@@ -8,11 +8,12 @@ require __DIR__ . '/prod.php';
 
 // enable the debug mode
 $app['debug'] = true;
+$app['weburl'] = 'http://localhost:8888';
 
 $app->register(new \Silex\Provider\TwigServiceProvider());
 //$app->register(new Sorien\Provider\PimpleDumpProvider());
-$app['pimpledump.output_dir'] = __DIR__ . '/../';
-$app['pimpledump.trigger_route_pattern'] = '/_dump_pimple';
+//$app['pimpledump.output_dir'] = __DIR__ . '/../';
+//$app['pimpledump.trigger_route_pattern'] = '/_dump_pimple';
 
 $app->register(new MonologServiceProvider(), array(
     'monolog.logfile' => __DIR__.'/../var/logs/silex_dev.log',

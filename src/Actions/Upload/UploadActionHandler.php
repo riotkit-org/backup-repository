@@ -8,7 +8,7 @@ use Manager\ImageManager;
 use Exception\ImageManager\InvalidUrlException;
 
 /**
- * @package Controllers\Upload\Actions
+ * @package Actions\Upload
  */
 class UploadActionHandler extends AbstractBaseAction
 {
