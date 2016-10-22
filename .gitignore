@@ -1,1 +1,6 @@
 /vendor/
+/config/prod.custom.php
+/.idea/
+/pimple.json
+/web/storage/*
+/var/version-number
