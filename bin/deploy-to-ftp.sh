@@ -2,7 +2,7 @@
 
 composer install
 
-echo -n "Host: "
+echo -n "Host: "htaccess for Apache, a few new controllers :)
 read -s server_host
 echo ""
 
