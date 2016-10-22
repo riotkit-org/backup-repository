@@ -21,3 +21,7 @@ $app['controller.stats'] = function (\Silex\Application $app) {
 $app['controller.serve'] = function (\Silex\Application $app) {
     return new \Controllers\Download\ImageServeController($app);
 };
+
+$app['controller.routing.map'] = function (\Silex\Application $app) {
+    return new \Controllers\ServerInfo\RoutingMapController($app);
+};

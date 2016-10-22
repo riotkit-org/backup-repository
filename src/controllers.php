@@ -22,6 +22,7 @@ $app->get('/', 'controller.hello:viewAction');
 $app->post('/repository/post/image', 'controller.upload:uploadAction');
 $app->get('/repository/download/{imageName}', 'controller.serve:downloadAction');
 $app->get('/repository/stats', 'controller.stats:viewAction');
+$app->get('/repository/routing/map', 'controller.routing.map:viewAction');
 
 $app->error(function (\Exception $e, Request $request, $code) use ($app) {
     if ($app['debug']) {

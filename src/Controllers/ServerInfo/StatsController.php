@@ -2,6 +2,7 @@
 
 namespace Controllers\ServerInfo;
 
+use Actions\ServerInfo\StatsProviderAction;
 use Controllers\AbstractBaseController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
@@ -15,9 +16,13 @@ class StatsController extends AbstractBaseController
      */
     public function viewAction()
     {
+        $action = new StatsProviderAction();
+        $action->setContainer($this->getContainer());
+        $action->setController($this);
+
         return new JsonResponse([
             'code'    => 200,
-            'message' => 'Currently nothing to show, yet.',
+            'data'    => $action->execute(),
         ], 200);
     }
 }

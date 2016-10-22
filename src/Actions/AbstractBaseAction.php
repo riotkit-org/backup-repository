@@ -2,6 +2,7 @@
 
 namespace Actions;
 
+use Controllers\AbstractBaseController;
 use Controllers\Upload\UploadControllerInterface;
 use Silex\Application;
 
@@ -36,10 +37,10 @@ abstract class AbstractBaseAction
     }
 
     /**
-     * @param UploadControllerInterface $controller
+     * @param AbstractBaseController $controller
      * @return $this
      */
-    public function setController(UploadControllerInterface $controller)
+    public function setController(AbstractBaseController $controller)
     {
         $this->controller = $controller;
         return $this;
