@@ -31,9 +31,15 @@
         }
     },
     "scripts": {
+        "post-install-cmd": [
+            "bash ./bin/generate-version-number.sh"
+        ],
+        "post-update-cmd": [
+            "bash ./bin/generate-version-number.sh"
+        ],
         "run": [
             "echo 'Started web server on http://localhost:8888'",
-            "php -S localhost:8888 ./web/index_dev.php"
+            "exec php -S localhost:8888 ./web/index_dev.php"
         ]
     },
     "require-dev": {
