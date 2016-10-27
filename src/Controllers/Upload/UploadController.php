@@ -2,7 +2,8 @@
 
 namespace Controllers\Upload;
 
-use Actions\Upload\UploadActionHandler;
+use Actions\Upload\AddByUrlActionHandler;
+use Actions\Upload\UploadByHttpActionHandler;
 use Controllers\AbstractBaseController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -13,15 +14,18 @@ use Symfony\Component\HttpFoundation\Response;
  *
  * @package Controllers\Upload
  */
-class HTTPUploadController extends AbstractBaseController implements UploadControllerInterface
+class UploadController extends AbstractBaseController implements UploadControllerInterface
 {
     /**
      * @return JsonResponse|Response
      */
     public function uploadAction() : Response
     {
-        $action = new UploadActionHandler(
-            (string)$this->getRequest()->request->get('image_file_url')
+        $action = new UploadByHttpActionHandler(
+            (string)$this->getRequest()->get('file_name'),
+            (bool)$this->getRequest()->get('file_overwrite'),
+            $this->getContainer()->offsetGet('storage.filesize'),
+            $this->getContainer()->offsetGet('storage.allowed_types')
         );
         $action->setContainer($this->getContainer())
             ->setController($this);

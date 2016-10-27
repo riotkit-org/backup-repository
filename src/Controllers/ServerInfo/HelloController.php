@@ -19,7 +19,7 @@ class HelloController extends AbstractBaseController
     {
         return new JsonResponse([
             'code'    => 200,
-            'message' => 'Hello, welcome.',
+            'message' => 'Hello, welcome. Please take a look at /repository/routing/map for the list of available routes.',
         ], 200);
     }
 }
