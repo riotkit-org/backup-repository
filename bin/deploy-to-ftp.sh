@@ -6,7 +6,7 @@ then
     exit 1
 fi
 
-git rev-list --all --count > ./var/version-number
+./bin/generate-version-number.sh
 composer install
 
 echo -n "Host: "htaccess for Apache, a few new controllers :)
