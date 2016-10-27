@@ -3,7 +3,7 @@
 namespace Controllers\Download;
 
 use Controllers\AbstractBaseController;
-use Manager\ImageManager;
+use Manager\StorageManager;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -29,11 +29,11 @@ class ImageServeController extends AbstractBaseController
      */
     public function downloadAction($imageName = null)
     {
-        /** @var ImageManager $manager */
+        /** @var StorageManager $manager */
         $manager       = $this->getContainer()->offsetGet('manager.image');
         $requestedFile = $this->getRequest()->request->get('image_file_url');
         $storagePath   = $requestedFile ?
-            $manager->getPathWhereToStoreTheImage($requestedFile, true)
+            $manager->getPathWhereToStoreTheFile($requestedFile, true)
         :
             $manager->assertGetStoragePathForFile($imageName);
 

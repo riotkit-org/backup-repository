@@ -4,13 +4,13 @@ namespace Actions\Upload;
 
 use Actions\AbstractBaseAction;
 use Service\HttpImageDownloader;
-use Manager\ImageManager;
+use Manager\StorageManager;
 use Exception\ImageManager\InvalidUrlException;
 
 /**
  * @package Actions\Upload
  */
-class UploadActionHandler extends AbstractBaseAction
+class AddByUrlActionHandler extends AbstractBaseAction
 {
     /**
      * @var string $fileUrl
@@ -33,9 +33,9 @@ class UploadActionHandler extends AbstractBaseAction
     {
         $this->assertValidUrl($this->fileUrl);
 
-        /** @var ImageManager $manager */
-        $manager    = $this->getContainer()->offsetGet('manager.image');
-        $targetPath = $manager->getPathWhereToStoreTheImage($this->fileUrl, true);
+        /** @var StorageManager $manager */
+        $manager    = $this->getContainer()->offsetGet('manager.storage');
+        $targetPath = $manager->getPathWhereToStoreTheFile($this->fileUrl, true);
         $modified   = false;
 
         if (!is_file($targetPath)) {
@@ -50,7 +50,7 @@ class UploadActionHandler extends AbstractBaseAction
         return [
             'status' => $modified ? 'OK' : 'Not-Changed',
             'code'   => 200,
-            'url'    => $manager->getImageUrl($this->fileUrl),
+            'url'    => $manager->getFileUrl($this->fileUrl),
         ];
     }
 
