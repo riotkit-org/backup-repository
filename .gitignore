@@ -1,5 +1,7 @@
 /vendor/
 /config/prod.custom.php
+/config/dev.custom.php
+/config/DEPLOYMENT_FTP
 /.idea/
 /pimple.json
 /web/storage/*
