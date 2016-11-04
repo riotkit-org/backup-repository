@@ -6,3 +6,4 @@
 /pimple.json
 /web/storage/*
 /var/version-number
+config/database.sqlite3

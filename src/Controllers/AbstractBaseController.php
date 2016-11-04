@@ -18,11 +18,6 @@ abstract class AbstractBaseController
     private $container;
 
     /**
-     * @var MessageBusSupportingMiddleware $commandBus
-     */
-    private $commandBus;
-
-    /**
      * @var Request $request
      */
     private $request;
@@ -33,7 +28,6 @@ abstract class AbstractBaseController
     public function __construct(Application $app)
     {
         $this->container  = $app;
-        $this->commandBus = $app['commandBus'];
         $this->request    = $app['request_stack']->getCurrentRequest();
 
         $this->assertValidateAccessRights($this->request, $app['api.key']);
@@ -64,13 +58,5 @@ abstract class AbstractBaseController
     public function getRequest()
     {
         return $this->request;
-    }
-
-    /**
-     * @return MessageBusSupportingMiddleware
-     */
-    public function getCommandBus()
-    {
-        return $this->commandBus;
     }
 }

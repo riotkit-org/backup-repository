@@ -7,6 +7,10 @@ $app['manager.storage'] = function (\Silex\Application $app) {
     return new \Manager\StorageManager($app['storage.path'], $app['url_generator']);
 };
 
+$app['manager.file_registry'] = function (\Silex\Application $app) {
+    return new \Manager\FileRegistry($app['spot'], $app['storage.path'], $app['manager.storage']);
+};
+
 // controllers
 $app['controller.upload'] = function (\Silex\Application $app) {
     return new \Controllers\Upload\UploadController($app);
