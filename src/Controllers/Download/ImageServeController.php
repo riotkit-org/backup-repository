@@ -33,7 +33,7 @@ class ImageServeController extends AbstractBaseController
         $manager       = $this->getContainer()->offsetGet('manager.image');
         $requestedFile = $this->getRequest()->request->get('image_file_url');
         $storagePath   = $requestedFile ?
-            $manager->getPathWhereToStoreTheFile($requestedFile, true)
+            $manager->getPathWhereToStoreTheFile($requestedFile)
         :
             $manager->assertGetStoragePathForFile($imageName);
 

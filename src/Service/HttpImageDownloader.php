@@ -6,7 +6,9 @@ use Exception\HttpImageDownloader\FileSizeLimitExceededException;
 use Exception\HttpImageDownloader\HTTPPermissionsException;
 use Exception\HttpImageDownloader\InvalidFileTypeException;
 use GuzzleHttp\Psr7\Stream;
+use Model\SavedFile;
 use Symfony\Component\Debug\Exception\ContextErrorException;
+use Symfony\Component\HttpFoundation\File\File;
 
 /**
  * HTTP Client for images downloading
@@ -74,11 +76,9 @@ class HttpImageDownloader
 
     /**
      * @param string $targetPath
-     * @param bool   $appendExtension
-     *
-     * @return string
+     * @return SavedFile
      */
-    public function saveTo($targetPath, $appendExtension = true)
+    public function saveTo($targetPath)
     {
         if (!is_dir(dirname($targetPath))) {
             mkdir($targetPath, 0774, true);
@@ -86,14 +86,14 @@ class HttpImageDownloader
 
         $fp = fopen($targetPath, 'w');
         $iteration = 0;
-        $extension = null;
+        $mime = null;
 
         while (!$this->stream->eof()) {
 
             $bufferRead = $this->stream->read(1024);
 
             if ($iteration === 0) {
-                $extension = $this->assertGetBufferedImageExtension($bufferRead, $fp);
+                $mime = $this->assertGetBufferedImageMime($bufferRead, $fp);
             }
 
             fwrite($fp, $bufferRead);
@@ -101,15 +101,9 @@ class HttpImageDownloader
         }
 
         fclose($fp);
-        $path = $targetPath;
-
-        if ($appendExtension) {
-            rename($targetPath, $targetPath . '.' . $extension);
-            $path = $targetPath . '.' . $extension;
-        }
-
         $this->stream->close();
-        return $path;
+
+        return new SavedFile($targetPath, $mime);
     }
 
     /**
@@ -119,7 +113,7 @@ class HttpImageDownloader
      * @throws InvalidFileTypeException
      * @return string
      */
-    private function assertGetBufferedImageExtension($bufferedString, $stream)
+    private function assertGetBufferedImageMime($bufferedString, $stream)
     {
         $mime = (new \finfo(FILEINFO_MIME))->buffer($bufferedString);
         $parts = explode(';', (string)$mime);
@@ -132,7 +126,7 @@ class HttpImageDownloader
             throw new InvalidFileTypeException(current($parts), $this->getAllowedMimes());
         }
 
-        return $allowedMimes[current($parts)];
+        return $mime;
     }
 
     /**

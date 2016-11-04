@@ -4,7 +4,9 @@ namespace Actions\Upload;
 
 use Actions\AbstractBaseAction;
 use Exception\ImageManager\FileNameReservedException;
+use Exception\Upload\DuplicatedContentException;
 use Exception\Upload\UploadException;
+use Manager\FileRegistry;
 use Manager\StorageManager;
 use Exception\ImageManager\InvalidUrlException;
 use Symfony\Component\Routing\Generator\UrlGenerator;
@@ -60,6 +62,22 @@ class UploadByHttpActionHandler extends AbstractBaseAction
     }
 
     /**
+     * @return FileRegistry
+     */
+    protected function getRegistry()
+    {
+        return $this->getContainer()->offsetGet('manager.file_registry');
+    }
+
+    /**
+     * @return StorageManager
+     */
+    protected function getManager()
+    {
+        return $this->getContainer()->offsetGet('manager.storage');
+    }
+
+    /**
      * @throws FileNameReservedException
      * @throws InvalidUrlException
      * @throws UploadException
@@ -68,39 +86,30 @@ class UploadByHttpActionHandler extends AbstractBaseAction
      */
     public function execute(): array
     {
-        /** @var StorageManager $manager */
-        $manager    = $this->getContainer()->offsetGet('manager.storage');
-        $extension  = isset($_FILES[$this->fieldName])
-            ? $this->getUploadedFileExtension($_FILES[$this->fieldName])
-            : '';
-        $this->correctFileName($manager, $extension);
-        $targetPath = $manager->getUniquePathWhereToStorageFile($this->fileName, true, false);
+        $targetPath = $this->getManager()->getUniquePathWhereToStorageFile($this->fileName);
+        $fileName   = $this->fileName;
 
-        if (!$manager->canWriteFile($this->fileName, true) && $this->forceFileName) {
-            throw new FileNameReservedException('File name is already reserved, please choose a different one');
+        if ($this->getRegistry()->existsInRegistry($fileName)) {
+            return [
+                'status' => 'OK',
+                'code'   => 301,
+                'url' => $this->getManager()->getFileUrl(
+                    $this->getRegistry()->fetchOneByName($fileName)
+                ),
+            ];
+        }
+
+        if (!$this->getManager()->canWriteFile($this->fileName) && $this->forceFileName) {
+            throw new FileNameReservedException('File name is already reserved, please choose a different one', 2);
         }
 
         $this->handleValidation();
 
         return [
-            'url'  => $manager->getFileUrl($targetPath),
-            'path' => $this->handleUpload($targetPath)
+            'status' => 'OK',
+            'code'   => 200,
+            'url'    => $this->handleUpload($targetPath),
         ];
-    }
-
-    /**
-     * @param StorageManager $manager
-     * @param string         $newExtension
-     */
-    private function correctFileName(StorageManager $manager, $newExtension)
-    {
-        $baseName = trim($manager->getFileName($this->fileName));
-
-        if (strlen($baseName) < 3) {
-            $baseName = substr(md5(microtime()), 0, 5);
-        }
-
-        $this->fileName = $baseName . '.' . $newExtension;
     }
 
     /**
@@ -127,7 +136,7 @@ class UploadByHttpActionHandler extends AbstractBaseAction
             default: throw new UploadException('Unknown error');
         }
 
-        if (false === $this->getUploadedFileExtension($uploadedFile)) {
+        if (false === $this->getUploadedFileMime($uploadedFile)) {
             throw new UploadException('Invalid file format.');
         }
 
@@ -140,15 +149,20 @@ class UploadByHttpActionHandler extends AbstractBaseAction
      * @param array $uploadedFile
      * @return string
      */
-    private function getUploadedFileExtension($uploadedFile)
+    private function getUploadedFileMime($uploadedFile) : string
     {
         $finfo = new \finfo(FILEINFO_MIME_TYPE);
 
-        return array_search(
-            $finfo->file($uploadedFile['tmp_name']),
+        if (array_search(
+            $finfo->file($uploadedFile['dst_name'] ?? $uploadedFile['tmp_name']),
             $this->getAllowedFileTypes(),
             true
-        );
+        ))
+        {
+            return $finfo->file($uploadedFile['dst_name'] ?? $uploadedFile['tmp_name']);
+        }
+
+        return '';
     }
 
     /**
@@ -175,10 +189,25 @@ class UploadByHttpActionHandler extends AbstractBaseAction
      */
     public function handleUpload(string $targetPath)
     {
+        $_FILES[$this->fieldName]['dst_name'] = $targetPath;
+
         if (!move_uploaded_file($_FILES[$this->fieldName]['tmp_name'], $targetPath)) {
             throw new UploadException('Cannot save uploaded file. Maybe a disk space problem?');
         }
 
-        return $targetPath;
+        try {
+            $this->getRegistry()->registerByName(
+                $this->fileName,
+                $this->getUploadedFileMime($_FILES[$this->fieldName])
+            );
+
+        } catch (DuplicatedContentException $e) {
+            // return the redirection to the duplicate
+            // instead of saving the same file twice
+            $this->getRegistry()->revertUploadedDuplicate($targetPath);
+            return $this->getManager()->getFileUrl($e->getDuplicate());
+        }
+
+        return $this->getManager()->getUrlByName($targetPath);
     }
 }

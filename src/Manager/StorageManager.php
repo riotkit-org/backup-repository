@@ -2,12 +2,17 @@
 
 namespace Manager;
 
+use Model\Entity\File;
 use Silex\Application;
 use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
 use Exception\ImageManager\DirectoryNotFoundException;
 use Symfony\Component\Routing\Generator\UrlGenerator;
 
 /**
+ * Manages where to put a new file
+ * and tells if putting a new file is possible
+ * ===========================================
+ *
  * @package Manager
  */
 class StorageManager
@@ -30,80 +35,57 @@ class StorageManager
 
     /**
      * @param string $url
-     * @param bool   $withExtension
-     *
      * @return string
      */
-    public function getFileName(string $url, $withExtension = false)
+    public function getFileName(string $url)
     {
         $parts = explode('?', $url);
-        return pathinfo($parts[0], ($withExtension ? PATHINFO_BASENAME : PATHINFO_FILENAME));
+        return substr(md5($url), 0, 8) . '-' . pathinfo($parts[0], PATHINFO_BASENAME);
     }
 
     /**
      * @param string $url
-     * @param bool   $withExtension
-     * @param bool   $withPrefix
      * @return string
      */
-    private function getStorageFileName(
-        string $url,
-        $withExtension = false,
-        $withPrefix = true)
+    public function getStorageFileName(string $url)
     {
-        $fileName = ($withPrefix === true)
-            ? substr(md5($url), 0, 8) . '-'
-            : '';
-
-        return $this->getFileName($url, $withExtension);
+       return $this->getFileName($url);
     }
 
     /**
      * @param string $url
-     * @param bool   $withExtension
-     * @param bool   $withPrefix
+     * @return string
+     */
+    public function getPathWhereToStoreTheFile(string $url)
+    {
+        return $this->storagePath . '/' . $this->getStorageFileName($url);
+    }
+
+    /**
+     * @param string $url
      *
      * @return string
      */
-    public function getPathWhereToStoreTheFile(
-        string $url,
-        $withExtension = false,
-        $withPrefix = true)
-    {
-        return $this->storagePath . '/' . $this->getStorageFileName($url, $withExtension, $withPrefix);
-    }
-
-    /**
-     * @param string $url
-     * @param bool   $withExtension
-     * @param bool   $withPrefix
-     *
-     * @return string
-     */
-    public function getUniquePathWhereToStorageFile(
-        string $url,
-        $withExtension = false,
-        $withPrefix    = true)
+    public function getUniquePathWhereToStorageFile(string $url)
     {
         $originalUrl = $url;
 
-        while (is_file($this->getPathWhereToStoreTheFile($url, $withExtension, $withPrefix))) {
+        while (is_file($this->getPathWhereToStoreTheFile($url))) {
             $url = rand(10000, 99999) . $originalUrl;
         }
 
-        return $this->getPathWhereToStoreTheFile($url, $withExtension, $withPrefix);
+        return $this->getPathWhereToStoreTheFile($url);
     }
 
     /**
      * Decide if we are able to write to selected path
      *
      * @param string $url
-     * @param bool   $withExtension
      * @return bool
      */
-    public function canWriteFile($url, $withExtension = false)
+    public function canWriteFile($url)
     {
-        return !is_file($this->getPathWhereToStoreTheFile($url, $withExtension));
+        return !is_file($this->getPathWhereToStoreTheFile($url));
     }
 
     /**
@@ -126,22 +108,33 @@ class StorageManager
     }
 
     /**
+     * @param File $file
+     * @return string
+     */
+    public function getFileUrl(File $file)
+    {
+        return $this->router->generate('GET_public_download_imageName', [
+            'imageName' => $this->getFileName($file->getFileName()),
+        ]);
+    }
+
+    /**
      * @param string $url
      * @return string
      */
-    public function getFileUrl($url)
+    public function getUrlByName($url)
     {
         if (substr($url, 0, 1) === '/' && is_file($url)) {
             $path = realpath($url);
-            $path = explode($this->storagePath, $path)[0];
+            $path = explode($this->storagePath, $path);
 
             return $this->router->generate('GET_public_download_imageName', [
-                'imageName' => $path[1],
+                'imageName' => ltrim($path[1], '/ '),
             ]);
         }
 
         return $this->router->generate('GET_public_download_imageName', [
-            'imageName' => $this->getFileName($url, true),
+            'imageName' => $this->getFileName($url),
         ]);
     }
 }

@@ -3,6 +3,8 @@
 namespace Actions\Upload;
 
 use Actions\AbstractBaseAction;
+use Exception\Upload\DuplicatedContentException;
+use Manager\FileRegistry;
 use Service\HttpImageDownloader;
 use Manager\StorageManager;
 use Exception\ImageManager\InvalidUrlException;
@@ -33,24 +35,46 @@ class AddByUrlActionHandler extends AbstractBaseAction
     {
         $this->assertValidUrl($this->fileUrl);
 
-        /** @var StorageManager $manager */
+        /**
+         * @var StorageManager $manager
+         * @var FileRegistry   $registry
+         */
         $manager    = $this->getContainer()->offsetGet('manager.storage');
-        $targetPath = $manager->getPathWhereToStoreTheFile($this->fileUrl, true);
-        $modified   = false;
+        $registry   = $this->getContainer()->offsetGet('manager.file_registry');
 
-        if (!is_file($targetPath)) {
+        if (!$registry->existsInRegistry($this->fileUrl)) {
+            $targetPath = $manager->getPathWhereToStoreTheFile($this->fileUrl);
+
             $downloader = new HttpImageDownloader($this->fileUrl);
-            $downloader->saveTo(
-                $targetPath, false
-            );
+            $savedFile = $downloader->saveTo($targetPath);
 
-            $modified = true;
+            try {
+                $registry->registerByName($this->fileUrl, $savedFile->getFileMimeType());
+
+            } catch (DuplicatedContentException $e) {
+
+                // on duplicate content redirect to other file
+                $file = $e->getDuplicate(); // original file that WAS duplicated
+                $registry->revertUploadedDuplicate($targetPath);
+
+                return [
+                    'status' => 'OK',
+                    'code'   => 301,
+                    'url'    => $manager->getFileUrl($file),
+                ];
+            }
+
+            return [
+                'status' => 'OK',
+                'code'   => 200,
+                'url'    => $manager->getUrlByName($targetPath),
+            ];
         }
 
         return [
-            'status' => $modified ? 'OK' : 'Not-Changed',
+            'status' => 'Not-Changed',
             'code'   => 200,
-            'url'    => $manager->getFileUrl($this->fileUrl),
+            'url'    => $manager->getUrlByName($this->fileUrl),
         ];
     }
 
