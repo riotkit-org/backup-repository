@@ -1,6 +1,7 @@
 Wolnościowiec Image Repository
 ==============================
 
+[![Build Status](https://travis-ci.org/Wolnosciowiec/image-repository.svg?branch=master)](https://travis-ci.org/Wolnosciowiec/image-repository)
 [![Code Climate](https://codeclimate.com/github/Wolnosciowiec/image-repository/badges/gpa.svg)](https://codeclimate.com/github/Wolnosciowiec/image-repository)
 [![Test Coverage](https://codeclimate.com/github/Wolnosciowiec/image-repository/badges/coverage.svg)](https://codeclimate.com/github/Wolnosciowiec/image-repository/coverage)
 [![Issue Count](https://codeclimate.com/github/Wolnosciowiec/image-repository/badges/issue_count.svg)](https://codeclimate.com/github/Wolnosciowiec/image-repository)
