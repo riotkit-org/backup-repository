@@ -27,12 +27,21 @@ abstract class AbstractBaseAction
     abstract public function execute(): array;
 
     /**
+     * @override
+     */
+    protected function constructServices()
+    {
+
+    }
+
+    /**
      * @param Application $app
      * @return $this
      */
     public function setContainer(Application $app)
     {
         $this->container = $app;
+        $this->constructServices();
         return $this;
     }
 

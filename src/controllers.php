@@ -1,8 +1,5 @@
 <?php
 
-use SimpleBus\Message\CallableResolver\CallableMap;
-use SimpleBus\Message\CallableResolver\ServiceLocatorAwareCallableResolver;
-use SimpleBus\Message\Name\ClassBasedNameResolver;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
@@ -18,9 +15,12 @@ $app->get('/repository/stats', 'controller.stats:viewAction');
 $app->get('/repository/routing/map', 'controller.routing.map:viewAction');
 $app->get('/public/download/{imageName}', 'controller.serve:downloadAction');
 
+/**
+ * @return null|JsonResponse
+ */
 $app->error(function (\Exception $e, Request $request, $code) use ($app) {
     if ($app['debug']) {
-        return;
+        return null;
     }
 
     return new JsonResponse(

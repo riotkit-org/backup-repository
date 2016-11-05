@@ -30,7 +30,7 @@ class ImageServeController extends AbstractBaseController
     public function downloadAction($imageName = null)
     {
         /** @var StorageManager $manager */
-        $manager       = $this->getContainer()->offsetGet('manager.image');
+        $manager       = $this->getContainer()->offsetGet('manager.storage');
         $requestedFile = $this->getRequest()->request->get('image_file_url');
         $storagePath   = $requestedFile ?
             $manager->getPathWhereToStoreTheFile($requestedFile)
