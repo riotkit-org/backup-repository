@@ -2,6 +2,7 @@
 
 namespace Controllers;
 
+use Actions\AbstractBaseAction;
 use Silex\Application;
 use SimpleBus\Message\Bus\Middleware\MessageBusSupportingMiddleware;
 use Symfony\Component\HttpFoundation\File\Exception\AccessDeniedException;
@@ -58,5 +59,17 @@ abstract class AbstractBaseController
     public function getRequest()
     {
         return $this->request;
+    }
+
+    /**
+     * @param AbstractBaseAction $action
+     * @return AbstractBaseAction
+     */
+    protected function getAction(AbstractBaseAction $action)
+    {
+        $action->setContainer($this->container);
+        $action->setController($this);
+
+        return $action;
     }
 }

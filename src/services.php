@@ -35,3 +35,7 @@ $app['controller.serve'] = function (\Silex\Application $app) {
 $app['controller.routing.map'] = function (\Silex\Application $app) {
     return new \Controllers\ServerInfo\RoutingMapController($app);
 };
+
+$app['controller.registry'] = function (\Silex\Application $app) {
+    return new \Controllers\Registry\RegistryController($app);
+};

@@ -72,11 +72,16 @@ class FileRegistry
      */
     public function getFileByContentHash($hash)
     {
+        // @todo: Move to repository
         return $this->db->mapper(File::class)
             ->first(['contentHash' => $hash]);
     }
 
     /**
+     * In case of a upload failure
+     * allow to delete saved file from the disk
+     * (should not be used in other cases)
+     *
      * @param string $path
      */
     public function revertUploadedDuplicate(string $path)
@@ -87,6 +92,9 @@ class FileRegistry
     }
 
     /**
+     * Put a file into the registry
+     * after successful save/upload to disk
+     *
      * @param string $fileName
      * @param string $mimeType
      *
@@ -121,5 +129,25 @@ class FileRegistry
 
         // persist and flush changes
         $this->db->mapper(File::class)->save($file);
+    }
+
+    /**
+     * Delete a file from disk and from the registry
+     *
+     * @param File $file
+     */
+    public function deleteFile(File $file)
+    {
+        $path = $this->storageManager->getPathWhereToStoreTheFile($file->getFileName());
+
+        if (!is_file($path)) {
+            throw new FileNotFoundException($path);
+        }
+
+        unlink($path);
+
+        $this->db->mapper(File::class)->delete([
+            'contentHash' => $file->getContentHash(),
+        ]);
     }
 }
