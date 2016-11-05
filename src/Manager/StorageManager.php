@@ -35,30 +35,42 @@ class StorageManager
 
     /**
      * @param string $url
+     * @param bool   $withPrefix
+     *
      * @return string
      */
-    public function getFileName(string $url)
+    public function getFileName(string $url, $withPrefix = true)
     {
         $parts = explode('?', $url);
-        return substr(md5($url), 0, 8) . '-' . pathinfo($parts[0], PATHINFO_BASENAME);
+        $name  = '';
+
+        if ($withPrefix == true) {
+            $name .= substr(md5($url), 0, 8) . '-';
+        }
+
+        return $name . pathinfo($parts[0], PATHINFO_BASENAME);
     }
 
     /**
      * @param string $url
+     * @param bool   $withPrefix
+     *
      * @return string
      */
-    public function getStorageFileName(string $url)
+    public function getStorageFileName(string $url, $withPrefix = true)
     {
-       return $this->getFileName($url);
+       return $this->getFileName($url, $withPrefix);
     }
 
     /**
      * @param string $url
+     * @param bool   $withPrefix
+     *
      * @return string
      */
-    public function getPathWhereToStoreTheFile(string $url)
+    public function getPathWhereToStoreTheFile(string $url, $withPrefix = true)
     {
-        return $this->storagePath . '/' . $this->getStorageFileName($url);
+        return $this->storagePath . '/' . $this->getStorageFileName($url, $withPrefix);
     }
 
     /**
