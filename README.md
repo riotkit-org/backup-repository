@@ -5,7 +5,7 @@ Wolnościowiec Image Repository
 [![Code Climate](https://codeclimate.com/github/Wolnosciowiec/image-repository/badges/gpa.svg)](https://codeclimate.com/github/Wolnosciowiec/image-repository)
 [![Test Coverage](https://codeclimate.com/github/Wolnosciowiec/image-repository/badges/coverage.svg)](https://codeclimate.com/github/Wolnosciowiec/image-repository/coverage)
 [![Issue Count](https://codeclimate.com/github/Wolnosciowiec/image-repository/badges/issue_count.svg)](https://codeclimate.com/github/Wolnosciowiec/image-repository)
-[![Heroku](https://heroku-badge.herokuapp.com/?app=image-repository-test&root=index.php)](https://image-repository-test.herokuapp.com/)
+[![Heroku](https://heroku-badge.herokuapp.com/?app=image-repository-test&root=index.php)](https://image-repository-test.herokuapp.com/?_token=api-key-here-for-external-remote-control)
 
 Handles images as a node and exposes uploaded images
 to end users. Could be used as a cheap cluster of storage
