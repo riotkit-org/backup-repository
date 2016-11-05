@@ -138,7 +138,7 @@ class FileRegistry
      */
     public function deleteFile(File $file)
     {
-        $path = $this->storageManager->getPathWhereToStoreTheFile($file->getFileName());
+        $path = $this->storageManager->getPathWhereToStoreTheFile($file->getFileName(), false);
 
         if (!is_file($path)) {
             throw new FileNotFoundException($path);
