@@ -11,6 +11,10 @@ $app['manager.file_registry'] = function (\Silex\Application $app) {
     return new \Manager\FileRegistry($app['spot'], $app['storage.path'], $app['manager.storage']);
 };
 
+$app['versioning'] = function () {
+    return new \Service\Versioning();
+};
+
 // controllers
 $app['controller.upload'] = function (\Silex\Application $app) {
     return new \Controllers\Upload\UploadController($app);
