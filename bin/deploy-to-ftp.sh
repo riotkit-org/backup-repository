@@ -16,8 +16,12 @@ source ./config/DEPLOYMENT_FTP
 ./bin/generate-version-number.sh
 composer install
 
+echo "==> Clearing up dev cache"
+rm -rf ./var/cache/profiler/
+rm ./var/cache/logs/silex_dev.log
+
 echo "==> Uploading all files"
-ncftpput -R -v -u $DEPLOYMENT_FTP_USER $DEPLOYMENT_FTP_SERVER $DEPLOYMENT_FTP_SERVER -p $DEPLOYMENT_FTP_DIR ./
+ncftpput -u $DEPLOYMENT_FTP_USER -R -v -p $DEPLOYMENT_FTP_PASSWD $DEPLOYMENT_FTP_SERVER $DEPLOYMENT_FTP_DIR ./
 
 echo "==> Removing files that should not be deployed to server"
 for fileName in $(cat ./.gitignore); do
