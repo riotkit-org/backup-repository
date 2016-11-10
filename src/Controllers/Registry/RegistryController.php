@@ -23,7 +23,8 @@ class RegistryController extends AbstractBaseController
     public function checkExistsAction()
     {
         $act = $this->getAction(new CheckExistAction(
-            $this->getRequest()->request->get('file_name')
+            $this->getRequest()->request->get('file_name'),
+            $this->getContainer()->offsetGet('manager.storage')
         ));
 
         return $this->getActionResponse($act);

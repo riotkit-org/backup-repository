@@ -31,6 +31,7 @@ class CheckExistAction extends AbstractBaseAction
 
     /**
      * @param string $fileName
+     * @param StorageManager $manager
      */
     public function __construct(string $fileName, StorageManager $manager)
     {

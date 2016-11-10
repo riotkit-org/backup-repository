@@ -130,7 +130,7 @@ class StorageManager
     public function getFileUrl(File $file)
     {
         return $this->weburl . $this->router->generate('GET_public_download_imageName', [
-            'imageName' => $this->getFileName($file->getFileName()),
+            'imageName' => $file->getFileName(),
         ]);
     }
 
