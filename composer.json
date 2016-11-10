@@ -42,10 +42,12 @@
     "scripts": {
         "post-install-cmd": [
             "bash ./bin/migrations.sh migrate",
+            "bash ./bin/migrations.sh migrate -e dev",
             "bash ./bin/generate-version-number.sh"
         ],
         "post-update-cmd": [
             "bash ./bin/migrations.sh migrate",
+            "bash ./bin/migrations.sh migrate -e dev",
             "bash ./bin/generate-version-number.sh"
         ],
         "run": [

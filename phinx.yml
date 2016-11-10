@@ -5,4 +5,8 @@ environments:
     default_database: default
     default:
         adapter: sqlite
-        name: ./config/database.sqlite3
+        name: ./config/database_prod.sqlite3
+
+    dev:
+        adapter: sqlite
+        name: ./config/database_dev.sqlite3
