@@ -49,7 +49,7 @@ class AddByUrlActionHandler extends AbstractBaseAction
             $savedFile = $downloader->saveTo($targetPath);
 
             try {
-                $registry->registerByName($this->fileUrl, $savedFile->getFileMimeType());
+                $file = $registry->registerByName($this->fileUrl, $savedFile->getFileMimeType());
 
             } catch (DuplicatedContentException $e) {
 
@@ -67,7 +67,7 @@ class AddByUrlActionHandler extends AbstractBaseAction
             return [
                 'status' => 'OK',
                 'code'   => 200,
-                'url'    => $manager->getUrlByName($targetPath),
+                'url'    => $manager->getFileUrl($file),
             ];
         }
 

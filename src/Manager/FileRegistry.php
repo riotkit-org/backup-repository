@@ -100,6 +100,8 @@ class FileRegistry
      *
      * @throws FileNotFoundException
      * @throws DuplicatedContentException
+     *
+     * @return File
      */
     public function registerByName(string $fileName, string $mimeType)
     {
@@ -129,6 +131,8 @@ class FileRegistry
 
         // persist and flush changes
         $this->db->mapper(File::class)->save($file);
+
+        return $file;
     }
 
     /**
