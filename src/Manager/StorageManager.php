@@ -23,10 +23,14 @@ class StorageManager
     /** @var UrlGenerator $router */
     private $router;
 
-    public function __construct(string $storagePath, UrlGenerator $router)
+    public function __construct(
+        string $storagePath,
+        UrlGenerator $router,
+        string $webUrl)
     {
         $this->storagePath = realpath($storagePath);
         $this->router      = $router;
+        $this->weburl      = $webUrl;
 
         if (!$this->storagePath) {
             throw new DirectoryNotFoundException('Storage path defined in "storage.path" configuration option does not exists');
@@ -125,7 +129,7 @@ class StorageManager
      */
     public function getFileUrl(File $file)
     {
-        return $this->router->generate('GET_public_download_imageName', [
+        return $this->weburl . $this->router->generate('GET_public_download_imageName', [
             'imageName' => $this->getFileName($file->getFileName()),
         ]);
     }
@@ -140,12 +144,12 @@ class StorageManager
             $path = realpath($url);
             $path = explode($this->storagePath, $path);
 
-            return $this->router->generate('GET_public_download_imageName', [
+            return $this->weburl . $this->router->generate('GET_public_download_imageName', [
                 'imageName' => ltrim($path[1], '/ '),
             ]);
         }
 
-        return $this->router->generate('GET_public_download_imageName', [
+        return $this->weburl . $this->router->generate('GET_public_download_imageName', [
             'imageName' => $this->getFileName($url),
         ]);
     }

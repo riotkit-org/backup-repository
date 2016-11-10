@@ -4,7 +4,7 @@
 
 // services
 $app['manager.storage'] = function (\Silex\Application $app) {
-    return new \Manager\StorageManager($app['storage.path'], $app['url_generator']);
+    return new \Manager\StorageManager($app['storage.path'], $app['url_generator'], $app['weburl']);
 };
 
 $app['manager.file_registry'] = function (\Silex\Application $app) {
