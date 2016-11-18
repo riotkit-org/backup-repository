@@ -7,3 +7,4 @@
 /web/storage/*
 /var/version-number
 config/database.sqlite3
+phploy.ini
