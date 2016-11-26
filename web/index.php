@@ -13,5 +13,3 @@ require __DIR__ . '/../src/services.php';
 require __DIR__ . '/../src/controllers.php';
 
 $app->run();
-
-//print("\n" . (microtime(true) - $startTime));
