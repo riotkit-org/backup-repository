@@ -15,7 +15,7 @@ $app->register(new HttpFragmentServiceProvider());
 // file registry requires a database to store data in
 $cfg = new \Spot\Config();
 $cfg->addConnection('sqlite', [
-    'path' => __DIR__ . '/../config/database_' . ENV . '.sqlite3',
+    'path' => __DIR__ . '/../data/database_' . ENV . '.sqlite3',
     'driver' => 'pdo_sqlite',
 ]);
 $app['spot'] = new \Spot\Locator($cfg);
