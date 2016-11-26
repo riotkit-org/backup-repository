@@ -19,3 +19,4 @@ if (is_file(__DIR__ . '/prod.custom.php')) {
     require __DIR__ . '/prod.custom.php';
 }
 
+return $app;

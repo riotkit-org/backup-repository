@@ -6,5 +6,5 @@
 /pimple.json
 /web/storage/*
 /var/version-number
-config/database.sqlite3
+data/*.sqlite3
 phploy.ini

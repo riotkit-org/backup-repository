@@ -1,4 +1,0 @@
-DEPLOYMENT_FTP_SERVER=1.2.3.4
-DEPLOYMENT_FTP_USER=user
-DEPLOYMENT_FTP_PASSWD=password
-DEPLOYMENT_FTP_DIR=/home/xxx/public_html/image_repository

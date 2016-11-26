@@ -24,7 +24,8 @@
         "guzzlehttp/guzzle": "^6.2",
         "sorien/silex-pimple-dumper": "~2.0",
         "robmorgan/phinx": "0.6.*",
-        "vlucas/spot2": "~2.2"
+        "vlucas/spot2": "~2.2",
+        "wolnosciowiec/wolnosciowiec-web-deploy": "1.*@dev"
     },
     "autoload": {
         "psr-0": { "": "src/" }
