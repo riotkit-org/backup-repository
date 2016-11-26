@@ -25,5 +25,7 @@ exclude[] = '.idea/*'
 exclude[] = 'tests/*'
 exclude[] = 'test-examples/*'
 
+include[] = 'vendor'
+
 purge[] = "var/cache/"
 pre-deploy[] = "composer install"
