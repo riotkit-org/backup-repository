@@ -28,6 +28,38 @@ Requirements for the build
 - Composer
 - ncftp
 
+Installation on remote server (with FTP access only)
+====================================================
+
+Let's assume a harder situation, we don't have an access to the shell, just the FTP on shared hosting.
+So, we will install the dependencies locally and put files on remote server using a deployment script.
+
+```
+# let's install the dependencies first, put application version
+composer install --no-dev
+
+# create custom configuration file
+nano ./config/prod.custom.php
+```
+
+```php
+<?php
+
+$app['api.key'] = 'your api key, longer is better, try to generate 128 characters - "openssl rand -base64 64" is helpful, but remember to remove the = and + characters';
+
+return $app;
+```
+
+```
+# put your FTP access data
+cp phploy.ini-example phploy.ini
+nano phploy.ini # or vim it, nano is easier
+
+# deploy to the remote server
+./bin/deploy-to-ftp.sh
+```
+
+
 Paths
 =====
 
