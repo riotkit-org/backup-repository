@@ -29,3 +29,4 @@ include[] = 'vendor'
 
 purge[] = "var/cache/"
 pre-deploy[] = "composer install"
+post-deploy[] = "curl http://your-host/deploy.php?_token=..."
