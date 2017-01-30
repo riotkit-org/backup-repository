@@ -32,10 +32,9 @@ class ImageServeController extends AbstractBaseController
         /** @var StorageManager $manager */
         $manager       = $this->getContainer()->offsetGet('manager.storage');
         $requestedFile = $this->getRequest()->request->get('image_file_url');
-        $storagePath   = $requestedFile ?
-            $manager->getPathWhereToStoreTheFile($requestedFile)
-        :
-            $manager->assertGetStoragePathForFile($imageName);
+        $storagePath   = $requestedFile
+            ? $manager->getPathWhereToStoreTheFile($requestedFile)
+            : $manager->assertGetStoragePathForFile($imageName);
 
         if (is_file($storagePath)) {
             $fp         = fopen($storagePath, 'r');
