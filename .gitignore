@@ -1,4 +1,5 @@
 /vendor/
+/web/assets/
 /config/prod.custom.php
 /config/dev.custom.php
 /config/DEPLOYMENT_FTP

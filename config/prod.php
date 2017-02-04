@@ -3,6 +3,7 @@
 // configure your app for the production environment
 
 $app['api.key'] = 'api-key-here-for-external-remote-control';
+$app['token.expiration.time'] = '+30 minutes';
 
 // storage settings
 $app['storage.path'] = realpath(__DIR__ . '/../web/storage');

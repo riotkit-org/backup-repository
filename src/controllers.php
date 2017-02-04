@@ -14,6 +14,10 @@ $app->post('/repository/image/delete', 'controller.registry:deleteAction');
 $app->get('/repository/stats', 'controller.stats:viewAction');
 $app->get('/repository/routing/map', 'controller.routing.map:viewAction');
 $app->get('/public/download/{imageName}', 'controller.serve:downloadAction');
+$app->get('/public/upload/image/form', 'controller.upload.form.image:showFormAction');
+$app->post('/public/upload/image', 'controller.upload.form.image:uploadAction');
+$app->post('/auth/token/generate', 'controller.auth.token:generateTemporaryTokenAction');
+$app->get('/jobs/token/expired/clear', 'controller.auth.token.expired:clearExpiredTokensAction');
 
 /**
  * @return null|JsonResponse
@@ -24,9 +28,9 @@ $app->error(function (\Exception $e, Request $request, $code) use ($app) {
     }
 
     return new JsonResponse(
-        array(
+        [
             'code'    => $code,
-            'message' => $e->getMessage()
-        )
+            'message' => $e->getMessage(),
+        ]
     );
 });

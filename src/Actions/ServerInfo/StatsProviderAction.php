@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Actions\ServerInfo;
 
@@ -21,6 +21,8 @@ class StatsProviderAction extends AbstractBaseAction
                 'free'  => disk_free_space($storagePath),
                 'total' => disk_total_space($storagePath),
             ],
+
+            'avg_load' => sys_getloadavg(),
 
             'storage' => [
                 'elements_count' => (count(scandir($storagePath)) - 2),

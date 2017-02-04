@@ -25,7 +25,10 @@
         "sorien/silex-pimple-dumper": "~2.0",
         "robmorgan/phinx": "0.6.*",
         "vlucas/spot2": "~2.2",
-        "wolnosciowiec/wolnosciowiec-web-deploy": "1.*@dev"
+        "wolnosciowiec/wolnosciowiec-web-deploy": "1.*@dev",
+        "twig/twig": "^2.1",
+        "symfony/twig-bridge": "^3.2",
+        "dflydev/doctrine-orm-service-provider": "^2.0"
     },
     "autoload": {
         "psr-0": { "": "src/" }
@@ -44,7 +47,8 @@
         "post-install-cmd": [
             "bash ./bin/migrations.sh migrate",
             "bash ./bin/migrations.sh migrate -e dev",
-            "bash ./bin/generate-version-number.sh"
+            "bash ./bin/generate-version-number.sh",
+            "bower install"
         ],
         "post-update-cmd": [
             "bash ./bin/migrations.sh migrate",
