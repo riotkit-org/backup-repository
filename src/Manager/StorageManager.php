@@ -26,8 +26,8 @@ class StorageManager
     public function __construct(
         string $storagePath,
         UrlGenerator $router,
-        string $webUrl)
-    {
+        string $webUrl
+    ) {
         $this->storagePath = realpath($storagePath);
         $this->router      = $router;
         $this->weburl      = $webUrl;
@@ -101,7 +101,9 @@ class StorageManager
      */
     public function canWriteFile($url)
     {
-        return !is_file($this->getPathWhereToStoreTheFile($url));
+        $path = $this->getPathWhereToStoreTheFile($url);
+
+        return !is_file($path) && is_writable($path);
     }
 
     /**

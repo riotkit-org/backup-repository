@@ -1,0 +1,25 @@
+{
+  "name": "wolnosciowiec-file-repository",
+  "homepage": "https://github.com/Wolnosciowiec/image-repository",
+  "authors": [
+    "Black and Red <wesoly.krzysztofa@gmail.com>"
+  ],
+  "description": "Lightweight file storage with API and user forms",
+  "main": "",
+  "keywords": [
+    "php"
+  ],
+  "license": "LGPLv3",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "cropperjs": "^0.8.1",
+    "bootstrap": "^3.3.7"
+  }
+}

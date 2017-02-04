@@ -43,22 +43,50 @@ class UploadByHttpActionHandler extends AbstractBaseAction
     /** @var array $allowedMimes */
     private $allowedMimes = [];
 
+    /** @var FileRegistry $registry */
+    private $registry;
+
+    /** @var StorageManager $manager */
+    private $manager;
+
+    /**
+     * Decides if to be strict about the "move_uploaded_file" or not
+     *
+     * @var bool $strictUploadMode
+     */
+    private $strictUploadMode = true;
+
+    /**
+     * @param int            $allowedFileSize
+     * @param array          $allowedMimes
+     * @param StorageManager $manager
+     * @param FileRegistry   $registry
+     */
+    public function __construct(
+        int $allowedFileSize,
+        array $allowedMimes,
+        StorageManager $manager,
+        FileRegistry   $registry
+    ) {
+        $this->allowedMimes  = $allowedMimes;
+        $this->maxFileSize   = $allowedFileSize;
+        $this->manager       = $manager;
+        $this->registry      = $registry;
+    }
+
     /**
      * @param string $fileName
      * @param bool   $forceFileName
-     * @param int    $allowedFilesize
-     * @param array  $allowedMimes
+     *
+     * @return UploadByHttpActionHandler
      */
-    public function __construct(
+    public function setData(
         string $fileName,
-        bool $forceFileName,
-        int $allowedFilesize,
-        array $allowedMimes)
-    {
+        bool $forceFileName
+    ): UploadByHttpActionHandler {
         $this->fileName      = $fileName;
         $this->forceFileName = $forceFileName;
-        $this->allowedMimes  = $allowedMimes;
-        $this->maxFileSize   = $allowedFilesize;
+        return $this;
     }
 
     /**
@@ -66,7 +94,7 @@ class UploadByHttpActionHandler extends AbstractBaseAction
      */
     protected function getRegistry()
     {
-        return $this->getContainer()->offsetGet('manager.file_registry');
+        return $this->registry;
     }
 
     /**
@@ -74,7 +102,7 @@ class UploadByHttpActionHandler extends AbstractBaseAction
      */
     protected function getManager()
     {
-        return $this->getContainer()->offsetGet('manager.storage');
+        return $this->manager;
     }
 
     /**
@@ -136,7 +164,7 @@ class UploadByHttpActionHandler extends AbstractBaseAction
             default: throw new UploadException('Unknown error');
         }
 
-        if (false === $this->getUploadedFileMime($uploadedFile)) {
+        if ('' === $this->getUploadedFileMime($uploadedFile)) {
             throw new UploadException('Invalid file format.');
         }
 
@@ -153,12 +181,11 @@ class UploadByHttpActionHandler extends AbstractBaseAction
     {
         $finfo = new \finfo(FILEINFO_MIME_TYPE);
 
-        if (array_search(
+        if (empty($this->getAllowedFileTypes()) || array_search(
             $finfo->file($uploadedFile['dst_name'] ?? $uploadedFile['tmp_name']),
             $this->getAllowedFileTypes(),
             true
-        ))
-        {
+        )) {
             return $finfo->file($uploadedFile['dst_name'] ?? $uploadedFile['tmp_name']);
         }
 
@@ -183,6 +210,19 @@ class UploadByHttpActionHandler extends AbstractBaseAction
 
     /**
      * @param string $targetPath
+     * @return bool
+     */
+    private function moveUploadedFile(string $targetPath)
+    {
+        if ($this->strictUploadMode === false) {
+            return rename($_FILES[$this->fieldName]['tmp_name'], $targetPath);
+        }
+
+        return move_uploaded_file($_FILES[$this->fieldName]['tmp_name'], $targetPath);
+    }
+
+    /**
+     * @param string $targetPath
      * @throws UploadException
      *
      * @return string
@@ -191,7 +231,7 @@ class UploadByHttpActionHandler extends AbstractBaseAction
     {
         $_FILES[$this->fieldName]['dst_name'] = $targetPath;
 
-        if (!move_uploaded_file($_FILES[$this->fieldName]['tmp_name'], $targetPath)) {
+        if (!$this->moveUploadedFile($targetPath)) {
             throw new UploadException('Cannot save uploaded file. Maybe a disk space problem?');
         }
 
@@ -209,5 +249,15 @@ class UploadByHttpActionHandler extends AbstractBaseAction
         }
 
         return $this->getManager()->getUrlByName($targetPath);
+    }
+
+    /**
+     * @param boolean $strictUploadMode
+     * @return UploadByHttpActionHandler
+     */
+    public function setStrictUploadMode(bool $strictUploadMode): UploadByHttpActionHandler
+    {
+        $this->strictUploadMode = $strictUploadMode;
+        return $this;
     }
 }

@@ -1,5 +1,5 @@
-Wolnościowiec Image Repository
-==============================
+Wolnościowiec File Repository
+=============================
 
 [![Build Status](https://travis-ci.org/Wolnosciowiec/image-repository.svg?branch=master)](https://travis-ci.org/Wolnosciowiec/image-repository)
 [![Code Climate](https://codeclimate.com/github/Wolnosciowiec/image-repository/badges/gpa.svg)](https://codeclimate.com/github/Wolnosciowiec/image-repository)
@@ -7,14 +7,27 @@ Wolnościowiec Image Repository
 [![Issue Count](https://codeclimate.com/github/Wolnosciowiec/image-repository/badges/issue_count.svg)](https://codeclimate.com/github/Wolnosciowiec/image-repository)
 [![Heroku](https://heroku-badge.herokuapp.com/?app=image-repository-test&root=?_token=api-key-here-for-external-remote-control)](https://image-repository-test.herokuapp.com/?_token=api-key-here-for-external-remote-control)
 
-Handles images as a node and exposes uploaded images
+Handles files as a node and exposes uploaded files
 to end users. Could be used as a cheap cluster of storage
-for images, or just as a simple static files storage.
+for files, or just as a simple static files storage.
 
 Initially the project was created to store static files
 to separate the traffic and conventionally the logic of the application
 from static content, and the second target is to provide a possibility
 to store the content on a very cheap $1/mo servers.
+
+Free software
+=============
+
+Created for an anarchist portal, with aim to propagate the freedom and grass-roots social movements
+where the human and it's needs is on first place, not the capital and profit.
+
+![Anarchist syndicalism](docs/anarchosyndicalism.png)
+
+Free to everyone, with restrictions for commercial usage.
+Built using recent technologies. RESTful, scalable, automated with tests, lightweight and cheap to host.
+
+![Silex](docs/silex-logo.png) ![Doctrine 2](docs/doctrine2-logo.png) ![Twig](docs/twig-logo.png)
 
 Requirements for web hosting
 ============================
@@ -74,8 +87,21 @@ POST /repository/image/delete
 GET /repository/stats
 GET /repository/routing/map
 
+# authentication
+/auth/token/generate
+/jobs/token/expired/clear
+
 # public area
 GET /public/download/{imageName}
+
+# public area with temporary token required (use /auth/token/generate to generate temporary tokens)
+GET /public/upload/image/form
+POST /public/upload/image
+{
+    "content": "... base64 encoded content ...",
+    "fileName": "file-name.jpg",
+    "mimeType": "image/jpeg"
+}
 ```
 
 Example forms
@@ -95,6 +121,13 @@ firefox ./test-examples
 
 - /test-examples/upload_form.html
 - /test-examples/add-by-url-form.html
+
+
+Console commands
+================
+
+Console is placed in `./src/console.php`.
+Type the `php ./src/console.php` to see the list of commands.
 
 FAQ
 ===

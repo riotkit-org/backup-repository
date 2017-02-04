@@ -1,0 +1,25 @@
+Model\Entity\Token:
+    type: entity
+    table: tokens
+    id:
+        id:
+            type: guid
+            unique: true
+            nullable: false
+            id: true
+            length: 36
+            generator:
+                strategy: UUID
+
+    fields:
+        expirationDate:
+            type: datetime
+            column: expiration_date
+
+        creationDate:
+            type: datetime
+            column: creation_date
+
+        roles:
+            type: array
+            column: roles
