@@ -21,10 +21,9 @@ class ExpiredTokensController extends AbstractBaseController
      */
     public function clearExpiredTokensAction()
     {
-        $command = (new ClearExpiredTokensCommand())
-            ->setApp($this->getContainer());
-
-        $command->execute(new StringInput(''), new NullOutput());
+        $command = new ClearExpiredTokensCommand();
+        $command->setApp($this->getContainer());
+        $command->executeCommand(new StringInput(''), new NullOutput());
 
         return new JsonResponse(['success' => true, 'processed' => $command->getProcessedAmount()]);
     }

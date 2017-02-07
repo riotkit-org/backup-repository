@@ -10,7 +10,7 @@ class ImageJsonPayload
     /**
      * @var string $content
      */
-    private $content;
+    private $content = '';
 
     /**
      * @var string $fileName
@@ -47,7 +47,7 @@ class ImageJsonPayload
     /**
      * @return string
      */
-    public function getContent()
+    public function getContent(): string
     {
         return $this->content;
     }

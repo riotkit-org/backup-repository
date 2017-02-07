@@ -6,6 +6,7 @@ use Actions\AbstractBaseAction;
 use Manager\FileRegistry;
 use Manager\StorageManager;
 use Model\Entity\File;
+use Repository\Domain\FileRepositoryInterface;
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 use Symfony\Component\Routing\Router;
 
@@ -15,9 +16,9 @@ use Symfony\Component\Routing\Router;
 class CheckExistAction extends AbstractBaseAction
 {
     /**
-     * @var FileRegistry
+     * @var FileRepositoryInterface $repository
      */
-    private $registry;
+    private $repository;
 
     /**
      * @var string $fileName
@@ -30,18 +31,15 @@ class CheckExistAction extends AbstractBaseAction
     private $manager;
 
     /**
-     * @param string $fileName
-     * @param StorageManager $manager
+     * @param string                  $fileName
+     * @param StorageManager          $manager
+     * @param FileRepositoryInterface $repository
      */
-    public function __construct(string $fileName, StorageManager $manager)
+    public function __construct(string $fileName, StorageManager $manager, FileRepositoryInterface $repository)
     {
         $this->fileName = $fileName;
         $this->manager  = $manager;
-    }
-
-    protected function constructServices()
-    {
-        $this->registry = $this->getContainer()->offsetGet('manager.file_registry');
+        $this->repository = $repository;
     }
 
     /**
@@ -49,7 +47,7 @@ class CheckExistAction extends AbstractBaseAction
      */
     public function execute(): array
     {
-        $file = $this->registry->fetchOneByName($this->fileName);
+        $file = $this->repository->fetchOneByName($this->fileName);
 
         if (!$file instanceof File) {
             throw new FileNotFoundException('File not found: ' . $this->fileName);

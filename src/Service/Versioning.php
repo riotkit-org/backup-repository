@@ -25,7 +25,7 @@ class Versioning
     /**
      * @return float
      */
-    public function getVersionNumber()
+    public function getVersionNumber(): float
     {
         $path = __DIR__ . '/../../var/version-number';
 
@@ -33,7 +33,7 @@ class Versioning
             $this->version = is_file($path) ? (int)file_get_contents($path) : 0;
         }
 
-        return $this->version;
+        return (float)$this->version;
     }
 
     /**

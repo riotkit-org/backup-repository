@@ -2,46 +2,37 @@
 
 namespace Commands;
 
-use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
  * @package Commands
  */
-class ClearExpiredTokensCommand implements CommandInterface
+class ClearExpiredTokensCommand extends BaseCommand
 {
-    /**
-     * @var \Silex\Application $app
-     */
-    private $app;
-
     /**
      * @var int $processed
      */
     private $processed = 0;
 
-    public function register(Application $console, \Silex\Application $app)
+    public function configure()
     {
-        $this->setApp($app);
-
-        $console
-            ->register('tokens:expired:clear')
+        $this->setName('tokens:expired:clear')
             ->setDescription('Clear all expired tokens')
-            ->setCode([$this, 'execute']);
+            ->setHelp('Removes all tokens with expiration date in the past');
     }
 
     /**
      * @inheritdoc
      */
-    public function execute(InputInterface $input, OutputInterface $output)
+    public function executeCommand(InputInterface $input, OutputInterface $output)
     {
         /**
          * @var \Repository\Domain\TokenRepositoryInterface $repository
          * @var \Manager\Domain\TokenManagerInterface       $manager
          */
-        $repository = $this->app['repository.token'];
-        $manager    = $this->app['manager.token'];
+        $repository = $this->getApp()['repository.token'];
+        $manager    = $this->getApp()['manager.token'];
 
         $output->writeln('Cleaning up expired tokens...');
 
@@ -54,16 +45,6 @@ class ClearExpiredTokensCommand implements CommandInterface
             );
             $manager->removeToken($token);
         }
-    }
-
-    /**
-     * @param \Silex\Application $app
-     * @return ClearExpiredTokensCommand
-     */
-    public function setApp($app)
-    {
-        $this->app = $app;
-        return $this;
     }
 
     /**

@@ -260,4 +260,14 @@ class UploadByHttpActionHandler extends AbstractBaseAction
         $this->strictUploadMode = $strictUploadMode;
         return $this;
     }
+
+    /**
+     * @param array $allowedMimes
+     * @return UploadByHttpActionHandler
+     */
+    public function setAllowedMimes(array $allowedMimes)
+    {
+        $this->allowedMimes = $allowedMimes;
+        return $this;
+    }
 }

@@ -1,11 +1,11 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Manager;
 
-use Doctrine\DBAL\Connection;
-use Exception\Upload\DuplicatedContentException;
 use Model\Entity\File;
-use Spot\Locator;
+use Exception\Upload\DuplicatedContentException;
+use Repository\Domain\FileRepositoryInterface;
+use Doctrine\ORM\EntityManager;
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 
 /**
@@ -14,9 +14,9 @@ use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 class FileRegistry
 {
     /**
-     * @var Connection $db
+     * @var EntityManager $em
      */
-    private $db;
+    private $em;
 
     /**
      * @var string $storagePath
@@ -29,32 +29,26 @@ class FileRegistry
     private $storageManager;
 
     /**
-     * @param Locator        $db
-     * @param string         $storagePath
-     * @param StorageManager $manager
+     * @var FileRepositoryInterface $repository
      */
-    public function __construct(
-        Locator $db,
-        string $storagePath,
-        StorageManager $manager
-    )
-    {
-        $this->db             = $db;
-        $this->storagePath    = $storagePath;
-        $this->storageManager = $manager;
-    }
+    private $repository;
 
     /**
-     * @param string $name File name or URL address
-     * @return File|null
+     * @param EntityManager           $em
+     * @param string                  $storagePath
+     * @param StorageManager          $manager
+     * @param FileRepositoryInterface $repository
      */
-    public function fetchOneByName($name)
-    {
-        // @todo: Move this method to repository
-        $name = $this->storageManager->getStorageFileName($name);
-
-        return $this->db->mapper(File::class)
-            ->first(['fileName' => $name]);
+    public function __construct(
+        EntityManager $em,
+        string $storagePath,
+        StorageManager $manager,
+        FileRepositoryInterface $repository
+    ) {
+        $this->em             = $em;
+        $this->storagePath    = $storagePath;
+        $this->storageManager = $manager;
+        $this->repository     = $repository;
     }
 
     /**
@@ -63,18 +57,7 @@ class FileRegistry
      */
     public function existsInRegistry($fileName)
     {
-        return $this->fetchOneByName($fileName) instanceof File;
-    }
-
-    /**
-     * @param string $hash
-     * @return File
-     */
-    public function getFileByContentHash($hash)
-    {
-        // @todo: Move to repository
-        return $this->db->mapper(File::class)
-            ->first(['contentHash' => $hash]);
+        return $this->repository->fetchOneByName($fileName) instanceof File;
     }
 
     /**
@@ -113,7 +96,7 @@ class FileRegistry
         }
 
         $hash      = hash_file('md5', $filePath);
-        $duplicate = $this->getFileByContentHash($hash);
+        $duplicate = $this->repository->getFileByContentHash($hash);
 
         if ($duplicate instanceof File) {
             throw new DuplicatedContentException(
@@ -130,7 +113,8 @@ class FileRegistry
         $file->setMimeType($mimeType);
 
         // persist and flush changes
-        $this->db->mapper(File::class)->save($file);
+        $this->em->persist($file);
+        $this->em->flush($file);
 
         return $file;
     }
@@ -150,8 +134,12 @@ class FileRegistry
 
         unlink($path);
 
-        $this->db->mapper(File::class)->delete([
-            'contentHash' => $file->getContentHash(),
-        ]);
+        $this->em->getRepository(File::class)
+            ->createQueryBuilder('f')
+            ->delete()
+            ->where('f.contentHash = :hash')
+            ->setParameter('hash', $file->getContentHash())
+            ->getQuery()
+                ->execute();
     }
 }

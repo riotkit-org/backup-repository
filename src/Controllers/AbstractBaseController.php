@@ -8,6 +8,7 @@ use Silex\Application;
 use SimpleBus\Message\Bus\Middleware\MessageBusSupportingMiddleware;
 use Symfony\Component\HttpFoundation\File\Exception\AccessDeniedException;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Serializer\SerializerInterface;
 
 /**
  * @package Controllers
@@ -29,6 +30,8 @@ abstract class AbstractBaseController
      */
     private $isInternalRequest = false;
 
+    private $payload;
+
     /**
      * @param Application $app
      * @param bool        $isInternalRequest
@@ -40,6 +43,26 @@ abstract class AbstractBaseController
         $this->setIsInternalRequest($isInternalRequest);
 
         $this->assertValidateAccessRights($this->request, $app['manager.token'], $this->getRequiredRoleName());
+    }
+
+    protected function getPayload()
+    {
+        if ($this->payload === null) {
+            /** @var SerializerInterface $serializer */
+            $serializer = $this->getContainer()->offsetGet('serializer');
+            $this->payload = $serializer->deserialize($this->getRequest()->getContent(false), $this->getPayloadClassName(), 'json');
+        }
+
+        return $this->payload;
+    }
+
+    /**
+     * @throws \Exception
+     * @return string
+     */
+    protected function getPayloadClassName(): string
+    {
+        throw new \Exception('Not implemented');
     }
 
     /**

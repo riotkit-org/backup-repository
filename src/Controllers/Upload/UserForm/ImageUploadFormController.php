@@ -22,11 +22,6 @@ use Symfony\Component\Serializer\SerializerInterface;
 class ImageUploadFormController extends AbstractBaseController
 {
     /**
-     * @var ImageJsonPayload $payload
-     */
-    private $payload;
-
-    /**
      * @return string
      */
     public function showFormAction()
@@ -46,17 +41,19 @@ class ImageUploadFormController extends AbstractBaseController
     }
 
     /**
+     * @return string
+     */
+    protected function getPayloadClassName(): string
+    {
+        return ImageJsonPayload::class;
+    }
+
+    /**
      * @return ImageJsonPayload
      */
-    private function getPayload(): ImageJsonPayload
+    protected function getPayload()
     {
-        if ($this->payload === null) {
-            /** @var SerializerInterface $serializer */
-            $serializer = $this->getContainer()->offsetGet('serializer');
-            $this->payload = $serializer->deserialize($this->getRequest()->getContent(false), ImageJsonPayload::class, 'json');
-        }
-
-        return $this->payload;
+        return parent::getPayload();
     }
 
     /**
@@ -83,6 +80,11 @@ class ImageUploadFormController extends AbstractBaseController
             $uploadController = new UploadController($this->getContainer(), true);
             $uploadController->setStrictUploadMode(false);
             $uploadController->setRequest($request);
+            $uploadController->setAllowedMimeTypes([
+                'jpg' => 'image/jpeg',
+                'png' => 'image/png',
+                'gif' => 'image/gif',
+            ]);
 
             return $uploadController->uploadAction();
 

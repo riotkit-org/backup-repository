@@ -1,9 +1,28 @@
 <?php
 
-// configure your app for the production environment
+/**
+ * Production environment settings
+ * -------------------------------
+ *
+ * @codeCoverageIgnore
+ *
+ * Override those default values by creating a "prod.custom.php" file
+ * Example:
+ *
+ * <?php
+ * $app['api.key'] = 'XxX'; return $app;
+ */
 
 $app['api.key'] = 'api-key-here-for-external-remote-control';
 $app['token.expiration.time'] = '+30 minutes';
+
+$app['downloader.size_limit'] = (1024 * 1024 * 1024); // megabyte
+$app['downloader.mimes'] = [
+    'image/jpeg',
+    'image/png',
+    'image/gif',
+    'image/jpg',
+];
 
 // storage settings
 $app['storage.path'] = realpath(__DIR__ . '/../web/storage');

@@ -1,13 +1,13 @@
 #!/usr/bin/env php
 <?php
 
-define('ENV', 'dev');
+/**
+ * Interactive console
+ * -------------------
+ */
 
+// @codeCoverageIgnoreStart
 require_once __DIR__ . '/../vendor/autoload.php';
-require_once __DIR__ . '/app.php';
-require __DIR__ . '/../config/prod.php';
-require __DIR__ . '/../src/services.php';
-require __DIR__ . '/../src/controllers.php';
 
 use Symfony\Component\Console\Application;
 use Symfony\Component\Console\Input\InputOption;
@@ -24,12 +24,15 @@ foreach (scandir(__DIR__ . '/Commands') as $fileName) {
         $commandName = substr($fileName, 0, -4);
         $className = '\\Commands\\' . $commandName;
 
-        /**
-         * @var \Commands\CommandInterface $className
-         */
+        if ($commandName === 'BaseCommand') {
+            continue;
+        }
+
         require_once __DIR__ . '/Commands/' . $commandName . '.php';
-        (new $className())->register($console, $app);
+        $console->add(new $className());
     }
 }
 
 $console->run();
+// @codeCoverageIgnore
+

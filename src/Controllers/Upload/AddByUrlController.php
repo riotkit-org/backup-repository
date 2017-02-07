@@ -4,8 +4,10 @@ namespace Controllers\Upload;
 
 use Actions\Upload\AddByUrlActionHandler;
 use Controllers\AbstractBaseController;
+use Model\Request\AddByUrlPayload;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Serializer\SerializerInterface;
 
 /**
  * HTTP/HTTPS handler
@@ -16,12 +18,28 @@ use Symfony\Component\HttpFoundation\Response;
 class AddByUrlController extends AbstractBaseController implements UploadControllerInterface
 {
     /**
+     * @return string
+     */
+    protected function getPayloadClassName(): string
+    {
+        return AddByUrlPayload::class;
+    }
+
+    /**
+     * @return AddByUrlPayload
+     */
+    protected function getPayload()
+    {
+        return parent::getPayload();
+    }
+
+    /**
      * @return JsonResponse|Response
      */
     public function uploadAction() : Response
     {
         $action = new AddByUrlActionHandler(
-            (string)$this->getRequest()->request->get('file_name')
+            $this->getPayload()->getFileUrl()
         );
         $action->setContainer($this->getContainer())
             ->setController($this);

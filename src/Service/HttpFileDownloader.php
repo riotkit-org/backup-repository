@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Service;
 
@@ -8,19 +8,18 @@ use Exception\HttpImageDownloader\InvalidFileTypeException;
 use GuzzleHttp\Psr7\Stream;
 use Model\SavedFile;
 use Symfony\Component\Debug\Exception\ContextErrorException;
-use Symfony\Component\HttpFoundation\File\File;
 
 /**
- * HTTP Client for images downloading
+ * HTTP Client for files downloading
  *
  * @package Service
  */
-class HttpImageDownloader
+class HttpFileDownloader
 {
     /**
      * @var int $maxFileSizeLimit
      */
-    private $maxFileSizeLimit = (1024 * 1024 * 1024); // megabyte?
+    private $maxFileSizeLimit = (1024 * 1024 * 1024); // megabyte
 
     /**
      * @var Stream $stream
@@ -36,10 +35,10 @@ class HttpImageDownloader
      * @var string[] $allowedMimes
      */
     private $allowedMimes = [
-        'image/jpeg' => 'jpg',
-        'image/png'  => 'png',
-        'image/gif'  => 'gif',
-        'image/jpg'  => 'jpg',
+        'image/jpeg',
+        'image/png',
+        'image/gif',
+        'image/jpg',
     ];
 
     /**
@@ -51,12 +50,12 @@ class HttpImageDownloader
     public function __construct($url)
     {
         try {
-            $this->_stream = fopen($url, 'r', null, stream_context_create([
+            $this->_stream = fopen($url, 'r', false, stream_context_create([
                 'http' => [
                     'method' => "GET",
                     'header' =>
                         "Accept: text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8\r\n" .
-                        "accept-encoding: gzip, deflate, lzma, sdch\r\n" .
+                        "accept-encoding: identity\r\n" .
                         "Accept-language: pl-PL,pl;q=0.8,en-US;q=0.6,en;q=0.4\r\n" .
                         "upgrade-insecure-requests: 1\r\n" .
                         "user-agent: Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2547.0 Safari/537.36 OPR/35.0.2052.0 (Edition developer)\r\n"
@@ -97,6 +96,8 @@ class HttpImageDownloader
             }
 
             fwrite($fp, $bufferRead);
+            $this->assertStreamSize($fp, $targetPath);
+
             $iteration++;
         }
 
@@ -104,6 +105,22 @@ class HttpImageDownloader
         $this->stream->close();
 
         return new SavedFile($targetPath, $mime);
+    }
+
+    /**
+     * @param \Resource $filePointer
+     * @param string    $targetPath
+     *
+     * @throws FileSizeLimitExceededException
+     */
+    private function assertStreamSize($filePointer, $targetPath)
+    {
+        if (filesize($targetPath) >= $this->getMaxFileSizeLimit()) {
+            fclose($filePointer);
+            @unlink($targetPath);
+
+            throw new FileSizeLimitExceededException($this->getMaxFileSizeLimit());
+        }
     }
 
     /**
@@ -120,7 +137,7 @@ class HttpImageDownloader
 
         $allowedMimes = $this->getAllowedMimes();
 
-        if (!isset($allowedMimes[current($parts)])) {
+        if (!in_array(current($parts), $allowedMimes)) {
             fclose($stream);
             $this->stream->close();
             throw new InvalidFileTypeException(current($parts), $this->getAllowedMimes());
@@ -131,7 +148,7 @@ class HttpImageDownloader
 
     /**
      * @param int $maxFileSizeLimit
-     * @return HttpImageDownloader
+     * @return HttpFileDownloader
      */
     public function setMaxFileSizeLimit(int $maxFileSizeLimit)
     {
@@ -153,5 +170,15 @@ class HttpImageDownloader
     public function getAllowedMimes()
     {
         return $this->allowedMimes;
+    }
+
+    /**
+     * @param \string[] $allowedMimes
+     * @return HttpFileDownloader
+     */
+    public function setAllowedMimes(array $allowedMimes)
+    {
+        $this->allowedMimes = $allowedMimes;
+        return $this;
     }
 }

@@ -5,7 +5,7 @@ namespace Actions\Upload;
 use Actions\AbstractBaseAction;
 use Exception\Upload\DuplicatedContentException;
 use Manager\FileRegistry;
-use Service\HttpImageDownloader;
+use Service\HttpFileDownloader;
 use Manager\StorageManager;
 use Exception\ImageManager\InvalidUrlException;
 
@@ -45,7 +45,9 @@ class AddByUrlActionHandler extends AbstractBaseAction
         if (!$registry->existsInRegistry($this->fileUrl)) {
             $targetPath = $manager->getPathWhereToStoreTheFile($this->fileUrl);
 
-            $downloader = new HttpImageDownloader($this->fileUrl);
+            /** @var HttpFileDownloader|Callable $downloader */
+            $downloader = $this->getContainer()->offsetGet('service.http_file_downloader');
+            $downloader = $downloader($this->fileUrl);
             $savedFile = $downloader->saveTo($targetPath);
 
             try {

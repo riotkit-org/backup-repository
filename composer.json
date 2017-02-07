@@ -1,7 +1,7 @@
 {
-    "name": "wolnosciowiec/wolnosciowiec-image-repository",
-    "description": "Image storage for Wolnościowiec",
-    "license": "MIT",
+    "name": "wolnosciowiec/wolnosciowiec-file-repository",
+    "description": "File repository, originally created for wolnosciowiec.net",
+    "license": "LGPLv3",
     "type": "project",
     "require": {
         "php": ">=7.0",
@@ -24,14 +24,14 @@
         "guzzlehttp/guzzle": "^6.2",
         "sorien/silex-pimple-dumper": "~2.0",
         "robmorgan/phinx": "0.6.*",
-        "vlucas/spot2": "~2.2",
         "wolnosciowiec/wolnosciowiec-web-deploy": "1.*@dev",
         "twig/twig": "^2.1",
         "symfony/twig-bridge": "^3.2",
-        "dflydev/doctrine-orm-service-provider": "^2.0"
+        "dflydev/doctrine-orm-service-provider": "^2.0",
+        "phpunit/phpunit": "^6.0"
     },
     "autoload": {
-        "psr-0": { "": "src/" }
+        "psr-0": { "": "src/", "Tests\\": "tests/" }
     },
     "extra": {
         "branch-alias": {
