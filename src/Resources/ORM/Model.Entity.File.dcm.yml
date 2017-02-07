@@ -1,0 +1,24 @@
+Model\Entity\File:
+    type: entity
+    table: file_registry
+    id:
+        id:
+            type: integer
+            generator:
+                strategy: IDENTITY
+
+    fields:
+        fileName:
+            type: string
+            length: 128
+
+        contentHash:
+            type: string
+            length: 32
+
+        dateAdded:
+            type: datetime
+
+        mimeType:
+            type: string
+            length: 48

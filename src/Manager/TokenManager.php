@@ -66,7 +66,7 @@ class TokenManager implements TokenManagerInterface
             return false;
         }
 
-        return $token->hasRole($roleName) && !$token->isNotExpired();
+        return $token->hasRole($roleName) && $token->isNotExpired();
     }
 
     /**

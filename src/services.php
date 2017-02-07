@@ -21,11 +21,23 @@ $app['manager.token'] = function (Application $app) {
 };
 
 $app['manager.file_registry'] = function (Application $app) {
-    return new \Manager\FileRegistry($app['spot'], $app['storage.path'], $app['manager.storage']);
+    return new \Manager\FileRegistry(
+        $app['orm.em'],
+        $app['storage.path'],
+        $app['manager.storage'],
+        $app['repository.file']
+    );
 };
 
 $app['repository.token'] = function (Application $app) {
     return new \Repository\TokenRepository(
+        $app['orm.em']
+    );
+};
+
+$app['repository.file'] = function (Application $app) {
+    return new \Repository\FileRepository(
+        $app['manager.storage'],
         $app['orm.em']
     );
 };
@@ -37,6 +49,14 @@ $app['factory.token'] = function (Application $app) {
 $app['versioning'] = function () {
     return new \Service\Versioning();
 };
+
+$app['service.http_file_downloader'] = $app->factory(function () use ($app) {
+    return function (string $url) use ($app) {
+        return (new \Service\HttpFileDownloader($url))
+        ->setAllowedMimes($app['downloader.mimes'])
+        ->setMaxFileSizeLimit($app['downloader.size_limit']);
+    };
+});
 
 // controllers
 $app['controller.upload'] = function (Application $app) {

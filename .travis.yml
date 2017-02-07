@@ -2,4 +2,10 @@ language: php
 php:
   - '7.0'
   - nightly
-script: composer install && composer dump-autoload -o
+
+before_script:
+    - npm install -g bower
+
+script:
+    - composer install
+    - composer dump-autoload -o

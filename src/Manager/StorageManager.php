@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Manager;
 
@@ -63,6 +63,10 @@ class StorageManager
      */
     public function getStorageFileName(string $url, $withPrefix = true)
     {
+       if (is_file($this->storagePath . '/' . $url)) {
+           return $url;
+       }
+
        return $this->getFileName($url, $withPrefix);
     }
 
@@ -103,14 +107,14 @@ class StorageManager
     {
         $path = $this->getPathWhereToStoreTheFile($url);
 
-        return !is_file($path) && is_writable($path);
+        return !is_file($path) && is_writable(dirname($path));
     }
 
     /**
      * @param string $fileName
      * @return string
      */
-    public function assertGetStoragePathForFile($fileName)
+    public function assertGetStoragePathForFile(string $fileName)
     {
         $fileName = str_replace('/', '', $fileName);
         $fileName = str_replace('..', '', $fileName);
@@ -129,7 +133,7 @@ class StorageManager
      * @param File $file
      * @return string
      */
-    public function getFileUrl(File $file)
+    public function getFileUrl(File $file): string
     {
         return $this->weburl . $this->router->generate('GET_public_download_imageName', [
             'imageName' => $file->getFileName(),
@@ -140,7 +144,7 @@ class StorageManager
      * @param string $url
      * @return string
      */
-    public function getUrlByName($url)
+    public function getUrlByName(string $url): string
     {
         if (substr($url, 0, 1) === '/' && is_file($url)) {
             $path = realpath($url);
@@ -154,5 +158,13 @@ class StorageManager
         return $this->weburl . $this->router->generate('GET_public_download_imageName', [
             'imageName' => $this->getFileName($url),
         ]);
+    }
+
+    /**
+     * @return string
+     */
+    public function getStoragePath()
+    {
+        return $this->storagePath;
     }
 }

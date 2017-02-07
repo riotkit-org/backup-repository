@@ -21,7 +21,7 @@ class StatsController extends AbstractBaseController
         $action->setController($this);
 
         return new JsonResponse([
-            'code'    => 200,
+            'success' => true,
             'data'    => $action->execute(),
         ], 200);
     }

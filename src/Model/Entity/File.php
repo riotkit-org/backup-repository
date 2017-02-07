@@ -1,14 +1,13 @@
 <?php
 
 namespace Model\Entity;
-use Spot\Entity;
 
 /**
  * Represents a file from the registry
  *
  * @package Model\Entity
  */
-class File extends Entity
+class File
 {
     /**
      * @var int $id
@@ -35,21 +34,9 @@ class File extends Entity
      */
     protected $mimeType;
 
-    /** @var string $table */
-    protected static $table = 'file_registry';
-
-    /**
-     * @return array
-     */
-    public static function fields()
+    public function __construct()
     {
-        return [
-            'id'           => ['type' => 'integer', 'autoincrement' => true, 'primary' => true],
-            'fileName'     => ['type' => 'string', 'required' => true, 'unique' => true, 'index' => true],
-            'contentHash'  => ['type' => 'string', 'required' => true, 'unique' => true, 'index' => true],
-            'dateAdded'    => ['type' => 'datetime', 'required' => true, 'value' => new \DateTime()],
-            'mimeType'     => ['type' => 'string', 'default' => 0, 'index' => true],
-        ];
+        $this->dateAdded = new \DateTime();
     }
 
     /**

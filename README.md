@@ -79,6 +79,10 @@ Paths
 ```
 # collection management
 POST /repository/image/add-by-url
+{
+    fileUrl: http://zsp.net.pl/files/barroness_logo.png
+}
+
 POST /repository/image/upload
 POST /repository/image/exists
 POST /repository/image/delete
@@ -89,6 +93,10 @@ GET /repository/routing/map
 
 # authentication
 /auth/token/generate
+[
+   'role_1', 'upload.images'
+]
+
 /jobs/token/expired/clear
 
 # public area

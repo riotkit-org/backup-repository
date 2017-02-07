@@ -22,4 +22,6 @@ $app = require __DIR__ . '/../src/app.php';
 require __DIR__ . '/../config/dev.php';
 require __DIR__ . '/../src/services.php';
 require __DIR__ . '/../src/controllers.php';
+
+/** @var \Silex\Application $app */
 $app->run();

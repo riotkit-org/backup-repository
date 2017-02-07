@@ -24,7 +24,7 @@ class TokenGenerationController extends AbstractBaseController
     {
         $roles = json_decode($this->getRequest()->getContent());
 
-        if (!is_array($roles)) {
+        if (!is_array($roles) || empty($roles)) {
             return new JsonResponse([
                 'success'         => false,
                 'error'           => 'No roles specified, please specify roles in the POST body as JSON eg. ["role1", "role2"]',

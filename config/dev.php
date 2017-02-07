@@ -3,6 +3,13 @@
 use Silex\Provider\MonologServiceProvider;
 use Silex\Provider\WebProfilerServiceProvider;
 
+/**
+ * Developer environment configuration
+ * -----------------------------------
+ *
+ * @codeCoverageIgnore
+ */
+
 // include the prod configuration
 $app = require __DIR__ . '/prod.php';
 

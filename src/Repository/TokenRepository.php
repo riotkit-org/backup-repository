@@ -40,7 +40,7 @@ class TokenRepository implements TokenRepositoryInterface
         return $this->em->getRepository(Token::class)
             ->createQueryBuilder('t')
             ->select()
-            ->where('t.expirationDate >= :now')
+            ->where('t.expirationDate <= :now')
             ->setParameter('now', (new \DateTime())->format('Y-m-d H:i:s'))
             ->getQuery()
             ->getResult();

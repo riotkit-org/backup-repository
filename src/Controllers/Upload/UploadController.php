@@ -18,6 +18,9 @@ class UploadController extends AbstractBaseController implements UploadControlle
     /** @var bool $strictUploadMode */
     private $strictUploadMode = true;
 
+    /** @var array $allowedMimeTypes */
+    private $allowedMimeTypes = [];
+
     /**
      * @return JsonResponse|Response
      */
@@ -36,6 +39,7 @@ class UploadController extends AbstractBaseController implements UploadControlle
         );
 
         $action->setStrictUploadMode($this->isStrictUploadMode());
+        $action->setAllowedMimes($this->allowedMimeTypes);
 
         return new JsonResponse($action->execute());
     }
@@ -64,5 +68,15 @@ class UploadController extends AbstractBaseController implements UploadControlle
     public function isStrictUploadMode(): bool
     {
         return $this->strictUploadMode;
+    }
+
+    /**
+     * @param array $allowedMimeTypes
+     * @return UploadController
+     */
+    public function setAllowedMimeTypes(array $allowedMimeTypes)
+    {
+        $this->allowedMimeTypes = $allowedMimeTypes;
+        return $this;
     }
 }
