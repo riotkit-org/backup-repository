@@ -9,3 +9,4 @@
 /var/version-number
 data/*.sqlite3
 phploy.ini
+!/web/storage/.gitkeep
