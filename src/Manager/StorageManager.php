@@ -38,6 +38,36 @@ class StorageManager
     }
 
     /**
+     * Escape path, make sure it will not go out of the storagePath
+     *
+     * @param string $path
+     * @return string
+     */
+    public function escapeTargetPath(string $path): string
+    {
+        $fileName = pathinfo($path, PATHINFO_BASENAME);
+        $directory = realpath(dirname($path));
+
+        if ($directory !== realpath($this->storagePath)) {
+            return '';
+        }
+
+        return $directory . '/' . $fileName;
+    }
+
+    /**
+     * @param string $fileName
+     * @return string
+     */
+    public function escapeName(string $fileName): string
+    {
+        $fileName = str_replace('..', '', $fileName);
+        $fileName = str_replace('/', '-', $fileName);
+
+        return $fileName;
+    }
+
+    /**
      * @param string $url
      * @param bool   $withPrefix
      *
@@ -78,7 +108,9 @@ class StorageManager
      */
     public function getPathWhereToStoreTheFile(string $url, $withPrefix = true)
     {
-        return $this->storagePath . '/' . $this->getStorageFileName($url, $withPrefix);
+        return $this->escapeTargetPath(
+            $this->storagePath . '/' . $this->getStorageFileName($url, $withPrefix)
+        );
     }
 
     /**
