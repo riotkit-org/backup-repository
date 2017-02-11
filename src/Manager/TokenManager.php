@@ -72,9 +72,9 @@ class TokenManager implements TokenManagerInterface
     /**
      * @inheritdoc
      */
-    public function generateNewToken(array $roles, \DateTime $expires): Token
+    public function generateNewToken(array $roles, \DateTime $expires, array $data = []): Token
     {
-        $token = $this->factory->createNewToken($roles, $expires);
+        $token = $this->factory->createNewToken($roles, $expires, $data);
 
         $this->entityManager->persist($token);
         $this->entityManager->flush($token);

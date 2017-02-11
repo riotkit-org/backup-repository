@@ -38,6 +38,14 @@ abstract class WolnosciowiecTestCase extends TestCase
         return $this->adminToken;
     }
 
+    /**
+     * @return Application|HttpKernelInterface
+     */
+    public function getApp()
+    {
+        return $this->app;
+    }
+
     protected function setUp()
     {
         $this->app        = $this->createApplication();

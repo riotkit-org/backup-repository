@@ -16,6 +16,16 @@ interface FileRepositoryInterface
     public function fetchOneByName(string $name);
 
     /**
+     * @param array  $tags
+     * @param string $searchQuery
+     * @param int    $limit
+     * @param int    $offset
+     *
+     * @return File[]
+     */
+    public function findByQuery(array $tags, string $searchQuery = '', int $limit, int $offset): array;
+
+    /**
      * @param string $hash
      * @return File
      */

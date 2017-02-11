@@ -21,9 +21,14 @@ class TokenGenerationControllerTest extends WolnosciowiecTestCase
         $this->prepareDatabase();
 
         $client = $this->createClient();
-        $client->request('POST', '/auth/token/generate?_token=' . $this->getAdminToken(), [], [], [], json_encode([
-            Roles::ROLE_UPLOAD_IMAGES
-        ]));
+        $client->request('POST', '/auth/token/generate?_token=' . $this->getAdminToken(), [], [], [], json_encode(
+            [
+                'roles' => [Roles::ROLE_UPLOAD_IMAGES],
+                'data'  => [
+                    'tags' => ['test_upload'],
+                ]
+            ]
+        ));
 
         $response = json_decode($client->getResponse()->getContent(), true);
 
@@ -43,7 +48,7 @@ class TokenGenerationControllerTest extends WolnosciowiecTestCase
             'Valid token, no roles selected' => [
                 self::ADMIN_TOKEN,
                 [],
-                'No roles specified, please specify roles in the POST body as JSON eg. ["role1", "role2"]',
+                'No roles specified, please specify roles in the POST body as JSON eg. {"roles": ["role1", "role2"], "data": {}}',
             ],
 
             'Invalid token, roles provided' => [

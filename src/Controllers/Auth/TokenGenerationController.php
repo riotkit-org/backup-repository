@@ -22,12 +22,14 @@ class TokenGenerationController extends AbstractBaseController
      */
     public function generateTemporaryTokenAction()
     {
-        $roles = json_decode($this->getRequest()->getContent());
+        $token = json_decode($this->getRequest()->getContent(), true);
+        $roles = $token['roles'] ?? [];
+        $data  = $token['data'] ?? [];
 
         if (!is_array($roles) || empty($roles)) {
             return new JsonResponse([
                 'success'         => false,
-                'error'           => 'No roles specified, please specify roles in the POST body as JSON eg. ["role1", "role2"]',
+                'error'           => 'No roles specified, please specify roles in the POST body as JSON eg. {"roles": ["role1", "role2"], "data": {}}',
                 'roles_available' => [Roles::ROLE_UPLOAD_IMAGES],
             ], 400);
         }
@@ -36,6 +38,7 @@ class TokenGenerationController extends AbstractBaseController
         $action->setTokenManager($this->getContainer()->offsetGet('manager.token'));
         $action->setRoles($roles);
         $action->setExpirationModifier($this->getContainer()->offsetGet('token.expiration.time') ?? '+30 minutes');
+        $action->setTokenData($data);
 
         return new JsonResponse([
             'success' => true,

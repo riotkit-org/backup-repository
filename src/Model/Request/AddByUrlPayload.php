@@ -13,6 +13,11 @@ class AddByUrlPayload
     private $fileUrl = '';
 
     /**
+     * @var array $tags
+     */
+    private $tags = [];
+
+    /**
      * @param string $fileUrl
      * @return AddByUrlPayload
      */
@@ -28,6 +33,24 @@ class AddByUrlPayload
     public function getFileUrl(): string
     {
         return $this->fileUrl;
+    }
+
+    /**
+     * @param array $tags
+     * @return AddByUrlPayload
+     */
+    public function setTags(array $tags)
+    {
+        $this->tags = $tags;
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getTags(): array
+    {
+        return $this->tags;
     }
 
 }

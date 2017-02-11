@@ -29,6 +29,20 @@ $app['manager.file_registry'] = function (Application $app) {
     );
 };
 
+$app['manager.tag'] = function (Application $app) {
+    return new \Manager\TagManager(
+        $app['repository.tag'],
+        $app['factory.tag'],
+        $app['orm.em']
+    );
+};
+
+$app['repository.tag'] = function (Application $app) {
+    return new \Repository\TagRepository(
+        $app['orm.em']
+    );
+};
+
 $app['repository.token'] = function (Application $app) {
     return new \Repository\TokenRepository(
         $app['orm.em']
@@ -40,6 +54,10 @@ $app['repository.file'] = function (Application $app) {
         $app['manager.storage'],
         $app['orm.em']
     );
+};
+
+$app['factory.tag'] = function () {
+    return new \Factory\TagFactory();
 };
 
 $app['factory.token'] = function (Application $app) {
@@ -98,3 +116,8 @@ $app['controller.routing.map'] = function (Application $app) {
 $app['controller.registry'] = function (Application $app) {
     return new \Controllers\Registry\RegistryController($app);
 };
+
+$app['controller.finder'] = function (Application $app) {
+    return new \Controllers\Finder\FinderController($app);
+};
+

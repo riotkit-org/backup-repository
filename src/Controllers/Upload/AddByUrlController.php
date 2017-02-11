@@ -39,7 +39,9 @@ class AddByUrlController extends AbstractBaseController implements UploadControl
     public function uploadAction() : Response
     {
         $action = new AddByUrlActionHandler(
-            $this->getPayload()->getFileUrl()
+            $this->getPayload()->getFileUrl(),
+            array_filter($this->getPayload()->getTags()),
+            $this->getContainer()->offsetGet('manager.tag')
         );
         $action->setContainer($this->getContainer())
             ->setController($this);

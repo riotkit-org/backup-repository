@@ -3,13 +3,15 @@
 namespace Actions\Upload;
 
 use Actions\AbstractBaseAction;
+use Doctrine\ORM\Repository\RepositoryFactory;
 use Exception\ImageManager\FileNameReservedException;
 use Exception\Upload\DuplicatedContentException;
 use Exception\Upload\UploadException;
+use Manager\Domain\TagManagerInterface;
 use Manager\FileRegistry;
 use Manager\StorageManager;
 use Exception\ImageManager\InvalidUrlException;
-use Symfony\Component\Routing\Generator\UrlGenerator;
+use Repository\Domain\FileRepositoryInterface;
 
 /**
  * @package Actions\Upload
@@ -27,6 +29,11 @@ class UploadByHttpActionHandler extends AbstractBaseAction
      * @var bool $forceFileName
      */
     private $forceFileName = false;
+
+    /**
+     * @var array $tags
+     */
+    private $tags = [];
 
     /**
      * Form field name
@@ -49,6 +56,12 @@ class UploadByHttpActionHandler extends AbstractBaseAction
     /** @var StorageManager $manager */
     private $manager;
 
+    /** @var TagManagerInterface $tagManager */
+    private $tagManager;
+
+    /** @var RepositoryFactory $repository */
+    private $repository;
+
     /**
      * Decides if to be strict about the "move_uploaded_file" or not
      *
@@ -57,35 +70,46 @@ class UploadByHttpActionHandler extends AbstractBaseAction
     private $strictUploadMode = true;
 
     /**
-     * @param int            $allowedFileSize
-     * @param array          $allowedMimes
-     * @param StorageManager $manager
-     * @param FileRegistry   $registry
+     * @param int                     $allowedFileSize
+     * @param array                   $allowedMimes
+     * @param StorageManager          $manager
+     * @param FileRegistry            $registry
+     * @param FileRepositoryInterface $repository
+     * @param TagManagerInterface     $tagManager
      */
     public function __construct(
         int $allowedFileSize,
         array $allowedMimes,
         StorageManager $manager,
-        FileRegistry   $registry
+        FileRegistry   $registry,
+        FileRepositoryInterface $repository,
+        TagManagerInterface     $tagManager
     ) {
         $this->allowedMimes  = $allowedMimes;
         $this->maxFileSize   = $allowedFileSize;
         $this->manager       = $manager;
         $this->registry      = $registry;
+        $this->repository    = $repository;
+        $this->tagManager    = $tagManager;
     }
 
     /**
      * @param string $fileName
      * @param bool   $forceFileName
+     * @param array  $tags
      *
      * @return UploadByHttpActionHandler
      */
     public function setData(
         string $fileName,
-        bool $forceFileName
+        bool $forceFileName,
+        array $tags = []
     ): UploadByHttpActionHandler {
+
         $this->fileName      = $fileName;
         $this->forceFileName = $forceFileName;
+        $this->tags          = $tags;
+
         return $this;
     }
 
@@ -122,7 +146,7 @@ class UploadByHttpActionHandler extends AbstractBaseAction
                 'status' => 'OK',
                 'code'   => 301,
                 'url' => $this->getManager()->getFileUrl(
-                    $this->getRegistry()->fetchOneByName($fileName)
+                    $this->repository->fetchOneByName($fileName)
                 ),
             ];
         }
@@ -236,7 +260,7 @@ class UploadByHttpActionHandler extends AbstractBaseAction
         }
 
         try {
-            $this->getRegistry()->registerByName(
+            $file = $this->getRegistry()->registerByName(
                 $this->fileName,
                 $this->getUploadedFileMime($_FILES[$this->fieldName])
             );
@@ -245,10 +269,14 @@ class UploadByHttpActionHandler extends AbstractBaseAction
             // return the redirection to the duplicate
             // instead of saving the same file twice
             $this->getRegistry()->revertUploadedDuplicate($targetPath);
-            return $this->getManager()->getFileUrl($e->getDuplicate());
+            $file = $e->getDuplicate();
         }
 
-        return $this->getManager()->getUrlByName($targetPath);
+        foreach ($this->tags as $tag) {
+            $this->tagManager->attachTagToFile($tag, $file);
+        }
+
+        return $this->getManager()->getFileUrl($file);
     }
 
     /**
