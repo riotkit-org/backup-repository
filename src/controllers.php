@@ -11,6 +11,7 @@ $app->post('/repository/image/add-by-url', 'controller.upload.by_url:uploadActio
 $app->post('/repository/image/upload', 'controller.upload:uploadAction');
 $app->post('/repository/image/exists', 'controller.registry:checkExistsAction');
 $app->post('/repository/image/delete', 'controller.registry:deleteAction');
+$app->post('/repository/search/query', 'controller.finder:findAction');
 $app->get('/repository/stats', 'controller.stats:viewAction');
 $app->get('/repository/routing/map', 'controller.routing.map:viewAction');
 $app->get('/public/download/{imageName}', 'controller.serve:downloadAction');

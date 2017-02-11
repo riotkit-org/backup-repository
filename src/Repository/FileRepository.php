@@ -33,8 +33,7 @@ class FileRepository implements FileRepositoryInterface
     }
 
     /**
-     * @param string $name File name or URL address
-     * @return File|null
+     * @inheritdoc
      */
     public function fetchOneByName(string $name)
     {
@@ -42,6 +41,37 @@ class FileRepository implements FileRepositoryInterface
 
         return $this->em->getRepository(File::class)
             ->findOneBy(['fileName' => $name]);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function findByQuery(array $tags, string $searchQuery = '', int $limit = 50, int $offset = 0): array
+    {
+        $qb = $this->em->getRepository(File::class)
+            ->createQueryBuilder('f');
+        $qb->select();
+        $qb->innerJoin('f.tags', 't');
+
+        if (count($tags) > 0) {
+            $qb->andWhere('t.name in (:tags)')
+                ->setParameter('tags', $tags);
+        }
+
+        if (strlen($searchQuery) > 0) {
+            $qb->andWhere('f.fileName = :searchQuery')
+                ->setParameter('searchQuery', '%' . $searchQuery . '%');
+        }
+
+        if ($limit > 0) {
+            $qb->setMaxResults($limit);
+        }
+
+        if ($offset > 0) {
+            $qb->setFirstResult($offset);
+        }
+
+        return $qb->getQuery()->getResult();
     }
 
     /**

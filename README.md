@@ -80,7 +80,8 @@ Paths
 # collection management
 POST /repository/image/add-by-url
 {
-    fileUrl: http://zsp.net.pl/files/barroness_logo.png
+    "fileUrl": "http://zsp.net.pl/files/barroness_logo.png",
+    "tags": ["user.avatar"] 
 }
 
 POST /repository/image/upload
@@ -93,9 +94,12 @@ GET /repository/routing/map
 
 # authentication
 /auth/token/generate
-[
-   'role_1', 'upload.images'
-]
+{
+   "roles": ['role_1', 'upload.images'],
+   "data": {
+       "tags": ['article.picture']
+   }
+}
 
 /jobs/token/expired/clear
 

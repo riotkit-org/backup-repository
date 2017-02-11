@@ -4,6 +4,7 @@ namespace Actions\Upload;
 
 use Actions\AbstractBaseAction;
 use Exception\Upload\DuplicatedContentException;
+use Manager\Domain\TagManagerInterface;
 use Manager\FileRegistry;
 use Service\HttpFileDownloader;
 use Manager\StorageManager;
@@ -20,11 +21,25 @@ class AddByUrlActionHandler extends AbstractBaseAction
     private $fileUrl;
 
     /**
-     * @param string $fileUrl
+     * @var array $tags
      */
-    public function __construct(string $fileUrl)
+    private $tags = [];
+
+    /**
+     * @var TagManagerInterface $tagManager
+     */
+    private $tagManager;
+
+    /**
+     * @param string $fileUrl
+     * @param array  $tags
+     * @param TagManagerInterface $tagManager
+     */
+    public function __construct(string $fileUrl, array $tags, TagManagerInterface $tagManager)
     {
-        $this->fileUrl = $fileUrl;
+        $this->fileUrl    = $fileUrl;
+        $this->tagManager = $tagManager;
+        $this->tags       = $tags;
     }
 
     /**
@@ -53,11 +68,19 @@ class AddByUrlActionHandler extends AbstractBaseAction
             try {
                 $file = $registry->registerByName($this->fileUrl, $savedFile->getFileMimeType());
 
+                foreach ($this->tags as $tag) {
+                    $this->tagManager->attachTagToFile($tag, $file);
+                }
+
             } catch (DuplicatedContentException $e) {
 
                 // on duplicate content redirect to other file
                 $file = $e->getDuplicate(); // original file that WAS duplicated
                 $registry->revertUploadedDuplicate($targetPath);
+
+                foreach ($this->tags as $tag) {
+                    $this->tagManager->attachTagToFile($tag, $file);
+                }
 
                 return [
                     'status' => 'OK',

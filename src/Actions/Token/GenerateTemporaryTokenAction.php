@@ -10,15 +10,14 @@ use Manager\Domain\TokenManagerInterface;
  */
 class GenerateTemporaryTokenAction extends AbstractBaseAction
 {
-    /**
-     * @var TokenManagerInterface $tokenManager
-     */
+    /** @var TokenManagerInterface $tokenManager */
     private $tokenManager;
 
-    /**
-     * @var array $roles
-     */
+    /** @var array $roles */
     private $roles = [];
+
+    /** @var array $tokenData */
+    private $tokenData = [];
 
     /**
      * @var string $expirationModifier
@@ -78,12 +77,23 @@ class GenerateTemporaryTokenAction extends AbstractBaseAction
     {
         $token = $this->tokenManager->generateNewToken(
             $this->getRoles(),
-            (new \DateTime())->modify($this->getExpirationModifier())
+            (new \DateTime())->modify($this->getExpirationModifier()),
+            $this->tokenData
         );
 
         return [
             'tokenId' => $token->getId(),
             'expires' => $token->getExpirationDate()->format('Y-m-d H:i:s'),
         ];
+    }
+
+    /**
+     * @param array $tokenData
+     * @return GenerateTemporaryTokenAction
+     */
+    public function setTokenData(array $tokenData)
+    {
+        $this->tokenData = $tokenData;
+        return $this;
     }
 }

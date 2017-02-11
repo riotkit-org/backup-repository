@@ -27,6 +27,11 @@ class Token
      */
     private $expirationDate;
 
+    /**
+     * @var array $data
+     */
+    private $data;
+
     public function __construct()
     {
         $this->expirationDate = new \DateTime();
@@ -125,5 +130,31 @@ class Token
     {
         $this->expirationDate = $expirationDate;
         return $this;
+    }
+
+    /**
+     * @param array $data
+     * @return Token
+     */
+    public function setData(array $data)
+    {
+        $this->data = $data;
+        return $this;
+    }
+
+    /**
+     * @return array
+     */
+    public function getData(): array
+    {
+        return $this->data;
+    }
+
+    /**
+     * @return array
+     */
+    public function getTags(): array
+    {
+        return isset($this->data['tags']) && is_array($this->data['tags']) ? $this->data['tags'] : [];
     }
 }

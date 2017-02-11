@@ -113,10 +113,18 @@ class FileRegistry
         $file->setMimeType($mimeType);
 
         // persist and flush changes
-        $this->em->persist($file);
-        $this->em->flush($file);
+        $this->save($file);
 
         return $file;
+    }
+
+    /**
+     * @param File $file
+     */
+    public function save(File $file)
+    {
+        $this->em->persist($file);
+        $this->em->flush($file);
     }
 
     /**

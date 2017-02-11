@@ -21,10 +21,11 @@ interface TokenManagerInterface
      *
      * @param array     $roles
      * @param \DateTime $expires
+     * @param array     $data
      *
      * @return Token
      */
-    public function generateNewToken(array $roles, \DateTime $expires): Token;
+    public function generateNewToken(array $roles, \DateTime $expires, array $data = []): Token;
 
     /**
      * @param Token $token

@@ -12,14 +12,16 @@ class TokenFactory
     /**
      * @param array     $roles
      * @param \DateTime $expires
+     * @param array     $data
      *
      * @return Token
      */
-    public function createNewToken(array $roles, \DateTime $expires): Token
+    public function createNewToken(array $roles, \DateTime $expires, array $data = []): Token
     {
         return (new Token())
             ->setId(uniqid('', true))
             ->setRoles($roles)
-            ->setExpirationDate($expires);
+            ->setExpirationDate($expires)
+            ->setData($data);
     }
 }

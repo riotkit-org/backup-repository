@@ -4,6 +4,8 @@ namespace Controllers;
 
 use Actions\AbstractBaseAction;
 use Manager\Domain\TokenManagerInterface;
+use Model\Entity\Token;
+use Repository\Domain\TokenRepositoryInterface;
 use Silex\Application;
 use SimpleBus\Message\Bus\Middleware\MessageBusSupportingMiddleware;
 use Symfony\Component\HttpFoundation\File\Exception\AccessDeniedException;
@@ -32,6 +34,9 @@ abstract class AbstractBaseController
 
     private $payload;
 
+    /** @var Token|null */
+    private $token;
+
     /**
      * @param Application $app
      * @param bool        $isInternalRequest
@@ -43,6 +48,14 @@ abstract class AbstractBaseController
         $this->setIsInternalRequest($isInternalRequest);
 
         $this->assertValidateAccessRights($this->request, $app['manager.token'], $this->getRequiredRoleName());
+    }
+
+    /**
+     * @return Token|null
+     */
+    public function getToken()
+    {
+        return $this->token;
     }
 
     protected function getPayload()
@@ -100,6 +113,10 @@ abstract class AbstractBaseController
         if (!$tokenManager->isTokenValid($inputToken, $roleName)) {
             throw new \Symfony\Component\Security\Core\Exception\AccessDeniedException('Access denied, please verify the "_token" parameter');
         }
+
+        /** @var TokenRepositoryInterface $repository */
+        $repository = $this->getContainer()->offsetGet('repository.token');
+        $this->token = $repository->getTokenById($inputToken);
     }
 
     /**

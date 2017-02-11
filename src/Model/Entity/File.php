@@ -1,6 +1,8 @@
 <?php
 
 namespace Model\Entity;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\PersistentCollection;
 
 /**
  * Represents a file from the registry
@@ -34,9 +36,48 @@ class File
      */
     protected $mimeType;
 
+    /**
+     * @var Tag[]|ArrayCollection $tags
+     */
+    private $tags;
+
     public function __construct()
     {
         $this->dateAdded = new \DateTime();
+        $this->tags      = new ArrayCollection();
+    }
+
+    /**
+     * @param Tag $tag
+     * @return File
+     */
+    public function addTag(Tag $tag): File
+    {
+        if (!$this->tags->contains($tag)) {
+            $this->tags->add($tag);
+            $tag->addFile($this);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param Tag $tag
+     */
+    public function deleteTag(Tag $tag)
+    {
+        if ($this->tags->contains($tag)) {
+            $this->tags->removeElement($tag);
+            $tag->getFiles()->removeElement($this);
+        }
+    }
+
+    /**
+     * @return PersistentCollection|ArrayCollection|Tag[]
+     */
+    public function getTags()
+    {
+        return $this->tags;
     }
 
     /**

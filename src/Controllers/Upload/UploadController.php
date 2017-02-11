@@ -30,12 +30,15 @@ class UploadController extends AbstractBaseController implements UploadControlle
             $this->getContainer()->offsetGet('storage.filesize'),
             $this->getContainer()->offsetGet('storage.allowed_types'),
             $this->getContainer()->offsetGet('manager.storage'),
-            $this->getContainer()->offsetGet('manager.file_registry')
+            $this->getContainer()->offsetGet('manager.file_registry'),
+            $this->getContainer()->offsetGet('repository.file'),
+            $this->getContainer()->offsetGet('manager.tag')
         );
 
         $action->setData(
             (string)$this->getRequest()->get('file_name'),
-            (bool)$this->getRequest()->get('file_overwrite')
+            (bool)$this->getRequest()->get('file_overwrite'),
+            array_filter((array)$this->getRequest()->get('tags'))
         );
 
         $action->setStrictUploadMode($this->isStrictUploadMode());

@@ -7,6 +7,7 @@ use Controllers\AbstractBaseController;
 use Controllers\Upload\UploadController;
 use Exception\Upload\UploadException;
 use GuzzleHttp\Psr7\Response;
+use Model\Entity\Token;
 use Model\Permissions\Roles;
 use Model\Request\ImageJsonPayload;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -73,6 +74,9 @@ class ImageUploadFormController extends AbstractBaseController
             [
                 '_token'    => $this->getRequest()->get('_token'),
                 'file_name' => $result['fileName'],
+                'tags'      => $this->getToken() instanceof Token
+                    ? $this->getToken()->getTags()
+                    : [],
             ]
         );
 

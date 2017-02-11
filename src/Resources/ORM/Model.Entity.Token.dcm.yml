@@ -23,3 +23,7 @@ Model\Entity\Token:
         roles:
             type: array
             column: roles
+
+        data:
+            type: array
+            column: data
