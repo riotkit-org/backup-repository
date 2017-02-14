@@ -98,9 +98,9 @@ function ImageUpload(aspectRatio, apiKey, redirectUrl) {
         xmlHttp.onreadystatechange = function() {
             if (xmlHttp.readyState == XMLHttpRequest.DONE) {
                 var response = JSON.parse(xmlHttp.responseText);
+                var url = b64EncodeUnicode(response.url);
 
-                console.info(response);
-                window.location.href = image_upload.redirectUrl.replace('|url|', b64EncodeUnicode(response.url));
+                window.location.href = image_upload.redirectUrl.replace('|url|', url).replace('%257Curl%257C', url);
             }
         };
         xmlHttp.send(JSON.stringify({
