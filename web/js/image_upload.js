@@ -100,7 +100,10 @@ function ImageUpload(aspectRatio, apiKey, redirectUrl) {
                 var response = JSON.parse(xmlHttp.responseText);
                 var url = b64EncodeUnicode(response.url);
 
-                window.location.href = image_upload.redirectUrl.replace('|url|', url).replace('%257Curl%257C', url);
+                window.location.href = image_upload.redirectUrl
+                    .replace('|url|', url)
+                    .replace('%257Curl%257C', url)
+                    .replace('%7Curl%7C', url);
             }
         };
         xmlHttp.send(JSON.stringify({
