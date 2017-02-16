@@ -34,7 +34,8 @@ class FinderController extends AbstractBaseController
     public function findAction()
     {
         $action = new FindAction(
-            $this->getContainer()->offsetGet('repository.file')
+            $this->getContainer()->offsetGet('repository.file'),
+            $this->getContainer()->offsetGet('manager.storage')
         );
 
         $action->setPayload($this->getPayload());

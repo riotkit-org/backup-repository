@@ -3,6 +3,7 @@
 namespace Actions\Finder;
 
 use Actions\AbstractBaseAction;
+use Manager\StorageManager;
 use Model\Entity\File;
 use Model\Entity\Tag;
 use Model\Request\SearchQueryPayload;
@@ -24,11 +25,18 @@ class FindAction extends AbstractBaseAction
     private $fileRepository;
 
     /**
-     * @param FileRepositoryInterface $fileRepository
+     * @var StorageManager $storage
      */
-    public function __construct(FileRepositoryInterface $fileRepository)
+    private $storage;
+
+    /**
+     * @param FileRepositoryInterface $fileRepository
+     * @param StorageManager          $storage
+     */
+    public function __construct(FileRepositoryInterface $fileRepository, StorageManager $storage)
     {
         $this->fileRepository = $fileRepository;
+        $this->storage        = $storage;
     }
 
     /**
@@ -46,6 +54,7 @@ class FindAction extends AbstractBaseAction
                 'mime_type'    => $file->getMimeType(),
                 'tags'         => array_map(function (Tag $tag) { return $tag->getName(); }, $file->getTags()->toArray()),
                 'date_added'   => $file->getDateAdded(),
+                'url'          => $this->storage->getFileUrl($file),
             ];
         }
 
