@@ -77,7 +77,7 @@ class FileRepository implements FileRepositoryInterface
 
         return [
             'results' => $qb->getQuery()->getResult(),
-            'max'     => $countingQuery->getQuery()->getSingleScalarResult(),
+            'max'     => $countingQuery->getQuery()->getScalarResult()[0][1] ?? 0,
         ];
     }
 
