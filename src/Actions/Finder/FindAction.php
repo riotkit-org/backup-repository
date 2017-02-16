@@ -65,8 +65,10 @@ class FindAction extends AbstractBaseAction
         );
 
         return [
-            'success' => true,
-            'results' => $this->remapFilesToResults($files)
+            'success'     => true,
+            'results'     => $this->remapFilesToResults($files['results']),
+            'max_results' => $files['max'],
+            'pages'       => $files['max'] > 0 ? ceil($files['max'] / $this->payload->getLimit()) : 0,
         ];
     }
 

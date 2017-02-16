@@ -21,7 +21,7 @@ interface FileRepositoryInterface
      * @param int    $limit
      * @param int    $offset
      *
-     * @return File[]
+     * @return array
      */
     public function findByQuery(array $tags, string $searchQuery = '', int $limit, int $offset): array;
 
