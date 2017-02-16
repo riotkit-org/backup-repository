@@ -71,7 +71,14 @@ class FileRepository implements FileRepositoryInterface
             $qb->setFirstResult($offset);
         }
 
-        return $qb->getQuery()->getResult();
+        // max results counting
+        $countingQuery = clone $qb;
+        $countingQuery->select('count(f)');
+
+        return [
+            'results' => $qb->getQuery()->getResult(),
+            'max'     => $countingQuery->getQuery()->getSingleScalarResult(),
+        ];
     }
 
     /**
