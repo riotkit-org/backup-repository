@@ -41,11 +41,11 @@ class FindAction extends AbstractBaseAction
 
         foreach ($files as $file) {
             $results[$file->getFileName()] = [
-                'name'        => $file->getFileName(),
-                'contentHash' => $file->getContentHash(),
-                'mimeType'    => $file->getMimeType(),
-                'tags'        => array_map(function (Tag $tag) { return $tag->getName(); }, $file->getTags()->toArray()),
-                'dateAdded'   => $file->getDateAdded(),
+                'name'         => $file->getFileName(),
+                'content_hash' => $file->getContentHash(),
+                'mime_type'    => $file->getMimeType(),
+                'tags'         => array_map(function (Tag $tag) { return $tag->getName(); }, $file->getTags()->toArray()),
+                'date_added'   => $file->getDateAdded(),
             ];
         }
 

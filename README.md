@@ -76,6 +76,8 @@ nano phploy.ini # or vim it, nano is easier
 Paths
 =====
 
+This is a list of application routes. Interactive examples are stored in `postman_collection.json` and could be imported into Postman application.
+
 ```
 # collection management
 POST /repository/image/add-by-url
@@ -87,6 +89,13 @@ POST /repository/image/add-by-url
 POST /repository/image/upload
 POST /repository/image/exists
 POST /repository/image/delete
+POST /repository/search/query
+{
+    "tags": [],
+    "limit": 50,
+    "offset": 0
+}
+
 
 # technical
 GET /repository/stats
