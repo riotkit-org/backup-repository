@@ -19,7 +19,7 @@
     "tests"
   ],
   "dependencies": {
-    "cropperjs": ">=1.0",
-    "bootstrap": "^3.3.7"
+    "bootstrap": "^3.3.7",
+    "cropperjs": "^0.8.1"
   }
 }
