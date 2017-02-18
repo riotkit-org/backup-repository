@@ -30,7 +30,7 @@ class Token
     /**
      * @var array $data
      */
-    private $data;
+    private $data = [];
 
     public function __construct()
     {
@@ -151,10 +151,18 @@ class Token
     }
 
     /**
-     * @return array
+     * @return string[]
      */
     public function getTags(): array
     {
         return isset($this->data['tags']) && is_array($this->data['tags']) ? $this->data['tags'] : [];
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getAllowedMimeTypes(): array
+    {
+        return isset($this->data['mime_types']) && is_array($this->data['mime_types']) ? $this->data['mime_types'] : [];
     }
 }

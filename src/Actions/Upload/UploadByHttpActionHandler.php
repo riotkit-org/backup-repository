@@ -11,6 +11,7 @@ use Manager\Domain\TagManagerInterface;
 use Manager\FileRegistry;
 use Manager\StorageManager;
 use Exception\ImageManager\InvalidUrlException;
+use Model\AllowedMimeTypes;
 use Repository\Domain\FileRepositoryInterface;
 
 /**
@@ -71,7 +72,7 @@ class UploadByHttpActionHandler extends AbstractBaseAction
 
     /**
      * @param int                     $allowedFileSize
-     * @param array                   $allowedMimes
+     * @param AllowedMimeTypes        $allowedMimes
      * @param StorageManager          $manager
      * @param FileRegistry            $registry
      * @param FileRepositoryInterface $repository
@@ -79,13 +80,13 @@ class UploadByHttpActionHandler extends AbstractBaseAction
      */
     public function __construct(
         int $allowedFileSize,
-        array $allowedMimes,
+        AllowedMimeTypes $allowedMimes,
         StorageManager $manager,
         FileRegistry   $registry,
         FileRepositoryInterface $repository,
         TagManagerInterface     $tagManager
     ) {
-        $this->allowedMimes  = $allowedMimes;
+        $this->allowedMimes  = $allowedMimes->all();
         $this->maxFileSize   = $allowedFileSize;
         $this->manager       = $manager;
         $this->registry      = $registry;
@@ -143,6 +144,7 @@ class UploadByHttpActionHandler extends AbstractBaseAction
 
         if ($this->getRegistry()->existsInRegistry($fileName)) {
             return [
+                'success' => true,
                 'status' => 'OK',
                 'code'   => 301,
                 'url' => $this->getManager()->getFileUrl(
@@ -158,6 +160,7 @@ class UploadByHttpActionHandler extends AbstractBaseAction
         $this->handleValidation();
 
         return [
+            'success' => true,
             'status' => 'OK',
             'code'   => 200,
             'url'    => $this->handleUpload($targetPath),

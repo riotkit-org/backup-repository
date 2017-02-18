@@ -14,7 +14,7 @@ function ImageUpload(aspectRatio, apiKey, redirectUrl) {
         image_upload.image.style.display = 'block';
 
         image_upload.cropper = new Cropper(image, {
-            aspectRatio: 4 / 3,
+            aspectRatio: this.aspectRatio,
             responsive: true,
             guides: true
         });
@@ -98,9 +98,13 @@ function ImageUpload(aspectRatio, apiKey, redirectUrl) {
         xmlHttp.onreadystatechange = function() {
             if (xmlHttp.readyState == XMLHttpRequest.DONE) {
                 var response = JSON.parse(xmlHttp.responseText);
+                var replacement = b64EncodeUnicode(response.url);
 
                 console.info(response);
-                window.location.href = image_upload.redirectUrl.replace('|url|', b64EncodeUnicode(response.url));
+                window.location.href = image_upload.redirectUrl
+                    .replace('|url|', replacement)
+                    .replace('%257Curl%257C', replacement)
+                    .replace('%7Curl%7C', replacement);
             }
         };
         xmlHttp.send(JSON.stringify({

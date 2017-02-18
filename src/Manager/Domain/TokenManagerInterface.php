@@ -10,11 +10,19 @@ interface TokenManagerInterface
      * Validate if having a token X we could access resource Y
      *
      * @param string $tokenId
-     * @param string $roleName
+     * @param array  $requiredRoles
      *
      * @return bool
      */
-    public function isTokenValid(string $tokenId, string $roleName = ''): bool;
+    public function isTokenValid(string $tokenId, array $requiredRoles = []): bool;
+
+    /**
+     * Check if input token is an admin token (a global defined token in configuration files)
+     *
+     * @param string $tokenId
+     * @return bool
+     */
+    public function isAdminToken(string $tokenId): bool;
 
     /**
      * Generate a new token with random id

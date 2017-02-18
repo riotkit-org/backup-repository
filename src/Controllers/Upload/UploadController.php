@@ -4,7 +4,10 @@ namespace Controllers\Upload;
 
 use Actions\Upload\UploadByHttpActionHandler;
 use Controllers\AbstractBaseController;
+use Model\AllowedMimeTypes;
+use Model\Permissions\Roles;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -28,7 +31,7 @@ class UploadController extends AbstractBaseController implements UploadControlle
     {
         $action = new UploadByHttpActionHandler(
             $this->getContainer()->offsetGet('storage.filesize'),
-            $this->getContainer()->offsetGet('storage.allowed_types'),
+            $this->getAllowedMimes(),
             $this->getContainer()->offsetGet('manager.storage'),
             $this->getContainer()->offsetGet('manager.file_registry'),
             $this->getContainer()->offsetGet('repository.file'),
@@ -44,7 +47,54 @@ class UploadController extends AbstractBaseController implements UploadControlle
         $action->setStrictUploadMode($this->isStrictUploadMode());
         $action->setAllowedMimes($this->allowedMimeTypes);
 
-        return new JsonResponse($action->execute());
+        $result = $action->execute();
+
+        if ($this->getRequest()->get('back_url') && $result['success'] ?? false) {
+
+            return new RedirectResponse(
+                $this->getRedirectUrl((string)$this->getRequest()->get('back_url'), $result)
+            );
+        }
+
+        return new JsonResponse($result);
+    }
+
+    /**
+     * @param string $backUrl
+     * @param array $result
+     *
+     * @return string
+     */
+    private function getRedirectUrl(string $backUrl, array $result): string
+    {
+        return str_replace(
+            ['%257Curl%257C', '%7Curl%7C', '|url|'],
+            $result['url'] ?? '',
+            $backUrl
+        );
+    }
+
+    /**
+     * @return AllowedMimeTypes
+     */
+    private function getAllowedMimes()
+    {
+        return new AllowedMimeTypes(
+            $this->getContainer()->offsetGet('storage.allowed_types'),
+            $this->getToken()->getAllowedMimeTypes()
+        );
+    }
+
+    /**
+     * @return string
+     */
+    public function showFormAction(): string
+    {
+        return $this->getRenderer()->render('@app/FileUpload.html.twig', [
+            'tokenId' => $this->getRequest()->get('_token'),
+            'backUrl' => (string)$this->getRequest()->get('back_url'),
+            'allowedMimeTypes' => $this->getAllowedMimes()->toString(),
+        ]);
     }
 
     /**
@@ -53,6 +103,18 @@ class UploadController extends AbstractBaseController implements UploadControlle
     public function supportsProtocol(string $protocolName) : bool
     {
         return in_array($protocolName, ['http', 'https']);
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function getRequiredRoleNames(): array
+    {
+        return [
+            Roles::ROLE_UPLOAD_IMAGES,
+            Roles::ROLE_UPLOAD_FILES,
+            Roles::ROLE_UPLOAD_DOCS,
+        ];
     }
 
     /**
