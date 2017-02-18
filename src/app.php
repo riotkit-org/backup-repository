@@ -12,15 +12,15 @@ $app = new Application();
 $app->register(new ServiceControllerServiceProvider());
 $app->register(new HttpFragmentServiceProvider());
 $app->register(new Silex\Provider\SerializerServiceProvider());
-$app->register(new Silex\Provider\TwigServiceProvider(), array(
+$app->register(new Silex\Provider\TwigServiceProvider(), [
     'twig.path' => __DIR__ . '/Resources/Views',
     'twig.options' => [
         'cache'            => __DIR__.'/../var/cache/twig',
         'strict_variables' => true,
-        'debug'            => false,
-        'autoescape'       => true
+        'debug'            => in_array(ENV, ['dev', 'test']),
+        'autoescape'       => true,
     ]
-));
+]);
 
 $app->register(new \Silex\Provider\DoctrineServiceProvider(), [
     'db.options' => [
@@ -29,7 +29,7 @@ $app->register(new \Silex\Provider\DoctrineServiceProvider(), [
     ],
 ]);
 
-$app->register(new \Dflydev\Provider\DoctrineOrm\DoctrineOrmServiceProvider(), array(
+$app->register(new \Dflydev\Provider\DoctrineOrm\DoctrineOrmServiceProvider(), [
     'orm.proxies_dir' => __DIR__ . '/../var/cache/orm-proxies',
     'orm.em.options' => [
         'mappings' => [
@@ -40,6 +40,6 @@ $app->register(new \Dflydev\Provider\DoctrineOrm\DoctrineOrmServiceProvider(), a
             ],
         ],
     ],
-));
+]);
 
 return $app;

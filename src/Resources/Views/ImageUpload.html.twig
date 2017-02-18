@@ -44,7 +44,7 @@
 
         <script src="/js/image_upload.js"></script>
         <script type="text/javascript">
-            image_upload = new ImageUpload(4 / 3, '{{ tokenId }}', '{{ backUrl }}');
+            image_upload = new ImageUpload({{ aspectRatio }}, '{{ tokenId }}', '{{ backUrl }}');
             document.getElementById('file').addEventListener('change', image_upload.handleImageUpload, false);
         </script>
     </body>

@@ -12,7 +12,6 @@ use Model\Permissions\Roles;
 use Model\Request\ImageJsonPayload;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Serializer\SerializerInterface;
 
 /**
  * User form handler: Image upload
@@ -25,20 +24,36 @@ class ImageUploadFormController extends AbstractBaseController
     /**
      * @return string
      */
-    public function showFormAction()
+    public function showFormAction(): string
     {
         return $this->getRenderer()->render('@app/ImageUpload.html.twig', [
             'tokenId' => $this->getRequest()->get('_token'),
-            'backUrl' => $this->getRequest()->get('backUrl')
+            'backUrl' => $this->getRequest()->get('backUrl'),
+            'aspectRatio' => $this->getAspectRatio((float)$this->getRequest()->get('aspectRatio'))
         ]);
     }
 
     /**
-     * @return string
+     * @return array
      */
-    public function getRequiredRoleName()
+    public function getRequiredRoleNames(): array
     {
-        return Roles::ROLE_UPLOAD_IMAGES;
+        return [Roles::ROLE_UPLOAD_IMAGES];
+    }
+
+    /**
+     * Normalize input aspect ratio
+     *
+     * @param float $ratio
+     * @return float
+     */
+    protected function getAspectRatio(float $ratio): float
+    {
+        if ($ratio < 0.5 || $ratio > 3.5) {
+            return 16 / 9;
+        }
+
+        return $ratio;
     }
 
     /**

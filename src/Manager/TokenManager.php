@@ -54,7 +54,7 @@ class TokenManager implements TokenManagerInterface
     /**
      * @inheritdoc
      */
-    public function isTokenValid(string $tokenId, string $roleName = ''): bool
+    public function isTokenValid(string $tokenId, array $requiredRoles = []): bool
     {
         if ($tokenId === $this->getAdminToken()) {
             return true;
@@ -62,11 +62,27 @@ class TokenManager implements TokenManagerInterface
 
         $token = $this->repository->getTokenById($tokenId);
 
-        if (!$token instanceof Token || !$roleName) {
+        if (!$token instanceof Token || empty($requiredRoles)) {
             return false;
         }
 
-        return $token->hasRole($roleName) && $token->isNotExpired();
+        // at least one role must match
+        foreach ($requiredRoles as $roleName) {
+
+            if ($token->hasRole($roleName) && $token->isNotExpired()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * @inheritdoc
+     */
+    public function isAdminToken(string $tokenId): bool
+    {
+        return $this->getAdminToken() === $tokenId;
     }
 
     /**

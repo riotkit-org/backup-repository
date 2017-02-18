@@ -4,6 +4,7 @@ namespace Controllers;
 
 use Actions\AbstractBaseAction;
 use Manager\Domain\TokenManagerInterface;
+use Model\Entity\AdminToken;
 use Model\Entity\Token;
 use Repository\Domain\TokenRepositoryInterface;
 use Silex\Application;
@@ -47,7 +48,7 @@ abstract class AbstractBaseController
         $this->request    = $app['request_stack']->getCurrentRequest();
         $this->setIsInternalRequest($isInternalRequest);
 
-        $this->assertValidateAccessRights($this->request, $app['manager.token'], $this->getRequiredRoleName());
+        $this->assertValidateAccessRights($this->request, $app['manager.token'], $this->getRequiredRoleNames());
     }
 
     /**
@@ -79,11 +80,11 @@ abstract class AbstractBaseController
     }
 
     /**
-     * @return string
+     * @return array
      */
-    public function getRequiredRoleName()
+    public function getRequiredRoleNames(): array
     {
-        return '';
+        return [];
     }
 
     /**
@@ -97,12 +98,12 @@ abstract class AbstractBaseController
     /**
      * @param Request               $request
      * @param TokenManagerInterface $tokenManager
-     * @param string                $roleName
+     * @param array                 $requiredRoles
      */
     public function assertValidateAccessRights(
         Request $request,
         TokenManagerInterface $tokenManager,
-        string $roleName = ''
+        array $requiredRoles = []
     ) {
         if ($this->isInternalRequest === true) {
             return;
@@ -110,8 +111,13 @@ abstract class AbstractBaseController
 
         $inputToken = $request->get('_token') ?? '';
 
-        if (!$tokenManager->isTokenValid($inputToken, $roleName)) {
+        if (!$tokenManager->isTokenValid($inputToken, $requiredRoles)) {
             throw new \Symfony\Component\Security\Core\Exception\AccessDeniedException('Access denied, please verify the "_token" parameter');
+        }
+
+        if ($tokenManager->isAdminToken($inputToken)) {
+            $this->token = (new AdminToken())->setId($inputToken);
+            return;
         }
 
         /** @var TokenRepositoryInterface $repository */

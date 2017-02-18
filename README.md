@@ -106,7 +106,8 @@ GET /repository/routing/map
 {
    "roles": ['role_1', 'upload.images'],
    "data": {
-       "tags": ['article.picture']
+       "tags": ['article.picture'],
+       "mime_types": ['image/jpeg']
    }
 }
 
@@ -123,6 +124,9 @@ POST /public/upload/image
     "fileName": "file-name.jpg",
     "mimeType": "image/jpeg"
 }
+
+GET /public/upload/files/form
+POST /public/upload/files
 ```
 
 Example forms
