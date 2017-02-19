@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace Controllers\Download;
 
@@ -22,7 +22,7 @@ class ImageServeController extends AbstractBaseController
     public function assertValidateAccessRights(
         Request $request,
         TokenManagerInterface $tokenManager,
-        string $roleName = ''
+        array $requiredRoles = []
     ) {
         return;
     }
@@ -34,9 +34,12 @@ class ImageServeController extends AbstractBaseController
     public function downloadAction($imageName = null)
     {
         /** @var StorageManager $manager */
-        $manager       = $this->getContainer()->offsetGet('manager.storage');
+        $manager = $this->getContainer()->offsetGet('manager.storage');
 
         try {
+            // image_file_url is used to get a file that was submitted using a full external URL
+            // instead of file name, using this method we are able to detect if given URL
+            // was already mirrored/cached :-)
             $requestedFile = $this->getRequest()->get('image_file_url');
             $storagePath = $requestedFile
                 ? $manager->getPathWhereToStoreTheFile($requestedFile)

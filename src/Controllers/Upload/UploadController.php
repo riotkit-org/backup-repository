@@ -5,6 +5,7 @@ namespace Controllers\Upload;
 use Actions\Upload\UploadByHttpActionHandler;
 use Controllers\AbstractBaseController;
 use Model\AllowedMimeTypes;
+use Model\Entity\AdminToken;
 use Model\Permissions\Roles;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
@@ -41,7 +42,7 @@ class UploadController extends AbstractBaseController implements UploadControlle
         $action->setData(
             (string)$this->getRequest()->get('file_name'),
             (bool)$this->getRequest()->get('file_overwrite'),
-            array_filter((array)$this->getRequest()->get('tags'))
+            $this->getTags()
         );
 
         $action->setStrictUploadMode($this->isStrictUploadMode());
@@ -83,6 +84,18 @@ class UploadController extends AbstractBaseController implements UploadControlle
             $this->getContainer()->offsetGet('storage.allowed_types'),
             $this->getToken()->getAllowedMimeTypes()
         );
+    }
+
+    /**
+     * @return string[]
+     */
+    private function getTags()
+    {
+        if ($this->getToken() instanceof AdminToken) {
+            return array_filter((array)$this->getRequest()->get('tags'));
+        }
+
+        return $this->getToken()->getTags();
     }
 
     /**

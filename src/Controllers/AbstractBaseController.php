@@ -105,19 +105,15 @@ abstract class AbstractBaseController
         TokenManagerInterface $tokenManager,
         array $requiredRoles = []
     ) {
-        if ($this->isInternalRequest === true) {
+        $inputToken = $request->get('_token') ?? '';
+
+        if ($this->isInternalRequest === true || $tokenManager->isAdminToken($inputToken)) {
+            $this->token = (new AdminToken())->setId($inputToken);
             return;
         }
-
-        $inputToken = $request->get('_token') ?? '';
 
         if (!$tokenManager->isTokenValid($inputToken, $requiredRoles)) {
             throw new \Symfony\Component\Security\Core\Exception\AccessDeniedException('Access denied, please verify the "_token" parameter');
-        }
-
-        if ($tokenManager->isAdminToken($inputToken)) {
-            $this->token = (new AdminToken())->setId($inputToken);
-            return;
         }
 
         /** @var TokenRepositoryInterface $repository */

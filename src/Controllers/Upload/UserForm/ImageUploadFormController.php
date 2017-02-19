@@ -28,7 +28,7 @@ class ImageUploadFormController extends AbstractBaseController
     {
         return $this->getRenderer()->render('@app/ImageUpload.html.twig', [
             'tokenId' => $this->getRequest()->get('_token'),
-            'backUrl' => $this->getRequest()->get('backUrl'),
+            'backUrl' => $this->getRequest()->get('back_url'),
             'aspectRatio' => $this->getAspectRatio((float)$this->getRequest()->get('aspectRatio'))
         ]);
     }

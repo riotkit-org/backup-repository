@@ -343,16 +343,16 @@
         },
         {
             "name": "doctrine/dbal",
-            "version": "v2.5.11",
+            "version": "v2.5.12",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/dbal.git",
-                "reference": "1b1effbddbdc0f40d1c8f849f44bcddac4f52a48"
+                "reference": "7b9e911f9d8b30d43b96853dab26898c710d8f44"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/dbal/zipball/1b1effbddbdc0f40d1c8f849f44bcddac4f52a48",
-                "reference": "1b1effbddbdc0f40d1c8f849f44bcddac4f52a48",
+                "url": "https://api.github.com/repos/doctrine/dbal/zipball/7b9e911f9d8b30d43b96853dab26898c710d8f44",
+                "reference": "7b9e911f9d8b30d43b96853dab26898c710d8f44",
                 "shasum": ""
             },
             "require": {
@@ -410,7 +410,7 @@
                 "persistence",
                 "queryobject"
             ],
-            "time": "2017-02-04T21:20:13+00:00"
+            "time": "2017-02-08T12:53:47+00:00"
         },
         {
             "name": "doctrine/inflector",
@@ -1456,16 +1456,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "6.0.5",
+            "version": "6.0.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "1fb01cbd5aa7fa2457cc10170070676a9ad315d2"
+                "reference": "e702506af102d0dc5312dd24b8e97fd6e58ce3ba"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/1fb01cbd5aa7fa2457cc10170070676a9ad315d2",
-                "reference": "1fb01cbd5aa7fa2457cc10170070676a9ad315d2",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/e702506af102d0dc5312dd24b8e97fd6e58ce3ba",
+                "reference": "e702506af102d0dc5312dd24b8e97fd6e58ce3ba",
                 "shasum": ""
             },
             "require": {
@@ -1534,7 +1534,7 @@
                 "testing",
                 "xunit"
             ],
-            "time": "2017-02-05T15:33:43+00:00"
+            "time": "2017-02-08T05:57:26+00:00"
         },
         {
             "name": "phpunit/phpunit-mock-objects",
@@ -2135,16 +2135,16 @@
         },
         {
             "name": "sebastian/object-enumerator",
-            "version": "2.0.0",
+            "version": "2.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/object-enumerator.git",
-                "reference": "96f8a3f257b69e8128ad74d3a7fd464bcbaa3b35"
+                "reference": "1311872ac850040a79c3c058bea3e22d0f09cbb7"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/object-enumerator/zipball/96f8a3f257b69e8128ad74d3a7fd464bcbaa3b35",
-                "reference": "96f8a3f257b69e8128ad74d3a7fd464bcbaa3b35",
+                "url": "https://api.github.com/repos/sebastianbergmann/object-enumerator/zipball/1311872ac850040a79c3c058bea3e22d0f09cbb7",
+                "reference": "1311872ac850040a79c3c058bea3e22d0f09cbb7",
                 "shasum": ""
             },
             "require": {
@@ -2177,7 +2177,7 @@
             ],
             "description": "Traverses array structures and object graphs to enumerate all referenced objects",
             "homepage": "https://github.com/sebastianbergmann/object-enumerator/",
-            "time": "2016-11-19T07:35:10+00:00"
+            "time": "2017-02-18T15:18:39+00:00"
         },
         {
             "name": "sebastian/recursion-context",
@@ -2844,7 +2844,7 @@
         },
         {
             "name": "symfony/dom-crawler",
-            "version": "v3.2.3",
+            "version": "v3.2.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/dom-crawler.git",
@@ -2900,7 +2900,7 @@
         },
         {
             "name": "symfony/event-dispatcher",
-            "version": "v3.2.3",
+            "version": "v3.2.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/event-dispatcher.git",
@@ -2960,7 +2960,7 @@
         },
         {
             "name": "symfony/filesystem",
-            "version": "v3.2.3",
+            "version": "v3.2.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/filesystem.git",
@@ -3132,16 +3132,16 @@
         },
         {
             "name": "symfony/http-foundation",
-            "version": "v3.2.3",
+            "version": "v3.2.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/http-foundation.git",
-                "reference": "e192b04de44aa1ed0e39d6793f7e06f5e0b672a0"
+                "reference": "a90da6dd679605d88c9803a57a6fc1fb7a19a6e0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/http-foundation/zipball/e192b04de44aa1ed0e39d6793f7e06f5e0b672a0",
-                "reference": "e192b04de44aa1ed0e39d6793f7e06f5e0b672a0",
+                "url": "https://api.github.com/repos/symfony/http-foundation/zipball/a90da6dd679605d88c9803a57a6fc1fb7a19a6e0",
+                "reference": "a90da6dd679605d88c9803a57a6fc1fb7a19a6e0",
                 "shasum": ""
             },
             "require": {
@@ -3181,20 +3181,20 @@
             ],
             "description": "Symfony HttpFoundation Component",
             "homepage": "https://symfony.com",
-            "time": "2017-02-02T13:47:35+00:00"
+            "time": "2017-02-16T22:46:52+00:00"
         },
         {
             "name": "symfony/http-kernel",
-            "version": "v3.2.3",
+            "version": "v3.2.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/http-kernel.git",
-                "reference": "96443239baf674b143604fb87cb27cb01672ab77"
+                "reference": "4cd0d4bc31819095c6ef13573069f621eb321081"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/http-kernel/zipball/96443239baf674b143604fb87cb27cb01672ab77",
-                "reference": "96443239baf674b143604fb87cb27cb01672ab77",
+                "url": "https://api.github.com/repos/symfony/http-kernel/zipball/4cd0d4bc31819095c6ef13573069f621eb321081",
+                "reference": "4cd0d4bc31819095c6ef13573069f621eb321081",
                 "shasum": ""
             },
             "require": {
@@ -3263,11 +3263,11 @@
             ],
             "description": "Symfony HttpKernel Component",
             "homepage": "https://symfony.com",
-            "time": "2017-02-06T13:15:19+00:00"
+            "time": "2017-02-16T23:59:56+00:00"
         },
         {
             "name": "symfony/inflector",
-            "version": "v3.2.3",
+            "version": "v3.2.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/inflector.git",
@@ -3324,7 +3324,7 @@
         },
         {
             "name": "symfony/intl",
-            "version": "v3.2.3",
+            "version": "v3.2.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/intl.git",
@@ -3459,7 +3459,7 @@
         },
         {
             "name": "symfony/options-resolver",
-            "version": "v3.2.3",
+            "version": "v3.2.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/options-resolver.git",
@@ -3846,7 +3846,7 @@
         },
         {
             "name": "symfony/property-access",
-            "version": "v3.2.3",
+            "version": "v3.2.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/property-access.git",
@@ -3914,7 +3914,7 @@
         },
         {
             "name": "symfony/routing",
-            "version": "v3.2.3",
+            "version": "v3.2.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/routing.git",
@@ -4130,7 +4130,7 @@
         },
         {
             "name": "symfony/stopwatch",
-            "version": "v3.2.3",
+            "version": "v3.2.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/stopwatch.git",
@@ -4179,16 +4179,16 @@
         },
         {
             "name": "symfony/twig-bridge",
-            "version": "v3.2.3",
+            "version": "v3.2.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/twig-bridge.git",
-                "reference": "9760556730617f4a942da7fe2ab454722f855182"
+                "reference": "e269487ec0218f591b45eb8556144c11e7883154"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/twig-bridge/zipball/9760556730617f4a942da7fe2ab454722f855182",
-                "reference": "9760556730617f4a942da7fe2ab454722f855182",
+                "url": "https://api.github.com/repos/symfony/twig-bridge/zipball/e269487ec0218f591b45eb8556144c11e7883154",
+                "reference": "e269487ec0218f591b45eb8556144c11e7883154",
                 "shasum": ""
             },
             "require": {
@@ -4256,20 +4256,20 @@
             ],
             "description": "Symfony Twig Bridge",
             "homepage": "https://symfony.com",
-            "time": "2017-01-21T17:06:35+00:00"
+            "time": "2017-02-16T22:46:52+00:00"
         },
         {
             "name": "symfony/var-dumper",
-            "version": "v3.2.3",
+            "version": "v3.2.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/var-dumper.git",
-                "reference": "5bb4435a03a4f05c211f4a9a8ee2756965924511"
+                "reference": "cb50260b674ee1c2d4ab49f2395a42e0b4681e20"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/var-dumper/zipball/5bb4435a03a4f05c211f4a9a8ee2756965924511",
-                "reference": "5bb4435a03a4f05c211f4a9a8ee2756965924511",
+                "url": "https://api.github.com/repos/symfony/var-dumper/zipball/cb50260b674ee1c2d4ab49f2395a42e0b4681e20",
+                "reference": "cb50260b674ee1c2d4ab49f2395a42e0b4681e20",
                 "shasum": ""
             },
             "require": {
@@ -4319,20 +4319,20 @@
                 "debug",
                 "dump"
             ],
-            "time": "2017-01-24T12:58:58+00:00"
+            "time": "2017-02-16T22:46:52+00:00"
         },
         {
             "name": "symfony/web-profiler-bundle",
-            "version": "v3.2.3",
+            "version": "v3.2.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/web-profiler-bundle.git",
-                "reference": "a1c9b7a7adfd54851f13dedf9e73299872550f87"
+                "reference": "e2f4704c2f2d6813e971345a8718001ff07a08c1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/web-profiler-bundle/zipball/a1c9b7a7adfd54851f13dedf9e73299872550f87",
-                "reference": "a1c9b7a7adfd54851f13dedf9e73299872550f87",
+                "url": "https://api.github.com/repos/symfony/web-profiler-bundle/zipball/e2f4704c2f2d6813e971345a8718001ff07a08c1",
+                "reference": "e2f4704c2f2d6813e971345a8718001ff07a08c1",
                 "shasum": ""
             },
             "require": {
@@ -4383,20 +4383,20 @@
             ],
             "description": "Symfony WebProfilerBundle",
             "homepage": "https://symfony.com",
-            "time": "2017-01-17T08:49:30+00:00"
+            "time": "2017-02-14T16:27:43+00:00"
         },
         {
             "name": "symfony/yaml",
-            "version": "v3.2.3",
+            "version": "v3.2.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/yaml.git",
-                "reference": "e1718c6bf57e1efbb8793ada951584b2ab27775b"
+                "reference": "9724c684646fcb5387d579b4bfaa63ee0b0c64c8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/yaml/zipball/e1718c6bf57e1efbb8793ada951584b2ab27775b",
-                "reference": "e1718c6bf57e1efbb8793ada951584b2ab27775b",
+                "url": "https://api.github.com/repos/symfony/yaml/zipball/9724c684646fcb5387d579b4bfaa63ee0b0c64c8",
+                "reference": "9724c684646fcb5387d579b4bfaa63ee0b0c64c8",
                 "shasum": ""
             },
             "require": {
@@ -4438,7 +4438,7 @@
             ],
             "description": "Symfony Yaml Component",
             "homepage": "https://symfony.com",
-            "time": "2017-01-21T17:06:35+00:00"
+            "time": "2017-02-16T22:46:52+00:00"
         },
         {
             "name": "twig/twig",
@@ -4558,12 +4558,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Wolnosciowiec/web-deploy.git",
-                "reference": "b610c493b7d4fc7be650ff67229bdfb072a809d2"
+                "reference": "ae553ca77ee79d204d3ba6ca31a5a23ec1a2b789"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Wolnosciowiec/web-deploy/zipball/b610c493b7d4fc7be650ff67229bdfb072a809d2",
-                "reference": "b610c493b7d4fc7be650ff67229bdfb072a809d2",
+                "url": "https://api.github.com/repos/Wolnosciowiec/web-deploy/zipball/ae553ca77ee79d204d3ba6ca31a5a23ec1a2b789",
+                "reference": "ae553ca77ee79d204d3ba6ca31a5a23ec1a2b789",
                 "shasum": ""
             },
             "require": {
@@ -4596,7 +4596,7 @@
                 "LGPLv3"
             ],
             "description": "Deploys the application from web instead of shell, which fits for smaller applications hosted on shared hostings",
-            "time": "2016-11-27 08:14:58"
+            "time": "2017-02-13 05:24:23"
         },
         {
             "name": "zendframework/zend-diactoros",
