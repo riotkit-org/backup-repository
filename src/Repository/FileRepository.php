@@ -75,6 +75,10 @@ class FileRepository implements FileRepositoryInterface
         $countingQuery = clone $qb;
         $countingQuery->select('count(f)');
 
+        // order by
+        $qb->addOrderBy('f.dateAdded', 'DESC');
+        $qb->addOrderBy('f.fileName', 'ASC');
+
         return [
             'results' => $qb->getQuery()->getResult(),
             'max'     => $countingQuery->getQuery()->getScalarResult()[0][1] ?? 0,
