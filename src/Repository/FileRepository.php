@@ -59,7 +59,7 @@ class FileRepository implements FileRepositoryInterface
         }
 
         if (strlen($searchQuery) > 0) {
-            $qb->andWhere('f.fileName = :searchQuery')
+            $qb->andWhere('f.fileName LIKE :searchQuery')
                 ->setParameter('searchQuery', '%' . $searchQuery . '%');
         }
 
