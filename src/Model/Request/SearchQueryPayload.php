@@ -10,6 +10,9 @@ class SearchQueryPayload
     /** @var array $tags */
     private $tags = [];
 
+    /** @var string $searchQuery */
+    private $searchQuery = '';
+
     /** @var int $limit */
     private $limit = 50;
 
@@ -23,6 +26,16 @@ class SearchQueryPayload
     public function setTags(array $tags = [])
     {
         $this->tags = array_filter((array)$tags);
+        return $this;
+    }
+
+    /**
+     * @param string $searchQuery
+     * @return SearchQueryPayload
+     */
+    public function setSearchQuery(string $searchQuery)
+    {
+        $this->searchQuery = $searchQuery;
         return $this;
     }
 
@@ -60,6 +73,14 @@ class SearchQueryPayload
     public function getTags()
     {
         return $this->tags;
+    }
+
+    /**
+     * @return string
+     */
+    public function getSearchQuery(): string
+    {
+        return $this->searchQuery;
     }
 
     /**

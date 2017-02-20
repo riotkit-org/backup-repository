@@ -68,7 +68,7 @@ class FindAction extends AbstractBaseAction
     {
         $files = $this->fileRepository->findByQuery(
             $this->payload->getTags(),
-            '',
+            $this->payload->getSearchQuery(),
             $this->payload->getLimit(),
             $this->payload->getOffset()
         );
