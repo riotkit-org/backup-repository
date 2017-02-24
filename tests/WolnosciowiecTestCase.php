@@ -53,6 +53,22 @@ abstract class WolnosciowiecTestCase extends TestCase
     }
 
     /**
+     * @param string $prefix
+     * @param string $content
+     * @return string
+     */
+    public function createTemporaryFile(string $prefix, string $content)
+    {
+        $tempFilePath = tempnam(sys_get_temp_dir(), $prefix);
+
+        $pointer = fopen($tempFilePath, 'w');
+        fwrite($pointer, $content);
+        fclose($pointer);
+
+        return $tempFilePath;
+    }
+
+    /**
      * @return array
      */
     public function invalidTokensProvider()
