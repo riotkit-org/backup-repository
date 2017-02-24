@@ -7,6 +7,10 @@ use Silex\Application;
 $app['twig.loader.filesystem']->addPath(__DIR__ . '/Resources/Views', 'app');
 
 // services
+$app['service.file.serve'] = function () {
+    return new \Service\FileServingService();
+};
+
 $app['manager.storage'] = function (Application $app) {
     return new \Manager\StorageManager($app['storage.path'], $app['url_generator'], $app['weburl']);
 };
@@ -106,7 +110,7 @@ $app['controller.stats'] = function (Application $app) {
 };
 
 $app['controller.serve'] = function (Application $app) {
-    return new \Controllers\Download\ImageServeController($app);
+    return new \Controllers\Download\FileServeController($app);
 };
 
 $app['controller.routing.map'] = function (Application $app) {

@@ -3,16 +3,19 @@
 namespace Controllers\Download;
 
 use Controllers\AbstractBaseController;
+use Domain\Service\FileServingServiceInterface;
 use Manager\Domain\TokenManagerInterface;
 use Manager\StorageManager;
 use Symfony\Component\HttpFoundation\File\Exception\FileNotFoundException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 /**
  * @package Controllers\Upload
  */
-class ImageServeController extends AbstractBaseController
+class FileServeController extends AbstractBaseController
 {
     /**
      * Everyone could download images, as those are public
@@ -33,8 +36,12 @@ class ImageServeController extends AbstractBaseController
      */
     public function downloadAction($imageName = null)
     {
-        /** @var StorageManager $manager */
+        /**
+         * @var StorageManager $manager
+         * @var FileServingServiceInterface $fileServe
+         */
         $manager = $this->getContainer()->offsetGet('manager.storage');
+        $fileServe = $this->getContainer()->offsetGet('service.file.serve');
 
         try {
             // image_file_url is used to get a file that was submitted using a full external URL
@@ -50,17 +57,21 @@ class ImageServeController extends AbstractBaseController
         }
 
         if ($storagePath !== '' && is_file($storagePath)) {
-            $fp         = fopen($storagePath, 'r');
-            $firstBytes = fread($fp, 1024);
-            $mime = $this->getMime($firstBytes);
+            $shouldServe = $fileServe->shouldServe(
+                $storagePath,
+                $_SERVER['HTTP_IF_MODIFIED_SINCE'] ?? null,
+                $_SERVER['HTTP_IF_NONE_MATCH'] ?? null
+            );
 
-            @header('Content-Type: ' . $mime);
-            @header('Content-Length: ' . filesize($storagePath));
+            if ($shouldServe) {
+                return new StreamedResponse(
+                    $fileServe->buildClosure($storagePath),
+                    200,
+                    $fileServe->buildOutputHeaders($storagePath)
+                );
+            }
 
-            print($firstBytes);
-            fpassthru($fp);
-            fclose($fp);
-            return '';
+            return new Response('', 304);
         }
 
         return new JsonResponse([
@@ -68,17 +79,5 @@ class ImageServeController extends AbstractBaseController
             'code'    => 404,
             'message' => 'Image not found in the registry',
         ], 404);
-    }
-
-    /**
-     * @param string $bufferedString
-     * @return string
-     */
-    private function getMime($bufferedString): string
-    {
-        $mime = (new \finfo(FILEINFO_MIME))->buffer($bufferedString);
-        $parts = explode(';', (string)$mime);
-
-        return $parts[0];
     }
 }
