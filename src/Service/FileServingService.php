@@ -3,7 +3,11 @@
 namespace Service;
 
 use Domain\Service\FileServingServiceInterface;
+use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 
+/**
+ * @inheritdoc
+ */
 class FileServingService implements FileServingServiceInterface
 {
     const HASH_ALGORITHM = 'md4';
@@ -18,12 +22,15 @@ class FileServingService implements FileServingServiceInterface
      */
     public function buildClosure(string $filePath): \Closure
     {
+        $this->assertFileExists($filePath);
+
         return function () use ($filePath) {
             $fp = $this->openFile($filePath); fseek($fp, 0);
             $firstBytes = fread($fp, 1024);
 
-            print($firstBytes);
-            fpassthru($fp);
+            print($firstBytes); flush();
+            fpassthru($fp); flush();
+
             fclose($fp);
         };
     }
@@ -33,6 +40,8 @@ class FileServingService implements FileServingServiceInterface
      */
     public function shouldServe(string $filePath, $modifiedSince, $noneMatch): bool
     {
+        $this->assertFileExists($filePath);
+
         $currentModifiedSince = gmdate('D, d M Y H:i:s \G\M\T', filemtime($filePath));
         $currentETag          = hash_file(self::HASH_ALGORITHM, $filePath);
 
@@ -45,6 +54,8 @@ class FileServingService implements FileServingServiceInterface
      */
     public function buildOutputHeaders(string $filePath): array
     {
+        $this->assertFileExists($filePath);
+
         $fp = $this->openFile($filePath); fseek($fp, 0);
         $firstBytes = fread($fp, 1024);
 
@@ -54,6 +65,13 @@ class FileServingService implements FileServingServiceInterface
             'Last-Modified'  => gmdate('D, d M Y H:i:s \G\M\T', filemtime($filePath)),
             'ETag'           => hash_file(self::HASH_ALGORITHM, $filePath),
         ];
+    }
+
+    private function assertFileExists(string $filePath)
+    {
+        if (!is_file($filePath) || !is_readable($filePath)) {
+            throw new FileNotFoundException('File "' . $filePath . '" not found');
+        }
     }
 
     private function openFile(string $filePath)

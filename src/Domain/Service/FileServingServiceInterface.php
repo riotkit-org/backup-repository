@@ -2,6 +2,15 @@
 
 namespace Domain\Service;
 
+/**
+ * Outputs the file to the web browser
+ * -----------------------------------
+ *   - Verifies browser cache
+ *   - Builds headers
+ *   - Streaming to browser
+ *
+ * @package Service
+ */
 interface FileServingServiceInterface
 {
     /**

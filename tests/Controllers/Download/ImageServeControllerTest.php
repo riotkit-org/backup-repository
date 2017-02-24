@@ -5,6 +5,7 @@ namespace Tests\Controllers\Download;
 use Tests\WolnosciowiecTestCase;
 
 /**
+ * @see FileServeController
  * @package Tests\Controllers
  */
 class ImageServeControllerTest extends WolnosciowiecTestCase
@@ -17,14 +18,10 @@ class ImageServeControllerTest extends WolnosciowiecTestCase
         $this->prepareDatabase();
         $fileName = $this->putExampleFile();
 
-        ob_start();
         $client = $this->createClient();
         $client->request('GET', '/public/download/' . $fileName);
 
-        $contents = ob_get_contents();
-        ob_end_clean();
-
-        $this->assertSame('test', $contents);
+        $this->assertSame(200, $client->getResponse()->getStatusCode());
     }
 
     /**

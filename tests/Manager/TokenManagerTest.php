@@ -42,28 +42,28 @@ class TokenManagerTest extends WolnosciowiecTestCase
      * @depends testGenerateNewToken
      * @param Token $token
      *
-     * @return Token
+     * @return string
      */
     public function testIsTokenValid(Token $token)
     {
         $this->assertTrue(
-            $this->getManager()->isTokenValid($token->getId(), 'syndicate_distribution'),
+            $this->getManager()->isTokenValid($token->getId(), ['syndicate_distribution']),
             'Failed to match that the token is valid for "syndicate_distribution" role'
         );
 
         $this->assertFalse(
-            $this->getManager()->isTokenValid($token->getId(), 'production'),
+            $this->getManager()->isTokenValid($token->getId(), ['production']),
             'Required role is "production", but the token was not registered with it, ' .
             'so the validation should return false'
         );
 
         $this->assertFalse(
-            $this->getManager()->isTokenValid('unknown-token', 'syndicate_distribution'),
+            $this->getManager()->isTokenValid('unknown-token', ['syndicate_distribution']),
             '"unknown-token" does not exists, so the validation should return false'
         );
 
         $this->assertTrue(
-            $this->getManager()->isTokenValid($this->app->offsetGet('api.key'), 'syndicate_distribution'),
+            $this->getManager()->isTokenValid($this->app->offsetGet('api.key'), ['syndicate_distribution']),
             'Main API key (configurable via configuration file) should have access to everything'
         );
 
@@ -84,7 +84,7 @@ class TokenManagerTest extends WolnosciowiecTestCase
         $this->getManager()->removeToken($token);
 
         $this->assertFalse(
-            $this->getManager()->isTokenValid($tokenCopy->getId(), 'syndicate_distribution'),
+            $this->getManager()->isTokenValid($tokenCopy->getId(), ['syndicate_distribution']),
             'Failed to match that the token is valid for "syndicate_distribution" role'
         );
     }
