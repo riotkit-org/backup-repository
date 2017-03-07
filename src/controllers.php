@@ -32,6 +32,10 @@ $app->post('/public/upload/files', 'controller.upload:uploadAction')->bind('publ
 $app->post('/auth/token/generate', 'controller.auth.token:generateTemporaryTokenAction');
 $app->get('/jobs/token/expired/clear', 'controller.auth.token.expired:clearExpiredTokensAction');
 
+if (isset($app['https.force']) && $app['https.force']) {
+    $app['controllers_factory']->requireHttps();
+}
+
 /**
  * @return null|JsonResponse
  */
