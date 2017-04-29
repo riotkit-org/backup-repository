@@ -15,7 +15,6 @@ $app = require __DIR__ . '/prod.php';
 
 // enable the debug mode
 $app['debug'] = true;
-$app['weburl'] = 'http://localhost:8888';
 
 // migrations environment
 if (is_array($app)) {
