@@ -22,13 +22,6 @@ $app->register(new Silex\Provider\TwigServiceProvider(), [
     ]
 ]);
 
-$app->register(new \Silex\Provider\DoctrineServiceProvider(), [
-    'db.options' => [
-        'driver' => 'pdo_sqlite',
-        'path'   => __DIR__ . '/../data/database_' . ENV . '.sqlite3',
-    ],
-]);
-
 $app->register(new \Dflydev\Provider\DoctrineOrm\DoctrineOrmServiceProvider(), [
     'orm.proxies_dir' => __DIR__ . '/../var/cache/orm-proxies',
     'orm.em.options' => [
