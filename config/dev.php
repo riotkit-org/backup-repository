@@ -21,7 +21,6 @@ $app = require __DIR__ . '/prod.php';
 
 // enable the debug mode
 $app['debug'] = true;
-$app['weburl'] = 'http://localhost:8888';
 
 if (is_file(__DIR__ . '/dev.custom.php')) {
     require __DIR__ . '/dev.custom.php';
