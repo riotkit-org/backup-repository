@@ -33,6 +33,11 @@ $app['storage.allowed_types'] = [
     'gif' => 'image/gif',
 ];
 
+$app['db.options'] = [
+    'driver' => 'pdo_sqlite',
+    'path'   => __DIR__ . '/../data/database_' . ENV . '.sqlite3',
+];
+
 $protocol = 'http';
 
 if (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') {
