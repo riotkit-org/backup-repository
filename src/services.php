@@ -6,6 +6,11 @@ use Silex\Application;
 
 $app['twig.loader.filesystem']->addPath(__DIR__ . '/Resources/Views', 'app');
 
+// db
+$app->register(new \Silex\Provider\DoctrineServiceProvider(), [
+    'db.options' => $app['db.options'],
+]);
+
 // services
 $app['service.file.serve'] = function () {
     return new \Service\FileServingService();
