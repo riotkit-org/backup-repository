@@ -3,7 +3,6 @@
 /** @var Silex\Application $app */
 
 use Silex\Application;
-use Val\Silex\Provider\DoctrineTablePrefixServiceProvider;
 
 $app['twig.loader.filesystem']->addPath(__DIR__ . '/Resources/Views', 'app');
 
@@ -12,7 +11,7 @@ $app->register(new \Silex\Provider\DoctrineServiceProvider(), [
     'db.options' => $app['db.options'],
 ]);
 
-$app->register(new DoctrineTablePrefixServiceProvider());
+$app->register(new \Val\Silex\Provider\DoctrineTablePrefixServiceProvider());
 
 // services
 $app['service.file.serve'] = function () {
