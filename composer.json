@@ -28,8 +28,7 @@
         "twig/twig": "^2.1",
         "symfony/twig-bridge": "^3.2",
         "dflydev/doctrine-orm-service-provider": "^2.0",
-        "phpunit/phpunit": "^6.0",
-        "val/doctrine-table-prefix-service-provider": "dev-pimple-3.0"
+        "phpunit/phpunit": "^6.0"
     },
     "autoload": {
         "psr-0": { "": "src/", "Tests\\": "tests/" }
@@ -63,11 +62,5 @@
     },
     "require-dev": {
         "symfony/var-dumper": "^3.1"
-    },
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/Gounlaf/doctrine-table-prefix-service-provider.git"
-        }
-    ]
+    }
 }
