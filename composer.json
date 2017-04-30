@@ -47,12 +47,14 @@
         "post-install-cmd": [
             "bash ./bin/migrations.sh migrate",
             "bash ./bin/migrations.sh migrate -e dev",
+            "bash ./bin/migrations.sh migrate -e test",
             "bash ./bin/generate-version-number.sh",
             "bower install"
         ],
         "post-update-cmd": [
             "bash ./bin/migrations.sh migrate",
             "bash ./bin/migrations.sh migrate -e dev",
+            "bash ./bin/migrations.sh migrate -e test",
             "bash ./bin/generate-version-number.sh"
         ],
         "run": [

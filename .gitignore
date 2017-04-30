@@ -3,6 +3,7 @@
 /web/assets/
 /config/prod.custom.php
 /config/dev.custom.php
+/config/test.custom.php
 /config/DEPLOYMENT_FTP
 /.idea/
 /pimple.json
