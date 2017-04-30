@@ -1,9 +1,8 @@
 Wolnościowiec File Repository
 =============================
 
-[![Build Status](https://travis-ci.org/Wolnosciowiec/image-repository.svg?branch=master)](https://travis-ci.org/Wolnosciowiec/image-repository)
+[![Build Status](https://travis-ci.org/Wolnosciowiec/file-repository.svg?branch=master)](https://travis-ci.org/Wolnosciowiec/image-repository)
 [![Code Climate](https://codeclimate.com/github/Wolnosciowiec/image-repository/badges/gpa.svg)](https://codeclimate.com/github/Wolnosciowiec/image-repository)
-[![Test Coverage](https://codeclimate.com/github/Wolnosciowiec/image-repository/badges/coverage.svg)](https://codeclimate.com/github/Wolnosciowiec/image-repository/coverage)
 [![Issue Count](https://codeclimate.com/github/Wolnosciowiec/image-repository/badges/issue_count.svg)](https://codeclimate.com/github/Wolnosciowiec/image-repository)
 [![Heroku](https://heroku-badge.herokuapp.com/?app=image-repository-test&root=?_token=api-key-here-for-external-remote-control)](https://image-repository-test.herokuapp.com/?_token=api-key-here-for-external-remote-control)
 
