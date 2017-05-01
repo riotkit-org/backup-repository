@@ -1,12 +1,10 @@
 <?php
 
-use Phinx\Migration\AbstractMigration;
-
-class Tags extends AbstractMigration
+class Tags extends BaseMigration
 {
     public function change()
     {
-        $table = $this->table('tags', [
+        $table = $this->table($this->createTableName('tags'), [
             'id' => false,
             'primary_key' => ['id'],
         ]);
@@ -19,10 +17,10 @@ class Tags extends AbstractMigration
         ]);
 
         $table->addColumn('dateAdded', 'datetime');
-        $table->save();
+        $table->create();
 
 
-        $middleTable = $this->table('file_tags', [
+        $middleTable = $this->table($this->createTableName('file_tags'), [
             'id' => false,
             'primary_key' => ['file_id', 'tag_id'],
         ]);
@@ -33,6 +31,6 @@ class Tags extends AbstractMigration
             'length' => 36,
         ]);
 
-        $middleTable->save();
+        $middleTable->create();
     }
 }

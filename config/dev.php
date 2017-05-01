@@ -22,6 +22,11 @@ $app = require __DIR__ . '/prod.php';
 // enable the debug mode
 $app['debug'] = true;
 
+// prefix table names (optionally)
+$dbOptions = $app['db.options'];
+$dbOptions['prefix'] = 'wfr_';
+$app['db.options'] = $dbOptions;
+
 if (is_file(__DIR__ . '/dev.custom.php')) {
     require __DIR__ . '/dev.custom.php';
 }
@@ -33,6 +38,7 @@ if (is_array($app)) {
 
 $app->register(new \Silex\Provider\TwigServiceProvider());
 
+// this will dump the container to the file, so the IDE could statically recognize classes registered in the container
 //$app->register(new Sorien\Provider\PimpleDumpProvider());
 //$app['pimpledump.output_dir'] = __DIR__ . '/../';
 //$app['pimpledump.trigger_route_pattern'] = '/_dump_pimple';

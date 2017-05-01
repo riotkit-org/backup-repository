@@ -1,13 +1,11 @@
 <?php
 
-use Phinx\Migration\AbstractMigration;
-
-class TokenData extends AbstractMigration
+class TokenData extends BaseMigration
 {
     public function change()
     {
-        $table = $this->table('tokens');
+        $table = $this->table($this->createTableName('tokens'));
         $table->addColumn('data', 'text');
-        $table->save();
+        $table->update();
     }
 }

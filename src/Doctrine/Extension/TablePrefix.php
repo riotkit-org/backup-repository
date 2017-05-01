@@ -7,6 +7,8 @@ use Doctrine\ORM\Mapping\ClassMetadataInfo;
 
 /**
  * Based on official documentation
+ * -------------------------------
+ *   Allows to add prefixes to all tables managed by Doctrine ORM
  *
  * @see http://docs.doctrine-project.org/projects/doctrine-orm/en/stable/cookbook/sql-table-prefixes.html
  */
@@ -14,9 +16,9 @@ class TablePrefix
 {
     protected $prefix = '';
 
-    public function __construct($prefix)
+    public function __construct(string $prefix)
     {
-        $this->prefix = (string)$prefix;
+        $this->prefix = $prefix;
     }
 
     public function loadClassMetadata(LoadClassMetadataEventArgs $eventArgs)
@@ -37,5 +39,4 @@ class TablePrefix
             }
         }
     }
-
 }

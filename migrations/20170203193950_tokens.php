@@ -1,15 +1,13 @@
 <?php
 
-use Phinx\Migration\AbstractMigration;
-
 /**
  * @see Token
  */
-class Tokens extends AbstractMigration
+class Tokens extends BaseMigration
 {
     public function up()
     {
-        $table = $this->table('tokens', ['id' => false]);
+        $table = $this->table($this->createTableName('tokens'), ['id' => false]);
 
         $table->addColumn('id', 'string', [
             'length' => 36,
@@ -29,7 +27,7 @@ class Tokens extends AbstractMigration
 
     public function down()
     {
-        $table = $this->table('tokens');
+        $table = $this->table($this->createTableName('tokens'));
         $table->drop();
     }
 }
