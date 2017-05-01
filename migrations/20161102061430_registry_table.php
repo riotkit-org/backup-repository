@@ -1,12 +1,10 @@
 <?php
 
-use Phinx\Migration\AbstractMigration;
-
 /**
  * Initial migration that is creating a basic structure
  * for FileRegistry
  */
-class RegistryTable extends AbstractMigration
+class RegistryTable extends BaseMigration
 {
     /**
      * More information on writing migrations is available here:
@@ -27,7 +25,7 @@ class RegistryTable extends AbstractMigration
      */
     public function change()
     {
-        $table = $this->table('file_registry');
+        $table = $this->table($this->createTableName('file_registry'));
         $table->addColumn('fileName', 'string', [
             'length' => 64,
             'null'   => false,
