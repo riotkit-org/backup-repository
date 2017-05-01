@@ -11,6 +11,8 @@ $app->register(new \Silex\Provider\DoctrineServiceProvider(), [
     'db.options' => $app['db.options'],
 ]);
 
+$app->register(new \Provider\DoctrineTablePrefixServiceProvider());
+
 // services
 $app['service.file.serve'] = function () {
     return new \Service\FileServingService();
