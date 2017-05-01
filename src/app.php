@@ -17,7 +17,7 @@ $app->register(new Silex\Provider\TwigServiceProvider(), [
     'twig.options' => [
         'cache'            => __DIR__.'/../var/cache/twig',
         'strict_variables' => true,
-        'debug'            => in_array(ENV, ['dev', 'test']),
+        'debug'            => !defined('ENV') || in_array(ENV, ['dev', 'test']),
         'autoescape'       => true,
     ]
 ]);
