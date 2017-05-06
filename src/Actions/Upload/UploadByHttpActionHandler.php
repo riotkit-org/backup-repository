@@ -86,7 +86,15 @@ class UploadByHttpActionHandler extends AbstractBaseAction
         FileRepositoryInterface $repository,
         TagManagerInterface     $tagManager
     ) {
-        $this->allowedMimes  = $allowedMimes->all();
+        $this->allowedMimes  = array_merge(
+            [
+                'jpg' => 'image/jpeg',
+                'png' => 'image/png',
+                'gif' => 'image/gif',
+            ],
+            $allowedMimes->all()
+        );
+
         $this->maxFileSize   = $allowedFileSize;
         $this->manager       = $manager;
         $this->registry      = $registry;
@@ -207,32 +215,13 @@ class UploadByHttpActionHandler extends AbstractBaseAction
     private function getUploadedFileMime($uploadedFile) : string
     {
         $finfo = new \finfo(FILEINFO_MIME_TYPE);
+        $mime = $finfo->file($uploadedFile['dst_name'] ?? $uploadedFile['tmp_name']);
 
-        if (empty($this->getAllowedFileTypes()) || array_search(
-            $finfo->file($uploadedFile['dst_name'] ?? $uploadedFile['tmp_name']),
-            $this->getAllowedFileTypes(),
-            true
-        )) {
-            return $finfo->file($uploadedFile['dst_name'] ?? $uploadedFile['tmp_name']);
+        if (array_search($mime, $this->allowedMimes, true)) {
+            return $mime;
         }
 
         return '';
-    }
-
-    /**
-     * @return array
-     */
-    protected function getAllowedFileTypes()
-    {
-        if (!$this->allowedMimes) {
-            return [
-                'jpg' => 'image/jpeg',
-                'png' => 'image/png',
-                'gif' => 'image/gif',
-            ];
-        }
-
-        return $this->allowedMimes;
     }
 
     /**
