@@ -1,7 +1,6 @@
 <?php
 
 require_once __DIR__ . '/migrations/BaseMigration.php';
-require_once __DIR__ . '/src/app.php';
 
 /**
  * Default migrations configuration
@@ -51,6 +50,46 @@ foreach (['-e', '--environment'] as $switchName) {
 }
 
 define('ENV', $envName);
-$GLOBALS['app'] = require_once __DIR__ . '/config/' . ENV . '.php';
+$envConfig = require_once __DIR__ . '/config/' . ENV . '.php';
+
+
+if (isset($envConfig['db.options']) && is_array($envConfig['db.options'])) {
+    $dbOptions = $envConfig['db.options'];
+    $envDbConfig = array();
+
+    $envDbConfig['adapter'] = str_replace('pdo_', '', $envConfig['db.options']['driver']);
+    if (array_key_exists('host', $dbOptions)) {
+        $envDbConfig['host'] = $dbOptions['host'];
+    }
+
+    if (array_key_exists('dbname', $dbOptions)) {
+        $envDbConfig['name'] = $dbOptions['dbname'];
+    }
+
+    if (array_key_exists('user', $dbOptions)) {
+        $envDbConfig['user'] = $dbOptions['user'];
+    }
+
+    if (array_key_exists('password', $dbOptions)) {
+        $envDbConfig['pass'] = $dbOptions['password'];
+    }
+
+    if (array_key_exists('port', $dbOptions)) {
+        $envDbConfig['port'] = $dbOptions['port'];
+    }
+
+    if (array_key_exists('charset', $dbOptions)) {
+        $envDbConfig['charset'] = $dbOptions['charset'];
+    }
+
+    if (array_key_exists('prefix', $dbOptions)) {
+        $envDbConfig['table_prefix'] = $dbOptions['prefix'];
+    }
+
+    $config['environments'][$envName] = array_merge(
+        $config['environments'][$envName],
+        $envDbConfig
+    );
+}
 
 return $config;

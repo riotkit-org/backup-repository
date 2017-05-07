@@ -23,7 +23,7 @@
         "symfony/security": "~2.8|3.0.*",
         "guzzlehttp/guzzle": "^6.2",
         "sorien/silex-pimple-dumper": "~2.0",
-        "robmorgan/phinx": "0.6.*",
+        "robmorgan/phinx": "^0.8.0",
         "wolnosciowiec/wolnosciowiec-web-deploy": "1.*@dev",
         "twig/twig": "^2.1",
         "symfony/twig-bridge": "^3.2",
