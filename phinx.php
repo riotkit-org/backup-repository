@@ -5,7 +5,8 @@ require_once __DIR__ . '/migrations/BaseMigration.php';
 /**
  * Default migrations configuration
  * -------------------------------
- *   Create a "phinx.custom.php" to override those values
+ *   Database configuration is imported automatically from your environements files.
+ *   If you need to customize other things, create a "phinx.custom.php" that return an array
  */
 
 $config = [
@@ -32,10 +33,6 @@ $config = [
         ],
     ],
 ];
-
-if (is_file('./phinx.custom.php')) {
-    $config = array_merge($config, require './phinx.custom.php');
-}
 
 // get the environment name that was selected using --env|-e switch
 $envName = $config['environments']['default_database'] ?? 'prod';
@@ -90,6 +87,10 @@ if (isset($envConfig['db.options']) && is_array($envConfig['db.options'])) {
         $config['environments'][$envName],
         $envDbConfig
     );
+}
+
+if (is_file('./phinx.custom.php')) {
+    $config = array_merge($config, require './phinx.custom.php');
 }
 
 return $config;
