@@ -55,32 +55,21 @@ if (isset($envConfig['db.options']) && is_array($envConfig['db.options'])) {
     $envDbConfig = array();
 
     $envDbConfig['adapter'] = str_replace('pdo_', '', $envConfig['db.options']['driver']);
-    if (array_key_exists('host', $dbOptions)) {
-        $envDbConfig['host'] = $dbOptions['host'];
-    }
 
-    if (array_key_exists('dbname', $dbOptions)) {
-        $envDbConfig['name'] = $dbOptions['dbname'];
-    }
+    $mapping = array(
+        'host' => 'host',
+        'dbname' => 'name',
+        'user' => 'user',
+        'password' => 'pass',
+        'port' => 'port',
+        'charset' => 'charset',
+        'prefix' => 'table_prefix'
+    );
 
-    if (array_key_exists('user', $dbOptions)) {
-        $envDbConfig['user'] = $dbOptions['user'];
-    }
-
-    if (array_key_exists('password', $dbOptions)) {
-        $envDbConfig['pass'] = $dbOptions['password'];
-    }
-
-    if (array_key_exists('port', $dbOptions)) {
-        $envDbConfig['port'] = $dbOptions['port'];
-    }
-
-    if (array_key_exists('charset', $dbOptions)) {
-        $envDbConfig['charset'] = $dbOptions['charset'];
-    }
-
-    if (array_key_exists('prefix', $dbOptions)) {
-        $envDbConfig['table_prefix'] = $dbOptions['prefix'];
+    foreach ($mapping as $dbKey => $phinxKey) {
+        if (array_key_exists($dbKey, $dbOptions)) {
+            $envDbConfig[$phinxKey] = $dbOptions[$dbKey];
+        }
     }
 
     $config['environments'][$envName] = array_merge(
