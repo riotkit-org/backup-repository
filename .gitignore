@@ -1,14 +1,16 @@
-.idea
-/vendor/
 /web/assets/
 /config/prod.custom.php
 /config/dev.custom.php
 /config/test.custom.php
 /config/DEPLOYMENT_FTP
-/.idea/
 /pimple.json
 /web/storage/*
 /var/version-number
 data/*.sqlite3
 phploy.ini
 !/web/storage/.gitkeep
+
+## https://github.com/github/gitignore/blob/master/Composer.gitignore
+
+composer.phar
+/vendor/
