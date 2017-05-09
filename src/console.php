@@ -16,7 +16,7 @@ use Symfony\Component\Console\Input\InputOption;
  * @var \Silex\Application $app
  */
 
-$console = new Application('Wolnościowiec Image Repository', 'n/a');
+$console = new Application('Wolnościowiec File Repository', 'n/a');
 $console->getDefinition()->addOption(new InputOption('--env', '-e', InputOption::VALUE_REQUIRED, 'The Environment name.', 'dev'));
 
 foreach (scandir(__DIR__ . '/Commands') as $fileName) {
