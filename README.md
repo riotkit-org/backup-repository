@@ -23,7 +23,7 @@ where the human and it's needs is on first place, not the capital and profit.
 
 ![Anarchist syndicalism](docs/anarchosyndicalism.png)
 
-Free to everyone, with restrictions for commercial usage.
+Free to everyone, shared on the GNU Lesser General Public License Version 3
 Built using recent technologies. RESTful, scalable, automated with tests, lightweight and cheap to host.
 
 ![Silex](docs/silex-logo.png) ![Doctrine 2](docs/doctrine2-logo.png) ![Twig](docs/twig-logo.png)
