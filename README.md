@@ -5,6 +5,8 @@ Wolnościowiec File Repository
 [![Code Climate](https://codeclimate.com/github/Wolnosciowiec/image-repository/badges/gpa.svg)](https://codeclimate.com/github/Wolnosciowiec/image-repository)
 [![Issue Count](https://codeclimate.com/github/Wolnosciowiec/image-repository/badges/issue_count.svg)](https://codeclimate.com/github/Wolnosciowiec/image-repository)
 [![Heroku](https://heroku-badge.herokuapp.com/?app=image-repository-test&root=?_token=api-key-here-for-external-remote-control)](https://image-repository-test.herokuapp.com/?_token=api-key-here-for-external-remote-control)
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/Wolnosciowiec/file-repository)
+
 
 Handles files as a node and exposes uploaded files
 to end users. Could be used as a cheap cluster of storage
