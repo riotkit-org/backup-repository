@@ -1,6 +1,7 @@
 {
     "name": "file-repository",
     "description": "File storage service, built for ultra-low budget shared hostings with no footprint on performance",
+    "logo": "https://avatars0.githubusercontent.com/u/22785395",
     "keywords": [
         "file-repository",
         "file repository",
@@ -18,5 +19,49 @@
         {
             "url": "heroku/php"
         }
-    ]
+    ],
+
+    "env": {
+        "WFR_API_KEY": {
+            "description": "Secret API authorization token that needs to be passed in the URL",
+            "required": true,
+            "generator": "secret"
+        },
+
+        "WFR_TEMP_TOKEN_TIME": {
+            "description": "Application allows generating temporary tokens for given actions to users eg. to show user an upload form and to allow to upload a file",
+            "value": "+30 minutes",
+            "required": false
+        },
+
+        "WFR_DOWNLOADER_FILE_SIZE_LIMIT": {
+            "description": "How much the external resource size can be. It's important when importing eg. an image from external server giving an URL address",
+            "value": "1073741824",
+            "required": false
+        },
+
+        "WFR_DOWNLOADER_MIMES": {
+            "description": "List of allowed mime types when importing from external HTTP server via URL address",
+            "value": "[\"image/jpeg\", \"image/png\"]",
+            "required": false
+        },
+
+        "WFR_STORAGE_PATH": {
+            "description": "Path where to store the files. In simple usage of service (without external storage etc.) it's better to do not change this value.",
+            "value": "",
+            "required": false
+        },
+
+        "WFR_STORAGE_MAX_FILE_SIZE": {
+            "description": "How much the uploaded file size can be",
+            "value": "1073741824",
+            "required": false
+        },
+
+        "WFR_STORAGE_MIMES": {
+            "description": "Allowed file types for upload (could be overwritten when creating a user token)",
+            "value": "[\"image/jpeg\", \"image/png\"]",
+            "required": false
+        }
+    }
 }
