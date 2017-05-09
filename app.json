@@ -1,0 +1,22 @@
+{
+    "name": "file-repository",
+    "description": "File storage service, built for ultra-low budget shared hostings with no footprint on performance",
+    "keywords": [
+        "file-repository",
+        "file repository",
+        "storage",
+        "files",
+        "sharing",
+        "cdn"
+    ],
+    "website": "https://github.com/Wolnosciowiec/file-repository",
+    "repository": "https://github.com/Wolnosciowiec/file-repository",
+    "buildpacks": [
+        {
+            "url": "heroku/nodejs"
+        },
+        {
+            "url": "heroku/php"
+        }
+    ]
+}
