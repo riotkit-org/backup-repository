@@ -21,12 +21,12 @@ Free software
 Created for an anarchist portal, with aim to propagate the freedom and grass-roots social movements
 where the human and it's needs is on first place, not the capital and profit.
 
-![Anarchist syndicalism](docs/anarchosyndicalism.png)
+![Anarchist syndicalism](docs/images/anarchosyndicalism.png)
 
 Free to everyone, shared on the GNU Lesser General Public License Version 3
 Built using recent technologies. RESTful, scalable, automated with tests, lightweight and cheap to host.
 
-![Silex](docs/silex-logo.png) ![Doctrine 2](docs/doctrine2-logo.png) ![Twig](docs/twig-logo.png)
+![Silex](docs/images/silex-logo.png) ![Doctrine 2](docs/images/doctrine2-logo.png) ![Twig](docs/images/twig-logo.png)
 
 Requirements for web hosting
 ============================
