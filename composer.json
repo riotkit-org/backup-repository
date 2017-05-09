@@ -50,7 +50,7 @@
             "bash ./bin/migrations.sh migrate -e dev",
             "bash ./bin/migrations.sh migrate -e test",
             "bash ./bin/generate-version-number.sh",
-            "bower install"
+            "./bin/bower.sh"
         ],
         "post-update-cmd": [
             "composer dump-autoload -o",
