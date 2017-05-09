@@ -4,8 +4,8 @@ class Tags extends BaseMigration
 {
     public function change()
     {
-        $table = $this->table($this->createTableName('tags'), [
-            'id' => false,
+        $table = $this->table('tags', [
+            'id'          => false,
             'primary_key' => ['id'],
         ]);
         $table->addColumn('id', 'string', [
@@ -20,8 +20,8 @@ class Tags extends BaseMigration
         $table->create();
 
 
-        $middleTable = $this->table($this->createTableName('file_tags'), [
-            'id' => false,
+        $middleTable = $this->table('file_tags', [
+            'id'          => false,
             'primary_key' => ['file_id', 'tag_id'],
         ]);
         $middleTable->addColumn('file_id', 'string', [

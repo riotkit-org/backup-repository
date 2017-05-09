@@ -7,7 +7,7 @@ class Tokens extends BaseMigration
 {
     public function up()
     {
-        $table = $this->table($this->createTableName('tokens'), ['id' => false]);
+        $table = $this->table('tokens', ['id' => false]);
 
         $table->addColumn('id', 'string', [
             'length' => 36,
@@ -27,7 +27,7 @@ class Tokens extends BaseMigration
 
     public function down()
     {
-        $table = $this->table($this->createTableName('tokens'));
+        $table = $this->table('tokens');
         $table->drop();
     }
 }

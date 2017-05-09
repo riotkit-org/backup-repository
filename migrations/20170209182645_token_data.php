@@ -4,7 +4,7 @@ class TokenData extends BaseMigration
 {
     public function change()
     {
-        $table = $this->table($this->createTableName('tokens'));
+        $table = $this->table('tokens');
         $table->addColumn('data', 'text');
         $table->update();
     }

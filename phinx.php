@@ -1,12 +1,12 @@
 <?php
 
 require_once __DIR__ . '/migrations/BaseMigration.php';
-require_once __DIR__ . '/src/app.php';
 
 /**
  * Default migrations configuration
  * -------------------------------
- *   Create a "phinx.custom.php" to override those values
+ *   Database configuration is imported automatically from your environements files.
+ *   If you need to customize other things, create a "phinx.custom.php" that return an array
  */
 
 $config = [
@@ -34,10 +34,6 @@ $config = [
     ],
 ];
 
-if (is_file('./phinx.custom.php')) {
-    $config = array_merge($config, require './phinx.custom.php');
-}
-
 // get the environment name that was selected using --env|-e switch
 $envName = $config['environments']['default_database'] ?? 'prod';
 
@@ -51,6 +47,39 @@ foreach (['-e', '--environment'] as $switchName) {
 }
 
 define('ENV', $envName);
-$GLOBALS['app'] = require_once __DIR__ . '/config/' . ENV . '.php';
+$envConfig = require_once __DIR__ . '/config/' . ENV . '.php';
+
+
+if (isset($envConfig['db.options']) && is_array($envConfig['db.options'])) {
+    $dbOptions = $envConfig['db.options'];
+    $envDbConfig = array();
+
+    $envDbConfig['adapter'] = str_replace('pdo_', '', $envConfig['db.options']['driver']);
+
+    $mapping = array(
+        'host' => 'host',
+        'dbname' => 'name',
+        'user' => 'user',
+        'password' => 'pass',
+        'port' => 'port',
+        'charset' => 'charset',
+        'prefix' => 'table_prefix'
+    );
+
+    foreach ($mapping as $dbKey => $phinxKey) {
+        if (array_key_exists($dbKey, $dbOptions)) {
+            $envDbConfig[$phinxKey] = $dbOptions[$dbKey];
+        }
+    }
+
+    $config['environments'][$envName] = array_merge(
+        $config['environments'][$envName],
+        $envDbConfig
+    );
+}
+
+if (is_file('./phinx.custom.php')) {
+    $config = array_merge($config, require './phinx.custom.php');
+}
 
 return $config;

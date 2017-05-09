@@ -25,7 +25,7 @@ class RegistryTable extends BaseMigration
      */
     public function change()
     {
-        $table = $this->table($this->createTableName('file_registry'));
+        $table = $this->table('file_registry');
         $table->addColumn('fileName', 'string', [
             'length' => 64,
             'null'   => false,
