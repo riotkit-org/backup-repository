@@ -14,7 +14,7 @@ function getConfigurationValue(string $name, $default, $allowEmptyString = false
     } elseif ($value == 'null') {
         $value = null;
 
-    } elseif ($isJson === true) {
+    } elseif (is_string($value) && $isJson === true) {
         $value = json_decode($value, true);
     }
 
