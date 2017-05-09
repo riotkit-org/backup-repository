@@ -20,7 +20,7 @@ class AddByUrlControllerTest extends WolnosciowiecTestCase
             '/repository/image/add-by-url?_token=' . $this->getAdminToken(),
             [], [], [],
             json_encode([
-                'fileUrl' => 'https://raw.githubusercontent.com/Wolnosciowiec/image-repository/master/docs/anarchosyndicalism.png',
+                'fileUrl' => 'https://raw.githubusercontent.com/Wolnosciowiec/image-repository/master/docs/images/anarchosyndicalism.png',
             ])
         );
 

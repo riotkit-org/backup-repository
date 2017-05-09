@@ -60,7 +60,7 @@ class ImageUploadFormControllerTest extends WolnosciowiecTestCase
     private function getExamplePayload()
     {
         return [
-            'content'  => 'data:image/png;base64,' . base64_encode(file_get_contents(__DIR__ . '/../../../../docs/anarchosyndicalism.png')),
+            'content'  => 'data:image/png;base64,' . base64_encode(file_get_contents(__DIR__ . '/../../../../docs/images/anarchosyndicalism.png')),
             'fileName' => 'anarchosyndicalism.png',
             'mimeType' => 'image/png',
         ];
