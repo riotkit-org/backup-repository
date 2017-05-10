@@ -4,7 +4,7 @@
   "authors": [
     "Black and Red <wesoly.krzysztofa@gmail.com>"
   ],
-  "description": "Lightweight file storage with API and user forms",
+  "description": "File storage service, built for ultra-low budget shared hostings with no footprint on performance",
   "main": "",
   "keywords": [
     "php"

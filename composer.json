@@ -1,6 +1,6 @@
 {
     "name": "wolnosciowiec/wolnosciowiec-file-repository",
-    "description": "File repository, originally created for wolnosciowiec.net",
+    "description": "File storage service, built for ultra-low budget shared hostings with no footprint on performance",
     "license": "LGPLv3",
     "type": "project",
     "require": {
@@ -50,7 +50,7 @@
             "bash ./bin/migrations.sh migrate -e dev",
             "bash ./bin/migrations.sh migrate -e test",
             "bash ./bin/generate-version-number.sh",
-            "bower install"
+            "./bin/bower.sh"
         ],
         "post-update-cmd": [
             "composer dump-autoload -o",

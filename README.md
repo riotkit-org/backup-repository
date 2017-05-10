@@ -5,6 +5,8 @@ Wolnościowiec File Repository
 [![Code Climate](https://codeclimate.com/github/Wolnosciowiec/image-repository/badges/gpa.svg)](https://codeclimate.com/github/Wolnosciowiec/image-repository)
 [![Issue Count](https://codeclimate.com/github/Wolnosciowiec/image-repository/badges/issue_count.svg)](https://codeclimate.com/github/Wolnosciowiec/image-repository)
 [![Heroku](https://heroku-badge.herokuapp.com/?app=image-repository-test&root=?_token=api-key-here-for-external-remote-control)](https://image-repository-test.herokuapp.com/?_token=api-key-here-for-external-remote-control)
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/Wolnosciowiec/file-repository)
+
 
 Handles files as a node and exposes uploaded files
 to end users. Could be used as a cheap cluster of storage
@@ -21,12 +23,12 @@ Free software
 Created for an anarchist portal, with aim to propagate the freedom and grass-roots social movements
 where the human and it's needs is on first place, not the capital and profit.
 
-![Anarchist syndicalism](docs/anarchosyndicalism.png)
+![Anarchist syndicalism](docs/images/anarchosyndicalism.png)
 
-Free to everyone, with restrictions for commercial usage.
+Free to everyone, shared on the GNU Lesser General Public License Version 3
 Built using recent technologies. RESTful, scalable, automated with tests, lightweight and cheap to host.
 
-![Silex](docs/silex-logo.png) ![Doctrine 2](docs/doctrine2-logo.png) ![Twig](docs/twig-logo.png)
+![Silex](docs/images/silex-logo.png) ![Doctrine 2](docs/images/doctrine2-logo.png) ![Twig](docs/images/twig-logo.png)
 
 Requirements for web hosting
 ============================
