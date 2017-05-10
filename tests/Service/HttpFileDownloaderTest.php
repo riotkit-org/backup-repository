@@ -27,7 +27,7 @@ class HttpFileDownloaderTest extends WolnosciowiecTestCase
             ],
 
             'Image' => [
-                'https://github.com/Wolnosciowiec/image-repository/raw/master/docs/anarchosyndicalism.png',
+                'https://github.com/Wolnosciowiec/image-repository/raw/master/docs/images/anarchosyndicalism.png',
                 ['image/png'],
                 1024 * 1024 * 1024,
                 sys_get_temp_dir() . '/anarchosyndicalism.png',

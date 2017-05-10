@@ -13,25 +13,31 @@
  * $app['api.key'] = 'XxX'; return $app;
  */
 
-$app['api.key'] = 'api-key-here-for-external-remote-control';
-$app['token.expiration.time'] = '+30 minutes';
+require_once __DIR__ . '/base.php';
 
-$app['downloader.size_limit'] = (1024 * 1024 * 1024); // megabyte
-$app['downloader.mimes'] = [
+$app['api.key'] = getConfigurationValue('WFR_API_KEY', 'api-key-here-for-external-remote-control', true, false);
+$app['token.expiration.time'] = getConfigurationValue('WFR_TEMP_TOKEN_TIME', '+30 minutes', true, false);
+
+
+// resources downloaded from external HTTP files
+$app['downloader.size_limit'] = (int)getConfigurationValue('WFR_DOWNLOADER_FILE_SIZE_LIMIT', (1024 * 1024 * 1024), true, false); // megabyte
+$app['downloader.mimes'] = getConfigurationValue('WFR_DOWNLOADER_MIMES', [
     'image/jpeg',
     'image/png',
     'image/gif',
     'image/jpg',
-];
+], false, true);
 
-// storage settings
-$app['storage.path'] = realpath(__DIR__ . '/../web/storage');
-$app['storage.filesize'] = 1024 * 1024 * 300; // 300 kb limit
-$app['storage.allowed_types'] = [
+
+// storage settings: uploaded files
+$app['storage.path'] = getConfigurationValue('WFR_STORAGE_PATH', realpath(__DIR__ . '/../web/storage'), true, false);
+$app['storage.filesize'] = (int)getConfigurationValue('WFR_STORAGE_MAX_FILE_SIZE', 1024 * 1024 * 300, false, false); // 300 kb limit
+$app['storage.allowed_types'] = getConfigurationValue('WFR_STORAGE_MIMES', [
     'jpg' => 'image/jpeg',
     'png' => 'image/png',
     'gif' => 'image/gif',
-];
+], false, true);
+
 
 $app['db.options'] = [
     'driver' => 'pdo_sqlite',
