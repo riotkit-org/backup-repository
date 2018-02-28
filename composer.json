@@ -18,7 +18,7 @@
         "symfony/finder": "~2.8|3.0.*",
         "symfony/form": "~2.8|3.0.*",
         "symfony/monolog-bridge": "~2.8|3.0.*",
-        "symfony/process": "~2.8|3.0.*",
+        "symfony/process": "^4.0.4",
         "symfony/serializer": "~2.8|3.0.*",
         "symfony/security": "~2.8|3.0.*",
         "guzzlehttp/guzzle": "^6.2",

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "57226a613f2a81f5411858b82784d39e",
+    "content-hash": "7a6a37c41fcdd2d1d27aa1c8838500e3",
     "packages": [
         {
             "name": "dflydev/doctrine-orm-service-provider",
@@ -1743,12 +1743,12 @@
             "version": "v0.8.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/robmorgan/phinx.git",
+                "url": "https://github.com/cakephp/phinx.git",
                 "reference": "15e43d10dd99ac818c8d65735c50191bcbeafdbc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/robmorgan/phinx/zipball/15e43d10dd99ac818c8d65735c50191bcbeafdbc",
+                "url": "https://api.github.com/repos/cakephp/phinx/zipball/15e43d10dd99ac818c8d65735c50191bcbeafdbc",
                 "reference": "15e43d10dd99ac818c8d65735c50191bcbeafdbc",
                 "shasum": ""
             },
@@ -3797,25 +3797,25 @@
         },
         {
             "name": "symfony/process",
-            "version": "v3.0.9",
+            "version": "v4.0.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/process.git",
-                "reference": "768debc5996f599c4372b322d9061dba2a4bf505"
+                "reference": "e1712002d81de6f39f854bc5bbd9e9f4bb6345b4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/process/zipball/768debc5996f599c4372b322d9061dba2a4bf505",
-                "reference": "768debc5996f599c4372b322d9061dba2a4bf505",
+                "url": "https://api.github.com/repos/symfony/process/zipball/e1712002d81de6f39f854bc5bbd9e9f4bb6345b4",
+                "reference": "e1712002d81de6f39f854bc5bbd9e9f4bb6345b4",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.5.9"
+                "php": "^7.1.3"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "3.0-dev"
+                    "dev-master": "4.0-dev"
                 }
             },
             "autoload": {
@@ -3842,7 +3842,7 @@
             ],
             "description": "Symfony Process Component",
             "homepage": "https://symfony.com",
-            "time": "2016-07-28T11:13:34+00:00"
+            "time": "2018-01-29T09:06:29+00:00"
         },
         {
             "name": "symfony/property-access",
@@ -4596,7 +4596,7 @@
                 "LGPLv3"
             ],
             "description": "Deploys the application from web instead of shell, which fits for smaller applications hosted on shared hostings",
-            "time": "2017-02-13 05:24:23"
+            "time": "2017-02-13T05:24:23+00:00"
         },
         {
             "name": "zendframework/zend-diactoros",
