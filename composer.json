@@ -15,7 +15,7 @@
         "symfony/console": "~2.8|3.0.*",
         "symfony/css-selector": "~2.8|3.0.*",
         "symfony/debug": "~2.8|3.0.*",
-        "symfony/finder": "~2.8|3.0.*",
+        "symfony/finder": "^4.0.4",
         "symfony/form": "~2.8|3.0.*",
         "symfony/monolog-bridge": "~2.8|3.0.*",
         "symfony/process": "~2.8|3.0.*",
