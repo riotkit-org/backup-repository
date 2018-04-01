@@ -19,7 +19,7 @@
         "symfony/form": "~2.8|3.0.*",
         "symfony/monolog-bridge": "~2.8|3.0.*",
         "symfony/process": "~2.8|3.0.*",
-        "symfony/serializer": "~2.8|3.0.*",
+        "symfony/serializer": "^3.2.14",
         "symfony/security": "~2.8|3.0.*",
         "guzzlehttp/guzzle": "^6.2",
         "sorien/silex-pimple-dumper": "~2.0",
