@@ -1743,12 +1743,12 @@
             "version": "v0.8.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/robmorgan/phinx.git",
+                "url": "https://github.com/cakephp/phinx.git",
                 "reference": "15e43d10dd99ac818c8d65735c50191bcbeafdbc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/robmorgan/phinx/zipball/15e43d10dd99ac818c8d65735c50191bcbeafdbc",
+                "url": "https://api.github.com/repos/cakephp/phinx/zipball/15e43d10dd99ac818c8d65735c50191bcbeafdbc",
                 "reference": "15e43d10dd99ac818c8d65735c50191bcbeafdbc",
                 "shasum": ""
             },
@@ -2404,23 +2404,23 @@
         },
         {
             "name": "silex/web-profiler",
-            "version": "v2.0.5",
-            "target-dir": "Silex/Provider",
+            "version": "v2.0.11",
             "source": {
                 "type": "git",
                 "url": "https://github.com/silexphp/Silex-WebProfiler.git",
-                "reference": "b44c4c8e70a43eb5e98372cffbeb6de3770c5805"
+                "reference": "57488d36961f89f8b3118125c2ec86bc841739c9"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/silexphp/Silex-WebProfiler/zipball/b44c4c8e70a43eb5e98372cffbeb6de3770c5805",
-                "reference": "b44c4c8e70a43eb5e98372cffbeb6de3770c5805",
+                "url": "https://api.github.com/repos/silexphp/Silex-WebProfiler/zipball/57488d36961f89f8b3118125c2ec86bc841739c9",
+                "reference": "57488d36961f89f8b3118125c2ec86bc841739c9",
                 "shasum": ""
             },
             "require": {
                 "silex/silex": "^2.0",
                 "symfony/stopwatch": "^2.8|^3.0",
                 "symfony/twig-bridge": "^2.8|^3.0",
+                "symfony/twig-bundle": "^2.8|^3.0",
                 "symfony/web-profiler-bundle": "^2.8|^3.0"
             },
             "conflict": {
@@ -2430,6 +2430,7 @@
                 "symfony/browser-kit": "^2.8|^3.0",
                 "symfony/css-selector": "^2.8|^3.0",
                 "symfony/debug-bundle": "^2.8|^3.0",
+                "symfony/phpunit-bridge": "~3.2",
                 "symfony/security": "^2.8|^3.0",
                 "symfony/security-bundle": "^2.8|^3.0",
                 "symfony/translation": "^2.8|^3.0"
@@ -2441,7 +2442,7 @@
                 }
             },
             "autoload": {
-                "psr-0": {
+                "psr-4": {
                     "Silex\\Provider\\": ""
                 }
             },
@@ -2457,7 +2458,7 @@
             ],
             "description": "A WebProfiler for Silex",
             "homepage": "http://silex.sensiolabs.org/",
-            "time": "2016-11-21T23:51:53+00:00"
+            "time": "2018-04-04T11:41:51+00:00"
         },
         {
             "name": "sorien/silex-pimple-dumper",
@@ -4259,6 +4260,72 @@
             "time": "2017-02-16T22:46:52+00:00"
         },
         {
+            "name": "symfony/twig-bundle",
+            "version": "v3.2.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/twig-bundle.git",
+                "reference": "6d79d8af97c6d77a87657c6d00d299b0de073c0c"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/twig-bundle/zipball/6d79d8af97c6d77a87657c6d00d299b0de073c0c",
+                "reference": "6d79d8af97c6d77a87657c6d00d299b0de073c0c",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.5.9",
+                "symfony/http-foundation": "~2.8|~3.0",
+                "symfony/http-kernel": "~2.8|~3.0",
+                "symfony/twig-bridge": "^3.2.1",
+                "twig/twig": "~1.28|~2.0"
+            },
+            "require-dev": {
+                "doctrine/annotations": "~1.0",
+                "symfony/asset": "~2.8|~3.0",
+                "symfony/config": "~3.2",
+                "symfony/dependency-injection": "~2.8|~3.0",
+                "symfony/expression-language": "~2.8|~3.0",
+                "symfony/finder": "~2.8|~3.0",
+                "symfony/framework-bundle": "~3.2",
+                "symfony/routing": "~2.8|~3.0",
+                "symfony/stopwatch": "~2.8|~3.0",
+                "symfony/templating": "~2.8|~3.0",
+                "symfony/yaml": "~2.8|~3.0"
+            },
+            "type": "symfony-bundle",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "3.2-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Symfony\\Bundle\\TwigBundle\\": ""
+                },
+                "exclude-from-classmap": [
+                    "/Tests/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Symfony TwigBundle",
+            "homepage": "https://symfony.com",
+            "time": "2016-12-13T09:39:43+00:00"
+        },
+        {
             "name": "symfony/var-dumper",
             "version": "v3.2.4",
             "source": {
@@ -4596,7 +4663,7 @@
                 "LGPLv3"
             ],
             "description": "Deploys the application from web instead of shell, which fits for smaller applications hosted on shared hostings",
-            "time": "2017-02-13 05:24:23"
+            "time": "2017-02-13T05:24:23+00:00"
         },
         {
             "name": "zendframework/zend-diactoros",
