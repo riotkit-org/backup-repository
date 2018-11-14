@@ -1,0 +1,20 @@
+storage.upload_by_url:
+    path: /repository/{type}/add-by-url
+    controller: 'App\Controller\Storage\UploadByUrlController::uploadByUrlAction'
+    methods: ['POST']
+    defaults:
+        _secured: true
+        type: image
+
+storage.upload_by_post:
+    path: /repository/{type}/upload
+    controller: 'App\Controller\Storage\UploadByUrlController::uploadByUrlAction'
+    methods: ['POST']
+    defaults:
+        _secured: true
+        type: image
+
+storage.get_file:
+    path: /public/download/{filename}
+    controller: 'App\Controller\Storage\ViewFileController::handle'
+    methods: ['GET']

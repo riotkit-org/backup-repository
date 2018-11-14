@@ -1,0 +1,24 @@
+App\Domain\Storage\Entity\Tag:
+    type: entity
+    table: tags
+
+    id:
+        id:
+            type: guid
+            length: 36
+            generator:
+                strategy: UUID
+
+    fields:
+        name:
+            type: string
+            unique: true
+            length: 48
+
+        dateAdded:
+            type: datetime
+
+#    manyToMany:
+#        files:
+#            targetEntity: File
+#            mappedBy: tags
