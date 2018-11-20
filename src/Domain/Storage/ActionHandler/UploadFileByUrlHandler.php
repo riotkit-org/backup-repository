@@ -8,6 +8,7 @@ use App\Domain\Storage\Factory\PublicUrlFactory;
 use App\Domain\Storage\Form\UploadByUrlForm;
 use App\Domain\Storage\Provider\HttpDownloadProvider;
 use App\Domain\Storage\Manager\StorageManager;
+use App\Domain\Storage\Repository\StagingAreaRepository;
 use App\Domain\Storage\ValueObject\Filename;
 use App\Domain\Storage\ValueObject\Stream;
 use App\Domain\Storage\ValueObject\Url;
@@ -27,11 +28,18 @@ class UploadFileByUrlHandler extends AbstractUploadHandler
         FileNameFactory $namingFactory,
         PublicUrlFactory $publicUrlFactory,
         HttpDownloadProvider $provider,
-        SecurityContextFactory $securityFactory
+        SecurityContextFactory $securityFactory,
+        StagingAreaRepository $stagingAreaRepository
     ) {
         $this->provider = $provider;
 
-        parent::__construct($storageManager, $namingFactory, $publicUrlFactory, $securityFactory);
+        parent::__construct(
+            $storageManager,
+            $namingFactory,
+            $publicUrlFactory,
+            $securityFactory,
+            $stagingAreaRepository
+        );
     }
 
     /**

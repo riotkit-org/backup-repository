@@ -36,7 +36,7 @@ class IncomingTokenFactory
             return $this->createTokenFromArray($decoded);
         }
 
-        $persistedToken = $this->repository->findTokenById($decrypted);
+        $persistedToken = $this->repository->findTokenById($decrypted ?: $tokenString);
 
         if (!$persistedToken) {
             throw new AuthenticationException(

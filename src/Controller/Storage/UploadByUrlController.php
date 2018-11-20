@@ -22,7 +22,7 @@ class UploadByUrlController extends BaseController
         $this->handler = $handler;
     }
 
-    public function uploadByUrlAction(Request $request, TokenTransport $tokenTransport): JsonResponse
+    public function handle(Request $request, TokenTransport $tokenTransport): JsonResponse
     {
         $form = new UploadByUrlForm();
         $infrastructureForm = $this->submitFormFromJsonRequest($request, $form, UploadByUrlFormType::class);

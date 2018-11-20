@@ -50,6 +50,11 @@ class Url implements \JsonSerializable
         return $new;
     }
 
+    public function isLocalFileUrl(): bool
+    {
+        return strtolower(parse_url($this->getValue(), PHP_URL_SCHEME)) === 'file';
+    }
+
     private function normalize(string $value)
     {
         return (new Normalizer($value))->normalize();

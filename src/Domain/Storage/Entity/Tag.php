@@ -33,4 +33,9 @@ class Tag
     {
         return strtolower(trim($tag->getName())) === strtolower(trim($this->getName()));
     }
+
+    public function setName(string $name): void
+    {
+        $this->name = $name;
+    }
 }

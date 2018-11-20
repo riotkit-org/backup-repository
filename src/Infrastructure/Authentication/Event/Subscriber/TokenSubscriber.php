@@ -87,6 +87,8 @@ class TokenSubscriber implements EventSubscriberInterface
 
             return;
         }
+
+        $this->tokenStorage->setToken(new TokenTransport($token->getId(), $token));
     }
 
     private function isPublicEndpoint(Request $request): bool

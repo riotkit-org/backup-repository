@@ -14,6 +14,11 @@ class StoredFileFactory
      */
     private $tagRepository;
 
+    public function __construct(TagRepository $tagRepository)
+    {
+        $this->tagRepository = $tagRepository;
+    }
+
     public function createFromForm(UploadForm $form, Filename $filename): StoredFile
     {
         $storedFile = StoredFile::newFromFilename($filename);

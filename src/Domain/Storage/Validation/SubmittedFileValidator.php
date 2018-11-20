@@ -7,7 +7,6 @@ use App\Domain\Storage\Exception\ValidationException;
 use App\Domain\Storage\Factory\FileInfoFactory;
 use App\Domain\Storage\Form\UploadForm;
 use App\Domain\Storage\Security\UploadSecurityContext;
-use App\Domain\Storage\ValueObject\Stream;
 
 class SubmittedFileValidator
 {
@@ -38,7 +37,7 @@ class SubmittedFileValidator
             );
         }
 
-        if ($context->isFileSizeOk($info->getFilesize())) {
+        if (!$context->isFileSizeOk($info->getFilesize())) {
             throw new ValidationException(
                 'The mime type "' . $info->getMime()->getValue() . '" is not allowed to upload',
                 ValidationException::CODE_LENGTH_EXCEEDED

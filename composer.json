@@ -24,7 +24,8 @@
         "symfony/security-bundle": "*",
         "symfony/validator": "*",
         "symfony/yaml": "*",
-        "twistor/flysystem-stream-wrapper": "^1.0"
+        "twistor/flysystem-stream-wrapper": "^1.0",
+        "ext-openssl": "*"
     },
     "require-dev": {
         "symfony/dotenv": "*",

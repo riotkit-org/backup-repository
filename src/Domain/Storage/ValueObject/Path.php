@@ -36,6 +36,10 @@ class Path
 
     public function isFile(): bool
     {
-        return \is_file($this->filename);
+        if (!$this->filename) {
+            return false;
+        }
+
+        return \is_file($this->dir . '/' . $this->filename->getValue());
     }
 }

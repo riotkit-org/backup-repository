@@ -48,3 +48,18 @@ services:
             $factory: '@App\Domain\Authentication\Factory\IncomingTokenFactory'
             $tokenStorage: '@security.token_storage'
             $isDev: '%kernel.debug%'
+
+    App\Domain\Storage\Repository\StagingAreaRepository:
+        class: App\Domain\Storage\Repository\StagingAreaRepository
+        arguments:
+            $tempPath: '/tmp'
+
+    App\Infrastructure\Storage\Manager\DownloadViaGuzzleProvider:
+        class: App\Infrastructure\Storage\Manager\DownloadViaGuzzleProvider
+        arguments:
+            $state: '@App\Domain\Common\Manager\StateManager'
+
+    App\Infrastructure\Storage\Manager\TestHttpDownloadProvider:
+        class: App\Infrastructure\Storage\Manager\TestHttpDownloadProvider
+        arguments:
+            $parentProvider: '@App\Infrastructure\Storage\Manager\DownloadViaGuzzleProvider'

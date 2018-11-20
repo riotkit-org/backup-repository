@@ -87,7 +87,7 @@ class StorageManager
         $existingFromRepository = $this->repository->findByName($name);
         $existsOnDisk = $this->fs->fileExist($name);
         $existsAtAll = $existingFromRepository && $existsOnDisk;
-        $canOverwriteFile = $securityContext->canOverwriteFile($existingFromRepository, $form);
+        $canOverwriteFile = $existingFromRepository ? $securityContext->canOverwriteFile($existingFromRepository, $form) : false;
 
         // early validation. There exists also validation after upload, which checks eg. mime type and size
         $this->validator->validateBeforeUpload($form, $securityContext);

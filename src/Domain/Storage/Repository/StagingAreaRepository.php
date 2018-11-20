@@ -3,6 +3,7 @@
 namespace App\Domain\Storage\Repository;
 
 use App\Domain\Storage\Entity\StagedFile;
+use App\Domain\Storage\ValueObject\Filename;
 use App\Domain\Storage\ValueObject\Path;
 use App\Domain\Storage\ValueObject\Stream;
 
@@ -11,7 +12,7 @@ class StagingAreaRepository
     /**
      * @var StagedFile[]
      */
-    private $files;
+    private $files = [];
 
     /**
      * @var string
@@ -32,7 +33,13 @@ class StagingAreaRepository
         stream_copy_to_stream($stream->attachTo(), $tempHandle);
         fclose($tempHandle);
 
-        $stagedFile = new StagedFile(new Path($filePath));
+        $stagedFile = new StagedFile(
+            new Path(
+                \dirname($filePath),
+                new Filename(\basename($filePath))
+            )
+        );
+
         $this->files[] = $stagedFile;
 
         return $stagedFile;

@@ -5,7 +5,8 @@ namespace App\Controller\Storage;
 use App\Controller\BaseController;
 use App\Domain\Storage\ActionHandler\UploadFileByPostHandler;
 use App\Domain\Storage\Form\UploadByPostForm;
-use App\Infrastructure\Storage\Form\UploadFormType;
+use App\Infrastructure\Authentication\Token\TokenTransport;
+use App\Infrastructure\Storage\Form\UploadByPostFormType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
@@ -21,10 +22,10 @@ class UploadByPostController extends BaseController
         $this->handler = $handler;
     }
 
-    public function handle(Request $request): JsonResponse
+    public function handle(Request $request, TokenTransport $tokenTransport): JsonResponse
     {
         $form = new UploadByPostForm();
-        $infrastructureForm = $this->submitFormFromRequestQuery($request, $form, UploadFormType::class);
+        $infrastructureForm = $this->submitFormFromRequestQuery($request, $form, UploadByPostFormType::class);
 
         if (!$infrastructureForm->isValid()) {
             return $this->createValidationErrorResponse($infrastructureForm);
@@ -33,7 +34,7 @@ class UploadByPostController extends BaseController
         $appResponse = $this->handler->handle(
             $form,
             $this->createBaseUrl($request),
-            $token
+            $tokenTransport->getToken()
         );
 
         return new JsonResponse(

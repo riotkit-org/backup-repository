@@ -21,6 +21,8 @@ class SecurityContextFactory
 
     public function createFromToken(Token $token): UploadSecurityContext
     {
+        dump($token);
+
         return new UploadSecurityContext(
             $this->createListOfMimeTypes($token),
             $token->getTags(),
@@ -28,7 +30,8 @@ class SecurityContextFactory
                 || $token->hasRole(Roles::ROLE_UPLOAD_DOCS)
                 || $token->hasRole(Roles::ROLE_UPLOAD_IMAGES)
                 || $token->hasRole(Roles::ROLE_UPLOAD_BACKUP),
-            $token->hasRole(Roles::ROLE_ALLOW_OVERWRITE_FILES)
+            $token->hasRole(Roles::ROLE_ALLOW_OVERWRITE_FILES),
+            $token->getMaxAllowedFileSize()
         );
     }
 

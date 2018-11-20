@@ -14,11 +14,17 @@ class TokenDetailsForm
      */
     public $allowedMimeTypes = [];
 
+    /**
+     * @var int
+     */
+    public $maxAllowedFileSize = 0;
+
     public function toArray(): array
     {
         return [
-            'tags'             => $this->tags,
-            'allowedMimeTypes' => $this->allowedMimeTypes
+            'tags'               => $this->tags,
+            'allowedMimeTypes'   => $this->allowedMimeTypes,
+            'maxAllowedFileSize' => $this->maxAllowedFileSize
         ];
     }
 }

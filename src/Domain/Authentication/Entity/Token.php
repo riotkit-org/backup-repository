@@ -126,6 +126,11 @@ class Token
      */
     public function getAllowedMimeTypes(): array
     {
-        return isset($this->data['mime_types']) && \is_array($this->data['mime_types']) ? $this->data['mime_types'] : [];
+        return isset($this->data['allowedMimeTypes']) && \is_array($this->data['allowedMimeTypes']) ? $this->data['allowedMimeTypes'] : [];
+    }
+
+    public function getMaxAllowedFileSize(): int
+    {
+        return isset($this->data['maxAllowedFileSize']) && \is_int($this->data['maxAllowedFileSize']) ? $this->data['maxAllowedFileSize'] : 0;
     }
 }

@@ -17,8 +17,4 @@ App\Domain\Storage\Entity\Tag:
 
         dateAdded:
             type: datetime
-
-#    manyToMany:
-#        files:
-#            targetEntity: File
-#            mappedBy: tags
+            column: dateAdded

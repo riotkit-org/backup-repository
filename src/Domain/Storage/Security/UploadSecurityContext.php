@@ -29,12 +29,23 @@ class UploadSecurityContext
      */
     private $allowedToOverwrite;
 
-    public function __construct(array $allowedMimes, array $allowedTags, bool $isAllowedToUploadAnything, bool $allowedToOverwrite)
-    {
+    /**
+     * @var int
+     */
+    private $maxAllowedFileSize;
+
+    public function __construct(
+        array $allowedMimes,
+        array $allowedTags,
+        bool $isAllowedToUploadAnything,
+        bool $allowedToOverwrite,
+        int $maxAllowedFileSize
+    ) {
         $this->allowedMimes = $allowedMimes;
         $this->allowedTags = $allowedTags;
         $this->isAllowedToUpload = $isAllowedToUploadAnything;
         $this->allowedToOverwrite = $allowedToOverwrite;
+        $this->maxAllowedFileSize = $maxAllowedFileSize;
     }
 
     public function isMimeAllowed(Mime $mime): bool
@@ -85,6 +96,6 @@ class UploadSecurityContext
 
     public function getMaximumFileSize(): int
     {
-        return 0;
+        return $this->maxAllowedFileSize;
     }
 }

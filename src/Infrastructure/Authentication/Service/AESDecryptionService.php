@@ -23,6 +23,11 @@ class AESDecryptionService implements TokenDecryptionService
             return '';
         }
 
-        return CryptoJSAES::decrypt($input, $this->secret);
+        try {
+            return CryptoJSAES::decrypt($input, $this->secret);
+
+        } catch (\InvalidArgumentException $exception) {
+            return '';
+        }
     }
 }

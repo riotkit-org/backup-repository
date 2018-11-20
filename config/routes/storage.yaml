@@ -1,6 +1,6 @@
 storage.upload_by_url:
     path: /repository/{type}/add-by-url
-    controller: 'App\Controller\Storage\UploadByUrlController::uploadByUrlAction'
+    controller: 'App\Controller\Storage\UploadByUrlController::handle'
     methods: ['POST']
     defaults:
         _secured: true
@@ -8,7 +8,7 @@ storage.upload_by_url:
 
 storage.upload_by_post:
     path: /repository/{type}/upload
-    controller: 'App\Controller\Storage\UploadByUrlController::uploadByUrlAction'
+    controller: 'App\Controller\Storage\UploadByPostController::handle'
     methods: ['POST']
     defaults:
         _secured: true

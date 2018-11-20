@@ -5,6 +5,7 @@ namespace App\Infrastructure\Authentication\Form;
 use App\Domain\Authentication\Form\TokenDetailsForm;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
+use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -20,7 +21,8 @@ class TokenDetailsFormType extends AbstractType
             ->add('allowedMimeTypes', CollectionType::class, [
                 'allow_add'    => true,
                 'allow_delete' => true
-            ]);
+            ])
+            ->add('maxAllowedFileSize', IntegerType::class);
     }
 
     public function configureOptions(OptionsResolver $resolver)

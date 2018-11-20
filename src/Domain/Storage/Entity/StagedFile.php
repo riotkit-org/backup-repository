@@ -29,7 +29,7 @@ class StagedFile
     public function __construct(Path $path)
     {
         $this->path = $path;
-        $this->id = hash('sha256', $path);
+        $this->id = hash('sha256', $path->getValue());
     }
 
     public function getFilePath(): Path

@@ -23,6 +23,8 @@ class FileDoctrineRepository extends ServiceEntityRepository implements FileRepo
      * @param Filename $filename
      *
      * @return StoredFile|null
+     *
+     * @throws \Doctrine\ORM\NonUniqueResultException
      */
     public function findByName(Filename $filename): ?StoredFile
     {
@@ -43,6 +45,8 @@ class FileDoctrineRepository extends ServiceEntityRepository implements FileRepo
      * @param Checksum $checksum
      *
      * @return StoredFile|null
+     *
+     * @throws \Doctrine\ORM\NonUniqueResultException
      */
     public function findByHash(Checksum $checksum): ?StoredFile
     {
@@ -59,6 +63,8 @@ class FileDoctrineRepository extends ServiceEntityRepository implements FileRepo
 
     /**
      * @param StoredFile $file
+     *
+     * @throws \Doctrine\ORM\ORMException
      */
     public function persist(StoredFile $file): void
     {
@@ -67,6 +73,9 @@ class FileDoctrineRepository extends ServiceEntityRepository implements FileRepo
 
     /**
      * @param null|StoredFile|StoredFile[] $files
+     *
+     * @throws \Doctrine\ORM\ORMException
+     * @throws \Doctrine\ORM\OptimisticLockException
      */
     public function flush($files = null): void
     {
