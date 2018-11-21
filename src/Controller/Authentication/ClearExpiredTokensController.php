@@ -4,7 +4,10 @@ namespace App\Controller\Authentication;
 
 use App\Controller\BaseController;
 use App\Domain\Authentication\ActionHandler\ClearExpiredTokensHandler;
+use App\Domain\Authentication\Exception\AuthenticationException;
+use App\Domain\Authentication\Factory\Context\SecurityContextFactory;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 
 class ClearExpiredTokensController extends BaseController
 {
@@ -13,15 +16,30 @@ class ClearExpiredTokensController extends BaseController
      */
     private $handler;
 
-    public function __construct(ClearExpiredTokensHandler $handler)
+    /**
+     * @var SecurityContextFactory
+     */
+    private $authFactory;
+
+    public function __construct(ClearExpiredTokensHandler $handler, SecurityContextFactory $authFactory)
     {
-        $this->handler = $handler;
+        $this->handler     = $handler;
+        $this->authFactory = $authFactory;
     }
 
-    public function clearAction(): JsonResponse
+    /**
+     * @return Response
+     */
+    public function clearAction(): Response
     {
-        return new JsonResponse(
-            $this->handler->handle()
+        return $this->wrap(
+            function () {
+                return new JsonResponse(
+                    $this->handler->handle(
+                        $this->authFactory->createFromToken($this->getLoggedUserToken())
+                    )
+                );
+            }
         );
     }
 }

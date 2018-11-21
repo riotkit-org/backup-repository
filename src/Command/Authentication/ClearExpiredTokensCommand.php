@@ -3,6 +3,7 @@
 namespace App\Command\Authentication;
 
 use App\Domain\Authentication\ActionHandler\ClearExpiredTokensHandler;
+use App\Domain\Authentication\Factory\Context\SecurityContextFactory;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -14,9 +15,15 @@ class ClearExpiredTokensCommand extends Command
      */
     private $handler;
 
-    public function __construct(ClearExpiredTokensHandler $handler)
+    /**
+     * @var SecurityContextFactory
+     */
+    private $authFactory;
+
+    public function __construct(ClearExpiredTokensHandler $handler, SecurityContextFactory $authFactory)
     {
         $this->handler = $handler;
+        $this->authFactory = $authFactory;
 
         parent::__construct();
     }
@@ -29,8 +36,11 @@ class ClearExpiredTokensCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $this->handler->handle(function (string $notification) use ($output) {
-            $output->writeln($notification);
-        });
+        $this->handler->handle(
+            $this->authFactory->createShellContext(),
+            function (string $notification) use ($output) {
+                $output->writeln($notification);
+            }
+        );
     }
 }

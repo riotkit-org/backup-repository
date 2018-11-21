@@ -11,7 +11,14 @@ class SecurityContextFactory
     public function createFromToken(Token $token): AuthenticationManagementContext
     {
         return new AuthenticationManagementContext(
-            $token->hasRole(Roles::ROLE_LOOKUP_TOKENS)
+            $token->hasRole(Roles::ROLE_LOOKUP_TOKENS),
+            $token->hasRole(Roles::ROLE_GENERATE_TOKENS),
+            $token->hasRole(Roles::ROLE_USE_TECHNICAL_ENDPOINTS)
         );
+    }
+
+    public function createShellContext(): AuthenticationManagementContext
+    {
+        return new AuthenticationManagementContext(true, true, true);
     }
 }

@@ -4,11 +4,13 @@ namespace App\Controller\Authentication;
 
 use App\Controller\BaseController;
 use App\Domain\Authentication\ActionHandler\TokenGenerationHandler;
+use App\Domain\Authentication\Factory\Context\SecurityContextFactory;
 use App\Domain\Authentication\Form\AuthForm;
 use App\Infrastructure\Authentication\Form\AuthFormType;
 use Exception;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class GenerateTokenController extends BaseController
 {
@@ -17,9 +19,15 @@ class GenerateTokenController extends BaseController
      */
     private $handler;
 
-    public function __construct(TokenGenerationHandler $handler)
+    /**
+     * @var SecurityContextFactory
+     */
+    private $authFactory;
+
+    public function __construct(TokenGenerationHandler $handler, SecurityContextFactory $authFactory)
     {
         $this->handler = $handler;
+        $this->authFactory = $authFactory;
     }
 
     /**
@@ -29,7 +37,7 @@ class GenerateTokenController extends BaseController
      *
      * @throws Exception
      */
-    public function generateAction(Request $request): JsonResponse
+    public function generateAction(Request $request): Response
     {
         $form = new AuthForm();
         $infrastructureForm = $this->submitFormFromJsonRequest($request, $form, AuthFormType::class);
@@ -38,9 +46,16 @@ class GenerateTokenController extends BaseController
             return $this->createValidationErrorResponse($infrastructureForm);
         }
 
-        return new JsonResponse(
-            $this->handler->handle($form),
-            JsonResponse::HTTP_ACCEPTED
+        return $this->wrap(
+            function () use ($form) {
+                return new JsonResponse(
+                    $this->handler->handle(
+                        $form,
+                        $this->authFactory->createFromToken($this->getLoggedUserToken())
+                    ),
+                    JsonResponse::HTTP_ACCEPTED
+                );
+            }
         );
     }
 }

@@ -44,7 +44,7 @@ class TokenManager
         $this->repository->remove($token);
     }
 
-    public function commitAll(): void
+    public function flushAll(): void
     {
         $this->repository->flush();
     }

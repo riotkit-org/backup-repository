@@ -2,8 +2,10 @@
 
 namespace App\Domain\Authentication\ActionHandler;
 
+use App\Domain\Authentication\Exception\AuthenticationException;
 use App\Domain\Authentication\Manager\TokenManager;
 use App\Domain\Authentication\Repository\TokenRepository;
+use App\Domain\Authentication\Security\Context\AuthenticationManagementContext;
 
 class ClearExpiredTokensHandler
 {
@@ -23,8 +25,18 @@ class ClearExpiredTokensHandler
         $this->repository = $repository;
     }
 
-    public function handle(callable $notifier = null): array
+    /**
+     * @param AuthenticationManagementContext $context
+     * @param callable|null $notifier
+     *
+     * @return array
+     *
+     * @throws AuthenticationException
+     */
+    public function handle(AuthenticationManagementContext $context, callable $notifier = null): array
     {
+        $this->assertHasRights($context);
+
         if (!$notifier) {
             $notifier = function (string $str) { };
         }
@@ -45,11 +57,26 @@ class ClearExpiredTokensHandler
             $this->manager->revokeToken($token);
         }
 
-        $this->manager->commitAll();
+        $this->manager->flushAll();
 
         return [
             'message' => 'Task done, log available.',
             'log'     => $log
         ];
+    }
+
+    /**
+     * @param AuthenticationManagementContext $context
+     *
+     * @throws AuthenticationException
+     */
+    private function assertHasRights(AuthenticationManagementContext $context): void
+    {
+        if (!$context->canUseTechnicalEndpoints()) {
+            throw new AuthenticationException(
+                'Current token does not allow access to technical endpoints',
+                AuthenticationException::CODES['not_authenticated']
+            );
+        }
     }
 }

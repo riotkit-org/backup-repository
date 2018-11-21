@@ -3,6 +3,7 @@
 namespace App\Command\Authentication;
 
 use App\Domain\Authentication\ActionHandler\TokenGenerationHandler;
+use App\Domain\Authentication\Factory\Context\SecurityContextFactory;
 use App\Domain\Authentication\Form\AuthForm;
 use App\Domain\Authentication\Form\TokenDetailsForm;
 use Symfony\Component\Console\Command\Command;
@@ -17,9 +18,15 @@ class GenerateTokenCommand extends Command
      */
     private $handler;
 
-    public function __construct(TokenGenerationHandler $handler)
+    /**
+     * @var SecurityContextFactory
+     */
+    private $authFactory;
+
+    public function __construct(TokenGenerationHandler $handler, SecurityContextFactory $authFactory)
     {
-        $this->handler = $handler;
+        $this->handler     = $handler;
+        $this->authFactory = $authFactory;
 
         parent::__construct();
     }
@@ -31,16 +38,26 @@ class GenerateTokenCommand extends Command
             ->addOption('roles', null, InputOption::VALUE_REQUIRED)
             ->addOption('tags', null, InputOption::VALUE_REQUIRED)
             ->addOption('mimes', null, InputOption::VALUE_REQUIRED)
+            ->addOption('max-file-size', null, InputOption::VALUE_REQUIRED)
             ->setHelp('Allows to generate a token you can use later to authenticate in application for a specific thing');
     }
 
+    /**
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     *
+     * @return int|void|null
+     *
+     * @throws \Exception
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $form = new AuthForm();
         $form->data = new TokenDetailsForm();
-        $form->data->tags             = $this->getMultipleValueOption($input, 'tags');
-        $form->data->allowedMimeTypes = $this->getMultipleValueOption($input, 'mimes');
-        $form->roles                  = $this->getMultipleValueOption($input, 'roles');
+        $form->data->tags               = $this->getMultipleValueOption($input, 'tags');
+        $form->data->allowedMimeTypes   = $this->getMultipleValueOption($input, 'mimes');
+        $form->data->maxAllowedFileSize = (int) $input->getOption('max-file-size');
+        $form->roles                    = $this->getMultipleValueOption($input, 'roles');
 
         $output->writeln('Form:');
         $output->writeln('========================');
@@ -57,7 +74,10 @@ class GenerateTokenCommand extends Command
             $output->writeln(' [Role] -> ' . $role);
         }
 
-        $response = $this->handler->handle($form);
+        $response = $this->handler->handle(
+            $form,
+            $this->authFactory->createShellContext()
+        );
 
         $output->writeln("\nResponse:");
         $output->writeln('========================');

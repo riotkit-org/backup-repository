@@ -12,8 +12,11 @@ final class Roles
     public const ROLE_UPLOAD_DOCS           = 'upload.documents';
     public const ROLE_UPLOAD_BACKUP         = 'upload.backup';
     public const ROLE_UPLOAD                = 'upload.all';
-    public const ROLE_LOOKUP_TOKENS         = 'authentication.lookup';
-    public const ROLE_ALLOW_OVERWRITE_FILES = 'security.overwrite';
+
+    public const ROLE_LOOKUP_TOKENS           = 'security.authentication_lookup';
+    public const ROLE_ALLOW_OVERWRITE_FILES   = 'security.overwrite';
+    public const ROLE_GENERATE_TOKENS         = 'security.generate_tokens';
+    public const ROLE_USE_TECHNICAL_ENDPOINTS = 'security.use_technical_endpoints';
 
     public const ROLES_LIST = [
         self::ROLE_UPLOAD_IMAGES,
@@ -21,6 +24,8 @@ final class Roles
         self::ROLE_UPLOAD_BACKUP,
         self::ROLE_UPLOAD,
         self::ROLE_LOOKUP_TOKENS,
-        self::ROLE_ALLOW_OVERWRITE_FILES
+        self::ROLE_ALLOW_OVERWRITE_FILES,
+        self::ROLE_GENERATE_TOKENS,
+        self::ROLE_USE_TECHNICAL_ENDPOINTS
     ];
 }

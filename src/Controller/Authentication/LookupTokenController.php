@@ -4,11 +4,10 @@ namespace App\Controller\Authentication;
 
 use App\Controller\BaseController;
 use App\Domain\Authentication\ActionHandler\TokenLookupHandler;
-use App\Domain\Authentication\Entity\Token;
-use App\Infrastructure\Authentication\Token\TokenTransport;
+use App\Domain\Authentication\Factory\Context\SecurityContextFactory;
 use Exception;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\HttpFoundation\Response;
 
 class LookupTokenController extends BaseController
 {
@@ -18,14 +17,14 @@ class LookupTokenController extends BaseController
     private $handler;
 
     /**
-     * @var TokenStorageInterface
+     * @var SecurityContextFactory
      */
-    private $tokenStorage;
+    private $authFactory;
 
-    public function __construct(TokenLookupHandler $handler, TokenStorageInterface $tokenStorage)
+    public function __construct(TokenLookupHandler $handler, SecurityContextFactory $authFactory)
     {
         $this->handler = $handler;
-        $this->tokenStorage = $tokenStorage;
+        $this->authFactory = $authFactory;
     }
 
     /**
@@ -35,24 +34,18 @@ class LookupTokenController extends BaseController
      *
      * @throws Exception
      */
-    public function handle(string $token): JsonResponse
+    public function handle(string $token): Response
     {
-        return new JsonResponse(
-            $this->handler->handle(
-                $token,
-                $this->getLoggedUserToken()
-            ),
-            JsonResponse::HTTP_ACCEPTED
+        return $this->wrap(
+            function () use ($token) {
+                return new JsonResponse(
+                    $this->handler->handle(
+                        $token,
+                        $this->authFactory->createFromToken($this->getLoggedUserToken())
+                    ),
+                    JsonResponse::HTTP_OK
+                );
+            }
         );
-    }
-
-    private function getLoggedUserToken(): Token
-    {
-        /**
-         * @var TokenTransport $sessionToken
-         */
-        $sessionToken = $this->tokenStorage->getToken();
-
-        return $sessionToken->getToken();
     }
 }

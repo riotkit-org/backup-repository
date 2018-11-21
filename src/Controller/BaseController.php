@@ -2,14 +2,28 @@
 
 namespace App\Controller;
 
+use App\Domain\Authentication\Entity\Token;
+use App\Domain\Authentication\Exception\AuthenticationException;
 use App\Domain\Common\ValueObject\BaseUrl;
+use App\Infrastructure\Authentication\Token\TokenTransport;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 abstract class BaseController extends Controller
 {
+    protected function getLoggedUserToken(): Token
+    {
+        /**
+         * @var TokenTransport $sessionToken
+         */
+        $sessionToken = $this->get('security.token_storage')->getToken();
+
+        return $sessionToken->getToken();
+    }
+
     protected function submitFormFromJsonRequest(Request $request, $formObject, string $formType): FormInterface
     {
         $arrayForm = \json_decode($request->getContent(), true);
@@ -38,6 +52,21 @@ abstract class BaseController extends Controller
             $this->collectErrorsForForm($form, 'form', []),
             JsonResponse::HTTP_BAD_REQUEST
         );
+    }
+
+    protected function createAccessDeniedResponse(): JsonResponse
+    {
+        return new JsonResponse('Not authorized', JsonResponse::HTTP_FORBIDDEN);
+    }
+
+    protected function wrap(callable $code): Response
+    {
+        try {
+            return $code();
+
+        } catch (AuthenticationException $exception) {
+            return $this->createAccessDeniedResponse();
+        }
     }
 
     protected function createBaseUrl(Request $request): BaseUrl

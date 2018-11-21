@@ -1,0 +1,686 @@
+{
+	"info": {
+		"_postman_id": "101b2f6d-85d5-4c78-aa91-fc19c9836058",
+		"name": "[Wolnościowiec] File Repository",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "Generate basic token for images only",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "f75b530a-1115-47f7-a43d-185141a11ff7",
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Status code is 202\", function () {",
+									"    pm.response.to.have.status(202);",
+									"});",
+									"",
+									"",
+									"pm.globals.set(\"token_basic\", jsonData.tokenId);",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"roles\": [\"upload.images\"]\n}"
+						},
+						"url": {
+							"raw": "{{appUrl}}/auth/token/generate?_token=test-token-full-permissions",
+							"host": [
+								"{{appUrl}}"
+							],
+							"path": [
+								"auth",
+								"token",
+								"generate"
+							],
+							"query": [
+								{
+									"key": "_token",
+									"value": "test-token-full-permissions"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Lookup basic token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "2b6d1e26-465d-4afe-9758-58d34715c93c",
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Has role to upload images\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"upload.images\");",
+									"});",
+									"",
+									"pm.test(\"Has not defined max file size\", function () {",
+									"    pm.expect(jsonData.max_file_size).to.equal(0);",
+									"});",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"roles\": [\"upload.images\", \"this-role-is-invalid\"]\n}\n"
+						},
+						"url": {
+							"raw": "{{appUrl}}/auth/token/lookup/{{token_basic}}?_token=test-token-full-permissions",
+							"host": [
+								"{{appUrl}}"
+							],
+							"path": [
+								"auth",
+								"token",
+								"lookup",
+								"{{token_basic}}"
+							],
+							"query": [
+								{
+									"key": "_token",
+									"value": "test-token-full-permissions"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Generate token with tags and allowed mimes",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "1b17d2a3-5f08-4e75-bd7f-f9290e9b0a0d",
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Status code is 202\", function () {",
+									"    pm.response.to.have.status(202);",
+									"});",
+									"",
+									"pm.globals.set(\"token_with_tags_and_mimes\", jsonData.tokenId);",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"roles\": [\"upload.images\"],\n    \"data\": {\n        \"tags\": [\"user_uploads.u123\", \"user_uploads\"],\n        \"allowedMimeTypes\": [\"image/jpeg\", \"image/png\", \"image/gif\"],\n        \"maxAllowedFileSize\": 14579\n    }\n}\n"
+						},
+						"url": {
+							"raw": "{{appUrl}}/auth/token/generate?_token=test-token-full-permissions",
+							"host": [
+								"{{appUrl}}"
+							],
+							"path": [
+								"auth",
+								"token",
+								"generate"
+							],
+							"query": [
+								{
+									"key": "_token",
+									"value": "test-token-full-permissions"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Lookup token with tags and mimes",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "9f090abd-6cd6-4902-adc4-56c5697afb1d",
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Can upload for specific tags\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"user_uploads.u123\");",
+									"    pm.expect(pm.response.text()).to.include(\"user_uploads\");",
+									"});",
+									"",
+									"pm.test(\"Has role to upload images\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"upload.images\");",
+									"});",
+									"",
+									"pm.test(\"Has defined max file size\", function () {",
+									"    pm.expect(jsonData.max_file_size).to.equal(14579);",
+									"});",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{appUrl}}/auth/token/lookup/{{token_with_tags_and_mimes}}?_token=test-token-full-permissions",
+							"host": [
+								"{{appUrl}}"
+							],
+							"path": [
+								"auth",
+								"token",
+								"lookup",
+								"{{token_with_tags_and_mimes}}"
+							],
+							"query": [
+								{
+									"key": "_token",
+									"value": "test-token-full-permissions"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[Job] Clear expired tokens",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "c03c1076-3007-4543-b316-4eaec7021fcd",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"roles\": [\"upload.images\", \"this-role-is-invalid\"]\n}\n"
+						},
+						"url": {
+							"raw": "{{appUrl}}/jobs/token/expired/clear?_token=test-token-full-permissions",
+							"host": [
+								"{{appUrl}}"
+							],
+							"path": [
+								"jobs",
+								"token",
+								"expired",
+								"clear"
+							],
+							"query": [
+								{
+									"key": "_token",
+									"value": "test-token-full-permissions"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Generate token with not enough allowed maximum file size (100b)",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "8f8cd581-cea0-4038-af88-1ea8e09fc8b7",
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Status code is 202\", function () {",
+									"    pm.response.to.have.status(202);",
+									"});",
+									"",
+									"pm.globals.set(\"token_with_low_file_size_limit\", jsonData.tokenId);",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"roles\": [\"upload.images\"],\n    \"data\": {\n        \"tags\": [\"user_uploads.u123\", \"user_uploads\"],\n        \"allowedMimeTypes\": [\"image/jpeg\", \"image/png\", \"image/gif\"],\n        \"maxAllowedFileSize\": 100\n    }\n}\n"
+						},
+						"url": {
+							"raw": "{{appUrl}}/auth/token/generate?_token=test-token-full-permissions",
+							"host": [
+								"{{appUrl}}"
+							],
+							"path": [
+								"auth",
+								"token",
+								"generate"
+							],
+							"query": [
+								{
+									"key": "_token",
+									"value": "test-token-full-permissions"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[Validation] Invalid role name",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "e86decd2-0765-4301-9f99-485468ced6ce",
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"Body matches string\", function () {",
+									"    pm.expect(pm.response.text()).to.include(\"Please select valid roles\");",
+									"});",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"roles\": [\"upload.images\", \"this-role-is-invalid\"]\n}\n"
+						},
+						"url": {
+							"raw": "{{appUrl}}/auth/token/generate?_token=test-token-full-permissions",
+							"host": [
+								"{{appUrl}}"
+							],
+							"path": [
+								"auth",
+								"token",
+								"generate"
+							],
+							"query": [
+								{
+									"key": "_token",
+									"value": "test-token-full-permissions"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[Validation] Cannot generate token without proper role",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "500828af-d547-4a4d-8e39-07a4e403f31d",
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Status code is 403\", function () {",
+									"    pm.response.to.have.status(403);",
+									"});",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"roles\": [\"upload.images\"],\n    \"data\": {\n        \"tags\": [\"user_uploads.u123\", \"user_uploads\"],\n        \"allowedMimeTypes\": [\"image/jpeg\", \"image/png\", \"image/gif\"],\n        \"maxAllowedFileSize\": 14579\n    }\n}\n"
+						},
+						"url": {
+							"raw": "{{appUrl}}/auth/token/generate?_token={{token_with_tags_and_mimes}}",
+							"host": [
+								"{{appUrl}}"
+							],
+							"path": [
+								"auth",
+								"token",
+								"generate"
+							],
+							"query": [
+								{
+									"key": "_token",
+									"value": "{{token_with_tags_and_mimes}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[Validation] Cannot lookup tokens",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "31215dc8-d91f-41ae-b801-1799542efaa6",
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Status code is 403\", function () {",
+									"    pm.response.to.have.status(403);",
+									"});",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"roles\": [\"upload.images\", \"this-role-is-invalid\"]\n}\n"
+						},
+						"url": {
+							"raw": "{{appUrl}}/auth/token/lookup/{{token_basic}}?_token={{token_with_tags_and_mimes}}",
+							"host": [
+								"{{appUrl}}"
+							],
+							"path": [
+								"auth",
+								"token",
+								"lookup",
+								"{{token_basic}}"
+							],
+							"query": [
+								{
+									"key": "_token",
+									"value": "{{token_with_tags_and_mimes}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[Validation][Job] Cannot run technical job without proper role",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "5797775a-7e22-4731-af15-9bc3f5d9a87d",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Status code is 403\", function () {",
+									"    pm.response.to.have.status(403);",
+									"});",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"roles\": [\"upload.images\", \"this-role-is-invalid\"]\n}\n"
+						},
+						"url": {
+							"raw": "{{appUrl}}/jobs/token/expired/clear?_token={{token_with_tags_and_mimes}}",
+							"host": [
+								"{{appUrl}}"
+							],
+							"path": [
+								"jobs",
+								"token",
+								"expired",
+								"clear"
+							],
+							"query": [
+								{
+									"key": "_token",
+									"value": "{{token_with_tags_and_mimes}}"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Technical",
+			"item": [
+				{
+					"name": "List routes",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{appUrl}}/repository/routing/map",
+							"host": [
+								"{{appUrl}}"
+							],
+							"path": [
+								"repository",
+								"routing",
+								"map"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Hello",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "f2d61b07-a205-4645-9751-c239bcc7836a",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{appUrl}}/",
+							"host": [
+								"{{appUrl}}"
+							],
+							"path": [
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Registry",
+			"item": [
+				{
+					"name": "[Upload] By URL",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"fileUrl\": \"https://scontent-waw1-1.xx.fbcdn.net/v/t1.0-1/p200x200/33676690_1665538920161317_2822612628159856640_n.png?_nc_cat=103&_nc_ht=scontent-waw1-1.xx&oh=dd805a27bebd132f5348a3fd701d716e&oe=5C70CD09\",\n    \"tags\": []\n}\n"
+						},
+						"url": {
+							"raw": "{{appUrl}}/repository/image/add-by-url?_token=test-token-full-permissions",
+							"host": [
+								"{{appUrl}}"
+							],
+							"path": [
+								"repository",
+								"image",
+								"add-by-url"
+							],
+							"query": [
+								{
+									"key": "_token",
+									"value": "test-token-full-permissions"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[Upload] Too big file",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "b96bf4bd-26ab-49cc-bfcc-dbb158625b69",
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Checks the file size is validated\", function () {",
+									"    pm.expect(jsonData.status).to.eql('File size is too big');",
+									"    pm.expect(jsonData.code).to.eql(400);",
+									"});",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "file",
+							"file": {}
+						},
+						"url": {
+							"raw": "{{appUrl}}/repository/image/upload?_token={{token_with_low_file_size_limit}}&fileName=heart.png",
+							"host": [
+								"{{appUrl}}"
+							],
+							"path": [
+								"repository",
+								"image",
+								"upload"
+							],
+							"query": [
+								{
+									"key": "_token",
+									"value": "{{token_with_low_file_size_limit}}"
+								},
+								{
+									"key": "fileName",
+									"value": "heart.png"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "85fbbe4d-e82b-4d62-b318-7f1de7cef9ae",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "4fd2ca93-ff20-4830-9189-315c46ea61bb",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"id": "e1200f8d-e3d0-4dd5-aa14-f5054fb10b06",
+			"key": "appUrl",
+			"value": "http://localhost:8000",
+			"type": "string"
+		}
+	]
+}
