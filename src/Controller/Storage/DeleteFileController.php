@@ -3,19 +3,18 @@
 namespace App\Controller\Storage;
 
 use App\Controller\BaseController;
-use App\Domain\Storage\ActionHandler\ViewFileHandler;
+use App\Domain\Storage\ActionHandler\DeleteFileHandler;
 use App\Domain\Storage\Factory\Context\SecurityContextFactory;
-use App\Domain\Storage\Form\ViewFileForm;
-use App\Infrastructure\Storage\Form\ViewFileFormType;
+use App\Domain\Storage\Form\DeleteFileForm;
+use App\Infrastructure\Storage\Form\DeleteFileFormType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\StreamedResponse;
 
-class ViewFileController extends BaseController
+class DeleteFileController extends BaseController
 {
     /**
-     * @var ViewFileHandler
+     * @var DeleteFileHandler
      */
     private $handler;
 
@@ -24,7 +23,7 @@ class ViewFileController extends BaseController
      */
     private $authFactory;
 
-    public function __construct(ViewFileHandler $handler, SecurityContextFactory $authFactory)
+    public function __construct(DeleteFileHandler $handler, SecurityContextFactory $authFactory)
     {
         $this->handler = $handler;
         $this->authFactory = $authFactory;
@@ -32,9 +31,9 @@ class ViewFileController extends BaseController
 
     public function handle(Request $request, string $filename): Response
     {
-        $form = new ViewFileForm();
+        $form = new DeleteFileForm();
         $form->filename = $filename;
-        $infrastructureForm = $this->submitFormFromRequestQuery($request, $form, ViewFileFormType::class);
+        $infrastructureForm = $this->submitFormFromRequestQuery($request, $form, DeleteFileFormType::class);
 
         if (!$infrastructureForm->isValid()) {
             return $this->createValidationErrorResponse($infrastructureForm);
@@ -44,14 +43,13 @@ class ViewFileController extends BaseController
             function () use ($form) {
                 $response = $this->handler->handle(
                     $form,
-                    $this->authFactory->createViewingContextFromTokenAndForm($this->getLoggedUserToken(), $form)
+                    $this->authFactory->createDeleteContextFromTokenAndForm($this->getLoggedUserToken(), $form)
                 );
 
-                if ($response->getCode() === Response::HTTP_OK) {
-                    return new StreamedResponse($response->getResponseCallback());
-                }
-
-                return new JsonResponse($response, $response->getCode());
+                return new JsonResponse(
+                    ['success' => $response],
+                    $response ? Response::HTTP_OK : Response::HTTP_INTERNAL_SERVER_ERROR
+                );
             }
         );
     }

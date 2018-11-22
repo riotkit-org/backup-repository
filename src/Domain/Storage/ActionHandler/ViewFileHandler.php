@@ -2,9 +2,12 @@
 
 namespace App\Domain\Storage\ActionHandler;
 
+use App\Domain\Storage\Exception\AuthenticationException;
 use App\Domain\Storage\Exception\StorageException;
+use App\Domain\Storage\Form\ViewFileForm;
 use App\Domain\Storage\Manager\StorageManager;
 use App\Domain\Storage\Response\FileDownloadResponse;
+use App\Domain\Storage\Security\ReadSecurityContext;
 use App\Domain\Storage\ValueObject\Filename;
 
 class ViewFileHandler
@@ -19,10 +22,18 @@ class ViewFileHandler
         $this->storageManager = $storageManager;
     }
 
-    public function handle(string $filename): FileDownloadResponse
+    /**
+     * @param ViewFileForm $form
+     * @param ReadSecurityContext $securityContext
+     *
+     * @return FileDownloadResponse
+     *
+     * @throws AuthenticationException
+     */
+    public function handle(ViewFileForm $form, ReadSecurityContext $securityContext): FileDownloadResponse
     {
         try {
-            $file = $this->storageManager->retrieve(new Filename($filename));
+            $file = $this->storageManager->retrieve(new Filename($form->filename));
 
         } catch (StorageException $exception) {
 
@@ -31,6 +42,13 @@ class ViewFileHandler
             }
 
             return new FileDownloadResponse($exception->getMessage(), 500);
+        }
+
+        if (!$securityContext->isAbleToViewFile($file->getStoredFile())) {
+            throw new AuthenticationException(
+                'No access to read the file, maybe invalid password?',
+                AuthenticationException::CODES['no_read_access_or_invalid_password']
+            );
         }
 
         return new FileDownloadResponse('OK', 200, function () use ($file) {

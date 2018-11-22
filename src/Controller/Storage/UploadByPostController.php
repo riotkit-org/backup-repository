@@ -22,8 +22,13 @@ class UploadByPostController extends BaseController
         $this->handler = $handler;
     }
 
-    public function handle(Request $request, TokenTransport $tokenTransport): JsonResponse
+    public function handle(Request $request, TokenTransport $tokenTransport, string $filename = ''): JsonResponse
     {
+        // REST support
+        if ($filename) {
+            $request->query->set('fileName', $filename);
+        }
+
         $form = new UploadByPostForm();
         $infrastructureForm = $this->submitFormFromRequestQuery($request, $form, UploadByPostFormType::class);
 

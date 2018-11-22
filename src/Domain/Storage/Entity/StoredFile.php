@@ -35,7 +35,7 @@ class StoredFile
     /**
      * @var string
      */
-    protected $password;
+    protected $password = '';
 
     /**
      * @var string
@@ -137,6 +137,17 @@ class StoredFile
     public function isPasswordProtected(): bool
     {
         return !empty($this->password);
+    }
+
+    public function changePassword(?string $newPassword): void
+    {
+        if (!$newPassword) {
+            $this->password = '';
+
+            return;
+        }
+
+        $this->password = $this->encryptPassword($newPassword);
     }
 
     public function checkPasswordMatchesWith(string $password): bool

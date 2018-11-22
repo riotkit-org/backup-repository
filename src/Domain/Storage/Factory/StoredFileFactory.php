@@ -35,6 +35,10 @@ class StoredFileFactory
      */
     public function mapFromForm(UploadForm $form, StoredFile $storedFile): StoredFile
     {
+        // fields
+        $storedFile->changePassword($form->password);
+
+        // relations
         $tags = $this->tagRepository->findOrCreateTagsByNames($form->tags);
 
         foreach ($tags as $tag) {

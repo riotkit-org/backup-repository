@@ -28,6 +28,11 @@ App\Domain\Storage\Entity\StoredFile:
             length: 48
             column: mimeType
 
+        password:
+            type: string
+            length: 254
+            column: password
+
     manyToMany:
         tags:
             targetEntity: Tag

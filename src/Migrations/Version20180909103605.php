@@ -17,6 +17,7 @@ final class Version20180909103605 extends AbstractMigration
             $table->addColumn('contentHash', Type::STRING, ['length' => 32]);
             $table->addColumn('dateAdded',   Type::DATETIME_IMMUTABLE, ['length' => 32]);
             $table->addColumn('mimeType',    Type::STRING, ['length' => 24, 'null' => false]);
+            $table->addColumn('password',    Type::STRING, ['length' => 254, 'null' => true]);
 
             $table->setPrimaryKey(['id']);
             $table->addUniqueIndex(['fileName']);

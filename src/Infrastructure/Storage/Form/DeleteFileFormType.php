@@ -2,32 +2,28 @@
 
 namespace App\Infrastructure\Storage\Form;
 
-use App\Domain\Storage\Form\UploadForm;
+use App\Domain\Storage\Form\DeleteFileForm;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
-use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
-class UploadFormType extends AbstractType
+/**
+ * @see DeleteFileForm
+ */
+class DeleteFileFormType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder
-            ->add('tags',    CollectionType::class, [
-                'allow_add'    => true,
-                'allow_delete' => true
-            ])
-            ->add('fileOverwrite', CheckboxType::class)
-            ->add('password',      TextType::class);
+        $builder->add('password', TextType::class);
     }
 
     public function configureOptions(OptionsResolver $resolver)
     {
         return $resolver->setDefaults([
-            'data_class'           => UploadForm::class,
+            'data_class'           => DeleteFileForm::class,
             'csrf_protection'      => false,
+            'allow_extra_fields'   => true, // _token
             'extra_fields_message' => 'This request does not support extra parameters such as {{ extra_fields }}'
         ]);
     }

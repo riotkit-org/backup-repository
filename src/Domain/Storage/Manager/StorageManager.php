@@ -133,16 +133,52 @@ class StorageManager
     }
 
     /**
-     * @param Filename $name
+     * @param Filename $filename
      *
-     * @return Stream
+     * @return FileRetrievedFromStorage
      *
      * @throws StorageException
      */
-    public function retrieve(Filename $name): FileRetrievedFromStorage
+    public function retrieve(Filename $filename): FileRetrievedFromStorage
     {
-        $storedFile = $this->repository->findByName($name);
+        $storedFile = $this->repository->findByName($filename);
+        $this->assertFileExists($storedFile, $filename);
 
+        return new FileRetrievedFromStorage($storedFile, $this->fs->read($filename));
+    }
+
+    /**
+     * @param Filename $filename
+     *
+     * @return bool
+     *
+     * @throws StorageException
+     */
+    public function delete(Filename $filename): bool
+    {
+        $storedFile = $this->repository->findByName($filename);
+        $this->assertFileExists($storedFile, $filename);
+
+        $this->fs->delete($filename);
+
+        if ($storedFile !== null && !$this->fs->fileExist($filename)) {
+            $this->repository->delete($storedFile);
+            $this->repository->flush($storedFile);
+
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * @param StoredFile|null $storedFile
+     * @param Filename $name
+     *
+     * @throws StorageException
+     */
+    private function assertFileExists(?StoredFile $storedFile, Filename $name)
+    {
         if (!$storedFile) {
             throw new StorageException('File not found in the storage', StorageException::codes['file_not_found']);
         }
@@ -150,7 +186,5 @@ class StorageManager
         if (!$this->fs->fileExist($name)) {
             throw new StorageException('File not found on disk', StorageException::codes['consistency_not_found_on_disk']);
         }
-
-        return new FileRetrievedFromStorage($storedFile, $this->fs->read($name));
     }
 }

@@ -3,8 +3,9 @@
 namespace App\Controller;
 
 use App\Domain\Authentication\Entity\Token;
-use App\Domain\Authentication\Exception\AuthenticationException;
+use App\Domain\Common\Exception\AuthenticationException;
 use App\Domain\Common\ValueObject\BaseUrl;
+use App\Domain\Storage\Exception\StorageException;
 use App\Infrastructure\Authentication\Token\TokenTransport;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Form\FormInterface;
@@ -59,6 +60,18 @@ abstract class BaseController extends Controller
         return new JsonResponse('Not authorized', JsonResponse::HTTP_FORBIDDEN);
     }
 
+    protected function createNotFoundResponse(): JsonResponse
+    {
+        return new JsonResponse('File not found', JsonResponse::HTTP_NOT_FOUND);
+    }
+
+    /**
+     * @param callable $code
+     *
+     * @return Response
+     *
+     * @throws \Exception
+     */
     protected function wrap(callable $code): Response
     {
         try {
@@ -66,6 +79,13 @@ abstract class BaseController extends Controller
 
         } catch (AuthenticationException $exception) {
             return $this->createAccessDeniedResponse();
+
+        } catch (StorageException $storageException) {
+            if ($storageException->getCode() === StorageException::codes['file_not_found']) {
+                return $this->createNotFoundResponse();
+            }
+
+            throw $storageException;
         }
     }
 

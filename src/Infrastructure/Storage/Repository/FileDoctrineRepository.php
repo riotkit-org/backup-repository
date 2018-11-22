@@ -81,4 +81,9 @@ class FileDoctrineRepository extends ServiceEntityRepository implements FileRepo
     {
         $this->getEntityManager()->flush($files);
     }
+
+    public function delete(StoredFile $file): void
+    {
+        $this->getEntityManager()->remove($file);
+    }
 }

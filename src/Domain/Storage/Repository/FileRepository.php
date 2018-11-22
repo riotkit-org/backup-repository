@@ -35,4 +35,9 @@ interface FileRepository
      * @param null|StoredFile|StoredFile[] $files
      */
     public function flush($files = null): void;
+
+    /**
+     * @param StoredFile $file
+     */
+    public function delete(StoredFile $file): void;
 }

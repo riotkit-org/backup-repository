@@ -67,7 +67,7 @@ abstract class AbstractUploadHandler
 
     public function handle(UploadForm $form, BaseUrl $baseUrl, Token $token): FileUploadedResponse
     {
-        $context = $this->securityFactory->createFromToken($token);
+        $context = $this->securityFactory->createUploadContextFromToken($token);
 
         if (!$context->isActionAllowed($form)) {
             return $this->finalize(FileUploadedResponse::createWithNoAccessError());

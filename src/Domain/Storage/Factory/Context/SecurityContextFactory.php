@@ -4,7 +4,11 @@ namespace App\Domain\Storage\Factory\Context;
 
 use App\Domain\Authentication\Entity\Token;
 use App\Domain\Roles;
+use App\Domain\Storage\Form\DeleteFileForm;
+use App\Domain\Storage\Form\ViewFileForm;
 use App\Domain\Storage\Provider\MimeTypeProvider;
+use App\Domain\Storage\Security\ManagementSecurityContext;
+use App\Domain\Storage\Security\ReadSecurityContext;
 use App\Domain\Storage\Security\UploadSecurityContext;
 
 class SecurityContextFactory
@@ -19,10 +23,8 @@ class SecurityContextFactory
         $this->mimeProvider = $mimeTypeProvider;
     }
 
-    public function createFromToken(Token $token): UploadSecurityContext
+    public function createUploadContextFromToken(Token $token): UploadSecurityContext
     {
-        dump($token);
-
         return new UploadSecurityContext(
             $this->createListOfMimeTypes($token),
             $token->getTags(),
@@ -32,6 +34,22 @@ class SecurityContextFactory
                 || $token->hasRole(Roles::ROLE_UPLOAD_BACKUP),
             $token->hasRole(Roles::ROLE_ALLOW_OVERWRITE_FILES),
             $token->getMaxAllowedFileSize()
+        );
+    }
+
+    public function createViewingContextFromTokenAndForm(Token $token, ViewFileForm $form): ReadSecurityContext
+    {
+        return new ReadSecurityContext(
+            $token->hasRole(Roles::ROLE_VIEW_ALL_PROTECTED_FILES),
+            $form->password ?? ''
+        );
+    }
+
+    public function createDeleteContextFromTokenAndForm(Token $token, DeleteFileForm $form): ManagementSecurityContext
+    {
+        return new ManagementSecurityContext(
+            $token->hasRole(Roles::ROLE_DELETE_ALL_FILES),
+            $form->password ?? ''
         );
     }
 
