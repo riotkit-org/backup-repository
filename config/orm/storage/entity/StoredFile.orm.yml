@@ -20,7 +20,7 @@ App\Domain\Storage\Entity\StoredFile:
             column: contentHash
 
         dateAdded:
-            type: datetime
+            type: datetime_immutable
             column: dateAdded
 
         mimeType:

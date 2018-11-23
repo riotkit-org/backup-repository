@@ -53,15 +53,22 @@ class TokenSubscriber implements EventSubscriberInterface
     /**
      * @param GetResponseEvent $event
      *
-     * @throws AuthenticationException
      * @throws \Exception
      */
     public function handleIncomingToken(GetResponseEvent $event): void
     {
+        // workaround: sometimes the event is fired twice by the Symfony, second time it has nulled attributes
+        if ($event->getRequest()->attributes->get('_route') === null) {
+            return;
+        }
+
         $tokenString = $this->getTokenStringFromRequest($event->getRequest());
 
         // Guest at public endpoints
         if ($this->isPublicEndpoint($event->getRequest())) {
+            $this->tokenStorage->setToken(
+                new TokenTransport('anonymous', new Token())
+            );
             return;
         }
 
@@ -76,7 +83,7 @@ class TokenSubscriber implements EventSubscriberInterface
 
         } catch (AuthenticationException $exception) {
             $event->setResponse(
-                new JsonResponse('Not authorized', JsonResponse::HTTP_FORBIDDEN)
+                new JsonResponse('Not authorized, no valid token present at all', JsonResponse::HTTP_FORBIDDEN)
             );
 
             return;

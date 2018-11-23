@@ -159,8 +159,23 @@ class StoredFile
         return $this->encryptPassword($password) === $this->password;
     }
 
+    public function checkContentHashMatchesEtag(string $etag): bool
+    {
+        return $this->contentHash === $etag;
+    }
+
     private function encryptPassword(string $password): string
     {
         return hash('sha256', $password);
+    }
+
+    public function getDateAdded(): \DateTimeImmutable
+    {
+        return $this->dateAdded;
+    }
+
+    public function getContentHash(): string
+    {
+        return $this->contentHash;
     }
 }

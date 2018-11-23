@@ -18,6 +18,8 @@ storage.get_file:
     path: /public/download/{filename}
     controller: 'App\Controller\Storage\ViewFileController::handle'
     methods: ['GET']
+    defaults:
+        _secured: false
 
 # REST
 storage.rest_delete:

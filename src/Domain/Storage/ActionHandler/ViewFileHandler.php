@@ -2,6 +2,8 @@
 
 namespace App\Domain\Storage\ActionHandler;
 
+use App\Domain\Storage\Context\CachingContext;
+use App\Domain\Storage\Entity\StoredFile;
 use App\Domain\Storage\Exception\AuthenticationException;
 use App\Domain\Storage\Exception\StorageException;
 use App\Domain\Storage\Form\ViewFileForm;
@@ -23,17 +25,18 @@ class ViewFileHandler
     }
 
     /**
-     * @param ViewFileForm $form
+     * @param ViewFileForm        $form
      * @param ReadSecurityContext $securityContext
+     * @param CachingContext      $cachingContext
      *
      * @return FileDownloadResponse
      *
      * @throws AuthenticationException
      */
-    public function handle(ViewFileForm $form, ReadSecurityContext $securityContext): FileDownloadResponse
+    public function handle(ViewFileForm $form, ReadSecurityContext $securityContext, CachingContext $cachingContext): FileDownloadResponse
     {
         try {
-            $file = $this->storageManager->retrieve(new Filename($form->filename));
+            $file = $this->storageManager->retrieve(new Filename((string) $form->filename));
 
         } catch (StorageException $exception) {
 
@@ -51,15 +54,29 @@ class ViewFileHandler
             );
         }
 
+        if (!$cachingContext->isCacheExpiredForFile($file->getStoredFile())) {
+            return new FileDownloadResponse('Not Modified', 304, function () use ($file) {
+                $this->sendHttpHeaders($file->getStoredFile());
+            });
+        }
+
         return new FileDownloadResponse('OK', 200, function () use ($file) {
             $out = fopen('php://output', 'wb');
             $res = $file->getStream()->attachTo();
 
-            header('Content-Type: ' . $file->getStoredFile()->getMimeType());
+            $this->sendHttpHeaders($file->getStoredFile());
 
             stream_copy_to_stream($res, $out);
             fclose($out);
             fclose($res);
         });
+    }
+
+    private function sendHttpHeaders(StoredFile $file): void
+    {
+        header('Content-Type: ' . $file->getMimeType());
+        header('Last-Modified:  ' . $file->getDateAdded()->format('D, d M Y H:i:s') . ' GMT');
+        header('ETag: ' . $file->getContentHash());
+        header('Cache-Control: public, max-age=25200');
     }
 }
