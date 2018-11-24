@@ -99,7 +99,10 @@ abstract class AbstractUploadHandler
             );
 
         } catch (ValidationException $exception) {
-            return $this->finalize(FileUploadedResponse::createWithValidationError($exception->getReason()));
+            return $this->finalize(FileUploadedResponse::createWithValidationError(
+                $exception->getReason(),
+                $exception->getCode()
+            ));
 
         } catch (StorageException $exception) {
             return $this->finalize(FileUploadedResponse::createWithServerError($exception->getCode()));

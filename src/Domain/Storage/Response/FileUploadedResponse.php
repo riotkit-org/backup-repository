@@ -17,6 +17,11 @@ class FileUploadedResponse implements \JsonSerializable
     private $exitCode;
 
     /**
+     * @var int
+     */
+    private $errorCode;
+
+    /**
      * @var Url
      */
     private $url;
@@ -77,12 +82,13 @@ class FileUploadedResponse implements \JsonSerializable
      *
      * @return FileUploadedResponse
      */
-    public static function createWithValidationError(string $message): FileUploadedResponse
+    public static function createWithValidationError(string $message, int $code): FileUploadedResponse
     {
         $new = new static();
-        $new->status   = $message;
-        $new->exitCode = 400;
-        $new->url      = null;
+        $new->status       = $message;
+        $new->errorCode    = $code;
+        $new->exitCode     = 400;
+        $new->url          = null;
 
         return $new;
     }
@@ -93,9 +99,10 @@ class FileUploadedResponse implements \JsonSerializable
     public static function createWithNoAccessError(): FileUploadedResponse
     {
         $new = new static();
-        $new->status   = 'No enough permissions on the token to perform the operation';
-        $new->exitCode = 403;
-        $new->url      = null;
+        $new->status    = 'No enough permissions on the token to perform the operation';
+        $new->errorCode = 403;
+        $new->exitCode  = 403;
+        $new->url       = null;
 
         return $new;
     }
@@ -118,10 +125,11 @@ class FileUploadedResponse implements \JsonSerializable
     public function jsonSerialize()
     {
         return [
-            'status' => $this->status,
-            'code'   => $this->exitCode,
-            'url'    => $this->url,
-            'back'   => $this->backUrl
+            'status'     => $this->status,
+            'error_code' => $this->errorCode,
+            'http_code'  => $this->exitCode,
+            'url'        => $this->url,
+            'back'       => $this->backUrl
        ];
     }
 

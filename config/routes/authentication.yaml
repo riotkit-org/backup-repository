@@ -18,3 +18,10 @@ authentication.clear_expired_tokens:
     methods: ['GET']
     defaults:
         _secured: true
+
+authentication.roles_listing:
+    path: /auth/roles
+    controller: 'App\Controller\Authentication\RolesListingController::handle'
+    methods: ['GET']
+    defaults:
+        _secured: true

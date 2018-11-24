@@ -57,12 +57,26 @@ abstract class BaseController extends Controller
 
     protected function createAccessDeniedResponse(): JsonResponse
     {
-        return new JsonResponse('Not authorized', JsonResponse::HTTP_FORBIDDEN);
+        return new JsonResponse(
+            [
+                'status'     => 'Forbidden',
+                'error_code' => 403,
+                'http_code'  => 403
+            ],
+            JsonResponse::HTTP_FORBIDDEN
+        );
     }
 
-    protected function createNotFoundResponse(): JsonResponse
+    protected function createNotFoundResponse(string $message = 'Not found'): JsonResponse
     {
-        return new JsonResponse('File not found', JsonResponse::HTTP_NOT_FOUND);
+        return new JsonResponse(
+            [
+                'status'     => $message,
+                'error_code' => 404,
+                'http_code'  => 404
+            ],
+            JsonResponse::HTTP_NOT_FOUND
+        );
     }
 
     /**
@@ -82,7 +96,7 @@ abstract class BaseController extends Controller
 
         } catch (StorageException $storageException) {
             if ($storageException->getCode() === StorageException::codes['file_not_found']) {
-                return $this->createNotFoundResponse();
+                return $this->createNotFoundResponse('File not found in the storage');
             }
 
             throw $storageException;

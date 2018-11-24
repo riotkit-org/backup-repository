@@ -83,7 +83,14 @@ class TokenSubscriber implements EventSubscriberInterface
 
         } catch (AuthenticationException $exception) {
             $event->setResponse(
-                new JsonResponse('Not authorized, no valid token present at all', JsonResponse::HTTP_FORBIDDEN)
+                new JsonResponse(
+                    [
+                        'status'     => 'Not authorized, no valid token present at all',
+                        'error_code' => 403,
+                        'http_code'  => 403
+                    ],
+                    JsonResponse::HTTP_FORBIDDEN
+                )
             );
 
             return;
