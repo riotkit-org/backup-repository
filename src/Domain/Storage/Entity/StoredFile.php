@@ -10,7 +10,7 @@ use App\Domain\Storage\ValueObject\Path;
 /**
  * Represents a file that is (or will be) stored in the storage
  */
-class StoredFile
+class StoredFile implements \JsonSerializable
 {
     /**
      * @var int
@@ -81,14 +81,41 @@ class StoredFile
         $tags = $this->getTags();
 
         // do not allow to add duplicates
-        foreach ($tags as $existingTag) {
-            if ($existingTag->isSameContentAs($tag)) {
-                return;
-            }
+        if ($this->hasTagNamed($tag->getName())) {
+            return;
         }
 
         $tags[] = $tag;
-        $this->tags = array_unique($tags);
+        $this->tags = \array_unique($tags);
+    }
+
+    public function hasTagNamed(string $name): bool
+    {
+        $tag = new Tag();
+        $tag->setName($name);
+
+        foreach ($this->getTags() as $existingTag) {
+            if ($existingTag->isSameContentAs($tag)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function isFileTaggedWithAnyOfThose(array $tags): bool
+    {
+        if (empty($tags) && empty($this->getTags())) {
+            return true;
+        }
+
+        foreach ($tags as $tag) {
+            if ($this->hasTagNamed($tag)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public function wasAlreadyStored(): bool
@@ -123,6 +150,14 @@ class StoredFile
     public function setMimeType(Mime $mimeType): StoredFile
     {
         $this->mimeType = $mimeType->getValue();
+
+        return $this;
+    }
+
+    public function setDateAdded(\DateTimeImmutable $date): StoredFile
+    {
+        $this->dateAdded = $date;
+
         return $this;
     }
 
@@ -177,5 +212,20 @@ class StoredFile
     public function getContentHash(): string
     {
         return $this->contentHash;
+    }
+
+    public function jsonSerialize()
+    {
+        return [
+            'publicUrl'   => '',
+            'filename'    => $this->getFilename(),
+            'contentHash' => $this->getContentHash(),
+            'dateAdded'   => $this->getDateAdded(),
+            'mimeType'    => $this->getMimeType(),
+            'tags'        => $this->getTags(),
+            'attributes'  => [
+                'isPasswordProtected' => $this->isPasswordProtected()
+            ]
+        ];
     }
 }

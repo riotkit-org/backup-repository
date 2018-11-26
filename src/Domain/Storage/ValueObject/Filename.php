@@ -2,7 +2,7 @@
 
 namespace App\Domain\Storage\ValueObject;
 
-class Filename
+class Filename implements \JsonSerializable
 {
     /**
      * @var string
@@ -21,5 +21,10 @@ class Filename
     public function getValue(): string
     {
         return $this->value;
+    }
+
+    public function jsonSerialize()
+    {
+        return $this->getValue();
     }
 }

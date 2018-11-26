@@ -5,6 +5,7 @@ namespace App\Domain\Storage\Factory\Context;
 use App\Domain\Authentication\Entity\Token;
 use App\Domain\Roles;
 use App\Domain\Storage\Form\DeleteFileForm;
+use App\Domain\Storage\Form\FilesListingForm;
 use App\Domain\Storage\Form\ViewFileForm;
 use App\Domain\Storage\Provider\MimeTypeProvider;
 use App\Domain\Storage\Security\ManagementSecurityContext;
@@ -41,7 +42,19 @@ class SecurityContextFactory
     {
         return new ReadSecurityContext(
             $token->hasRole(Roles::ROLE_VIEW_ALL_PROTECTED_FILES),
-            $form->password ?? ''
+            $token->hasRole(Roles::ROLE_BROWSE_LIST_OF_FILES_BY_ANY_TAG),
+            $form->password ?? '',
+            $token->getTags()
+        );
+    }
+
+    public function createListingContextFromTokenAndForm(Token $token, FilesListingForm $form): ReadSecurityContext
+    {
+        return new ReadSecurityContext(
+            $token->hasRole(Roles::ROLE_VIEW_ALL_PROTECTED_FILES),
+            $token->hasRole(Roles::ROLE_BROWSE_LIST_OF_FILES_BY_ANY_TAG),
+            $form->password,
+            $token->getTags()
         );
     }
 

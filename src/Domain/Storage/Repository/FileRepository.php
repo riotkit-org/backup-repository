@@ -3,6 +3,7 @@
 namespace App\Domain\Storage\Repository;
 
 use App\Domain\Storage\Entity\StoredFile;
+use App\Domain\Storage\Parameters\Repository\FindByParameters;
 use App\Domain\Storage\ValueObject\Checksum;
 use App\Domain\Storage\ValueObject\Filename;
 
@@ -40,4 +41,18 @@ interface FileRepository
      * @param StoredFile $file
      */
     public function delete(StoredFile $file): void;
+
+    /**
+     * @param FindByParameters $createFromArray
+     *
+     * @return StoredFile[]
+     */
+    public function findMultipleBy(FindByParameters $createFromArray): array;
+
+    /**
+     * @param FindByParameters $parameters
+     *
+     * @return int
+     */
+    public function getMultipleByPagesCount(FindByParameters $parameters): int;
 }

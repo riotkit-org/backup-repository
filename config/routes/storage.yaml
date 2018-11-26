@@ -1,3 +1,10 @@
+storage.list_files:
+    path: /repository
+    controller: 'App\Controller\Storage\FilesListingController::handleListing'
+    methods: ['GET']
+    defaults:
+        _secured: true
+
 storage.upload_by_url:
     path: /repository/{type}/add-by-url
     controller: 'App\Controller\Storage\UploadByUrlController::handle'

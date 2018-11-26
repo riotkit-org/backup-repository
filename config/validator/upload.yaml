@@ -65,8 +65,8 @@ App\Domain\Storage\Form\UploadByUrlForm:
             - Type:
                   type: string
 
-            - Url:
-                  message: "URL should be empty or a valid URL"
+            #- Url:
+            #      message: "Expected a valid URL"
 
             - Length:
                   min: 10

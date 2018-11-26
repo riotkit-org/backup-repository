@@ -2,7 +2,7 @@
 
 namespace App\Domain\Storage\Entity;
 
-class Tag
+class Tag implements \JsonSerializable
 {
     /**
      * @var string $id UUID
@@ -34,8 +34,26 @@ class Tag
         return strtolower(trim($tag->getName())) === strtolower(trim($this->getName()));
     }
 
+    /**
+     * @return \DateTimeImmutable
+     */
+    public function getDateAdded(): \DateTimeImmutable
+    {
+        return $this->dateAdded;
+    }
+
     public function setName(string $name): void
     {
         $this->name = $name;
+    }
+
+    public function jsonSerialize()
+    {
+        return $this->getName();
+    }
+
+    public function __toString()
+    {
+        return 'Tag<' . $this->getName() . '>';
     }
 }

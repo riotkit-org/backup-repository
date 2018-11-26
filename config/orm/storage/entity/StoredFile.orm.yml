@@ -37,6 +37,8 @@ App\Domain\Storage\Entity\StoredFile:
         tags:
             targetEntity: Tag
             inversedBy: files
+            cascade:
+                - persist
             joinTable:
                 name: file_tags
                 joinColumns:

@@ -25,9 +25,6 @@ final class Roles
     /** Allows to upload ALL types of files regardless of mime type */
     public const ROLE_UPLOAD                   = 'upload.all';
 
-    /** Allows to download ANY file, even if a file is password protected*/
-    public const ROLE_VIEW_ALL_PROTECTED_FILES = 'view.any_file';
-
     //
     //
     // authentication and tokens
@@ -54,6 +51,18 @@ final class Roles
     /** Delete files that do not have a password, and password protected without a password */
     public const ROLE_DELETE_ALL_FILES        = 'deletion.all_files_including_protected_and_unprotected';
 
+    //
+    //
+    // browsing
+    //
+    //
+
+    /** Allows to download ANY file, even if a file is password protected*/
+    public const ROLE_VIEW_ALL_PROTECTED_FILES = 'view.any_file';
+
+    /** List files from ANY tag that was requested, else the user can list only files by tags allowed in token */
+    public const ROLE_BROWSE_LIST_OF_FILES_BY_ANY_TAG = 'view.files_from_all_tags';
+
     public const ROLES_LIST = [
         self::ROLE_UPLOAD_IMAGES,
         self::ROLE_UPLOAD_DOCS,
@@ -63,7 +72,8 @@ final class Roles
         self::ROLE_ALLOW_OVERWRITE_FILES,
         self::ROLE_GENERATE_TOKENS,
         self::ROLE_USE_TECHNICAL_ENDPOINTS,
+        self::ROLE_DELETE_ALL_FILES,
         self::ROLE_VIEW_ALL_PROTECTED_FILES,
-        self::ROLE_DELETE_ALL_FILES
+        self::ROLE_BROWSE_LIST_OF_FILES_BY_ANY_TAG
     ];
 }

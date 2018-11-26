@@ -12,14 +12,30 @@ class ReadSecurityContext
     private $viewAllProtectedFiles;
 
     /**
+     * @var bool
+     */
+    private $listAllFilesInAllTags;
+
+    /**
      * @var string
      */
     private $requestPassword;
 
-    public function __construct(bool $viewAllProtectedFiles, string $requestPassword)
-    {
+    /**
+     * @var array
+     */
+    private $allowedTags;
+
+    public function __construct(
+        bool $viewAllProtectedFiles,
+        bool $listAllFilesInAllTags,
+        string $requestPassword,
+        array $allowedTags
+    ) {
         $this->viewAllProtectedFiles = $viewAllProtectedFiles;
+        $this->listAllFilesInAllTags = $listAllFilesInAllTags;
         $this->requestPassword       = $requestPassword;
+        $this->allowedTags           = $allowedTags;
     }
 
     public function isAbleToViewFile(StoredFile $file): bool
@@ -31,5 +47,13 @@ class ReadSecurityContext
 
         // valid password was supplied in the request
         return $file->checkPasswordMatchesWith($this->requestPassword);
+    }
+
+    public function canUserSeeFileOnList(StoredFile $file): bool
+    {
+        $canSeeBecauseOfTag = $file->isFileTaggedWithAnyOfThose($this->allowedTags) || $this->listAllFilesInAllTags;
+        $canSeeBecauseOfPassword = $file->checkPasswordMatchesWith($this->requestPassword) || $this->viewAllProtectedFiles;
+
+        return $canSeeBecauseOfPassword && $canSeeBecauseOfTag;
     }
 }

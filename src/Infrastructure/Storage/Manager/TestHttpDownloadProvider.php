@@ -21,9 +21,16 @@ class TestHttpDownloadProvider implements HttpDownloadProvider
     public function getStreamFromUrl(Url $url): Stream
     {
         if ($url->isLocalFileUrl()) {
-            return new Stream(fopen($url->getValue(), 'rb'));
+            $filePath = \dirname(__DIR__, 4) . '/' . $this->prepareLocalUrl($url->getValue());
+
+            return new Stream(fopen($filePath, 'rb'));
         }
 
         return $this->parentProvider->getStreamFromUrl($url);
+    }
+
+    private function prepareLocalUrl(string $url): string
+    {
+        return './' . substr($url, \strlen('file://'));
     }
 }
