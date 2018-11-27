@@ -43,6 +43,7 @@ class SecurityContextFactory
         return new ReadSecurityContext(
             $token->hasRole(Roles::ROLE_VIEW_ALL_PROTECTED_FILES),
             $token->hasRole(Roles::ROLE_BROWSE_LIST_OF_FILES_BY_ANY_TAG),
+            $token->hasRole(Roles::ROLE_ACCESS_LISTING_ENDPOINT),
             $form->password ?? '',
             $token->getTags()
         );
@@ -53,7 +54,8 @@ class SecurityContextFactory
         return new ReadSecurityContext(
             $token->hasRole(Roles::ROLE_VIEW_ALL_PROTECTED_FILES),
             $token->hasRole(Roles::ROLE_BROWSE_LIST_OF_FILES_BY_ANY_TAG),
-            $form->password,
+            $token->hasRole(Roles::ROLE_ACCESS_LISTING_ENDPOINT),
+            $form->password ?? '',
             $token->getTags()
         );
     }

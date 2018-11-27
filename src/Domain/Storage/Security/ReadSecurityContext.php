@@ -26,14 +26,21 @@ class ReadSecurityContext
      */
     private $allowedTags;
 
+    /**
+     * @var bool
+     */
+    private $canListAnything;
+
     public function __construct(
         bool $viewAllProtectedFiles,
         bool $listAllFilesInAllTags,
+        bool $canListAnything,
         string $requestPassword,
         array $allowedTags
     ) {
         $this->viewAllProtectedFiles = $viewAllProtectedFiles;
         $this->listAllFilesInAllTags = $listAllFilesInAllTags;
+        $this->canListAnything       = $canListAnything;
         $this->requestPassword       = $requestPassword;
         $this->allowedTags           = $allowedTags;
     }
@@ -55,5 +62,10 @@ class ReadSecurityContext
         $canSeeBecauseOfPassword = $file->checkPasswordMatchesWith($this->requestPassword) || $this->viewAllProtectedFiles;
 
         return $canSeeBecauseOfPassword && $canSeeBecauseOfTag;
+    }
+
+    public function canListAnything(): bool
+    {
+        return $this->canListAnything;
     }
 }

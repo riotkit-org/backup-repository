@@ -34,11 +34,21 @@ class FilesListingForm
      */
     public $password = '';
 
+    public function getPage(): int
+    {
+        return (int) $this->page ?: 1;
+    }
+
+    public function getLimit(): int
+    {
+        return (int) $this->limit ?: 20;
+    }
+
     public function toArray(): array
     {
         return [
-            'page'        => $this->page,
-            'limit'       => $this->limit,
+            'page'        => $this->getPage(),
+            'limit'       => $this->getLimit(),
             'searchQuery' => $this->searchQuery,
             'tags'        => $this->tags,
             'mimes'       => $this->mimes,

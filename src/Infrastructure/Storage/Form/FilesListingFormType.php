@@ -18,14 +18,15 @@ class FilesListingFormType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('page', NumberType::class)
-            ->add('limit', NumberType::class)
+            ->add('page',        NumberType::class)
+            ->add('limit',       NumberType::class)
+            ->add('password',    TextType::class)
             ->add('searchQuery', TextType::class)
-            ->add('tags', CollectionType::class, [
+            ->add('tags',        CollectionType::class, [
                 'allow_add'    => true,
                 'allow_delete' => true
             ])
-            ->add('mimes', CollectionType::class, [
+            ->add('mimes',       CollectionType::class, [
                 'allow_add'    => true,
                 'allow_delete' => true
             ]);

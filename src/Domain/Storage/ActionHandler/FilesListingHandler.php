@@ -5,6 +5,7 @@ namespace App\Domain\Storage\ActionHandler;
 use App\Domain\Common\ValueObject\BaseUrl;
 use App\Domain\Storage\Entity\AnonymousFile;
 use App\Domain\Storage\Entity\StoredFile;
+use App\Domain\Storage\Exception\AuthenticationException;
 use App\Domain\Storage\Factory\PublicUrlFactory;
 use App\Domain\Storage\Form\FilesListingForm;
 use App\Domain\Storage\Parameters\Repository\FindByParameters;
@@ -29,8 +30,19 @@ class FilesListingHandler
         $this->urlFactory = $urlFactory;
     }
 
+    /**
+     * @param FilesListingForm $form
+     * @param ReadSecurityContext $securityContext
+     * @param BaseUrl $baseUrl
+     *
+     * @return array
+     *
+     * @throws AuthenticationException
+     */
     public function handle(FilesListingForm $form, ReadSecurityContext $securityContext, BaseUrl $baseUrl): array
     {
+        $this->assertHasRightsToListAnything($securityContext);
+
         $searchParameters = FindByParameters::createFromArray($form->toArray());
         $entries = $this->repository->findMultipleBy($searchParameters);
         $maxPages = $this->repository->getMultipleByPagesCount($searchParameters);
@@ -42,9 +54,9 @@ class FilesListingHandler
         return [
             'results' => $entriesWithPublicLink,
             'pagination' => [
-                'current' => $form->page,
+                'current' => $form->getPage(),
                 'max'     => $maxPages,
-                'perPage' => $form->limit
+                'perPage' => $form->getLimit()
             ]
         ];
     }
@@ -90,5 +102,20 @@ class FilesListingHandler
         }
 
         return $output;
+    }
+
+    /**
+     * @param ReadSecurityContext $securityContext
+     *
+     * @throws AuthenticationException
+     */
+    private function assertHasRightsToListAnything(ReadSecurityContext $securityContext): void
+    {
+        if (!$securityContext->canListAnything()) {
+            throw new AuthenticationException(
+                'Current token does not allow user to delete the file',
+                AuthenticationException::CODES['auth_cannot_delete_file']
+            );
+        }
     }
 }

@@ -63,6 +63,9 @@ final class Roles
     /** List files from ANY tag that was requested, else the user can list only files by tags allowed in token */
     public const ROLE_BROWSE_LIST_OF_FILES_BY_ANY_TAG = 'view.files_from_all_tags';
 
+    /** Define that the user can use the listing endpoint (basic usage) */
+    public const ROLE_ACCESS_LISTING_ENDPOINT = 'view.can_use_listing_endpoint_at_all';
+
     public const ROLES_LIST = [
         self::ROLE_UPLOAD_IMAGES,
         self::ROLE_UPLOAD_DOCS,
@@ -74,6 +77,7 @@ final class Roles
         self::ROLE_USE_TECHNICAL_ENDPOINTS,
         self::ROLE_DELETE_ALL_FILES,
         self::ROLE_VIEW_ALL_PROTECTED_FILES,
-        self::ROLE_BROWSE_LIST_OF_FILES_BY_ANY_TAG
+        self::ROLE_BROWSE_LIST_OF_FILES_BY_ANY_TAG,
+        self::ROLE_ACCESS_LISTING_ENDPOINT
     ];
 }
