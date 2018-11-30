@@ -5,18 +5,13 @@ namespace App\Domain\Storage\Entity;
 use App\Domain\Storage\ValueObject\Checksum;
 use App\Domain\Storage\ValueObject\Filename;
 use App\Domain\Storage\ValueObject\Mime;
-use App\Domain\Storage\ValueObject\Path;
+use App\Domain\Common\SharedEntity\StoredFile as StoredFileFromCommon;
 
 /**
  * Represents a file that is (or will be) stored in the storage
  */
-class StoredFile implements \JsonSerializable
+class StoredFile extends StoredFileFromCommon implements \JsonSerializable
 {
-    /**
-     * @var int
-     */
-    protected $id;
-
     /**
      * @var string
      */

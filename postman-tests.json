@@ -500,6 +500,50 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "Roles listing",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "c103d2a2-8227-4ba3-bce6-60465ab3489c",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Contains roles list as a dict\", function () {",
+									"    var jsonData = pm.response.json();",
+									"    pm.expect(typeof jsonData.roles).to.eql('object');",
+									"});",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"roles\": [\"upload.images\", \"this-role-is-invalid\"]\n}\n"
+						},
+						"url": {
+							"raw": "{{appUrl}}/auth/roles?_token=test-token-full-permissions",
+							"host": [
+								"{{appUrl}}"
+							],
+							"path": [
+								"auth",
+								"roles"
+							],
+							"query": [
+								{
+									"key": "_token",
+									"value": "test-token-full-permissions"
+								}
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
@@ -568,7 +612,7 @@
 			]
 		},
 		{
-			"name": "Registry",
+			"name": "Registry: Upload / Delete",
 			"item": [
 				{
 					"name": "[Upload] By URL",
@@ -577,7 +621,147 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"fileUrl\": \"https://scontent-waw1-1.xx.fbcdn.net/v/t1.0-1/p200x200/33676690_1665538920161317_2822612628159856640_n.png?_nc_cat=103&_nc_ht=scontent-waw1-1.xx&oh=dd805a27bebd132f5348a3fd701d716e&oe=5C70CD09\",\n    \"tags\": []\n}\n"
+							"raw": "{\n    \"fileUrl\": \"http://zsp.net.pl/files/barroness_logo.png\",\n    \"tags\": []\n}\n"
+						},
+						"url": {
+							"raw": "{{appUrl}}/repository/image/add-by-url?_token=test-token-full-permissions",
+							"host": [
+								"{{appUrl}}"
+							],
+							"path": [
+								"repository",
+								"image",
+								"add-by-url"
+							],
+							"query": [
+								{
+									"key": "_token",
+									"value": "test-token-full-permissions"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[Delete] Remove file added previously",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "dc11ec8c-cc22-4cd1-81e0-cc1984b26bfe",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"fileUrl\": \"https://iwa-ait.org/sites/default/files/iwaait_1.png\",\n    \"password\": \"InternationalWorkersAssociation\",\n    \"tags\": []\n}\n"
+						},
+						"url": {
+							"raw": "{{appUrl}}/repository/file/f8f39c14c7df5976aa1257f05692337c71bb749012022fe7eba74539248ae376_barroness_logo.png?_token=test-token-full-permissions",
+							"host": [
+								"{{appUrl}}"
+							],
+							"path": [
+								"repository",
+								"file",
+								"f8f39c14c7df5976aa1257f05692337c71bb749012022fe7eba74539248ae376_barroness_logo.png"
+							],
+							"query": [
+								{
+									"key": "_token",
+									"value": "test-token-full-permissions"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[Upload] Again same file by URL with password",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"fileUrl\": \"http://zsp.net.pl/files/barroness_logo.png\",\n    \"password\": \"InternationalWorkersAssociation\",\n    \"tags\": []\n}\n"
+						},
+						"url": {
+							"raw": "{{appUrl}}/repository/image/add-by-url?_token=test-token-full-permissions",
+							"host": [
+								"{{appUrl}}"
+							],
+							"path": [
+								"repository",
+								"image",
+								"add-by-url"
+							],
+							"query": [
+								{
+									"key": "_token",
+									"value": "test-token-full-permissions"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[Delete] Try to delete file without correct password and non-admin token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "18d6696c-d6c7-459e-a16e-65e919b53b21",
+								"type": "text/javascript",
+								"exec": [
+									"pm.test(\"Status code is 403\", function () {",
+									"    pm.response.to.have.status(403);",
+									"});",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"fileUrl\": \"https://iwa-ait.org/sites/default/files/iwaait_1.png\",\n    \"password\": \"InternationalWorkersAssociation\",\n    \"tags\": []\n}\n"
+						},
+						"url": {
+							"raw": "{{appUrl}}/repository/file/f8f39c14c7df5976aa1257f05692337c71bb749012022fe7eba74539248ae376_barroness_logo.png",
+							"host": [
+								"{{appUrl}}"
+							],
+							"path": [
+								"repository",
+								"file",
+								"f8f39c14c7df5976aa1257f05692337c71bb749012022fe7eba74539248ae376_barroness_logo.png"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[Upload] Add a file with a tag",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"fileUrl\": \"file://examples/files/image.jpg\",\n    \"tags\": [\n    \t\"grassroot\", \"memes\"\n    ]\n}\n"
 						},
 						"url": {
 							"raw": "{{appUrl}}/repository/image/add-by-url?_token=test-token-full-permissions",
@@ -644,6 +828,366 @@
 								{
 									"key": "fileName",
 									"value": "heart.png"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[Upload] Not allowed mime type",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "8e4e64f0-1228-4e16-8c2f-ef280ed08309",
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Checks the file size is validated\", function () {",
+									"    pm.expect(jsonData.status).to.eql('Mime type not allowed');",
+									"    pm.expect(jsonData.code).to.eql(400);",
+									"});",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "one-two-three a plaintext file here\n"
+						},
+						"url": {
+							"raw": "{{appUrl}}/repository/image/upload?_token={{token_with_low_file_size_limit}}&fileName=heart.png",
+							"host": [
+								"{{appUrl}}"
+							],
+							"path": [
+								"repository",
+								"image",
+								"upload"
+							],
+							"query": [
+								{
+									"key": "_token",
+									"value": "{{token_with_low_file_size_limit}}"
+								},
+								{
+									"key": "fileName",
+									"value": "heart.png"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "f170a6e9-2d09-42bd-8872-2a186eef98cf",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "cc44a1b7-8dae-4c31-ab72-d52cf476c3c3",
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Registry: Listing",
+			"item": [
+				{
+					"name": "Generate token for listing ALL tags",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "8a294cd3-a2bb-4dee-8655-d1d05b0258f9",
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Status code is 202\", function () {",
+									"    pm.response.to.have.status(202);",
+									"});",
+									"",
+									"",
+									"pm.globals.set(\"token_list_all_tags\", jsonData.tokenId);",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"roles\": [\"view.files_from_all_tags\", \"view.can_use_listing_endpoint_at_all\"]\n}"
+						},
+						"url": {
+							"raw": "{{appUrl}}/auth/token/generate?_token=test-token-full-permissions",
+							"host": [
+								"{{appUrl}}"
+							],
+							"path": [
+								"auth",
+								"token",
+								"generate"
+							],
+							"query": [
+								{
+									"key": "_token",
+									"value": "test-token-full-permissions"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "List all files",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "2f1b3da9-20b5-469b-92a3-f365d8f96dd4",
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Response time is less than 200ms\", function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(200);",
+									"});",
+									"",
+									"pm.test(\"Current page is first\", function () {",
+									"    pm.expect(jsonData.pagination.current).to.eql(1);",
+									"});",
+									"",
+									"pm.test(\"Maximum amount of results is 1 per page\", function () {",
+									"    pm.expect(jsonData.pagination.current).to.eql(1);",
+									"});",
+									"",
+									"pm.test(\"Maximum amount of results is 2 per page\", function () {",
+									"    pm.expect(jsonData.pagination.perPage).to.eql(2);",
+									"});",
+									"",
+									"pm.test(\"There are exactly 2 results\", function () {",
+									"    pm.expect(jsonData.results.length).to.eql(2);",
+									"});",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{appUrl}}/repository?_token=test-token-full-permissions&page=1&limit=2",
+							"host": [
+								"{{appUrl}}"
+							],
+							"path": [
+								"repository"
+							],
+							"query": [
+								{
+									"key": "_token",
+									"value": "test-token-full-permissions"
+								},
+								{
+									"key": "page",
+									"value": "1"
+								},
+								{
+									"key": "limit",
+									"value": "2"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search by TEXT 'barroness_logo'",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "d140e820-b6f3-4bf5-9054-b4f82b5b0680",
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Response time is less than 200ms\", function () {",
+									"    pm.expect(pm.response.responseTime).to.be.below(200);",
+									"});",
+									"",
+									"pm.test(\"Current page is first\", function () {",
+									"    pm.expect(jsonData.pagination.current).to.eql(1);",
+									"});",
+									"",
+									"pm.test(\"Maximum per page is fallback to default - 20 elements per page\", function () {",
+									"    pm.expect(jsonData.pagination.perPage).to.eql(20);",
+									"});",
+									"",
+									"pm.test(\"There is only one match\", function () {",
+									"    pm.expect(jsonData.results.length).to.eql(1);",
+									"});",
+									"",
+									"pm.test(\"First result atches file we were looking for - baroness_logo\", function () {",
+									"    pm.expect(jsonData.results[0].publicUrl).to.contain('barroness_logo.png');",
+									"    pm.expect(jsonData.results[0].mimeType).to.equal('image/png');",
+									"});"
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{appUrl}}/repository?_token=test-token-full-permissions&searchQuery=barroness_logo",
+							"host": [
+								"{{appUrl}}"
+							],
+							"path": [
+								"repository"
+							],
+							"query": [
+								{
+									"key": "_token",
+									"value": "test-token-full-permissions"
+								},
+								{
+									"key": "searchQuery",
+									"value": "barroness_logo"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Encrypted file should be anonymous if password not specified",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "b69ed365-790a-49e7-9b2f-6a1743fe4c64",
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"",
+									"pm.test(\"File name is anonymous\", function () {",
+									"    pm.expect(jsonData.results[0].filename).to.equal('anonymous');",
+									"});",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{appUrl}}/repository?_token={{token_list_all_tags}}&searchQuery=barroness_logo",
+							"host": [
+								"{{appUrl}}"
+							],
+							"path": [
+								"repository"
+							],
+							"query": [
+								{
+									"key": "_token",
+									"value": "{{token_list_all_tags}}"
+								},
+								{
+									"key": "searchQuery",
+									"value": "barroness_logo"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Encrypted file should be visible when correct password supplied",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "97cb3791-026d-43b1-9e27-fdc1d0529092",
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"",
+									"pm.test(\"File name is not hidden when password is correct\", function () {",
+									"    pm.expect(jsonData.results[0].filename).to.not.equal('anonymous');",
+									"    pm.expect(jsonData.results[0].filename).to.contain('barroness_logo');",
+									"});",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{appUrl}}/repository?_token={{token_list_all_tags}}&searchQuery=barroness_logo&password=InternationalWorkersAssociation",
+							"host": [
+								"{{appUrl}}"
+							],
+							"path": [
+								"repository"
+							],
+							"query": [
+								{
+									"key": "_token",
+									"value": "{{token_list_all_tags}}"
+								},
+								{
+									"key": "searchQuery",
+									"value": "barroness_logo"
+								},
+								{
+									"key": "password",
+									"value": "InternationalWorkersAssociation"
 								}
 							]
 						}

@@ -26,3 +26,8 @@ App\Domain\Authentication\Entity\Token:
         creationDate:
             type: datetime_immutable
             column: creation_date
+
+        active:
+            type: boolean
+            options:
+                default: true

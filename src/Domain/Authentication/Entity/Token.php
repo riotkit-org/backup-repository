@@ -36,6 +36,11 @@ class Token
     private $data = [];
 
     /**
+     * @var bool
+     */
+    private $active;
+
+    /**
      * @throws \Exception
      */
     public function __construct()
@@ -99,6 +104,18 @@ class Token
     public function setExpirationDate(\DateTimeImmutable $expirationDate): Token
     {
         $this->expirationDate = $expirationDate;
+        return $this;
+    }
+
+    public function activate(): Token
+    {
+        $this->active = true;
+        return $this;
+    }
+
+    public function deactivate(): Token
+    {
+        $this->active = false;
         return $this;
     }
 

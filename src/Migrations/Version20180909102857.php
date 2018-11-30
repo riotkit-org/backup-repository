@@ -18,6 +18,7 @@ final class Version20180909102857 extends AbstractMigration
             $table->addColumn('data',            Type::JSON);
             $table->addColumn('expiration_date', Type::DATETIME_IMMUTABLE);
             $table->addColumn('creation_date',   Type::DATETIME_IMMUTABLE);
+            $table->addColumn('active',          Type::BOOLEAN);
 
             $table->setPrimaryKey(['id']);
         }

@@ -34,6 +34,12 @@ class TokenDoctrineRepository extends ServiceEntityRepository implements TokenRe
         $this->_em->remove($token);
     }
 
+    public function deactivate(Token $token): void
+    {
+        $token->deactivate();
+        $this->persist($token);
+    }
+
     public function getExpiredTokens(): array
     {
         $qb = $this->createQueryBuilder('token');

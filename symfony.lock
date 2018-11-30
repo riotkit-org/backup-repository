@@ -80,6 +80,9 @@
             "ref": "70062abc2cd58794d2a90274502f81b55cd9951b"
         }
     },
+    "gabrielelana/byte-units": {
+        "version": "0.5.0"
+    },
     "glenscott/url-normalizer": {
         "version": "1.4.0"
     },
