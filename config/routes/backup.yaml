@@ -1,0 +1,34 @@
+backup.collection_create:
+    path: /repository/collection
+    controller: 'App\Controller\Backup\Collection\CreationController::createAction'
+    methods: ['POST']
+    defaults:
+        _secured: true
+
+#backup.collection_edit:
+#    path: /repository/collection
+#    controller: 'App\Controller\Backup\Collection\EditController::editAction'
+#    methods: ['PUT']
+#    defaults:
+#        _secured: true
+#
+#backup.collection_delete:
+#    path: /repository/collection/{id}
+#    controller: 'App\Controller\Backup\Collection\DeleteController::deleteAction'
+#    methods: ['DELETE']
+#    defaults:
+#        _secured: true
+#
+#backup.collection_fetch:
+#    path: /repository/collection/{id}
+#    controller: 'App\Controller\Backup\Collection\LookupController::lookupAction'
+#    methods: ['GET']
+#    defaults:
+#        _secured: true
+#
+#backup.collection_listing:
+#    path: /repository/collections
+#    controller: 'App\Controller\Backup\Collection\ListingController::listingAction'
+#    methods: ['GET']
+#    defaults:
+#        _secured: true

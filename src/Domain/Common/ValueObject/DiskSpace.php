@@ -2,16 +2,22 @@
 
 namespace App\Domain\Common\ValueObject;
 
-class DiskSpace
+class DiskSpace extends BaseValueObject implements \JsonSerializable
 {
     /**
      * @var int
      */
-    private $value;
+    protected $value;
 
     public function __construct(string $size)
     {
-        $this->value = (int) \ByteUnits\parse($size)->numberOfBytes();
+        try {
+            $this->value = (int) \ByteUnits\parse($size)->numberOfBytes();
+
+        } catch (\Exception $exception) {
+            $exceptionType = static::getExceptionType();
+            throw new $exceptionType('Cannot parse file size into bytes, make sure the format is correct');
+        }
     }
 
     public function getValue(): int
@@ -22,5 +28,10 @@ class DiskSpace
     public function toHumanReadable(): string
     {
         return \ByteUnits\Metric::bytes($this->value)->format();
+    }
+
+    public function jsonSerialize()
+    {
+        return $this->getValue();
     }
 }

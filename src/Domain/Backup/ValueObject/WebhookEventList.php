@@ -2,6 +2,8 @@
 
 namespace App\Domain\Backup\ValueObject;
 
+use App\Domain\Backup\Exception\ValueObjectException;
+
 class WebhookEventList
 {
     /**
@@ -17,11 +19,16 @@ class WebhookEventList
         self::EVENT_BACKUP_FAILED
     ];
 
+    /**
+     * @param array $events
+     *
+     * @throws ValueObjectException
+     */
     public function __construct(array $events)
     {
         foreach ($events as $event) {
             if (!\in_array($event, self::EVENTS, true)) {
-                throw new \InvalidArgumentException('Unsupported event "' . $event . '"');
+                throw new ValueObjectException('Unsupported event "' . $event . '"');
             }
         }
 

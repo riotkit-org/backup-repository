@@ -66,6 +66,13 @@ final class Roles
     /** Define that the user can use the listing endpoint (basic usage) */
     public const ROLE_ACCESS_LISTING_ENDPOINT = 'view.can_use_listing_endpoint_at_all';
 
+    //
+    //
+    // collections
+    //
+    //
+    public const ROLE_COLLECTION_ADD = 'collections.create_new';
+
     public const ROLES_LIST = [
         self::ROLE_UPLOAD_IMAGES,
         self::ROLE_UPLOAD_DOCS,
@@ -78,6 +85,7 @@ final class Roles
         self::ROLE_DELETE_ALL_FILES,
         self::ROLE_VIEW_ALL_PROTECTED_FILES,
         self::ROLE_BROWSE_LIST_OF_FILES_BY_ANY_TAG,
-        self::ROLE_ACCESS_LISTING_ENDPOINT
+        self::ROLE_ACCESS_LISTING_ENDPOINT,
+        self::ROLE_COLLECTION_ADD
     ];
 }

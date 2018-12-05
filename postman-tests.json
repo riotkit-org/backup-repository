@@ -1195,6 +1195,123 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "Backup",
+			"item": [
+				{
+					"name": "Create collection: Validation success",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "9035199c-00b4-42e2-a973-0b28f98036eb",
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Status code is 202\", function () {",
+									"    pm.response.to.have.status(202);",
+									"});",
+									"",
+									"pm.test(\"Id is 36 length UUID\", function () {",
+									"    pm.expect(jsonData.collection.id.length).to.eql(36);",
+									"});",
+									"",
+									"pm.test(\"All fields are at its place\", function () {",
+									"    pm.expect(jsonData.collection.max_backups_count).to.eql(5);",
+									"    pm.expect(jsonData.collection.max_one_backup_version_size).to.eql(0);",
+									"    pm.expect(jsonData.collection.max_collection_size).to.eql(250000000);",
+									"    pm.expect(jsonData.collection.strategy).to.eql('delete_oldest_when_adding_new');",
+									"    pm.expect(jsonData.collection.description).to.eql('Test collection');",
+									"});",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"maxBackupsCount\": 5,\n\t\"maxOneVersionSize\": 0,\n\t\"maxCollectionSize\": \"250MB\",\n\t\"strategy\": \"delete_oldest_when_adding_new\",\n\t\"description\": \"Test collection\"\n}\n"
+						},
+						"url": {
+							"raw": "{{appUrl}}/repository/collection?_token=test-token-full-permissions&simulate=true",
+							"host": [
+								"{{appUrl}}"
+							],
+							"path": [
+								"repository",
+								"collection"
+							],
+							"query": [
+								{
+									"key": "_token",
+									"value": "test-token-full-permissions"
+								},
+								{
+									"key": "simulate",
+									"value": "true"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Validation check",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "e8c7a755-a144-46b0-8177-d137b9d45aec",
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Status code is 400\", function () {",
+									"    pm.response.to.have.status(400);",
+									"});",
+									"",
+									"pm.test(\"All fields are at its place\", function () {",
+									"    pm.expect(jsonData.errors.maxBackupsCount).to.eql('Number cannot be negative value');",
+									"    pm.expect(jsonData.errors.maxOneVersionSize).to.eql('Cannot parse file size into bytes, make sure the format is correct');",
+									"    pm.expect(jsonData.errors.strategy).to.eql('Unknown strategy \"invalid_strategy\". Allowed: delete_oldest_when_adding_new, alert_when_backup_limit_reached');",
+									"});",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"maxBackupsCount\": -5,\n\t\"maxOneVersionSize\": \"invalid-format-cannot-parse\",\n\t\"maxCollectionSize\": \"1111\",\n\t\"strategy\": \"invalid_strategy\",\n\t\"description\": null\n}\n"
+						},
+						"url": {
+							"raw": "{{appUrl}}/repository/collection?_token=test-token-full-permissions",
+							"host": [
+								"{{appUrl}}"
+							],
+							"path": [
+								"repository",
+								"collection"
+							],
+							"query": [
+								{
+									"key": "_token",
+									"value": "test-token-full-permissions"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		}
 	],
 	"event": [

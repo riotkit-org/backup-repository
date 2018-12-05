@@ -1,0 +1,51 @@
+App\Domain\Backup\Entity\BackupCollection:
+    type: entity
+    table: backup_collections
+
+    id:
+        id:
+            type: guid
+            generator:
+                strategy: UUID
+
+    embedded:
+        description:
+            class: App\Domain\Backup\ValueObject\Collection\Description
+            columnPrefix: false
+
+        maxBackupsCount:
+            class: App\Domain\Backup\ValueObject\Collection\CollectionLength
+            columnPrefix: false
+
+        maxOneVersionSize:
+            class: App\Domain\Backup\ValueObject\Collection\BackupSize
+            columnPrefix: false
+
+        maxCollectionSize:
+            class: App\Domain\Backup\ValueObject\Collection\CollectionSize
+            columnPrefix: false
+
+        strategy:
+            class: App\Domain\Backup\ValueObject\BackupStrategy
+            columnPrefix: false
+
+    fields:
+        creationDate:
+            type: datetime_immutable
+
+    oneToMany:
+        webhooks:
+            targetEntity: App\Domain\Backup\Entity\Webhook
+            mappedBy: collection
+
+    manyToMany:
+        allowedTokens:
+            targetEntity: App\Domain\Authentication\Entity\Token
+            joinTable:
+                name: collection_tokens
+                joinColumns:
+                    collection_id:
+                        referencedColumnName: id
+                inverseJoinColumns:
+                    token_id:
+                        referencedColumnName: id

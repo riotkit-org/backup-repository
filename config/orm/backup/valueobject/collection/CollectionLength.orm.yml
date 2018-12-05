@@ -1,0 +1,7 @@
+App\Domain\Backup\ValueObject\Collection\CollectionLength:
+    type: embeddable
+    fields:
+        value:
+            type: integer
+            column: max_backups_count
+            nullable: false

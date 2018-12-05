@@ -2,7 +2,9 @@
 
 namespace App\Domain\Backup\ValueObject;
 
-class HttpMethod
+use App\Domain\Backup\Exception\ValueObjectException;
+
+class HttpMethod implements \JsonSerializable
 {
     /**
      * @var string
@@ -23,10 +25,15 @@ class HttpMethod
         self::METHOD_DELETE
     ];
 
+    /**
+     * @param string $methodName
+     *
+     * @throws ValueObjectException
+     */
     public function __construct(string $methodName)
     {
         if (!\in_array($methodName, self::METHODS, true)) {
-            throw new \InvalidArgumentException('Unknown HTTP method "' . $methodName . '"');
+            throw new ValueObjectException('Unknown HTTP method "' . $methodName . '"');
         }
 
         $this->value = $methodName;
@@ -35,5 +42,10 @@ class HttpMethod
     public function getValue(): string
     {
         return $this->value;
+    }
+
+    public function jsonSerialize()
+    {
+        return $this->getValue();
     }
 }

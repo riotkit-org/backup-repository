@@ -2,7 +2,9 @@
 
 namespace App\Domain\Common\ValueObject\Numeric;
 
-class PositiveNumber
+use App\Domain\Common\ValueObject\BaseValueObject;
+
+class PositiveNumber extends BaseValueObject implements \JsonSerializable
 {
     /**
      * @var int
@@ -17,7 +19,8 @@ class PositiveNumber
     protected function setValue($number): void
     {
         if ($number < 1) {
-            throw new \InvalidArgumentException('Number cannot be 0 or negative');
+            $exceptionType = static::getExceptionType();
+            throw new $exceptionType('Number cannot be 0 or negative');
         }
 
         $this->value = $number;
@@ -26,5 +29,10 @@ class PositiveNumber
     public function getValue(): int
     {
         return $this->value;
+    }
+
+    public function jsonSerialize()
+    {
+        return $this->getValue();
     }
 }

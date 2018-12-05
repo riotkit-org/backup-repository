@@ -7,41 +7,47 @@ use App\Domain\Backup\ValueObject\BackupStrategy;
 use App\Domain\Backup\ValueObject\Collection\BackupSize;
 use App\Domain\Backup\ValueObject\Collection\CollectionLength;
 use App\Domain\Backup\ValueObject\Collection\CollectionSize;
+use App\Domain\Backup\ValueObject\Collection\Description;
 
 /**
  * Represents a single backup (eg. database dump from iwa-ait.org website) collection
  */
-class BackupCollection
+class BackupCollection implements \JsonSerializable
 {
     /**
      * @var string
      */
-    private $id;
+    protected $id;
+
+    /**
+     * @var Description
+     */
+    protected $description;
 
     /**
      * @var CollectionLength
      */
-    private $maxBackupsCount;
+    protected $maxBackupsCount;
 
     /**
      * @var BackupSize
      */
-    private $maxOneVersionSize;
+    protected $maxOneVersionSize;
 
     /**
      * @var CollectionSize
      */
-    private $maxCollectionSize;
+    protected $maxCollectionSize;
 
     /**
      * @var Webhook[]
      */
-    private $webhooks;
+    protected $webhooks;
 
     /**
      * @var Token[]
      */
-    private $allowedTokens;
+    protected $allowedTokens;
 
     /**
      * Defines a strategy - should the older backups be deleted in favor of new backups, or should the user
@@ -49,10 +55,106 @@ class BackupCollection
      *
      * @var BackupStrategy
      */
-    private $strategy;
+    protected $strategy;
 
     /**
      * @var \DateTimeImmutable
      */
-    private $creationDate;
+    protected $creationDate;
+
+    /**
+     * @throws \Exception
+     */
+    public function __construct()
+    {
+        $this->creationDate = new \DateTimeImmutable();
+    }
+
+    /**
+     * @immutable
+     *
+     * @param CollectionLength $param
+     *
+     * @return BackupCollection
+     */
+    public function withMaxBackupsCount(CollectionLength $param): BackupCollection
+    {
+        $self = clone $this;
+        $self->maxBackupsCount = $param;
+
+        return $self;
+    }
+
+    /**
+     * @immutable
+     *
+     * @param BackupSize $param
+     *
+     * @return BackupCollection
+     */
+    public function withOneVersionSize(BackupSize $param): BackupCollection
+    {
+        $self = clone $this;
+        $self->maxOneVersionSize = $param;
+
+        return $self;
+    }
+
+    /**
+     * @immutable
+     *
+     * @param CollectionSize $param
+     *
+     * @return BackupCollection
+     */
+    public function withCollectionSize(CollectionSize $param): BackupCollection
+    {
+        $self = clone $this;
+        $self->maxCollectionSize = $param;
+
+        return $self;
+    }
+
+    /**
+     * @immutable
+     *
+     * @param BackupStrategy $param
+     *
+     * @return BackupCollection
+     */
+    public function withStrategy(BackupStrategy $param): BackupCollection
+    {
+        $self = clone $this;
+        $self->strategy = $param;
+
+        return $self;
+    }
+
+    /**
+     * @immutable
+     *
+     * @param Description $param
+     *
+     * @return BackupCollection
+     */
+    public function withDescription(Description $param): BackupCollection
+    {
+        $self = clone $this;
+        $self->description = $param;
+
+        return $self;
+    }
+
+    public function jsonSerialize()
+    {
+        return [
+            'id'                          => $this->id,
+            'max_backups_count'           => $this->maxBackupsCount,
+            'max_one_backup_version_size' => $this->maxOneVersionSize,
+            'max_collection_size'         => $this->maxCollectionSize,
+            'created_at'                  => $this->creationDate,
+            'strategy'                    => $this->strategy,
+            'description'                 => $this->description
+        ];
+    }
 }

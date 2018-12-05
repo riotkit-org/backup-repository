@@ -2,8 +2,13 @@
 
 namespace App\Domain\Backup\ValueObject\Version;
 
-use App\Domain\Common\ValueObject\PositiveNumber;
+use App\Domain\Backup\Exception\ValueObjectException;
+use App\Domain\Common\ValueObject\Numeric\PositiveNumber;
 
 class VersionNumber extends PositiveNumber
 {
+    protected static function getExceptionType(): string
+    {
+        return ValueObjectException::class;
+    }
 }

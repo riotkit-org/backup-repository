@@ -4,7 +4,7 @@ namespace App\Domain\Common\ValueObject;
 
 use URL\Normalizer;
 
-class Url implements \JsonSerializable
+class Url extends BaseValueObject implements \JsonSerializable
 {
     /**
      * @var string
@@ -22,7 +22,8 @@ class Url implements \JsonSerializable
         $this->value = $this->normalize($this->value);
 
         if ($this->value && !filter_var($this->value, FILTER_VALIDATE_URL)) {
-            throw new \InvalidArgumentException('Invalid URL address');
+            $exceptionType = static::getExceptionType();
+            throw new $exceptionType('Invalid URL address');
         }
     }
 
