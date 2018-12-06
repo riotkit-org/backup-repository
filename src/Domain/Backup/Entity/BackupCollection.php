@@ -157,4 +157,29 @@ class BackupCollection implements \JsonSerializable
             'description'                 => $this->description
         ];
     }
+
+    public function getDescription(): Description
+    {
+        return $this->description;
+    }
+
+    public function getMaxBackupsCount(): CollectionLength
+    {
+        return $this->maxBackupsCount;
+    }
+
+    public function getMaxOneVersionSize(): BackupSize
+    {
+        return $this->maxOneVersionSize;
+    }
+
+    public function getMaxCollectionSize(): CollectionSize
+    {
+        return $this->maxCollectionSize;
+    }
+
+    public function setMaxCollectionSize(CollectionSize $maxCollectionSize): void
+    {
+        $this->maxCollectionSize = $maxCollectionSize;
+    }
 }

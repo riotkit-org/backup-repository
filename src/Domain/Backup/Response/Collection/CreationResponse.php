@@ -31,6 +31,11 @@ class CreationResponse implements \JsonSerializable
      */
     private $errors;
 
+    /**
+     * @var array|null
+     */
+    private $context;
+
     public static function createWithValidationErrors(array $validationErrors): CreationResponse
     {
         $new = new static();
@@ -38,6 +43,18 @@ class CreationResponse implements \JsonSerializable
         $new->errorCode = 400;
         $new->exitCode  = 400;
         $new->errors    = $validationErrors;
+
+        return $new;
+    }
+
+    public static function createWithDomainError(string $status, string $fieldName, int $code, $context): CreationResponse
+    {
+        $new = new static();
+        $new->status    = 'Logic validation error';
+        $new->errorCode = $code;
+        $new->exitCode  = 400;
+        $new->errors    = [$fieldName => $status];
+        $new->context = $context;
 
         return $new;
     }
@@ -61,7 +78,8 @@ class CreationResponse implements \JsonSerializable
             'error_code' => $this->errorCode,
             'http_code'  => $this->exitCode,
             'errors'     => $this->errors,
-            'collection' => $this->collection
+            'collection' => $this->collection,
+            'context'    => $this->context
         ];
     }
 

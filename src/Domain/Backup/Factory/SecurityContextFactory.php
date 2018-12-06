@@ -11,7 +11,8 @@ class SecurityContextFactory
     public function createCollectionManagementContext(Token $token): CollectionManagementContext
     {
         return new CollectionManagementContext(
-            $token->hasRole(Roles::ROLE_COLLECTION_ADD)
+            $token->hasRole(Roles::ROLE_COLLECTION_ADD),
+            $token->hasRole(Roles::ROLE_COLLECTION_ADD_WITH_INFINITE_LIMITS)
         );
     }
 }

@@ -28,7 +28,7 @@ class BackupStrategy implements \JsonSerializable
     {
         if (!\in_array($strategy, self::STRATEGIES, true)) {
             throw new ValueObjectException(
-                'Unknown strategy "' . $strategy . '". Allowed: ' . implode(', ', self::STRATEGIES)
+                'unknown_strategy_allowed___delete_oldest_when_adding_new___or__alert_when_backup_limit_reached'
             );
         }
 

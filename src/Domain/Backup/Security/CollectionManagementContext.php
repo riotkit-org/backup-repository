@@ -2,6 +2,8 @@
 
 namespace App\Domain\Backup\Security;
 
+use App\Domain\Backup\Form\Collection\CreationForm;
+
 class CollectionManagementContext
 {
     /**
@@ -9,13 +11,32 @@ class CollectionManagementContext
      */
     private $canCreateCollections;
 
-    public function __construct(bool $canCreateCollections)
+    /**
+     * @var bool
+     */
+    private $canCreateCollectionsWithoutLimit;
+
+    public function __construct(bool $canCreateCollections, bool $canCreateCollectionsWithoutLimit)
     {
-        $this->canCreateCollections = $canCreateCollections;
+        $this->canCreateCollections             = $canCreateCollections;
+        $this->canCreateCollectionsWithoutLimit = $canCreateCollectionsWithoutLimit;
     }
 
-    public function canCreateCollections(): bool
+    public function canCreateCollection(CreationForm $form): bool
     {
+        if (!$this->checkCollectionCanBeCreatedIfUnlimitedLimitsWereSet($form)) {
+            return false;
+        }
+
         return $this->canCreateCollections;
+    }
+
+    private function checkCollectionCanBeCreatedIfUnlimitedLimitsWereSet(CreationForm $form): bool
+    {
+        if ($form->maxOneVersionSize && $form->maxCollectionSize && $form->maxBackupsCount) {
+            return true;
+        }
+
+        return $this->canCreateCollectionsWithoutLimit;
     }
 }

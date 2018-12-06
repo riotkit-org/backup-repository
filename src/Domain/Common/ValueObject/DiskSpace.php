@@ -2,21 +2,19 @@
 
 namespace App\Domain\Common\ValueObject;
 
-class DiskSpace extends BaseValueObject implements \JsonSerializable
-{
-    /**
-     * @var int
-     */
-    protected $value;
+use App\Domain\Common\ValueObject\Numeric\PositiveNumberOrZero;
 
+class DiskSpace extends PositiveNumberOrZero implements \JsonSerializable
+{
     public function __construct(string $size)
     {
         try {
-            $this->value = (int) \ByteUnits\parse($size)->numberOfBytes();
+            $valueInBytes = (int) \ByteUnits\parse($size)->numberOfBytes();
+            parent::__construct($valueInBytes);
 
         } catch (\Exception $exception) {
             $exceptionType = static::getExceptionType();
-            throw new $exceptionType('Cannot parse file size into bytes, make sure the format is correct');
+            throw new $exceptionType('cannot_parse_disk_space_check_format');
         }
     }
 

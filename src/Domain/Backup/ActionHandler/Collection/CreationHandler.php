@@ -4,6 +4,7 @@ namespace App\Domain\Backup\ActionHandler\Collection;
 
 use App\Domain\Backup\Exception\AuthenticationException;
 use App\Domain\Backup\Exception\CollectionMappingError;
+use App\Domain\Backup\Exception\ValidationException;
 use App\Domain\Backup\Form\Collection\CreationForm;
 use App\Domain\Backup\Manager\CollectionManager;
 use App\Domain\Backup\Response\Collection\CreationResponse;
@@ -22,7 +23,7 @@ class CreationHandler
     }
 
     /**
-     * @param CreationForm $form
+     * @param CreationForm                $form
      * @param CollectionManagementContext $securityContext
      *
      * @return CreationResponse
@@ -31,13 +32,21 @@ class CreationHandler
      */
     public function handle(CreationForm $form, CollectionManagementContext $securityContext): CreationResponse
     {
-        $this->assertHasRights($securityContext);
+        $this->assertHasRights($securityContext, $form);
 
         try {
             $collection = $this->manager->create($form);
 
         } catch (CollectionMappingError $mappingError) {
             return CreationResponse::createWithValidationErrors($mappingError->getErrors());
+
+        } catch (ValidationException $validationException) {
+            return CreationResponse::createWithDomainError(
+                $validationException->getMessage(),
+                $validationException->getField(),
+                $validationException->getCode(),
+                $validationException->getReference()
+            );
         }
 
         return CreationResponse::createSuccessfullResponse($collection);
@@ -53,15 +62,16 @@ class CreationHandler
 
     /**
      * @param CollectionManagementContext $securityContext
+     * @param CreationForm                $form
      *
      * @throws AuthenticationException
      */
-    private function assertHasRights(CollectionManagementContext $securityContext): void
+    private function assertHasRights(CollectionManagementContext $securityContext, CreationForm $form): void
     {
-        if (!$securityContext->canCreateCollections()) {
+        if (!$securityContext->canCreateCollection($form)) {
             throw new AuthenticationException(
-                'Current token does not allow user to delete the file',
-                AuthenticationException::CODES['auth_cannot_delete_file']
+                'Current token does not allow to create this collection',
+                AuthenticationException::CODES['not_authenticated']
             );
         }
     }

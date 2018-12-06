@@ -4,6 +4,7 @@ namespace App\Domain\Backup\Manager;
 
 use App\Domain\Backup\Entity\BackupCollection;
 use App\Domain\Backup\Exception\CollectionMappingError;
+use App\Domain\Backup\Exception\ValidationException;
 use App\Domain\Backup\Factory\CollectionFactory;
 use App\Domain\Backup\Form\Collection\CreationForm;
 use App\Domain\Backup\Repository\CollectionRepository;
@@ -47,6 +48,7 @@ class CollectionManager
      * @return BackupCollection
      *
      * @throws CollectionMappingError
+     * @throws ValidationException
      */
     public function create(CreationForm $form): BackupCollection
     {
@@ -56,7 +58,7 @@ class CollectionManager
         $collection = $this->factory->createFromForm($form);
 
         // second stage of validation - logic, permissions and existence validation
-        $this->validator->validateBeforeCreation($form);
+        $this->validator->validateBeforeCreation($collection);
 
         $this->repository->persist($collection);
 

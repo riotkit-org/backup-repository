@@ -4,6 +4,9 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
+    env(BACKUP_MAX_VERSIONS): 5
+    env(BACKUP_ONE_VERSION_MAX_SIZE): "25MB"
+    env(BACKUP_COLLECTION_MAX_SIZE): "125MB"
 
 services:
     # default configuration for services in *this* file
@@ -62,3 +65,10 @@ services:
         class: App\Infrastructure\Storage\Manager\TestHttpDownloadProvider
         arguments:
             $parentProvider: '@App\Infrastructure\Storage\Manager\DownloadViaGuzzleProvider'
+
+    App\Domain\Backup\Settings\BackupSettings:
+        class: App\Domain\Backup\Settings\BackupSettings
+        arguments:
+            $maxBackupsCountPerCollection: '%env(BACKUP_MAX_VERSIONS)%'
+            $maxOneBackupVersionSize: '%env(BACKUP_ONE_VERSION_MAX_SIZE)%'
+            $maxWholeCollectionSize: '%env(BACKUP_COLLECTION_MAX_SIZE)%'

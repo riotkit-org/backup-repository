@@ -71,7 +71,11 @@ final class Roles
     // collections
     //
     //
+    /** Allow person creatin a new backup collection */
     public const ROLE_COLLECTION_ADD = 'collections.create_new';
+
+    /** Allow creating backup collections that have no limits on size and length */
+    public const ROLE_COLLECTION_ADD_WITH_INFINITE_LIMITS = 'collections.allow_infinite_limits';
 
     public const ROLES_LIST = [
         self::ROLE_UPLOAD_IMAGES,

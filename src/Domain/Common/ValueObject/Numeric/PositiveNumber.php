@@ -31,6 +31,36 @@ class PositiveNumber extends BaseValueObject implements \JsonSerializable
         return $this->value;
     }
 
+    public function isSameAs(PositiveNumber $number): bool
+    {
+        return $number->getValue() === $this->getValue();
+    }
+
+    public function isHigherThan(PositiveNumber $number): bool
+    {
+        return $this->getValue() > $number->getValue();
+    }
+
+    public function isHigherThanOrEqual(PositiveNumber $number): bool
+    {
+        return $this->getValue() >= $number->getValue();
+    }
+
+    public function isLessThan(PositiveNumber $number): bool
+    {
+        return $this->getValue() < $number->getValue();
+    }
+
+    public function isLessThanOrEqual(PositiveNumber $number): bool
+    {
+        return $this->getValue() <= $number->getValue();
+    }
+
+    public function isZero(): bool
+    {
+        return $this->getValue() === 0;
+    }
+
     public function jsonSerialize()
     {
         return $this->getValue();

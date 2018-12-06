@@ -8,7 +8,7 @@ class PositiveNumberOrZero extends PositiveNumber
     {
         if ($number < 0) {
             $exceptionType = static::getExceptionType();
-            throw new $exceptionType('Number cannot be negative value');
+            throw new $exceptionType('number_cannot_be_negative_value');
         }
 
         $this->value = $number;
