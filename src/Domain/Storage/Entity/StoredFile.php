@@ -15,11 +15,6 @@ class StoredFile extends StoredFileFromCommon implements \JsonSerializable
     /**
      * @var string
      */
-    protected $fileName;
-
-    /**
-     * @var string
-     */
     protected $contentHash = '';
 
     /**
@@ -119,14 +114,6 @@ class StoredFile extends StoredFileFromCommon implements \JsonSerializable
     }
 
     /**
-     * @return Filename
-     */
-    public function getFilename(): Filename
-    {
-        return new Filename($this->fileName);
-    }
-
-    /**
      * @param Checksum $contentHash
      *
      * @return StoredFile
@@ -222,5 +209,10 @@ class StoredFile extends StoredFileFromCommon implements \JsonSerializable
                 'isPasswordProtected' => $this->isPasswordProtected()
             ]
         ];
+    }
+
+    protected static function getFilenameClass(): string
+    {
+        return Filename::class;
     }
 }

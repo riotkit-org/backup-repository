@@ -15,6 +15,7 @@
         "kendrick/symfony-debug-toolbar-git": "^1.4",
         "league/flysystem-aws-s3-v2": "^1.0",
         "oneup/flysystem-bundle": "^3.0",
+        "ramsey/uuid": "^3.8",
         "sensio/framework-extra-bundle": "^5.2",
         "symfony/console": "*",
         "symfony/debug-pack": "^1.0",

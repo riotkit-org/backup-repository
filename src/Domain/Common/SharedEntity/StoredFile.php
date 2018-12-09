@@ -2,10 +2,28 @@
 
 namespace App\Domain\Common\SharedEntity;
 
-class StoredFile
+use App\Domain\Common\ValueObject\Filename;
+
+abstract class StoredFile
 {
     /**
      * @var int
      */
     protected $id;
+
+    /**
+     * @var string
+     */
+    protected $fileName;
+
+    /**
+     * @return Filename
+     */
+    public function getFilename()
+    {
+        $class = static::getFilenameClass();
+        return new $class($this->fileName);
+    }
+
+    abstract protected static function getFilenameClass(): string;
 }

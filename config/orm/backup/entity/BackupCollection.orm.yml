@@ -33,14 +33,14 @@ App\Domain\Backup\Entity\BackupCollection:
         creationDate:
             type: datetime_immutable
 
-    oneToMany:
-        webhooks:
-            targetEntity: App\Domain\Backup\Entity\Webhook
-            mappedBy: collection
+    #oneToMany:
+    #    webhooks:
+    #        targetEntity: App\Domain\Backup\Entity\Webhook
+    #        mappedBy: collection
 
     manyToMany:
         allowedTokens:
-            targetEntity: App\Domain\Authentication\Entity\Token
+            targetEntity: App\Domain\Backup\Entity\Authentication\Token
             joinTable:
                 name: collection_tokens
                 joinColumns:

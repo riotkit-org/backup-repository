@@ -2,7 +2,6 @@
 
 namespace App\Domain\Backup\Entity;
 
-use App\Domain\Backup\ValueObject\StoredFile;
 use App\Domain\Backup\ValueObject\Version\VersionNumber;
 
 class StoredVersion
@@ -31,4 +30,30 @@ class StoredVersion
      * @var \DateTimeImmutable
      */
     private $creationDate;
+
+    public function getId(): string
+    {
+        return $this->id;
+    }
+
+    public function getCollection(): BackupCollection
+    {
+        return $this->collection;
+    }
+
+    /**
+     * @return StoredFile
+     */
+    public function getFile(): StoredFile
+    {
+        return $this->file;
+    }
+
+    /**
+     * @return VersionNumber
+     */
+    public function getVersionNumber(): VersionNumber
+    {
+        return $this->versionNumber;
+    }
 }

@@ -17,6 +17,18 @@ class CollectionDoctrineRepository extends ServiceEntityRepository implements Co
     /**
      * @param BackupCollection $collection
      *
+     * @return BackupCollection|null
+     *
+     * @throws \Doctrine\ORM\ORMException
+     */
+    public function merge(BackupCollection $collection): ?BackupCollection
+    {
+        return $this->getEntityManager()->merge($collection);
+    }
+
+    /**
+     * @param BackupCollection $collection
+     *
      * @throws \Doctrine\ORM\ORMException
      */
     public function persist(BackupCollection $collection): void

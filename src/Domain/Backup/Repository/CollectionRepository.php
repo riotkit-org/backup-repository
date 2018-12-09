@@ -7,6 +7,16 @@ use App\Domain\Backup\Entity\BackupCollection;
 interface CollectionRepository
 {
     /**
+     * Re-connect the entity with database and entity manager
+     * (after eg. it was CLONED)
+     *
+     * @param BackupCollection $collection
+     *
+     * @return BackupCollection
+     */
+    public function merge(BackupCollection $collection): ?BackupCollection;
+
+    /**
      * @param BackupCollection $collection
      */
     public function persist(BackupCollection $collection): void;

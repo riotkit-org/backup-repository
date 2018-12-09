@@ -4,7 +4,7 @@ namespace App\Domain\Backup\Response\Collection;
 
 use App\Domain\Backup\Entity\BackupCollection;
 
-class CreationResponse implements \JsonSerializable
+class CrudResponse implements \JsonSerializable
 {
     /**
      * @var string
@@ -36,7 +36,7 @@ class CreationResponse implements \JsonSerializable
      */
     private $context;
 
-    public static function createWithValidationErrors(array $validationErrors): CreationResponse
+    public static function createWithValidationErrors(array $validationErrors): CrudResponse
     {
         $new = new static();
         $new->status    = 'Form validation error';
@@ -47,7 +47,7 @@ class CreationResponse implements \JsonSerializable
         return $new;
     }
 
-    public static function createWithDomainError(string $status, string $fieldName, int $code, $context): CreationResponse
+    public static function createWithDomainError(string $status, string $fieldName, int $code, $context): CrudResponse
     {
         $new = new static();
         $new->status    = 'Logic validation error';
@@ -59,7 +59,17 @@ class CreationResponse implements \JsonSerializable
         return $new;
     }
 
-    public static function createSuccessfullResponse(BackupCollection $collection): CreationResponse
+    public static function createWithNotFoundError(): CrudResponse
+    {
+        $new = new static();
+        $new->status    = 'Object not found';
+        $new->errorCode = 404;
+        $new->exitCode  = 404;
+
+        return $new;
+    }
+
+    public static function createSuccessfullResponse(BackupCollection $collection): CrudResponse
     {
         $new = new static();
         $new->status     = 'OK';

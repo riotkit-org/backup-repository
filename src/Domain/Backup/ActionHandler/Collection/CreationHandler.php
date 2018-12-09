@@ -7,7 +7,7 @@ use App\Domain\Backup\Exception\CollectionMappingError;
 use App\Domain\Backup\Exception\ValidationException;
 use App\Domain\Backup\Form\Collection\CreationForm;
 use App\Domain\Backup\Manager\CollectionManager;
-use App\Domain\Backup\Response\Collection\CreationResponse;
+use App\Domain\Backup\Response\Collection\CrudResponse;
 use App\Domain\Backup\Security\CollectionManagementContext;
 
 class CreationHandler
@@ -26,22 +26,23 @@ class CreationHandler
      * @param CreationForm                $form
      * @param CollectionManagementContext $securityContext
      *
-     * @return CreationResponse
+     * @return CrudResponse
      *
+     * @throws \Exception
      * @throws AuthenticationException
      */
-    public function handle(CreationForm $form, CollectionManagementContext $securityContext): CreationResponse
+    public function handle(CreationForm $form, CollectionManagementContext $securityContext): CrudResponse
     {
         $this->assertHasRights($securityContext, $form);
 
         try {
-            $collection = $this->manager->create($form);
+            $collection = $this->manager->create($form, $securityContext->getTokenId());
 
         } catch (CollectionMappingError $mappingError) {
-            return CreationResponse::createWithValidationErrors($mappingError->getErrors());
+            return CrudResponse::createWithValidationErrors($mappingError->getErrors());
 
         } catch (ValidationException $validationException) {
-            return CreationResponse::createWithDomainError(
+            return CrudResponse::createWithDomainError(
                 $validationException->getMessage(),
                 $validationException->getField(),
                 $validationException->getCode(),
@@ -49,7 +50,7 @@ class CreationHandler
             );
         }
 
-        return CreationResponse::createSuccessfullResponse($collection);
+        return CrudResponse::createSuccessfullResponse($collection);
     }
 
     /**

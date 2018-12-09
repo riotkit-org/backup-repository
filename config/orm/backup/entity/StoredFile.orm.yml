@@ -1,0 +1,15 @@
+App\Domain\Backup\Entity\StoredFile:
+    type: entity
+    table: file_registry
+
+    id:
+        id:
+            type: integer
+            generator:
+                strategy: IDENTITY
+
+    fields:
+        fileName:
+            type: string
+            length: 254
+            column: fileName

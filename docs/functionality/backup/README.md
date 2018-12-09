@@ -29,5 +29,25 @@ There are two strategies. **delete_oldest_when_adding_new** is automatically del
 when a `maxBackupsCount` is reached and a new backup is submitted. **alert_when_backup_limit_reached** will raise an
 error when submitting a new version to already full backup collection.
 
-**Note:** Put zero values to disable the limit
-**Note:** _Supports "simulate=true" parameter that allows to send a request that will not create any data, but only validate submitted data_
+**Notes:** 
+- Put zero values to disable the limit
+- _Supports "simulate=true" parameter that allows to send a request that will not create any data, but only validate submitted data_
+- You'r token will be automatically added as token allowed to access and modify the collection
+
+##### Collection editing
+
+```
+PUT {{appUrl}}/repository/collection?_token=test-token-full-permissions
+
+{
+    "collection": "SOME-COLLECTION-ID-YOUR-RECEIVED-WHEN-CREATING-THE-COLLECTION",
+    "maxBackupsCount": 5,
+    "maxOneVersionSize": 0,
+    "maxCollectionSize": "250MB",
+    "strategy": "delete_oldest_when_adding_new",
+    "description": "Test collection (modified)"
+}
+```
+
+**Notes:**
+- The collection size cannot be lower than it is actual in the storage (sum of existing files in the collection)

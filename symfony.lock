@@ -146,6 +146,9 @@
     "ralouphie/getallheaders": {
         "version": "2.0.5"
     },
+    "ramsey/uuid": {
+        "version": "3.8.0"
+    },
     "sensio/framework-extra-bundle": {
         "version": "5.2",
         "recipe": {

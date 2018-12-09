@@ -3,11 +3,10 @@
 namespace App\Domain\Backup\Validation;
 
 use App\Domain\Backup\Entity\BackupCollection;
-use App\Domain\Backup\Exception\BackupException;
 use App\Domain\Backup\Exception\ValidationException;
+use App\Domain\Backup\Repository\VersionRepository;
 use App\Domain\Backup\Settings\BackupSettings;
 use App\Domain\Common\ValueObject\DiskSpace;
-use App\Domain\Common\ValueObject\Numeric\PositiveNumber;
 
 class CollectionValidator
 {
@@ -16,9 +15,15 @@ class CollectionValidator
      */
     private $settings;
 
-    public function __construct(BackupSettings $settings)
+    /**
+     * @var VersionRepository
+     */
+    private $versionRepository;
+
+    public function __construct(BackupSettings $settings, VersionRepository $versionRepository)
     {
-        $this->settings = $settings;
+        $this->settings          = $settings;
+        $this->versionRepository = $versionRepository;
     }
 
     /**
@@ -33,6 +38,22 @@ class CollectionValidator
         $this->validateMaxCollectionSize($collection);
         $this->validateCollectionSizeIsHigherThanSingleElementSize($collection);
         $this->validateCollectionSizeHasEnoughSize($collection);
+    }
+
+    /**
+     * @param BackupCollection $collection
+     *
+     * @throws ValidationException
+     */
+    public function validateBeforeEditing(BackupCollection $collection): void
+    {
+        $this->validateMaxBackupsCount($collection);
+        $this->validateMaxOneVersionSize($collection);
+        $this->validateMaxCollectionSize($collection);
+        $this->validateCollectionSizeIsHigherThanSingleElementSize($collection);
+        $this->validateCollectionSizeHasEnoughSize($collection);
+
+        $this->validateExistingElementsDoesNotExceedSubmittedLimit($collection);
     }
 
     /**
@@ -134,9 +155,7 @@ class CollectionValidator
             return;
         }
 
-        $maxBytesCollectionCanHandle = new DiskSpace(
-            ($collection->getMaxOneVersionSize()->getValue() * $collection->getMaxBackupsCount()->getValue()) . 'b'
-        );
+        $maxBytesCollectionCanHandle = $this->calculateMaxBytesCollectionCanHandle($collection);
 
         if ($maxBytesCollectionCanHandle->isHigherThan($collection->getMaxCollectionSize())) {
             throw ValidationException::createFromFieldError(
@@ -148,5 +167,31 @@ class CollectionValidator
                 ]
             );
         }
+    }
+
+    /**
+     * @param BackupCollection $collection
+     *
+     * @throws ValidationException
+     */
+    private function validateExistingElementsDoesNotExceedSubmittedLimit(BackupCollection $collection): void
+    {
+        $existingDiskSpaceSum = $this->versionRepository->findCollectionVersions($collection)->sumAllVersionsDiskSpace();
+
+        if ($existingDiskSpaceSum->isHigherThan($this->calculateMaxBytesCollectionCanHandle($collection))) {
+            throw ValidationException::createFromFieldError(
+                'max_collection_size_is_smaller_than_sum_of_existing_data_in_collection',
+                'maxCollectionSize',
+                ValidationException::CODE_COLLECTION_IS_ALREADY_TOO_BIG,
+                []
+            );
+        }
+    }
+
+    private function calculateMaxBytesCollectionCanHandle(BackupCollection $collection): DiskSpace
+    {
+        return DiskSpace::fromBytes(
+            $collection->getMaxOneVersionSize()->getValue() * $collection->getMaxBackupsCount()->getValue()
+        );
     }
 }

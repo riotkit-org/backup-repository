@@ -18,6 +18,11 @@ class DiskSpace extends PositiveNumberOrZero implements \JsonSerializable
         }
     }
 
+    public static function fromBytes(int $bytes)
+    {
+        return new static($bytes . 'b');
+    }
+
     public function getValue(): int
     {
         return $this->value;

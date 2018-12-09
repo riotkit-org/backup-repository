@@ -1,7 +1,7 @@
-backup.collection_create:
+backup.collection_create_and_edit:
     path: /repository/collection
-    controller: 'App\Controller\Backup\Collection\CreationController::createAction'
-    methods: ['POST']
+    controller: 'App\Controller\Backup\Collection\CreateEditController::handleAction'
+    methods: ['POST', 'PUT']
     defaults:
         _secured: true
 

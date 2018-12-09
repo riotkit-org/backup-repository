@@ -71,11 +71,21 @@ final class Roles
     // collections
     //
     //
-    /** Allow person creatin a new backup collection */
+    /** Allow person creating a new backup collection */
     public const ROLE_COLLECTION_ADD = 'collections.create_new';
 
     /** Allow creating backup collections that have no limits on size and length */
     public const ROLE_COLLECTION_ADD_WITH_INFINITE_LIMITS = 'collections.allow_infinite_limits';
+
+    /** Allow to modify ALL collections. Collection don't have to allow such token which has this role */
+    public const ROLE_COLLECTION_MODIFY_ANY_COLLECTION = 'collections.modify_any_collection_regardless_if_token_was_allowed_by_collection';
+
+    /** Collection manager: Create, edit, delete collections */
+    public const GROUP_COLLECTION_MANAGER = [
+        self::ROLE_COLLECTION_ADD,
+        self::ROLE_COLLECTION_ADD_WITH_INFINITE_LIMITS,
+        self::ROLE_COLLECTION_MODIFY_ANY_COLLECTION
+    ];
 
     public const ROLES_LIST = [
         self::ROLE_UPLOAD_IMAGES,
@@ -90,6 +100,8 @@ final class Roles
         self::ROLE_VIEW_ALL_PROTECTED_FILES,
         self::ROLE_BROWSE_LIST_OF_FILES_BY_ANY_TAG,
         self::ROLE_ACCESS_LISTING_ENDPOINT,
-        self::ROLE_COLLECTION_ADD
+        self::ROLE_COLLECTION_ADD,
+        self::ROLE_COLLECTION_ADD_WITH_INFINITE_LIMITS,
+        self::ROLE_COLLECTION_MODIFY_ANY_COLLECTION
     ];
 }

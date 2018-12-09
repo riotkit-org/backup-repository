@@ -145,6 +145,14 @@ class BackupCollection implements \JsonSerializable
         return $self;
     }
 
+    public function withTokenAdded(Token $token): BackupCollection
+    {
+        $self = clone $this;
+        $self->allowedTokens[] = $token;
+
+        return $self;
+    }
+
     public function jsonSerialize()
     {
         return [
@@ -156,6 +164,11 @@ class BackupCollection implements \JsonSerializable
             'strategy'                    => $this->strategy,
             'description'                 => $this->description
         ];
+    }
+
+    public function getId(): ?string
+    {
+        return $this->id;
     }
 
     public function getDescription(): Description
@@ -178,8 +191,22 @@ class BackupCollection implements \JsonSerializable
         return $this->maxCollectionSize;
     }
 
-    public function setMaxCollectionSize(CollectionSize $maxCollectionSize): void
+    /**
+     * @return bool
+     */
+    public function isTokenIdAllowed(string $tokenId): bool
     {
-        $this->maxCollectionSize = $maxCollectionSize;
+        foreach ($this->allowedTokens as $token) {
+            if ($token->getId() === $tokenId) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function isSameAsCollection(BackupCollection $collection): bool
+    {
+        return $collection->getId() === $this->getId();
     }
 }

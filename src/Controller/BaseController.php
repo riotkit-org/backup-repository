@@ -55,11 +55,11 @@ abstract class BaseController extends Controller
         );
     }
 
-    protected function createAccessDeniedResponse(): JsonResponse
+    protected function createAccessDeniedResponse($message = 'Forbidden'): JsonResponse
     {
         return new JsonResponse(
             [
-                'status'     => 'Forbidden',
+                'status'     => $message,
                 'error_code' => 403,
                 'http_code'  => 403
             ],
@@ -92,7 +92,7 @@ abstract class BaseController extends Controller
             return $code();
 
         } catch (AuthenticationException $exception) {
-            return $this->createAccessDeniedResponse();
+            return $this->createAccessDeniedResponse($exception->getMessage());
 
         } catch (StorageException $storageException) {
             if ($storageException->getCode() === StorageException::codes['file_not_found']) {

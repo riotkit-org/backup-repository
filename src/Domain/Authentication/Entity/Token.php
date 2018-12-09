@@ -47,6 +47,7 @@ class Token
     {
         $this->expirationDate = new \DateTimeImmutable();
         $this->creationDate   = new \DateTimeImmutable();
+        $this->active         = true;
     }
 
     public function getId(): string
