@@ -48,6 +48,7 @@ final class Roles
     // deletion
     //
     //
+
     /** Delete files that do not have a password, and password protected without a password */
     public const ROLE_DELETE_ALL_FILES        = 'deletion.all_files_including_protected_and_unprotected';
 
@@ -71,6 +72,7 @@ final class Roles
     // collections
     //
     //
+
     /** Allow person creating a new backup collection */
     public const ROLE_COLLECTION_ADD = 'collections.create_new';
 
@@ -80,11 +82,15 @@ final class Roles
     /** Allow to modify ALL collections. Collection don't have to allow such token which has this role */
     public const ROLE_COLLECTION_MODIFY_ANY_COLLECTION = 'collections.modify_any_collection_regardless_if_token_was_allowed_by_collection';
 
+    /** Allow to browse any collection regardless of if the user token was allowed by it or not */
+    public const ROLE_COLLECTION_VIEW_ANY_COLLECTION = 'collections.view_all_collections';
+
     /** Collection manager: Create, edit, delete collections */
     public const GROUP_COLLECTION_MANAGER = [
         self::ROLE_COLLECTION_ADD,
         self::ROLE_COLLECTION_ADD_WITH_INFINITE_LIMITS,
-        self::ROLE_COLLECTION_MODIFY_ANY_COLLECTION
+        self::ROLE_COLLECTION_MODIFY_ANY_COLLECTION,
+        self::ROLE_COLLECTION_VIEW_ANY_COLLECTION
     ];
 
     public const ROLES_LIST = [
@@ -102,6 +108,7 @@ final class Roles
         self::ROLE_ACCESS_LISTING_ENDPOINT,
         self::ROLE_COLLECTION_ADD,
         self::ROLE_COLLECTION_ADD_WITH_INFINITE_LIMITS,
-        self::ROLE_COLLECTION_MODIFY_ANY_COLLECTION
+        self::ROLE_COLLECTION_MODIFY_ANY_COLLECTION,
+        self::ROLE_COLLECTION_VIEW_ANY_COLLECTION
     ];
 }

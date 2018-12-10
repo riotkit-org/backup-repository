@@ -2,11 +2,13 @@
 
 namespace App\Domain\Backup\ActionHandler\Collection;
 
+use App\Domain\Backup\Entity\BackupCollection;
 use App\Domain\Backup\Exception\AuthenticationException;
 use App\Domain\Backup\Exception\CollectionMappingError;
 use App\Domain\Backup\Exception\ValidationException;
 use App\Domain\Backup\Form\Collection\CreationForm;
 use App\Domain\Backup\Manager\CollectionManager;
+use App\Domain\Backup\Mapper\CollectionMapper;
 use App\Domain\Backup\Response\Collection\CrudResponse;
 use App\Domain\Backup\Security\CollectionManagementContext;
 
@@ -17,9 +19,15 @@ class CreationHandler
      */
     private $manager;
 
-    public function __construct(CollectionManager $manager)
+    /**
+     * @var CollectionMapper
+     */
+    private $mapper;
+
+    public function __construct(CollectionManager $manager, CollectionMapper $mapper)
     {
         $this->manager = $manager;
+        $this->mapper  = $mapper;
     }
 
     /**
@@ -36,7 +44,15 @@ class CreationHandler
         $this->assertHasRights($securityContext, $form);
 
         try {
-            $collection = $this->manager->create($form, $securityContext->getTokenId());
+            // maps form into entity
+            // in case the value objects will raise an exception it will be converted into a CollectionMappingError
+            // and raised there. This is a first stage validation of the possible options and format
+            $collection = $this->mapper->mapFormIntoCollection($form, new BackupCollection());
+
+            // person/token who creates the collection needs to be allowed to later edit it :-)
+            $collection = $this->mapper->mapTokenIntoCollection($collection, $securityContext->getTokenId());
+
+            $collection = $this->manager->create($collection);
 
         } catch (CollectionMappingError $mappingError) {
             return CrudResponse::createWithValidationErrors($mappingError->getErrors());

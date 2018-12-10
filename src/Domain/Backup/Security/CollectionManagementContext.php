@@ -2,7 +2,9 @@
 
 namespace App\Domain\Backup\Security;
 
+use App\Domain\Backup\Entity\BackupCollection;
 use App\Domain\Backup\Form\Collection\CreationForm;
+use App\Domain\Backup\Form\Collection\DeleteForm;
 use App\Domain\Backup\Form\Collection\EditForm;
 
 class CollectionManagementContext
@@ -23,6 +25,11 @@ class CollectionManagementContext
     private $canModifyAnyCollection;
 
     /**
+     * @var bool
+     */
+    private $canAccessAnyCollection;
+
+    /**
      * @var string|null
      */
     private $tokenId;
@@ -31,11 +38,13 @@ class CollectionManagementContext
         bool $canCreateCollections,
         bool $canCreateCollectionsWithoutLimit,
         bool $canModifyAnyCollection,
+        bool $canAccessAnyCollection,
         ?string $tokenId
     ) {
         $this->canCreateCollections             = $canCreateCollections;
         $this->canCreateCollectionsWithoutLimit = $canCreateCollectionsWithoutLimit;
         $this->canModifyAnyCollection           = $canModifyAnyCollection;
+        $this->canAccessAnyCollection           = $canAccessAnyCollection;
         $this->tokenId                          = $tokenId;
     }
 
@@ -67,7 +76,38 @@ class CollectionManagementContext
             return true;
         }
 
-        return $form->collection->isTokenIdAllowed($this->tokenId);
+        return $this->isTokenAllowedFor($form->collection);
+    }
+
+    public function canDeleteCollection(DeleteForm $form): bool
+    {
+        if (!$form->collection) {
+            return false;
+        }
+
+        if ($this->canModifyAnyCollection) {
+            return true;
+        }
+
+        return $this->isTokenAllowedFor($form->collection);
+    }
+
+    public function canViewCollection(DeleteForm $form): bool
+    {
+        if (!$form->collection) {
+            return false;
+        }
+
+        if ($this->canAccessAnyCollection) {
+            return true;
+        }
+
+        return $this->isTokenAllowedFor($form->collection);
+    }
+
+    private function isTokenAllowedFor(BackupCollection $collection): bool
+    {
+        return $collection->isTokenIdAllowed($this->tokenId);
     }
 
     /**

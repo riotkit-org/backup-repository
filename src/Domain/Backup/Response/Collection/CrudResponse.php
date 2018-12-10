@@ -69,12 +69,24 @@ class CrudResponse implements \JsonSerializable
         return $new;
     }
 
-    public static function createSuccessfullResponse(BackupCollection $collection): CrudResponse
+    public static function createSuccessfullResponse(BackupCollection $collection, int $status = 202): CrudResponse
     {
         $new = new static();
         $new->status     = 'OK';
         $new->errorCode  = null;
         $new->exitCode   = 202;
+        $new->errors     = [];
+        $new->collection = $collection;
+
+        return $new;
+    }
+
+    public static function deletionSuccessfulResponse(BackupCollection $collection): CrudResponse
+    {
+        $new = new static();
+        $new->status     = 'OK, collection was deleted';
+        $new->errorCode  = null;
+        $new->exitCode   = 200;
         $new->errors     = [];
         $new->collection = $collection;
 

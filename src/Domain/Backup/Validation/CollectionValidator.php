@@ -61,6 +61,16 @@ class CollectionValidator
      *
      * @throws ValidationException
      */
+    public function validateBeforeDeletion(BackupCollection $collection): void
+    {
+        $this->validateCollectionShouldBeEmpty($collection);
+    }
+
+    /**
+     * @param BackupCollection $collection
+     *
+     * @throws ValidationException
+     */
     private function validateMaxBackupsCount(BackupCollection $collection): void
     {
         if ($this->settings->getMaxBackupsCountPerCollection()->isZero()) {
@@ -183,6 +193,25 @@ class CollectionValidator
                 'max_collection_size_is_smaller_than_sum_of_existing_data_in_collection',
                 'maxCollectionSize',
                 ValidationException::CODE_COLLECTION_IS_ALREADY_TOO_BIG,
+                []
+            );
+        }
+    }
+
+    /**
+     * @param BackupCollection $collection
+     *
+     * @throws ValidationException
+     */
+    private function validateCollectionShouldBeEmpty(BackupCollection $collection): void
+    {
+        $versions = $this->versionRepository->findCollectionVersions($collection);
+
+        if ($versions->areThereAny()) {
+            throw ValidationException::createFromFieldError(
+                'collection_cannot_be_deleted_while_it_contains_not_deleted_versions',
+                'collection',
+                ValidationException::CODE_COLLECTION_HAS_VERSIONS_INSIDE,
                 []
             );
         }

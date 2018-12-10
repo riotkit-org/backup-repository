@@ -32,7 +32,7 @@ error when submitting a new version to already full backup collection.
 **Notes:** 
 - Put zero values to disable the limit
 - _Supports "simulate=true" parameter that allows to send a request that will not create any data, but only validate submitted data_
-- You'r token will be automatically added as token allowed to access and modify the collection
+- **You'r token will be automatically added as token allowed to access and modify the collection**
 
 ##### Collection editing
 
@@ -51,3 +51,23 @@ PUT {{appUrl}}/repository/collection?_token=test-token-full-permissions
 
 **Notes:**
 - The collection size cannot be lower than it is actual in the storage (sum of existing files in the collection)
+- You need to have global permissions for managing any collection or to **have token listed as allowed in collection you want to edit**
+
+##### Deleting
+
+To delete a collection you need to at first make sure, that there are no backup versions attached to it.
+Before deleting a collection you need to manually delete all backups. It's for safety reasons.
+
+```
+DELETE {{appUrl}}/repository/collection?_token=test-token-full-permissions&id=SOME-COLLECTION-ID-YOUR-RECEIVED-WHEN-CREATING-THE-COLLECTION
+
+{
+    "collection": "SOME-COLLECTION-ID-YOUR-RECEIVED-WHEN-CREATING-THE-COLLECTION",
+    "maxBackupsCount": 5,
+    "maxOneVersionSize": 0,
+    "maxCollectionSize": "250MB",
+    "strategy": "delete_oldest_when_adding_new",
+    "description": "Test collection (modified)"
+}
+```
+

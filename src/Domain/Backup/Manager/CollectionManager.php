@@ -6,8 +6,6 @@ use App\Domain\Backup\Entity\BackupCollection;
 use App\Domain\Backup\Exception\CollectionMappingError;
 use App\Domain\Backup\Exception\ValidationException;
 use App\Domain\Backup\Mapper\CollectionMapper;
-use App\Domain\Backup\Form\Collection\CreationForm;
-use App\Domain\Backup\Form\Collection\EditForm;
 use App\Domain\Backup\Repository\CollectionRepository;
 use App\Domain\Backup\Validation\CollectionValidator;
 
@@ -28,24 +26,16 @@ class CollectionManager
      */
     private $repository;
 
-    /**
-     * @var CollectionMapper
-     */
-    private $mapper;
-
     public function __construct(
         CollectionValidator $validator,
-        CollectionRepository $repository,
-        CollectionMapper $factory
+        CollectionRepository $repository
     ) {
         $this->validator  = $validator;
         $this->repository = $repository;
-        $this->mapper    = $factory;
     }
 
     /**
-     * @param CreationForm $form
-     * @param string       $tokenId
+     * @param BackupCollection $collection
      *
      * @return BackupCollection
      *
@@ -53,16 +43,8 @@ class CollectionManager
      * @throws ValidationException
      * @throws \Exception
      */
-    public function create(CreationForm $form, string $tokenId): BackupCollection
+    public function create(BackupCollection $collection): BackupCollection
     {
-        // maps form into entity
-        // in case the value objects will raise an exception it will be converted into a CollectionMappingError
-        // and raised there. This is a first stage validation of the possible options and format
-        $collection = $this->mapper->mapFormIntoCollection($form, new BackupCollection());
-
-        // person/token who creates the collection needs to be allowed to later edit it :-)
-        $collection = $this->mapper->mapTokenIntoCollection($collection, $tokenId);
-
         // second stage of validation - logic, permissions and existence validation
         $this->validator->validateBeforeCreation($collection);
 
@@ -72,20 +54,35 @@ class CollectionManager
     }
 
     /**
-     * @param EditForm $form
+     * @param BackupCollection $collection
      *
      * @return BackupCollection
      *
-     * @throws CollectionMappingError
      * @throws ValidationException
      */
-    public function edit(EditForm $form): BackupCollection
+    public function edit(BackupCollection $collection): BackupCollection
     {
-        $collection = $this->mapper->mapFormIntoCollection($form, $form->collection);
-
         $this->validator->validateBeforeEditing($collection);
 
-        $this->repository->persist($this->repository->merge($collection));
+        $this->repository->persist(
+            $this->repository->merge($collection)
+        );
+
+        return $collection;
+    }
+
+    /**
+     * @param BackupCollection $collection
+     *
+     * @return BackupCollection
+     *
+     * @throws ValidationException
+     */
+    public function delete(BackupCollection $collection): BackupCollection
+    {
+        $this->validator->validateBeforeDeletion($collection);
+
+        $this->repository->delete($collection);
 
         return $collection;
     }

@@ -44,4 +44,14 @@ class CollectionDoctrineRepository extends ServiceEntityRepository implements Co
     {
         $this->getEntityManager()->flush();
     }
+
+    /**
+     * @param BackupCollection $collection
+     *
+     * @throws \Doctrine\ORM\ORMException
+     */
+    public function delete(BackupCollection $collection): void
+    {
+        $this->getEntityManager()->remove($collection);
+    }
 }

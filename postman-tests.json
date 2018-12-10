@@ -1200,29 +1200,607 @@
 			"name": "Backup",
 			"item": [
 				{
-					"name": "Validation",
+					"name": "Collection creation and editing",
 					"item": [
 						{
-							"name": "Validation check",
+							"name": "Validation",
+							"item": [
+								{
+									"name": "Validation check",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "4f0bda2c-f849-4752-9c73-fa982ac59d67",
+												"type": "text/javascript",
+												"exec": [
+													"var jsonData = pm.response.json();",
+													"",
+													"pm.test(\"Status code is 400\", function () {",
+													"    pm.response.to.have.status(400);",
+													"});",
+													"",
+													"pm.test(\"All fields are at its place\", function () {",
+													"    pm.expect(jsonData.errors.maxBackupsCount).to.eql('number_cannot_be_negative_value');",
+													"    pm.expect(jsonData.errors.maxOneVersionSize).to.eql('cannot_parse_disk_space_check_format');",
+													"    pm.expect(jsonData.errors.strategy).to.eql('Unknown strategy \"invalid_strategy\". Allowed: delete_oldest_when_adding_new, alert_when_backup_limit_reached');",
+													"});",
+													""
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n\t\"maxBackupsCount\": -5,\n\t\"maxOneVersionSize\": \"invalid-format-cannot-parse\",\n\t\"maxCollectionSize\": \"1111\",\n\t\"strategy\": \"invalid_strategy\",\n\t\"description\": null\n}\n"
+										},
+										"url": {
+											"raw": "{{appUrl}}/repository/collection?_token=test-token-full-permissions",
+											"host": [
+												"{{appUrl}}"
+											],
+											"path": [
+												"repository",
+												"collection"
+											],
+											"query": [
+												{
+													"key": "_token",
+													"value": "test-token-full-permissions"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "[Validation] Single element size cannot be bigger than whole collection limit",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "1de254cc-720e-4930-bd0b-5510fd1cb72c",
+												"type": "text/javascript",
+												"exec": [
+													"var jsonData = pm.response.json();",
+													"",
+													"pm.test(\"Status code is 400\", function () {",
+													"    pm.response.to.have.status(400);",
+													"});",
+													"",
+													"pm.test(\"maxCollectionSize is properly validated\", function () {",
+													"    pm.expect(jsonData.errors.maxCollectionSize).to.eql('max_collection_size_is_lower_than_single_element_size');",
+													"});",
+													""
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n\t\"maxBackupsCount\": 4,\n\t\"maxOneVersionSize\": \"11MB\",\n\t\"maxCollectionSize\": \"10MB\",\n\t\"strategy\": \"alert_when_backup_limit_reached\",\n\t\"description\": null\n}\n"
+										},
+										"url": {
+											"raw": "{{appUrl}}/repository/collection?_token=test-token-full-permissions",
+											"host": [
+												"{{appUrl}}"
+											],
+											"path": [
+												"repository",
+												"collection"
+											],
+											"query": [
+												{
+													"key": "_token",
+													"value": "test-token-full-permissions"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "[Validation] Single element limit is bigger than globally defined",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "7d7b7e65-0e8a-42da-ad76-e3e6088cd93c",
+												"type": "text/javascript",
+												"exec": [
+													"var jsonData = pm.response.json();",
+													"",
+													"pm.test(\"Status code is 400\", function () {",
+													"    pm.response.to.have.status(400);",
+													"});",
+													"",
+													"pm.test(\"maxOneVersionSize is properly validated\", function () {",
+													"    pm.expect(jsonData.errors.maxOneVersionSize).to.eql('max_one_version_size_too_big');",
+													"});",
+													""
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n\t\"maxBackupsCount\": 4,\n\t\"maxOneVersionSize\": \"50MB\",\n\t\"maxCollectionSize\": \"10MB\",\n\t\"strategy\": \"alert_when_backup_limit_reached\",\n\t\"description\": null\n}\n"
+										},
+										"url": {
+											"raw": "{{appUrl}}/repository/collection?_token=test-token-full-permissions",
+											"host": [
+												"{{appUrl}}"
+											],
+											"path": [
+												"repository",
+												"collection"
+											],
+											"query": [
+												{
+													"key": "_token",
+													"value": "test-token-full-permissions"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "[Validation] Whole collection size (mb/kb/gb) is bigger than globally defined limit",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "372a0b11-0eac-4da2-b8e3-cd0fb56004ef",
+												"type": "text/javascript",
+												"exec": [
+													"var jsonData = pm.response.json();",
+													"",
+													"pm.test(\"Status code is 400\", function () {",
+													"    pm.response.to.have.status(400);",
+													"});",
+													"",
+													"pm.test(\"maxCollectionSize cannot be bigger than the defined limit\", function () {",
+													"    pm.expect(jsonData.errors.maxCollectionSize).to.eql('max_collection_size_too_big');",
+													"});",
+													""
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n\t\"maxBackupsCount\": 4,\n\t\"maxOneVersionSize\": \"1MB\",\n\t\"maxCollectionSize\": \"5TB\",\n\t\"strategy\": \"alert_when_backup_limit_reached\",\n\t\"description\": null\n}\n"
+										},
+										"url": {
+											"raw": "{{appUrl}}/repository/collection?_token=test-token-full-permissions",
+											"host": [
+												"{{appUrl}}"
+											],
+											"path": [
+												"repository",
+												"collection"
+											],
+											"query": [
+												{
+													"key": "_token",
+													"value": "test-token-full-permissions"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "[Validation] Max backup count cannot be higher than globally defined limit",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "231c444d-9820-47ee-b597-505da35a8eba",
+												"type": "text/javascript",
+												"exec": [
+													"var jsonData = pm.response.json();",
+													"",
+													"pm.test(\"Status code is 400\", function () {",
+													"    pm.response.to.have.status(400);",
+													"});",
+													"",
+													"pm.test(\"maxBackupsCount cannot be bigger than the defined limit\", function () {",
+													"    pm.expect(jsonData.errors.maxBackupsCount).to.eql('max_backups_count_too_many');",
+													"});",
+													""
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n\t\"maxBackupsCount\": 9000,\n\t\"maxOneVersionSize\": \"5MB\",\n\t\"maxCollectionSize\": \"10MB\",\n\t\"strategy\": \"alert_when_backup_limit_reached\",\n\t\"description\": null\n}\n"
+										},
+										"url": {
+											"raw": "{{appUrl}}/repository/collection?_token=test-token-full-permissions",
+											"host": [
+												"{{appUrl}}"
+											],
+											"path": [
+												"repository",
+												"collection"
+											],
+											"query": [
+												{
+													"key": "_token",
+													"value": "test-token-full-permissions"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "[Validation] Collection is has not enough max space",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "ee2ba435-98a8-41d1-ad51-1f876e85d4c7",
+												"type": "text/javascript",
+												"exec": [
+													"var jsonData = pm.response.json();",
+													"",
+													"pm.test(\"Status code is 400\", function () {",
+													"    pm.response.to.have.status(400);",
+													"});",
+													"",
+													"pm.test(\"A combination of maxBackupsCount and maxOneVersionSize must give at less or equal maxCollectionSize\", function () {",
+													"    pm.expect(jsonData.errors.maxCollectionSize).to.eql('max_collection_size_will_have_not_enough_space_to_keep_max_number_of_items');",
+													"});",
+													""
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n\t\"maxBackupsCount\": 5,\n\t\"maxOneVersionSize\": \"5MB\",\n\t\"maxCollectionSize\": \"5MB\",\n\t\"strategy\": \"alert_when_backup_limit_reached\",\n\t\"description\": null\n}\n"
+										},
+										"url": {
+											"raw": "{{appUrl}}/repository/collection?_token=test-token-full-permissions&simulate=true",
+											"host": [
+												"{{appUrl}}"
+											],
+											"path": [
+												"repository",
+												"collection"
+											],
+											"query": [
+												{
+													"key": "_token",
+													"value": "test-token-full-permissions"
+												},
+												{
+													"key": "simulate",
+													"value": "true"
+												}
+											]
+										}
+									},
+									"response": []
+								}
+							],
+							"_postman_isSubFolder": true
+						},
+						{
+							"name": "Permissions check",
+							"item": [
+								{
+									"name": "[Permissions -> Limits] Create token that does not allow creating unlimited collections",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "eeca4c93-8eec-4230-b205-6df99bf28205",
+												"type": "text/javascript",
+												"exec": [
+													"var jsonData = pm.response.json();",
+													"",
+													"pm.test(\"Status code is 202\", function () {",
+													"    pm.response.to.have.status(202);",
+													"});",
+													"",
+													"pm.globals.set(\"token_without_unlimited_collections\", jsonData.tokenId);",
+													""
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"roles\": [\"collections.create_new\"],\n    \"data\": {\n        \"tags\": [\"user_uploads.u123\", \"user_uploads\"],\n        \"allowedMimeTypes\": [\"image/jpeg\", \"image/png\", \"image/gif\"],\n        \"maxAllowedFileSize\": 14579\n    }\n}\n"
+										},
+										"url": {
+											"raw": "{{appUrl}}/auth/token/generate?_token=test-token-full-permissions",
+											"host": [
+												"{{appUrl}}"
+											],
+											"path": [
+												"auth",
+												"token",
+												"generate"
+											],
+											"query": [
+												{
+													"key": "_token",
+													"value": "test-token-full-permissions"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "[Permissions -> Limits] Create token for unlimited collections creating",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "7e63ae3c-d79c-4975-8338-ca6809ad1498",
+												"type": "text/javascript",
+												"exec": [
+													"var jsonData = pm.response.json();",
+													"",
+													"pm.test(\"Status code is 202\", function () {",
+													"    pm.response.to.have.status(202);",
+													"});",
+													"",
+													"pm.globals.set(\"token_unlimited_collections\", jsonData.tokenId);",
+													""
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"roles\": [\"collections.create_new\", \"collections.allow_infinite_limits\"],\n    \"data\": {\n        \"tags\": [\"user_uploads.u123\", \"user_uploads\"],\n        \"allowedMimeTypes\": [\"image/jpeg\", \"image/png\", \"image/gif\"],\n        \"maxAllowedFileSize\": 14579\n    }\n}\n"
+										},
+										"url": {
+											"raw": "{{appUrl}}/auth/token/generate?_token=test-token-full-permissions",
+											"host": [
+												"{{appUrl}}"
+											],
+											"path": [
+												"auth",
+												"token",
+												"generate"
+											],
+											"query": [
+												{
+													"key": "_token",
+													"value": "test-token-full-permissions"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Create collection: not allowed to create collection with infinite limits",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "612c51f3-f96a-4f69-bad1-1f2cd0add9ad",
+												"type": "text/javascript",
+												"exec": [
+													"var jsonData = pm.response.json();",
+													"",
+													"pm.test(\"Status code is 403\", function () {",
+													"    pm.response.to.have.status(403);",
+													"});",
+													"",
+													"pm.test(\"A proper message about access rights will appear\", function () {",
+													"    pm.expect(jsonData.status).to.eql('Current token does not allow to create this collection');",
+													"});",
+													""
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n\t\"maxBackupsCount\": 5,\n\t\"maxOneVersionSize\": 0,\n\t\"maxCollectionSize\": \"5MB\",\n\t\"strategy\": \"delete_oldest_when_adding_new\",\n\t\"description\": \"Test collection\"\n}\n"
+										},
+										"url": {
+											"raw": "{{appUrl}}/repository/collection?_token={{token_without_unlimited_collections}}&simulate=true",
+											"host": [
+												"{{appUrl}}"
+											],
+											"path": [
+												"repository",
+												"collection"
+											],
+											"query": [
+												{
+													"key": "_token",
+													"value": "{{token_without_unlimited_collections}}"
+												},
+												{
+													"key": "simulate",
+													"value": "true"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Create collection: allowed to create infinite collections",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "51b55601-3b8c-4811-9323-e373c16502f8",
+												"type": "text/javascript",
+												"exec": [
+													"var jsonData = pm.response.json();",
+													"",
+													"pm.test(\"Status code is 202\", function () {",
+													"    pm.response.to.have.status(202);",
+													"});",
+													"",
+													"pm.test(\"Id is 36 length UUID\", function () {",
+													"    pm.expect(jsonData.collection.id.length).to.eql(36);",
+													"});",
+													"",
+													"pm.test(\"All fields are at its place\", function () {",
+													"    pm.expect(jsonData.collection.max_backups_count).to.eql(5);",
+													"    pm.expect(jsonData.collection.max_one_backup_version_size).to.eql(0);",
+													"    pm.expect(jsonData.collection.max_collection_size).to.eql(5000000);",
+													"    pm.expect(jsonData.collection.strategy).to.eql('delete_oldest_when_adding_new');",
+													"    pm.expect(jsonData.collection.description).to.eql('Test collection');",
+													"});",
+													""
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n\t\"maxBackupsCount\": 5,\n\t\"maxOneVersionSize\": 0,\n\t\"maxCollectionSize\": \"5MB\",\n\t\"strategy\": \"delete_oldest_when_adding_new\",\n\t\"description\": \"Test collection\"\n}\n"
+										},
+										"url": {
+											"raw": "{{appUrl}}/repository/collection?_token={{token_unlimited_collections}}&simulate=true",
+											"host": [
+												"{{appUrl}}"
+											],
+											"path": [
+												"repository",
+												"collection"
+											],
+											"query": [
+												{
+													"key": "_token",
+													"value": "{{token_unlimited_collections}}"
+												},
+												{
+													"key": "simulate",
+													"value": "true"
+												}
+											]
+										}
+									},
+									"response": []
+								}
+							],
+							"_postman_isSubFolder": true
+						},
+						{
+							"name": "Create a token that allows to create collections",
 							"event": [
 								{
 									"listen": "test",
 									"script": {
-										"id": "4f0bda2c-f849-4752-9c73-fa982ac59d67",
+										"id": "0fb68bc5-c302-4e99-b07f-44907e0de989",
 										"type": "text/javascript",
 										"exec": [
 											"var jsonData = pm.response.json();",
 											"",
-											"pm.test(\"Status code is 400\", function () {",
-											"    pm.response.to.have.status(400);",
+											"pm.test(\"Status code is 202\", function () {",
+											"    pm.response.to.have.status(202);",
+											"});",
+											"",
+											"pm.globals.set(\"token_create_collections\", jsonData.tokenId);",
+											""
+										]
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n    \"roles\": [\"collections.create_new\"],\n    \"data\": {\n        \"tags\": [\"user_uploads.u123\", \"user_uploads\"],\n        \"allowedMimeTypes\": [\"image/jpeg\", \"image/png\", \"image/gif\"],\n        \"maxAllowedFileSize\": 14579\n    }\n}\n"
+								},
+								"url": {
+									"raw": "{{appUrl}}/auth/token/generate?_token=test-token-full-permissions",
+									"host": [
+										"{{appUrl}}"
+									],
+									"path": [
+										"auth",
+										"token",
+										"generate"
+									],
+									"query": [
+										{
+											"key": "_token",
+											"value": "test-token-full-permissions"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Create collection: success (#1)",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "5e6d2508-5215-4514-a402-a1c0a61a9fd9",
+										"type": "text/javascript",
+										"exec": [
+											"var jsonData = pm.response.json();",
+											"",
+											"pm.test(\"Status code is 202\", function () {",
+											"    pm.response.to.have.status(202);",
+											"});",
+											"",
+											"pm.test(\"Id is 36 length UUID\", function () {",
+											"    pm.expect(jsonData.collection.id.length).to.eql(36);",
 											"});",
 											"",
 											"pm.test(\"All fields are at its place\", function () {",
-											"    pm.expect(jsonData.errors.maxBackupsCount).to.eql('number_cannot_be_negative_value');",
-											"    pm.expect(jsonData.errors.maxOneVersionSize).to.eql('cannot_parse_disk_space_check_format');",
-											"    pm.expect(jsonData.errors.strategy).to.eql('Unknown strategy \"invalid_strategy\". Allowed: delete_oldest_when_adding_new, alert_when_backup_limit_reached');",
+											"    pm.expect(jsonData.collection.max_backups_count).to.eql(5);",
+											"    pm.expect(jsonData.collection.max_one_backup_version_size).to.eql(1000000);",
+											"    pm.expect(jsonData.collection.max_collection_size).to.eql(5000000);",
+											"    pm.expect(jsonData.collection.strategy).to.eql('delete_oldest_when_adding_new');",
+											"    pm.expect(jsonData.collection.description).to.eql('Test collection');",
 											"});",
-											""
+											"",
+											"",
+											"pm.globals.set(\"collection_1\", jsonData.collection.id);"
 										]
 									}
 								}
@@ -1232,7 +1810,68 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n\t\"maxBackupsCount\": -5,\n\t\"maxOneVersionSize\": \"invalid-format-cannot-parse\",\n\t\"maxCollectionSize\": \"1111\",\n\t\"strategy\": \"invalid_strategy\",\n\t\"description\": null\n}\n"
+									"raw": "{\n\t\"maxBackupsCount\": 5,\n\t\"maxOneVersionSize\": \"1MB\",\n\t\"maxCollectionSize\": \"5MB\",\n\t\"strategy\": \"delete_oldest_when_adding_new\",\n\t\"description\": \"Test collection\"\n}\n"
+								},
+								"url": {
+									"raw": "{{appUrl}}/repository/collection?_token={{token_create_collections}}",
+									"host": [
+										"{{appUrl}}"
+									],
+									"path": [
+										"repository",
+										"collection"
+									],
+									"query": [
+										{
+											"key": "_token",
+											"value": "{{token_create_collections}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Edit created collection #1",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "3cf493b6-5caa-46dc-af4f-ab079affdd43",
+										"type": "text/javascript",
+										"exec": [
+											"var jsonData = pm.response.json();",
+											"",
+											"pm.test(\"Status code is 202\", function () {",
+											"    pm.response.to.have.status(202);",
+											"});",
+											"",
+											"pm.test(\"Id is 36 length UUID\", function () {",
+											"    pm.expect(jsonData.collection.id.length).to.eql(36);",
+											"});",
+											"",
+											"pm.test(\"All fields are at its place\", function () {",
+											"    pm.expect(jsonData.collection.max_backups_count).to.eql(5);",
+											"    pm.expect(jsonData.collection.max_one_backup_version_size).to.eql(0);",
+											"    pm.expect(jsonData.collection.max_collection_size).to.eql(5000000);",
+											"    pm.expect(jsonData.collection.strategy).to.eql('delete_oldest_when_adding_new');",
+											"    pm.expect(jsonData.collection.description).to.eql('Test collection (modified)');",
+											"});",
+											"",
+											"pm.test(\"Id was not changed\", function () {",
+											"    pm.expect(jsonData.collection.id).to.eql(pm.globals.get('collection_1'));",
+											"});",
+											""
+										]
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"collection\": \"{{collection_1}}\",\n\t\"maxBackupsCount\": 5,\n\t\"maxOneVersionSize\": 0,\n\t\"maxCollectionSize\": \"5MB\",\n\t\"strategy\": \"delete_oldest_when_adding_new\",\n\t\"description\": \"Test collection (modified)\"\n}\n"
 								},
 								"url": {
 									"raw": "{{appUrl}}/repository/collection?_token=test-token-full-permissions",
@@ -1252,25 +1891,64 @@
 								}
 							},
 							"response": []
+						}
+					],
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "511e6518-d5cf-4640-840d-eeb9c3d34036",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
 						},
 						{
-							"name": "[Validation] Single element size cannot be bigger than whole collection limit",
+							"listen": "test",
+							"script": {
+								"id": "f3ff06e5-edb5-403c-bb96-21542152c657",
+								"type": "text/javascript",
+								"exec": [
+									""
+								]
+							}
+						}
+					],
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Collection deletion",
+					"item": [
+						{
+							"name": "Create collection #2",
 							"event": [
 								{
 									"listen": "test",
 									"script": {
-										"id": "1de254cc-720e-4930-bd0b-5510fd1cb72c",
+										"id": "a0df8cea-1236-4c59-9b3f-3281f904bc2a",
 										"type": "text/javascript",
 										"exec": [
 											"var jsonData = pm.response.json();",
 											"",
-											"pm.test(\"Status code is 400\", function () {",
-											"    pm.response.to.have.status(400);",
+											"pm.test(\"Status code is 202\", function () {",
+											"    pm.response.to.have.status(202);",
 											"});",
 											"",
-											"pm.test(\"maxCollectionSize is properly validated\", function () {",
-											"    pm.expect(jsonData.errors.maxCollectionSize).to.eql('max_collection_size_is_lower_than_single_element_size');",
+											"pm.test(\"Id is 36 length UUID\", function () {",
+											"    pm.expect(jsonData.collection.id.length).to.eql(36);",
 											"});",
+											"",
+											"pm.test(\"All fields are at its place\", function () {",
+											"    pm.expect(jsonData.collection.max_backups_count).to.eql(5);",
+											"    pm.expect(jsonData.collection.max_one_backup_version_size).to.eql(1000000);",
+											"    pm.expect(jsonData.collection.max_collection_size).to.eql(5000000);",
+											"    pm.expect(jsonData.collection.strategy).to.eql('delete_oldest_when_adding_new');",
+											"    pm.expect(jsonData.collection.description).to.eql('IWA-AIT.org old format backups');",
+											"});",
+											"",
+											"",
+											"pm.globals.set(\"collection_2\", jsonData.collection.id);",
 											""
 										]
 									}
@@ -1281,7 +1959,153 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n\t\"maxBackupsCount\": 4,\n\t\"maxOneVersionSize\": \"11MB\",\n\t\"maxCollectionSize\": \"10MB\",\n\t\"strategy\": \"alert_when_backup_limit_reached\",\n\t\"description\": null\n}\n"
+									"raw": "{\n\t\"maxBackupsCount\": 5,\n\t\"maxOneVersionSize\": \"1MB\",\n\t\"maxCollectionSize\": \"5MB\",\n\t\"strategy\": \"delete_oldest_when_adding_new\",\n\t\"description\": \"IWA-AIT.org old format backups\"\n}\n"
+								},
+								"url": {
+									"raw": "{{appUrl}}/repository/collection?_token={{token_create_collections}}",
+									"host": [
+										"{{appUrl}}"
+									],
+									"path": [
+										"repository",
+										"collection"
+									],
+									"query": [
+										{
+											"key": "_token",
+											"value": "{{token_create_collections}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Delete collection #2",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "444a0900-7707-4363-b958-c086197caeff",
+										"type": "text/javascript",
+										"exec": [
+											"",
+											"pm.test(\"Status code is 200\", function () {",
+											"    pm.response.to.have.status(200);",
+											"});",
+											""
+										]
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{appUrl}}/repository/collection/{{collection_2}}?_token={{token_create_collections}}",
+									"host": [
+										"{{appUrl}}"
+									],
+									"path": [
+										"repository",
+										"collection",
+										"{{collection_2}}"
+									],
+									"query": [
+										{
+											"key": "_token",
+											"value": "{{token_create_collections}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Try to delete #2 second time",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "26ccbe46-0ae7-43d5-97e5-c8cb9eeff4d8",
+										"type": "text/javascript",
+										"exec": [
+											"var jsonData = pm.response.json();",
+											"",
+											"",
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});",
+											"",
+											"pm.test(\"Error about that the collection was already deleted is present\", function () {",
+											"    pm.expect(jsonData['form.collection'][0]).to.eql('collection_no_longer_exists');",
+											"});",
+											""
+										]
+									}
+								}
+							],
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{appUrl}}/repository/collection/{{collection_2}}?_token={{token_create_collections}}",
+									"host": [
+										"{{appUrl}}"
+									],
+									"path": [
+										"repository",
+										"collection",
+										"{{collection_2}}"
+									],
+									"query": [
+										{
+											"key": "_token",
+											"value": "{{token_create_collections}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Attempt to edit deleted collection #2",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "0982e7ef-ffd0-4953-b79f-c371557faaee",
+										"type": "text/javascript",
+										"exec": [
+											"var jsonData = pm.response.json();",
+											"",
+											"",
+											"pm.test(\"Status code is 400\", function () {",
+											"    pm.response.to.have.status(400);",
+											"});",
+											"",
+											"pm.test(\"Error about that the collection was already deleted is present\", function () {",
+											"    pm.expect(jsonData['form.collection'][0]).to.eql('collection_no_longer_exists');",
+											"});",
+											""
+										]
+									}
+								}
+							],
+							"request": {
+								"method": "PUT",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"collection\": \"{{collection_2}}\",\n\t\"maxBackupsCount\": 5,\n\t\"maxOneVersionSize\": 0,\n\t\"maxCollectionSize\": \"5MB\",\n\t\"strategy\": \"delete_oldest_when_adding_new\",\n\t\"description\": \"Test collection (modified)\"\n}\n"
 								},
 								"url": {
 									"raw": "{{appUrl}}/repository/collection?_token=test-token-full-permissions",
@@ -1296,206 +2120,6 @@
 										{
 											"key": "_token",
 											"value": "test-token-full-permissions"
-										}
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "[Validation] Single element limit is bigger than globally defined",
-							"event": [
-								{
-									"listen": "test",
-									"script": {
-										"id": "7d7b7e65-0e8a-42da-ad76-e3e6088cd93c",
-										"type": "text/javascript",
-										"exec": [
-											"var jsonData = pm.response.json();",
-											"",
-											"pm.test(\"Status code is 400\", function () {",
-											"    pm.response.to.have.status(400);",
-											"});",
-											"",
-											"pm.test(\"maxOneVersionSize is properly validated\", function () {",
-											"    pm.expect(jsonData.errors.maxOneVersionSize).to.eql('max_one_version_size_too_big');",
-											"});",
-											""
-										]
-									}
-								}
-							],
-							"request": {
-								"method": "POST",
-								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n\t\"maxBackupsCount\": 4,\n\t\"maxOneVersionSize\": \"50MB\",\n\t\"maxCollectionSize\": \"10MB\",\n\t\"strategy\": \"alert_when_backup_limit_reached\",\n\t\"description\": null\n}\n"
-								},
-								"url": {
-									"raw": "{{appUrl}}/repository/collection?_token=test-token-full-permissions",
-									"host": [
-										"{{appUrl}}"
-									],
-									"path": [
-										"repository",
-										"collection"
-									],
-									"query": [
-										{
-											"key": "_token",
-											"value": "test-token-full-permissions"
-										}
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "[Validation] Whole collection size (mb/kb/gb) is bigger than globally defined limit",
-							"event": [
-								{
-									"listen": "test",
-									"script": {
-										"id": "372a0b11-0eac-4da2-b8e3-cd0fb56004ef",
-										"type": "text/javascript",
-										"exec": [
-											"var jsonData = pm.response.json();",
-											"",
-											"pm.test(\"Status code is 400\", function () {",
-											"    pm.response.to.have.status(400);",
-											"});",
-											"",
-											"pm.test(\"maxCollectionSize cannot be bigger than the defined limit\", function () {",
-											"    pm.expect(jsonData.errors.maxCollectionSize).to.eql('max_collection_size_too_big');",
-											"});",
-											""
-										]
-									}
-								}
-							],
-							"request": {
-								"method": "POST",
-								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n\t\"maxBackupsCount\": 4,\n\t\"maxOneVersionSize\": \"1MB\",\n\t\"maxCollectionSize\": \"5TB\",\n\t\"strategy\": \"alert_when_backup_limit_reached\",\n\t\"description\": null\n}\n"
-								},
-								"url": {
-									"raw": "{{appUrl}}/repository/collection?_token=test-token-full-permissions",
-									"host": [
-										"{{appUrl}}"
-									],
-									"path": [
-										"repository",
-										"collection"
-									],
-									"query": [
-										{
-											"key": "_token",
-											"value": "test-token-full-permissions"
-										}
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "[Validation] Max backup count cannot be higher than globally defined limit",
-							"event": [
-								{
-									"listen": "test",
-									"script": {
-										"id": "231c444d-9820-47ee-b597-505da35a8eba",
-										"type": "text/javascript",
-										"exec": [
-											"var jsonData = pm.response.json();",
-											"",
-											"pm.test(\"Status code is 400\", function () {",
-											"    pm.response.to.have.status(400);",
-											"});",
-											"",
-											"pm.test(\"maxBackupsCount cannot be bigger than the defined limit\", function () {",
-											"    pm.expect(jsonData.errors.maxBackupsCount).to.eql('max_backups_count_too_many');",
-											"});",
-											""
-										]
-									}
-								}
-							],
-							"request": {
-								"method": "POST",
-								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n\t\"maxBackupsCount\": 9000,\n\t\"maxOneVersionSize\": \"5MB\",\n\t\"maxCollectionSize\": \"10MB\",\n\t\"strategy\": \"alert_when_backup_limit_reached\",\n\t\"description\": null\n}\n"
-								},
-								"url": {
-									"raw": "{{appUrl}}/repository/collection?_token=test-token-full-permissions",
-									"host": [
-										"{{appUrl}}"
-									],
-									"path": [
-										"repository",
-										"collection"
-									],
-									"query": [
-										{
-											"key": "_token",
-											"value": "test-token-full-permissions"
-										}
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "[Validation] Collection is has not enough max space",
-							"event": [
-								{
-									"listen": "test",
-									"script": {
-										"id": "ee2ba435-98a8-41d1-ad51-1f876e85d4c7",
-										"type": "text/javascript",
-										"exec": [
-											"var jsonData = pm.response.json();",
-											"",
-											"pm.test(\"Status code is 400\", function () {",
-											"    pm.response.to.have.status(400);",
-											"});",
-											"",
-											"pm.test(\"A combination of maxBackupsCount and maxOneVersionSize must give at less or equal maxCollectionSize\", function () {",
-											"    pm.expect(jsonData.errors.maxCollectionSize).to.eql('max_collection_size_will_have_not_enough_space_to_keep_max_number_of_items');",
-											"});",
-											""
-										]
-									}
-								}
-							],
-							"request": {
-								"method": "POST",
-								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n\t\"maxBackupsCount\": 5,\n\t\"maxOneVersionSize\": \"5MB\",\n\t\"maxCollectionSize\": \"5MB\",\n\t\"strategy\": \"alert_when_backup_limit_reached\",\n\t\"description\": null\n}\n"
-								},
-								"url": {
-									"raw": "{{appUrl}}/repository/collection?_token=test-token-full-permissions&simulate=true",
-									"host": [
-										"{{appUrl}}"
-									],
-									"path": [
-										"repository",
-										"collection"
-									],
-									"query": [
-										{
-											"key": "_token",
-											"value": "test-token-full-permissions"
-										},
-										{
-											"key": "simulate",
-											"value": "true"
 										}
 									]
 								}
@@ -1506,65 +2130,129 @@
 					"_postman_isSubFolder": true
 				},
 				{
-					"name": "Create collection: success",
-					"event": [
+					"name": "Collection fetching",
+					"item": [
 						{
-							"listen": "test",
-							"script": {
-								"id": "51b55601-3b8c-4811-9323-e373c16502f8",
-								"type": "text/javascript",
-								"exec": [
-									"var jsonData = pm.response.json();",
-									"",
-									"pm.test(\"Status code is 202\", function () {",
-									"    pm.response.to.have.status(202);",
-									"});",
-									"",
-									"pm.test(\"Id is 36 length UUID\", function () {",
-									"    pm.expect(jsonData.collection.id.length).to.eql(36);",
-									"});",
-									"",
-									"pm.test(\"All fields are at its place\", function () {",
-									"    pm.expect(jsonData.collection.max_backups_count).to.eql(5);",
-									"    pm.expect(jsonData.collection.max_one_backup_version_size).to.eql(0);",
-									"    pm.expect(jsonData.collection.max_collection_size).to.eql(5000000);",
-									"    pm.expect(jsonData.collection.strategy).to.eql('delete_oldest_when_adding_new');",
-									"    pm.expect(jsonData.collection.description).to.eql('Test collection');",
-									"});",
-									""
-								]
-							}
+							"name": "Create collection: success (#3)",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "176e16d7-86cf-464b-80ee-c56b8d33ab4b",
+										"type": "text/javascript",
+										"exec": [
+											"var jsonData = pm.response.json();",
+											"",
+											"pm.test(\"Status code is 202\", function () {",
+											"    pm.response.to.have.status(202);",
+											"});",
+											"",
+											"pm.test(\"Id is 36 length UUID\", function () {",
+											"    pm.expect(jsonData.collection.id.length).to.eql(36);",
+											"});",
+											"",
+											"pm.test(\"All fields are at its place\", function () {",
+											"    pm.expect(jsonData.collection.max_backups_count).to.eql(5);",
+											"    pm.expect(jsonData.collection.max_one_backup_version_size).to.eql(1000000);",
+											"    pm.expect(jsonData.collection.max_collection_size).to.eql(5000000);",
+											"    pm.expect(jsonData.collection.strategy).to.eql('delete_oldest_when_adding_new');",
+											"    pm.expect(jsonData.collection.description).to.eql('Solidarity Federation documents backup');",
+											"});",
+											"",
+											"",
+											"pm.globals.set(\"collection_3\", jsonData.collection.id);"
+										]
+									}
+								}
+							],
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"maxBackupsCount\": 5,\n\t\"maxOneVersionSize\": \"1MB\",\n\t\"maxCollectionSize\": \"5MB\",\n\t\"strategy\": \"delete_oldest_when_adding_new\",\n\t\"description\": \"Solidarity Federation documents backup\"\n}\n"
+								},
+								"url": {
+									"raw": "{{appUrl}}/repository/collection?_token={{token_create_collections}}",
+									"host": [
+										"{{appUrl}}"
+									],
+									"path": [
+										"repository",
+										"collection"
+									],
+									"query": [
+										{
+											"key": "_token",
+											"value": "{{token_create_collections}}"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Fetch (#3)",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "ad9227bd-f11a-41c7-b28d-894886a23c70",
+										"type": "text/javascript",
+										"exec": [
+											"var jsonData = pm.response.json();",
+											"",
+											"pm.test(\"Returns a collection of proper id\", function () {",
+											"    pm.expect(jsonData.collection.id).to.eql(pm.globals.get('collection_3'));",
+											"});",
+											"",
+											"pm.test(\"Collection has matching description the collection that was created as #3\", function () {",
+											"    pm.expect(jsonData.collection.description).to.eql('Solidarity Federation documents backup');",
+											"});",
+											""
+										]
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"maxBackupsCount\": 5,\n\t\"maxOneVersionSize\": \"1MB\",\n\t\"maxCollectionSize\": \"5MB\",\n\t\"strategy\": \"delete_oldest_when_adding_new\",\n\t\"description\": \"Solidarity Federation documents backup\"\n}\n"
+								},
+								"url": {
+									"raw": "{{appUrl}}/repository/collection/{{collection_3}}?_token={{token_create_collections}}",
+									"host": [
+										"{{appUrl}}"
+									],
+									"path": [
+										"repository",
+										"collection",
+										"{{collection_3}}"
+									],
+									"query": [
+										{
+											"key": "_token",
+											"value": "{{token_create_collections}}"
+										}
+									]
+								}
+							},
+							"response": []
 						}
 					],
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "{\n\t\"maxBackupsCount\": 5,\n\t\"maxOneVersionSize\": 0,\n\t\"maxCollectionSize\": \"5MB\",\n\t\"strategy\": \"delete_oldest_when_adding_new\",\n\t\"description\": \"Test collection\"\n}\n"
-						},
-						"url": {
-							"raw": "{{appUrl}}/repository/collection?_token=test-token-full-permissions&simulate=true",
-							"host": [
-								"{{appUrl}}"
-							],
-							"path": [
-								"repository",
-								"collection"
-							],
-							"query": [
-								{
-									"key": "_token",
-									"value": "test-token-full-permissions"
-								},
-								{
-									"key": "simulate",
-									"value": "true"
-								}
-							]
-						}
-					},
-					"response": []
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Collection listing",
+					"item": [],
+					"_postman_isSubFolder": true
+				},
+				{
+					"name": "Backup upload",
+					"item": [],
+					"_postman_isSubFolder": true
 				}
 			]
 		}

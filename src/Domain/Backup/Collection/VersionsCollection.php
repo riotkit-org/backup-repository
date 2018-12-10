@@ -12,7 +12,7 @@ class VersionsCollection
     /**
      * @var StoredVersion
      */
-    private $versions;
+    private $versions = [];
 
     /**
      * @var callable
@@ -50,10 +50,20 @@ class VersionsCollection
         return new FileSize(array_sum($eachVersionSpace) . 'b');
     }
 
+    public function getCount(): int
+    {
+        return \count($this->versions);
+    }
+
     private function getFileSize(Filename $filename): ?int
     {
         $callable = $this->fsSizeCheck;
 
         return $callable($filename);
+    }
+
+    public function areThereAny(): bool
+    {
+        return $this->getCount() > 0;
     }
 }

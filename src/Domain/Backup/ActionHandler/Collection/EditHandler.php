@@ -7,6 +7,7 @@ use App\Domain\Backup\Exception\CollectionMappingError;
 use App\Domain\Backup\Exception\ValidationException;
 use App\Domain\Backup\Form\Collection\EditForm;
 use App\Domain\Backup\Manager\CollectionManager;
+use App\Domain\Backup\Mapper\CollectionMapper;
 use App\Domain\Backup\Response\Collection\CrudResponse;
 use App\Domain\Backup\Security\CollectionManagementContext;
 
@@ -17,18 +18,25 @@ class EditHandler
      */
     private $manager;
 
-    public function __construct(CollectionManager $manager)
+    /**
+     * @var CollectionMapper
+     */
+    private $mapper;
+
+    public function __construct(CollectionManager $manager, CollectionMapper $mapper)
     {
         $this->manager = $manager;
+        $this->mapper  = $mapper;
     }
 
     /**
-     * @param EditForm                    $form
+     * @param EditForm $form
      * @param CollectionManagementContext $securityContext
      *
      * @return CrudResponse
      *
      * @throws AuthenticationException
+     * @throws \Exception
      */
     public function handle(EditForm $form, CollectionManagementContext $securityContext): CrudResponse
     {
@@ -39,7 +47,9 @@ class EditHandler
         $this->assertHasRights($securityContext, $form);
 
         try {
-            $collection = $this->manager->edit($form);
+            $collection = $this->manager->edit(
+                $this->mapper->mapFormIntoCollection($form, $form->collection)
+            );
 
         } catch (CollectionMappingError $mappingError) {
             return CrudResponse::createWithValidationErrors($mappingError->getErrors());

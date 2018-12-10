@@ -3,24 +3,12 @@
 namespace App\Domain\Backup\ActionHandler\Collection;
 
 use App\Domain\Backup\Exception\AuthenticationException;
-use App\Domain\Backup\Exception\ValidationException;
 use App\Domain\Backup\Form\Collection\DeleteForm;
-use App\Domain\Backup\Manager\CollectionManager;
 use App\Domain\Backup\Response\Collection\CrudResponse;
 use App\Domain\Backup\Security\CollectionManagementContext;
 
-class DeleteHandler
+class FetchHandler
 {
-    /**
-     * @var CollectionManager
-     */
-    private $manager;
-
-    public function __construct(CollectionManager $manager)
-    {
-        $this->manager = $manager;
-    }
-
     /**
      * @param DeleteForm                  $form
      * @param CollectionManagementContext $securityContext
@@ -38,27 +26,7 @@ class DeleteHandler
 
         $this->assertHasRights($securityContext, $form);
 
-        try {
-            $this->manager->delete($form->collection);
-
-        } catch (ValidationException $validationException) {
-            return CrudResponse::createWithDomainError(
-                $validationException->getMessage(),
-                $validationException->getField(),
-                $validationException->getCode(),
-                $validationException->getReference()
-            );
-        }
-
-        return CrudResponse::deletionSuccessfulResponse($form->collection);
-    }
-
-    /**
-     * Submit changes to the persistent storage eg. database
-     */
-    public function flush(): void
-    {
-        $this->manager->flush();
+        return CrudResponse::createSuccessfullResponse($form->collection, 200);
     }
 
     /**
@@ -69,7 +37,7 @@ class DeleteHandler
      */
     private function assertHasRights(CollectionManagementContext $securityContext, DeleteForm $form): void
     {
-        if (!$securityContext->canDeleteCollection($form)) {
+        if (!$securityContext->canViewCollection($form)) {
             throw new AuthenticationException(
                 'Current token does not allow to delete this collection',
                 AuthenticationException::CODES['not_authenticated']

@@ -25,4 +25,6 @@ interface CollectionRepository
      * Send all pending changes to the database/storage
      */
     public function flushAll(): void;
+
+    public function delete(BackupCollection $collection): void;
 }

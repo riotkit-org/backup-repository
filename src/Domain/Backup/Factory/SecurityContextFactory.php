@@ -14,6 +14,7 @@ class SecurityContextFactory
             $token->hasRole(Roles::ROLE_COLLECTION_ADD),
             $token->hasRole(Roles::ROLE_COLLECTION_ADD_WITH_INFINITE_LIMITS),
             $token->hasRole(Roles::ROLE_COLLECTION_MODIFY_ANY_COLLECTION),
+            $token->hasRole(Roles::ROLE_COLLECTION_VIEW_ANY_COLLECTION),
             $token->getId()
         );
     }
