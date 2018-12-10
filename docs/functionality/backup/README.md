@@ -59,15 +59,16 @@ To delete a collection you need to at first make sure, that there are no backup 
 Before deleting a collection you need to manually delete all backups. It's for safety reasons.
 
 ```
-DELETE {{appUrl}}/repository/collection?_token=test-token-full-permissions&id=SOME-COLLECTION-ID-YOUR-RECEIVED-WHEN-CREATING-THE-COLLECTION
-
-{
-    "collection": "SOME-COLLECTION-ID-YOUR-RECEIVED-WHEN-CREATING-THE-COLLECTION",
-    "maxBackupsCount": 5,
-    "maxOneVersionSize": 0,
-    "maxCollectionSize": "250MB",
-    "strategy": "delete_oldest_when_adding_new",
-    "description": "Test collection (modified)"
-}
+DELETE {{appUrl}}/repository/collection/SOME-COLLECTION-ID-YOUR-RECEIVED-WHEN-CREATING-THE-COLLECTION?_token=test-token-full-permissions
 ```
 
+##### Fetching collection information
+
+You can fetch information about collection limits, strategy, description and more to be able to edit it using other endpoints.
+
+```
+GET {{appUrl}}/repository/collection/SOME-COLLECTION-ID-YOUR-RECEIVED-WHEN-CREATING-THE-COLLECTION?_token=test-token-full-permissions
+```
+
+**Notes:**
+- You need to have global permissions for managing any collection or to **have token listed as allowed in collection you want to fetch**
