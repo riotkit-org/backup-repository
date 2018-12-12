@@ -6,6 +6,7 @@ use App\Domain\Backup\Entity\BackupCollection;
 use App\Domain\Backup\Form\Collection\CreationForm;
 use App\Domain\Backup\Form\Collection\DeleteForm;
 use App\Domain\Backup\Form\Collection\EditForm;
+use App\Domain\Backup\Form\Collection\ListingForm;
 
 class CollectionManagementContext
 {
@@ -27,6 +28,11 @@ class CollectionManagementContext
     /**
      * @var bool
      */
+    private $canUseListingEndpoint;
+
+    /**
+     * @var bool
+     */
     private $canAccessAnyCollection;
 
     /**
@@ -39,12 +45,14 @@ class CollectionManagementContext
         bool $canCreateCollectionsWithoutLimit,
         bool $canModifyAnyCollection,
         bool $canAccessAnyCollection,
+        bool $canUseListingEndpoint,
         ?string $tokenId
     ) {
         $this->canCreateCollections             = $canCreateCollections;
         $this->canCreateCollectionsWithoutLimit = $canCreateCollectionsWithoutLimit;
         $this->canModifyAnyCollection           = $canModifyAnyCollection;
         $this->canAccessAnyCollection           = $canAccessAnyCollection;
+        $this->canUseListingEndpoint            = $canUseListingEndpoint;
         $this->tokenId                          = $tokenId;
     }
 
@@ -116,5 +124,23 @@ class CollectionManagementContext
     public function getTokenId(): ?string
     {
         return $this->tokenId;
+    }
+
+    public function canListMultipleCollections(ListingForm $form): bool
+    {
+        return $this->canUseListingEndpoint;
+    }
+
+    public function canSeeCollection(BackupCollection $collection): bool
+    {
+        if (!$this->canUseListingEndpoint) {
+            return false;
+        }
+
+        if ($this->canAccessAnyCollection) {
+            return true;
+        }
+
+        return $collection->isTokenIdAllowed($this->tokenId);
     }
 }

@@ -85,12 +85,16 @@ final class Roles
     /** Allow to browse any collection regardless of if the user token was allowed by it or not */
     public const ROLE_COLLECTION_VIEW_ANY_COLLECTION = 'collections.view_all_collections';
 
+    /** Can use an endpoint that will allow to browse and search collections? */
+    public const ROLE_CAN_USE_LISTING_COLLECTION_ENDPOINT = 'collections.can_use_listing_endpoint';
+
     /** Collection manager: Create, edit, delete collections */
     public const GROUP_COLLECTION_MANAGER = [
         self::ROLE_COLLECTION_ADD,
         self::ROLE_COLLECTION_ADD_WITH_INFINITE_LIMITS,
         self::ROLE_COLLECTION_MODIFY_ANY_COLLECTION,
-        self::ROLE_COLLECTION_VIEW_ANY_COLLECTION
+        self::ROLE_COLLECTION_VIEW_ANY_COLLECTION,
+        self::ROLE_CAN_USE_LISTING_COLLECTION_ENDPOINT
     ];
 
     public const ROLES_LIST = [
@@ -109,6 +113,7 @@ final class Roles
         self::ROLE_COLLECTION_ADD,
         self::ROLE_COLLECTION_ADD_WITH_INFINITE_LIMITS,
         self::ROLE_COLLECTION_MODIFY_ANY_COLLECTION,
-        self::ROLE_COLLECTION_VIEW_ANY_COLLECTION
+        self::ROLE_COLLECTION_VIEW_ANY_COLLECTION,
+        self::ROLE_CAN_USE_LISTING_COLLECTION_ENDPOINT
     ];
 }

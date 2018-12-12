@@ -1778,7 +1778,7 @@
 								{
 									"listen": "test",
 									"script": {
-										"id": "5e6d2508-5215-4514-a402-a1c0a61a9fd9",
+										"id": "919b2953-b104-4093-9c76-019785d7d32d",
 										"type": "text/javascript",
 										"exec": [
 											"var jsonData = pm.response.json();",
@@ -1796,7 +1796,7 @@
 											"    pm.expect(jsonData.collection.max_one_backup_version_size).to.eql(1000000);",
 											"    pm.expect(jsonData.collection.max_collection_size).to.eql(5000000);",
 											"    pm.expect(jsonData.collection.strategy).to.eql('delete_oldest_when_adding_new');",
-											"    pm.expect(jsonData.collection.description).to.eql('Test collection');",
+											"    pm.expect(jsonData.collection.description).to.eql('ZSP uploads directory');",
 											"});",
 											"",
 											"",
@@ -1810,7 +1810,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n\t\"maxBackupsCount\": 5,\n\t\"maxOneVersionSize\": \"1MB\",\n\t\"maxCollectionSize\": \"5MB\",\n\t\"strategy\": \"delete_oldest_when_adding_new\",\n\t\"description\": \"Test collection\"\n}\n"
+									"raw": "{\n\t\"maxBackupsCount\": 5,\n\t\"maxOneVersionSize\": \"1MB\",\n\t\"maxCollectionSize\": \"5MB\",\n\t\"strategy\": \"delete_oldest_when_adding_new\",\n\t\"description\": \"ZSP uploads directory\"\n}\n"
 								},
 								"url": {
 									"raw": "{{appUrl}}/repository/collection?_token={{token_create_collections}}",
@@ -2246,7 +2246,118 @@
 				},
 				{
 					"name": "Collection listing",
-					"item": [],
+					"item": [
+						{
+							"name": "Listing: Search for ZSP* -> should find \"ZSP uploads directory\"",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "c1a5f77d-b9d1-4945-ad9e-60186f679710",
+										"type": "text/javascript",
+										"exec": [
+											"var jsonData = pm.response.json();",
+											"",
+											"pm.test(\"Has element 'ZSP uploads directory'\", function () {",
+											"    pm.expect(jsonData.elements[0].description).to.eql('ZSP uploads directory');",
+											"});",
+											""
+										]
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"maxBackupsCount\": 5,\n\t\"maxOneVersionSize\": \"1MB\",\n\t\"maxCollectionSize\": \"5MB\",\n\t\"strategy\": \"delete_oldest_when_adding_new\",\n\t\"description\": \"Solidarity Federation documents backup\"\n}\n"
+								},
+								"url": {
+									"raw": "{{appUrl}}/repository/collection?_token=test-token-full-permissions&createdTo=2050-05-05&createdFrom=2018-01-01&searchQuery=ZSP",
+									"host": [
+										"{{appUrl}}"
+									],
+									"path": [
+										"repository",
+										"collection"
+									],
+									"query": [
+										{
+											"key": "_token",
+											"value": "test-token-full-permissions"
+										},
+										{
+											"key": "createdTo",
+											"value": "2050-05-05"
+										},
+										{
+											"key": "createdFrom",
+											"value": "2018-01-01"
+										},
+										{
+											"key": "searchQuery",
+											"value": "ZSP"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "Listing: Show everything",
+							"event": [
+								{
+									"listen": "test",
+									"script": {
+										"id": "dbd0a8b9-0951-4b8b-ab0e-bb2a6bbe5d7c",
+										"type": "text/javascript",
+										"exec": [
+											"var jsonData = pm.response.json();",
+											"",
+											"pm.test(\"There is a pagination\", function () {",
+											"    pm.expect(jsonData.pagination.current).to.eql(2);",
+											"});",
+											""
+										]
+									}
+								}
+							],
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\n\t\"maxBackupsCount\": 5,\n\t\"maxOneVersionSize\": \"1MB\",\n\t\"maxCollectionSize\": \"5MB\",\n\t\"strategy\": \"delete_oldest_when_adding_new\",\n\t\"description\": \"Solidarity Federation documents backup\"\n}\n"
+								},
+								"url": {
+									"raw": "{{appUrl}}/repository/collection?_token=test-token-full-permissions&page=2&limit=3",
+									"host": [
+										"{{appUrl}}"
+									],
+									"path": [
+										"repository",
+										"collection"
+									],
+									"query": [
+										{
+											"key": "_token",
+											"value": "test-token-full-permissions"
+										},
+										{
+											"key": "page",
+											"value": "2"
+										},
+										{
+											"key": "limit",
+											"value": "3"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					],
 					"_postman_isSubFolder": true
 				},
 				{

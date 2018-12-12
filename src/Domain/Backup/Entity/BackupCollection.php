@@ -70,6 +70,17 @@ class BackupCollection implements \JsonSerializable
         $this->creationDate = new \DateTimeImmutable();
     }
 
+    public function withAnonymousData(): BackupCollection
+    {
+        $clone                = clone $this;
+        $clone->id            = null;
+        $clone->description   = 'Anonymous';
+        $clone->allowedTokens = [];
+        $clone->webhooks      = [];
+
+        return $clone;
+    }
+
     /**
      * @immutable
      *

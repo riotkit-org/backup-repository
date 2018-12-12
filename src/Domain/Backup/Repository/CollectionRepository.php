@@ -3,6 +3,7 @@
 namespace App\Domain\Backup\Repository;
 
 use App\Domain\Backup\Entity\BackupCollection;
+use App\Domain\Backup\Parameters\Repository\ListingParameters;
 
 interface CollectionRepository
 {
@@ -27,4 +28,18 @@ interface CollectionRepository
     public function flushAll(): void;
 
     public function delete(BackupCollection $collection): void;
+
+    /**
+     * @param ListingParameters $createFromArray
+     *
+     * @return BackupCollection[]
+     */
+    public function findElementsBy(ListingParameters $createFromArray): array;
+
+    /**
+     * @param ListingParameters $parameters
+     *
+     * @return int
+     */
+    public function getMaxResultsCountForFindElementsBy(ListingParameters $parameters): int;
 }

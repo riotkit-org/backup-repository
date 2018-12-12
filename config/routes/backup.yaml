@@ -19,9 +19,9 @@ backup.collection_fetch:
     defaults:
         _secured: true
 
-#backup.collection_listing:
-#    path: /repository/collections
-#    controller: 'App\Controller\Backup\Collection\ListingController::listingAction'
-#    methods: ['GET']
-#    defaults:
-#        _secured: true
+backup.collection_listing:
+    path: /repository/collection
+    controller: 'App\Controller\Backup\Collection\ListingController::handleAction'
+    methods: ['GET']
+    defaults:
+        _secured: true
