@@ -47,7 +47,7 @@ class BackupCollection implements \JsonSerializable
     /**
      * @var Token[]
      */
-    protected $allowedTokens;
+    protected $allowedTokens = [];
 
     /**
      * Defines a strategy - should the older backups be deleted in favor of new backups, or should the user
@@ -158,6 +158,13 @@ class BackupCollection implements \JsonSerializable
 
     public function withTokenAdded(Token $token): BackupCollection
     {
+        // don't allow to add same token twice
+        foreach ($this->allowedTokens as $existingToken) {
+            if ($existingToken->getId() === $token->getId()) {
+                return $this;
+            }
+        }
+
         $self = clone $this;
         $self->allowedTokens[] = $token;
 
@@ -219,5 +226,17 @@ class BackupCollection implements \JsonSerializable
     public function isSameAsCollection(BackupCollection $collection): bool
     {
         return $collection->getId() === $this->getId();
+    }
+
+    /**
+     * @return Token[]
+     */
+    public function getAllowedTokens(): array
+    {
+        if (\is_object($this->allowedTokens)) {
+            return $this->allowedTokens->toArray();
+        }
+
+        return $this->allowedTokens;
     }
 }

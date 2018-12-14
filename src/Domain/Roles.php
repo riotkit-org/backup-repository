@@ -88,13 +88,17 @@ final class Roles
     /** Can use an endpoint that will allow to browse and search collections? */
     public const ROLE_CAN_USE_LISTING_COLLECTION_ENDPOINT = 'collections.can_use_listing_endpoint';
 
+    /** Attach new tokens to the collections where our current token is already added as allowed */
+    public const ROLE_CAN_ADD_TOKENS_TO_ALLOWED_COLLECTIONS = 'collections.add_tokens_to_allowed_collections';
+
     /** Collection manager: Create, edit, delete collections */
     public const GROUP_COLLECTION_MANAGER = [
         self::ROLE_COLLECTION_ADD,
         self::ROLE_COLLECTION_ADD_WITH_INFINITE_LIMITS,
         self::ROLE_COLLECTION_MODIFY_ANY_COLLECTION,
         self::ROLE_COLLECTION_VIEW_ANY_COLLECTION,
-        self::ROLE_CAN_USE_LISTING_COLLECTION_ENDPOINT
+        self::ROLE_CAN_USE_LISTING_COLLECTION_ENDPOINT,
+        self::ROLE_CAN_ADD_TOKENS_TO_ALLOWED_COLLECTIONS
     ];
 
     public const ROLES_LIST = [
@@ -110,10 +114,12 @@ final class Roles
         self::ROLE_VIEW_ALL_PROTECTED_FILES,
         self::ROLE_BROWSE_LIST_OF_FILES_BY_ANY_TAG,
         self::ROLE_ACCESS_LISTING_ENDPOINT,
+
         self::ROLE_COLLECTION_ADD,
         self::ROLE_COLLECTION_ADD_WITH_INFINITE_LIMITS,
         self::ROLE_COLLECTION_MODIFY_ANY_COLLECTION,
         self::ROLE_COLLECTION_VIEW_ANY_COLLECTION,
-        self::ROLE_CAN_USE_LISTING_COLLECTION_ENDPOINT
+        self::ROLE_CAN_USE_LISTING_COLLECTION_ENDPOINT,
+        self::ROLE_CAN_ADD_TOKENS_TO_ALLOWED_COLLECTIONS
     ];
 }

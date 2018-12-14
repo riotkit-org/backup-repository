@@ -2,6 +2,7 @@
 
 namespace App\Domain\Backup\Manager;
 
+use App\Domain\Backup\Entity\Authentication\Token;
 use App\Domain\Backup\Entity\BackupCollection;
 use App\Domain\Backup\Exception\CollectionMappingError;
 use App\Domain\Backup\Exception\ValidationException;
@@ -90,5 +91,16 @@ class CollectionManager
     public function flush(): void
     {
         $this->repository->flushAll();
+    }
+
+    public function appendToken(Token $token, BackupCollection $collection): BackupCollection
+    {
+        $modifiedCollection = $collection->withTokenAdded($token);
+
+        $this->repository->persist(
+            $this->repository->merge($modifiedCollection)
+        );
+
+        return $modifiedCollection;
     }
 }

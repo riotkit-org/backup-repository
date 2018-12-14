@@ -25,3 +25,10 @@ backup.collection_listing:
     methods: ['GET']
     defaults:
         _secured: true
+
+backup.collection_add_token:
+    path: /repository/collection/{id}/token
+    controller: 'App\Controller\Backup\Security\AddAllowedTokenController::handleAction'
+    methods: ['POST']
+    defaults:
+        _secured: true
