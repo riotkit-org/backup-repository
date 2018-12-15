@@ -159,7 +159,7 @@ class BackupCollection implements \JsonSerializable
     public function withTokenAdded(Token $token): BackupCollection
     {
         // don't allow to add same token twice
-        foreach ($this->allowedTokens as $existingToken) {
+        foreach ($this->getAllowedTokens() as $existingToken) {
             if ($existingToken->getId() === $token->getId()) {
                 return $this;
             }
@@ -167,6 +167,19 @@ class BackupCollection implements \JsonSerializable
 
         $self = clone $this;
         $self->allowedTokens[] = $token;
+
+        return $self;
+    }
+
+    public function withoutToken(Token $tokenToRevokeAccessToCollection): BackupCollection
+    {
+        $self = clone $this;
+        $self->allowedTokens = array_filter(
+            $this->getAllowedTokens(),
+            function (Token $token) use ($tokenToRevokeAccessToCollection) {
+                return !$token->isSameAs($tokenToRevokeAccessToCollection);
+            }
+        );
 
         return $self;
     }

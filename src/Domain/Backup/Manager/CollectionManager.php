@@ -103,4 +103,15 @@ class CollectionManager
 
         return $modifiedCollection;
     }
+
+    public function revokeToken(Token $token, BackupCollection $collection): BackupCollection
+    {
+        $modifiedCollection = $collection->withoutToken($token);
+
+        $this->repository->persist(
+            $this->repository->merge($modifiedCollection)
+        );
+
+        return $modifiedCollection;
+    }
 }

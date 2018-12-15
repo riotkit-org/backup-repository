@@ -163,4 +163,17 @@ class CollectionManagementContext
 
         return $collection->isTokenIdAllowed($this->tokenId);
     }
+
+    public function canRevokeAccessToCollection(BackupCollection $collection)
+    {
+        if (!$this->canAddTokensToAllowedCollections) {
+            return false;
+        }
+
+        if ($this->canModifyAnyCollection) {
+            return true;
+        }
+
+        return $collection->isTokenIdAllowed($this->tokenId);
+    }
 }

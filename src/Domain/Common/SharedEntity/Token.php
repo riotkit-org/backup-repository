@@ -16,4 +16,9 @@ class Token
     {
         return $this->id;
     }
+
+    public function isSameAs(Token $token): bool
+    {
+        return $token->getId() === $this->getId();
+    }
 }

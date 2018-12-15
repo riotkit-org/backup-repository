@@ -4,12 +4,12 @@ namespace App\Domain\Backup\ActionHandler\Security;
 
 use App\Domain\Backup\Entity\BackupCollection;
 use App\Domain\Backup\Exception\AuthenticationException;
+use App\Domain\Backup\Form\TokenDeleteForm;
 use App\Domain\Backup\Manager\CollectionManager;
 use App\Domain\Backup\Response\Security\TokenManagementResponse;
 use App\Domain\Backup\Security\CollectionManagementContext;
-use App\Domain\Backup\Form\TokenFormAttachForm;
 
-class TokenAddHandler
+class DisallowTokenHandler
 {
     /**
      * @var CollectionManager
@@ -22,14 +22,14 @@ class TokenAddHandler
     }
 
     /**
-     * @param TokenFormAttachForm $form
+     * @param TokenDeleteForm             $form
      * @param CollectionManagementContext $securityContext
      *
      * @throws AuthenticationException
      *
      * @return TokenManagementResponse
      */
-    public function handle(TokenFormAttachForm $form, CollectionManagementContext $securityContext): TokenManagementResponse
+    public function handle(TokenDeleteForm $form, CollectionManagementContext $securityContext): TokenManagementResponse
     {
         if (!$form->collection || !$form->token) {
             return TokenManagementResponse::createWithNotFoundError();
@@ -37,7 +37,7 @@ class TokenAddHandler
 
         $this->assertHasRights($securityContext, $form->collection);
 
-        $collection = $this->manager->appendToken($form->token, $form->collection);
+        $collection = $this->manager->revokeToken($form->token, $form->collection);
 
         return TokenManagementResponse::createFromResults($form->token, $collection);
     }
@@ -55,9 +55,9 @@ class TokenAddHandler
      */
     private function assertHasRights(CollectionManagementContext $securityContext, BackupCollection $collection): void
     {
-        if (!$securityContext->canAddTokensToCollection($collection)) {
+        if (!$securityContext->canRevokeAccessToCollection($collection)) {
             throw new AuthenticationException(
-                'Current token does not allow to add tokens to this collection',
+                'Current token does not allow to revoke tokens at this collection',
                 AuthenticationException::CODES['not_authenticated']
             );
         }

@@ -1,11 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace App\Domain\Storage\Form;
+namespace App\Domain\Backup\Form;
 
 use App\Domain\Backup\Entity\Authentication\Token;
 use App\Domain\Backup\Entity\BackupCollection;
 
-class CollectionAddDeleteToken
+class CollectionAddDeleteTokenForm
 {
     /**
      * @var BackupCollection
