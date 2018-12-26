@@ -2,24 +2,8 @@
 
 namespace App\Domain\Storage\ValueObject;
 
-class Filesize
+use App\Domain\Common\ValueObject\DiskSpace;
+
+class Filesize extends DiskSpace
 {
-    /**
-     * @var int
-     */
-    private $value;
-
-    public function __construct(int $value)
-    {
-        if ($value < 0) {
-            throw new \LogicException('File size cannot be negative');
-        }
-
-        $this->value = $value;
-    }
-
-    public function getValue(): int
-    {
-        return $this->value;
-    }
 }

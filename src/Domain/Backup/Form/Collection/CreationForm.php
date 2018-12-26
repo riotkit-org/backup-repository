@@ -28,4 +28,14 @@ class CreationForm
      * @var string
      */
     public $description;
+
+    /**
+     * @var string
+     */
+    public $password;
+
+    /**
+     * @var string
+     */
+    public $filename;
 }

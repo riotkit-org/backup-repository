@@ -3,9 +3,12 @@
 namespace App\Domain\Backup\Collection;
 
 use App\Domain\Backup\Entity\BackupCollection;
+use App\Domain\Backup\Entity\StoredFile;
 use App\Domain\Backup\Entity\StoredVersion;
+use App\Domain\Backup\ValueObject\Collection\CollectionLength;
 use App\Domain\Backup\ValueObject\Filename;
 use App\Domain\Backup\ValueObject\FileSize;
+use App\Domain\Backup\ValueObject\Version\VersionNumber;
 
 class VersionsCollection
 {
@@ -42,7 +45,7 @@ class VersionsCollection
     {
         $eachVersionSpace = array_map(
             function (StoredVersion $version) {
-                return $this->getFileSize($version->getFile()->getFilename());
+                return $this->getFileSize($version->getFile()->getFilename())->getValue();
             },
             $this->versions
         );
@@ -50,20 +53,56 @@ class VersionsCollection
         return new FileSize(array_sum($eachVersionSpace) . 'b');
     }
 
-    public function getCount(): int
+    public function getCount(): CollectionLength
     {
-        return \count($this->versions);
+        return new CollectionLength(\count($this->versions));
     }
 
-    private function getFileSize(Filename $filename): ?int
+    public function areThereAny(): bool
+    {
+        return $this->getCount()->isHigherThanInteger(0);
+    }
+
+    public function getLast(): ?StoredVersion
+    {
+        /**
+         * @var StoredVersion|null $latest
+         */
+        $latest = null;
+
+        foreach ($this->versions as $storedVersion) {
+            if (!$latest || $latest->getVersionNumber() < $storedVersion->getVersionNumber()) {
+                $latest = $storedVersion;
+            }
+        }
+
+        return $latest;
+    }
+
+    public function getNextVersionNumber(): VersionNumber
+    {
+        if ($this->getLast()) {
+            return $this->getLast()->getVersionNumber()->incrementVersion();
+        }
+
+        return new VersionNumber(1);
+    }
+
+    private function getFileSize(Filename $filename): FileSize
     {
         $callable = $this->fsSizeCheck;
 
         return $callable($filename);
     }
 
-    public function areThereAny(): bool
+    public function isThereAnyVersionThatHasFile(StoredFile $file): bool
     {
-        return $this->getCount() > 0;
+        foreach ($this->versions as $version) {
+            if ($version->getFile()->isSameAs($file)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

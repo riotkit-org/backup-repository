@@ -41,6 +41,11 @@ class CollectionManagementContext
     private $canAddTokensToAllowedCollections;
 
     /**
+     * @var bool
+     */
+    private $canUploadToAllowedCollections;
+
+    /**
      * @var string|null
      */
     private $tokenId;
@@ -52,6 +57,7 @@ class CollectionManagementContext
         bool $canAccessAnyCollection,
         bool $canUseListingEndpoint,
         bool $canAddTokensToAllowedCollections,
+        bool $canUploadToAllowedCollections,
         ?string $tokenId
     ) {
         $this->canCreateCollections             = $canCreateCollections;
@@ -60,6 +66,7 @@ class CollectionManagementContext
         $this->canAccessAnyCollection           = $canAccessAnyCollection;
         $this->canUseListingEndpoint            = $canUseListingEndpoint;
         $this->canAddTokensToAllowedCollections = $canAddTokensToAllowedCollections;
+        $this->canUploadToAllowedCollections    = $canUploadToAllowedCollections;
         $this->tokenId                          = $tokenId;
     }
 
@@ -164,9 +171,22 @@ class CollectionManagementContext
         return $collection->isTokenIdAllowed($this->tokenId);
     }
 
-    public function canRevokeAccessToCollection(BackupCollection $collection)
+    public function canRevokeAccessToCollection(BackupCollection $collection): bool
     {
         if (!$this->canAddTokensToAllowedCollections) {
+            return false;
+        }
+
+        if ($this->canModifyAnyCollection) {
+            return true;
+        }
+
+        return $collection->isTokenIdAllowed($this->tokenId);
+    }
+
+    public function canUploadToCollection(BackupCollection $collection): bool
+    {
+        if (!$this->canUploadToAllowedCollections) {
             return false;
         }
 

@@ -2,6 +2,8 @@
 
 namespace App\Domain\Storage\Form;
 
+use App\Domain\Common\ValueObject\Password;
+
 class UploadForm
 {
     /**
@@ -10,7 +12,7 @@ class UploadForm
     public $tags;
 
     /**
-     * @var string
+     * @var string|Password
      */
     public $password;
 
@@ -23,4 +25,9 @@ class UploadForm
      * @var string
      */
     public $backUrl = '';
+
+    /**
+     * @var bool
+     */
+    public $public = true;
 }

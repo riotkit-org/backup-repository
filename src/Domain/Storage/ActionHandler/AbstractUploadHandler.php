@@ -80,21 +80,27 @@ abstract class AbstractUploadHandler
             return $this->finalize(
                 FileUploadedResponse::createWithMeaningFileWasUploaded(
                     $publicUrl,
-                    new Url($form->backUrl)
+                    new Url($form->backUrl),
+                    $uploadedFile->getId(),
+                    $uploadedFile->getFilename()
                 )
             );
 
         } catch (DuplicatedContentException $exception) {
             return $this->finalize(
                 FileUploadedResponse::createWithMeaningFileWasAlreadyUploadedUnderOtherName(
-                    $this->publicUrlFactory->fromStoredFile($exception->getAlreadyExistingFile(), $baseUrl)
+                    $this->publicUrlFactory->fromStoredFile($exception->getAlreadyExistingFile(), $baseUrl),
+                    $exception->getAlreadyExistingFile()->getId(),
+                    $exception->getAlreadyExistingFile()->getFilename()
                 )
             );
 
         } catch (FileUploadedTwiceException $exception) {
             return $this->finalize(
                 FileUploadedResponse::createWithMeaningFileWasAlreadyUploaded(
-                    $this->publicUrlFactory->fromStoredFile($exception->getAlreadyExistingFile(), $baseUrl)
+                    $this->publicUrlFactory->fromStoredFile($exception->getAlreadyExistingFile(), $baseUrl),
+                    $exception->getAlreadyExistingFile()->getId(),
+                    $exception->getAlreadyExistingFile()->getFilename()
                 )
             );
 

@@ -17,6 +17,7 @@ class SecurityContextFactory
             $token->hasRole(Roles::ROLE_COLLECTION_VIEW_ANY_COLLECTION),
             $token->hasRole(Roles::ROLE_CAN_USE_LISTING_COLLECTION_ENDPOINT),
             $token->hasRole(Roles::ROLE_CAN_ADD_TOKENS_TO_ALLOWED_COLLECTIONS),
+            $token->hasRole(Roles::ROLE_CAN_UPLOAD_TO_ALLOWED_COLLECTIONS),
             $token->getId()
         );
     }

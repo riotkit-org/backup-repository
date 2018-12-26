@@ -8,6 +8,9 @@ use App\Domain\Backup\ValueObject\Collection\BackupSize;
 use App\Domain\Backup\ValueObject\Collection\CollectionLength;
 use App\Domain\Backup\ValueObject\Collection\CollectionSize;
 use App\Domain\Backup\ValueObject\Collection\Description;
+use App\Domain\Backup\ValueObject\Filename;
+use App\Domain\Backup\ValueObject\Password;
+use App\Domain\Common\ValueObject\DiskSpace;
 
 /**
  * Represents a single backup (eg. database dump from iwa-ait.org website) collection
@@ -23,6 +26,16 @@ class BackupCollection implements \JsonSerializable
      * @var Description
      */
     protected $description;
+
+    /**
+     * @var Password
+     */
+    protected $password;
+
+    /**
+     * @var Filename
+     */
+    protected $filename;
 
     /**
      * @var CollectionLength
@@ -156,6 +169,36 @@ class BackupCollection implements \JsonSerializable
         return $self;
     }
 
+    /**
+     * @immutable
+     *
+     * @param Password $password
+     *
+     * @return BackupCollection
+     */
+    public function withPassword(Password $password): BackupCollection
+    {
+        $self = clone $this;
+        $self->password = $password;
+
+        return $self;
+    }
+
+    /**
+     * @immutable
+     *
+     * @param Filename $filename
+     *
+     * @return BackupCollection
+     */
+    public function withFilename(Filename $filename): BackupCollection
+    {
+        $self = clone $this;
+        $self->filename = $filename;
+
+        return $self;
+    }
+
     public function withTokenAdded(Token $token): BackupCollection
     {
         // don't allow to add same token twice
@@ -193,7 +236,8 @@ class BackupCollection implements \JsonSerializable
             'max_collection_size'         => $this->maxCollectionSize,
             'created_at'                  => $this->creationDate,
             'strategy'                    => $this->strategy,
-            'description'                 => $this->description
+            'description'                 => $this->description,
+            'filename'                    => $this->filename
         ];
     }
 
@@ -205,6 +249,16 @@ class BackupCollection implements \JsonSerializable
     public function getDescription(): Description
     {
         return $this->description;
+    }
+
+    public function getPassword(): Password
+    {
+        return $this->password;
+    }
+
+    public function getFilename(): Filename
+    {
+        return $this->filename;
     }
 
     public function getMaxBackupsCount(): CollectionLength
@@ -251,5 +305,12 @@ class BackupCollection implements \JsonSerializable
         }
 
         return $this->allowedTokens;
+    }
+
+    public function getMaxDiskSpaceCollectionCanAllocate(): DiskSpace
+    {
+        return DiskSpace::fromBytes(
+            $this->getMaxOneVersionSize()->getValue() * $this->getMaxBackupsCount()->getValue()
+        );
     }
 }

@@ -6,4 +6,8 @@ use App\Domain\Common\ValueObject\Filename as FilenameFromCommon;
 
 class Filename extends FilenameFromCommon
 {
+    public static function createFromBasicForm(FilenameFromCommon $basicForm): Filename
+    {
+        return new self($basicForm->value);
+    }
 }

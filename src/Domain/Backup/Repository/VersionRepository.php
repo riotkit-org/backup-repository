@@ -21,6 +21,16 @@ interface VersionRepository
     public function persist(StoredVersion $version): void;
 
     /**
+     * @param StoredVersion $version
+     */
+    public function delete(StoredVersion $version): void;
+
+    /**
+     * @param StoredVersion $version
+     */
+    public function flush(StoredVersion $version): void;
+
+    /**
      * Send all pending changes to the database/storage
      */
     public function flushAll(): void;

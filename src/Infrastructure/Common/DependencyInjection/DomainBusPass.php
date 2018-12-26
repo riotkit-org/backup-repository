@@ -2,6 +2,7 @@
 
 namespace App\Infrastructure\Common\DependencyInjection;
 
+use App\Domain\Common\Service\Bus\CommandHandler;
 use App\Domain\Common\Service\Bus\DomainBus;
 use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -20,12 +21,24 @@ class DomainBusPass implements CompilerPassInterface
      */
     public function process(ContainerBuilder $container)
     {
-        $commands = $container->findTaggedServiceIds('domain.bus');
+        $commands = $container->getDefinitions();
+        $onlyCommandsThatImplementsInterface = array_filter(
+            $commands,
+            function (Definition $definition) {
+
+                if (!$definition->getClass() || !class_exists($definition->getClass(), false)) {
+                    return false;
+                }
+
+                return \in_array(CommandHandler::class, class_implements($definition->getClass()), true);
+            }
+        );
+
         $commandDefinitions = array_map(
             function (string $serviceId) {
                 return new Reference($serviceId);
             },
-            array_keys($commands)
+            array_keys($onlyCommandsThatImplementsInterface)
         );
 
         $container->setDefinition(

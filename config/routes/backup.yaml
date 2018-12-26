@@ -39,3 +39,10 @@ backup.collection_delete_token:
     methods: ['DELETE']
     defaults:
         _secured: true
+
+backup.submit_version:
+    path: /repository/collection/{collectionId}/backup
+    controller: 'App\Controller\Backup\Version\SubmitVersionController::handleAction'
+    methods: ['POST']
+    defaults:
+        _secured: true

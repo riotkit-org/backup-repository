@@ -29,6 +29,14 @@ App\Domain\Backup\Entity\BackupCollection:
             class: App\Domain\Backup\ValueObject\BackupStrategy
             columnPrefix: false
 
+        password:
+            class: App\Domain\Backup\ValueObject\Password
+            columnPrefix: false
+
+        filename:
+            class: App\Domain\Backup\ValueObject\Filename
+            columnPrefix: false
+
     fields:
         creationDate:
             type: datetime_immutable

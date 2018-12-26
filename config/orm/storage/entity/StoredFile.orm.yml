@@ -33,6 +33,10 @@ App\Domain\Storage\Entity\StoredFile:
             length: 254
             column: password
 
+        public:
+            type: boolean
+            column: public
+
     manyToMany:
         tags:
             targetEntity: Tag

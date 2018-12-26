@@ -5,6 +5,7 @@ namespace App\Domain\Storage\ActionHandler;
 use App\Domain\Storage\Factory\Context\SecurityContextFactory;
 use App\Domain\Storage\Factory\FileNameFactory;
 use App\Domain\Storage\Factory\PublicUrlFactory;
+use App\Domain\Storage\Form\UploadByPostForm;
 use App\Domain\Storage\Form\UploadByUrlForm;
 use App\Domain\Storage\Manager\StorageManager;
 use App\Domain\Storage\Provider\UserUploadProvider;
@@ -43,7 +44,7 @@ class UploadFileByPostHandler extends AbstractUploadHandler
     }
 
     /**
-     * @param UploadByUrlForm $form
+     * @param UploadByPostForm $form
      *
      * @return Filename
      */

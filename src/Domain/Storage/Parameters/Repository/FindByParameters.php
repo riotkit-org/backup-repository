@@ -29,6 +29,11 @@ class FindByParameters
      */
     public $mimes = [];
 
+    /**
+     * @var bool
+     */
+    public $public = true;
+
     public static function createFromArray(array $input): FindByParameters
     {
         $self = new static();
@@ -37,6 +42,7 @@ class FindByParameters
         $self->limit = $input['limit'] ?? 20;
         $self->page  = $input['page'] ?? 1;
         $self->searchQuery = $input['searchQuery'] ?? '';
+        $self->public      = $input['public'] ?? null;
 
         return $self;
     }

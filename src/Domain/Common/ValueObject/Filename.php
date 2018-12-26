@@ -7,7 +7,7 @@ class Filename implements \JsonSerializable
     /**
      * @var string
      */
-    private $value;
+    protected $value;
 
     public function __construct(string $value)
     {
@@ -26,5 +26,24 @@ class Filename implements \JsonSerializable
     public function jsonSerialize()
     {
         return $this->getValue();
+    }
+
+    /**
+     * @param string $suffix
+     *
+     * @return static
+     */
+    public function withSuffix(string $suffix)
+    {
+        $extension = pathinfo($this->value, PATHINFO_EXTENSION);
+
+        $self = clone $this;
+        $self->value = pathinfo($self->value, PATHINFO_BASENAME) . $suffix;
+
+        if ($extension) {
+            $self->value .= '.' . $extension;
+        }
+
+        return $self;
     }
 }

@@ -20,7 +20,7 @@ class PositiveNumber extends BaseValueObject implements \JsonSerializable
     {
         if ($number < 1) {
             $exceptionType = static::getExceptionType();
-            throw new $exceptionType('Number cannot be 0 or negative');
+            throw new $exceptionType('Number cannot be 0 or negative, got "' . $number . '"');
         }
 
         $this->value = $number;
@@ -59,6 +59,11 @@ class PositiveNumber extends BaseValueObject implements \JsonSerializable
     public function isZero(): bool
     {
         return $this->getValue() === 0;
+    }
+
+    public function isHigherThanInteger(int $num): bool
+    {
+        return $this->getValue() > 0;
     }
 
     public function jsonSerialize()

@@ -34,6 +34,11 @@ class FilesListingForm
      */
     public $password = '';
 
+    /**
+     * @var bool
+     */
+    public $public;
+
     public function getPage(): int
     {
         return (int) $this->page ?: 1;
@@ -52,7 +57,8 @@ class FilesListingForm
             'searchQuery' => $this->searchQuery,
             'tags'        => $this->tags,
             'mimes'       => $this->mimes,
-            'password'    => $this->password
+            'password'    => $this->password,
+            'public'      => $this->public
         ];
     }
 }

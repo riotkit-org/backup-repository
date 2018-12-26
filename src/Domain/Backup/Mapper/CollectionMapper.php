@@ -12,6 +12,8 @@ use App\Domain\Backup\ValueObject\Collection\BackupSize;
 use App\Domain\Backup\ValueObject\Collection\CollectionLength;
 use App\Domain\Backup\ValueObject\Collection\CollectionSize;
 use App\Domain\Backup\ValueObject\Collection\Description;
+use App\Domain\Backup\ValueObject\Filename;
+use App\Domain\Backup\ValueObject\Password;
 
 class CollectionMapper
 {
@@ -94,6 +96,12 @@ class CollectionMapper
             },
             'description'       => function () use (&$collection, $form) {
                 $collection = $collection->withDescription(new Description((string) $form->description));
+            },
+            'password'          => function () use (&$collection, $form) {
+                $collection = $collection->withPassword(new Password((string) $form->password));
+            },
+            'filename'          => function () use (&$collection, $form) {
+                $collection = $collection->withFilename(new Filename((string) $form->filename));
             }
         ];
     }

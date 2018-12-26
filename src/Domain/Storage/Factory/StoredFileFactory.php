@@ -2,6 +2,7 @@
 
 namespace App\Domain\Storage\Factory;
 
+use App\Domain\Common\ValueObject\Password;
 use App\Domain\Storage\Entity\StoredFile;
 use App\Domain\Storage\Form\UploadForm;
 use App\Domain\Storage\Repository\TagRepository;
@@ -36,7 +37,11 @@ class StoredFileFactory
     public function mapFromForm(UploadForm $form, StoredFile $storedFile): StoredFile
     {
         // fields
-        $storedFile->changePassword($form->password);
+        $form->password instanceof Password
+            ? $storedFile->replaceEncodedPassword($form->password)
+            : $storedFile->changePassword($form->password);
+
+        $storedFile->setPublic($form->public);
 
         // relations
         $tags = $this->tagRepository->findOrCreateTagsByNames($form->tags);

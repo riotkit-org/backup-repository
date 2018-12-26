@@ -2,6 +2,7 @@
 
 namespace App\Domain\Storage\Entity;
 
+use App\Domain\Common\ValueObject\Password;
 use App\Domain\Storage\ValueObject\Checksum;
 use App\Domain\Storage\ValueObject\Filename;
 use App\Domain\Storage\ValueObject\Mime;
@@ -9,6 +10,8 @@ use App\Domain\Common\SharedEntity\StoredFile as StoredFileFromCommon;
 
 /**
  * Represents a file that is (or will be) stored in the storage
+ *
+ * @method Filename getFilename()
  */
 class StoredFile extends StoredFileFromCommon implements \JsonSerializable
 {
@@ -33,16 +36,31 @@ class StoredFile extends StoredFileFromCommon implements \JsonSerializable
     protected $mimeType;
 
     /**
+     * @var bool
+     */
+    protected $public;
+
+    /**
      * @var Tag[]
      */
     private $tags;
 
+    /**
+     * @throws \Exception
+     */
     public function __construct()
     {
         $this->dateAdded = new \DateTimeImmutable();
         $this->tags      = [];
     }
 
+    /**
+     * @param Filename $filename
+     *
+     * @return StoredFile
+     *
+     * @throws \Exception
+     */
     public static function newFromFilename(Filename $filename): StoredFile
     {
         $new = new static();
@@ -143,6 +161,11 @@ class StoredFile extends StoredFileFromCommon implements \JsonSerializable
         return $this;
     }
 
+    public function setPublic(bool $public): void
+    {
+        $this->public = $public;
+    }
+
     /**
      * @return string
      */
@@ -154,6 +177,11 @@ class StoredFile extends StoredFileFromCommon implements \JsonSerializable
     public function isPasswordProtected(): bool
     {
         return !empty($this->password);
+    }
+
+    public function replaceEncodedPassword(Password $password): void
+    {
+        $this->password = $password->getValue();
     }
 
     public function changePassword(?string $newPassword): void
@@ -196,6 +224,11 @@ class StoredFile extends StoredFileFromCommon implements \JsonSerializable
         return $this->contentHash;
     }
 
+    public function isPublic(): bool
+    {
+        return $this->public;
+    }
+
     public function jsonSerialize()
     {
         return [
@@ -205,6 +238,7 @@ class StoredFile extends StoredFileFromCommon implements \JsonSerializable
             'dateAdded'   => $this->getDateAdded(),
             'mimeType'    => $this->getMimeType(),
             'tags'        => $this->getTags(),
+            'public'      => $this->public,
             'attributes'  => [
                 'isPasswordProtected' => $this->isPasswordProtected()
             ]

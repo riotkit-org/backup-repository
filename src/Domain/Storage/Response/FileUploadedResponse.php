@@ -2,6 +2,7 @@
 
 namespace App\Domain\Storage\Response;
 
+use App\Domain\Storage\ValueObject\Filename;
 use App\Domain\Storage\ValueObject\Url;
 
 class FileUploadedResponse implements \JsonSerializable
@@ -32,47 +33,70 @@ class FileUploadedResponse implements \JsonSerializable
     private $backUrl;
 
     /**
+     * @var int|null
+     */
+    private $id;
+
+    /**
+     * @var string
+     */
+    private $filename;
+
+    /**
      * @param Url $url
+     * @param Url $backUrl
+     * @param string|int $id
+     * @param Filename $filename
      *
      * @return FileUploadedResponse
      */
-    public static function createWithMeaningFileWasUploaded(Url $url, Url $backUrl): FileUploadedResponse
+    public static function createWithMeaningFileWasUploaded(Url $url, Url $backUrl, $id, Filename $filename): FileUploadedResponse
     {
         $new = new static();
         $new->status   = 'OK';
         $new->exitCode = 200;
         $new->url      = $url;
         $new->backUrl  = $backUrl->withVar('back', $url->getValue());
+        $new->id       = $id;
+        $new->filename = $filename->getValue();
 
         return $new;
     }
 
     /**
-     * @param Url $url
+     * @param Url        $url
+     * @param string|int $id
+     * @param Filename $filename
      *
      * @return FileUploadedResponse
      */
-    public static function createWithMeaningFileWasAlreadyUploaded(Url $url): FileUploadedResponse
+    public static function createWithMeaningFileWasAlreadyUploaded(Url $url, $id, Filename $filename): FileUploadedResponse
     {
         $new = new static();
         $new->status   = 'Not-Changed';
         $new->exitCode = 200;
         $new->url      = $url;
+        $new->id       = $id;
+        $new->filename = $filename->getValue();
 
         return $new;
     }
 
     /**
      * @param Url $url
+     * @param string|int $id
+     * @param Filename $filename
      *
      * @return FileUploadedResponse
      */
-    public static function createWithMeaningFileWasAlreadyUploadedUnderOtherName(Url $url): FileUploadedResponse
+    public static function createWithMeaningFileWasAlreadyUploadedUnderOtherName(Url $url, $id, Filename $filename): FileUploadedResponse
     {
         $new = new static();
         $new->status   = 'OK';
         $new->exitCode = 301;
         $new->url      = $url;
+        $new->id       = $id;
+        $new->filename = $filename->getValue();
 
         return $new;
     }
@@ -129,7 +153,9 @@ class FileUploadedResponse implements \JsonSerializable
             'error_code' => $this->errorCode,
             'http_code'  => $this->exitCode,
             'url'        => $this->url,
-            'back'       => $this->backUrl
+            'back'       => $this->backUrl,
+            'id'         => $this->id,
+            'filename'   => $this->filename
        ];
     }
 

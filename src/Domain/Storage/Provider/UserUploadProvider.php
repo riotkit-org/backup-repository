@@ -53,7 +53,7 @@ class UserUploadProvider
         $part = fread($input, 512);
         fclose($input);
 
-        return \strlen($part) > 32;
+        return \strlen($part) > 8;
     }
 
     private function hasUserSentUrlEncodedContentType(): bool

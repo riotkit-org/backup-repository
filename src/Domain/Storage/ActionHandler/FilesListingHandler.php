@@ -41,6 +41,8 @@ class FilesListingHandler
      */
     public function handle(FilesListingForm $form, ReadSecurityContext $securityContext, BaseUrl $baseUrl): array
     {
+        $form->public = true; // enforce: only public files can be listed
+
         $this->assertHasRightsToListAnything($securityContext);
 
         $searchParameters = FindByParameters::createFromArray($form->toArray());

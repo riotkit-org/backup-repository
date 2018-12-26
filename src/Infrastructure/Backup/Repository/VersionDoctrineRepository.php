@@ -6,8 +6,7 @@ use App\Domain\Backup\Collection\VersionsCollection;
 use App\Domain\Backup\Entity\BackupCollection;
 use App\Domain\Backup\Entity\StoredVersion;
 use App\Domain\Backup\Repository\VersionRepository;
-use App\Domain\Bus;
-use App\Domain\Common\Service\Bus\DomainBus;
+use App\Domain\Backup\Service\Filesystem;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
 use Doctrine\ORM\OptimisticLockException;
@@ -16,15 +15,56 @@ use Doctrine\ORM\ORMException;
 class VersionDoctrineRepository extends ServiceEntityRepository implements VersionRepository
 {
     /**
-     * @var DomainBus
+     * @var Filesystem
      */
-    private $domainBus;
+    private $fs;
 
-    public function __construct(ManagerRegistry $registry, DomainBus $domainBus)
+    /**
+     * @var VersionsCollection[]
+     */
+    private $collectionVersionsCache = [];
+
+    public function __construct(ManagerRegistry $registry, Filesystem $fs)
     {
-        $this->domainBus = $domainBus;
+        $this->fs = $fs;
 
         parent::__construct($registry, StoredVersion::class);
+    }
+
+    /**
+     * @param BackupCollection $collection
+     *
+     * @return VersionsCollection
+     */
+    public function findCollectionVersions(BackupCollection $collection): VersionsCollection
+    {
+        $cacheId = \spl_object_hash($collection);
+
+        if (isset($this->collectionVersionsCache[$cacheId])) {
+            return $this->collectionVersionsCache[$cacheId];
+        }
+
+        $qb = $this->createQueryBuilder('version');
+        $qb->where('version.collection = :collection');
+        $qb->setParameter('collection', $collection);
+
+        $versions = new VersionsCollection(
+            $qb->getQuery()->getResult(),
+            $collection,
+            function ($filename) { return $this->fs->getFileSize($filename);  }
+        );
+
+        return $this->collectionVersionsCache[$cacheId] = $versions;
+    }
+
+    /**
+     * @param StoredVersion $version
+     *
+     * @throws ORMException
+     */
+    public function delete(StoredVersion $version): void
+    {
+        $this->getEntityManager()->remove($version);
     }
 
     /**
@@ -38,29 +78,22 @@ class VersionDoctrineRepository extends ServiceEntityRepository implements Versi
     }
 
     /**
+     * @param StoredVersion $version
+     *
+     * @throws ORMException
+     * @throws OptimisticLockException
+     */
+    public function flush(StoredVersion $version): void
+    {
+        $this->getEntityManager()->flush($version);
+    }
+
+    /**
      * @throws ORMException
      * @throws OptimisticLockException
      */
     public function flushAll(): void
     {
         $this->getEntityManager()->flush();
-    }
-
-    /**
-     * @param BackupCollection $collection
-     *
-     * @return VersionsCollection
-     */
-    public function findCollectionVersions(BackupCollection $collection): VersionsCollection
-    {
-        $qb = $this->createQueryBuilder('version');
-        $qb->where('version.collection = :collection');
-        $qb->setParameter('collection', $collection);
-
-        return new VersionsCollection(
-            $qb->getQuery()->getResult(),
-            $collection,
-            function (...$args) { return $this->domainBus->call(Bus::STORAGE_GET_FILE_SIZE, $args);  }
-        );
     }
 }

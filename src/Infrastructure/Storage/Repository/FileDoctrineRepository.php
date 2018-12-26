@@ -139,5 +139,10 @@ class FileDoctrineRepository extends ServiceEntityRepository implements FileRepo
             $qb->andWhere('tag.name IN (:tags)')
                 ->setParameter('tags', $parameters->tags);
         }
+
+        if ($parameters->public !== null) {
+            $qb->andWhere('file.public = :public')
+                ->setParameter('public', $parameters->public);
+        }
     }
 }

@@ -26,4 +26,18 @@ abstract class StoredFile
     }
 
     abstract protected static function getFilenameClass(): string;
+
+    /**
+     * @return int
+     */
+    public function getId(): int
+    {
+        return $this->id;
+    }
+
+    public function isSameAs(StoredFile $file): bool
+    {
+        return $file->getId() === $this->getId()
+            || $file->getFilename()->getValue() === $this->getFilename()->getValue();
+    }
 }

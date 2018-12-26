@@ -21,7 +21,9 @@ class CreationFormType extends AbstractType
             ->add('maxBackupsCount',   IntegerType::class)
             ->add('maxCollectionSize', TextType::class)
             ->add('maxOneVersionSize', TextType::class)
-            ->add('description',       TextType::class);
+            ->add('description',       TextType::class)
+            ->add('password',          TextType::class)
+            ->add('filename',          TextType::class);
     }
 
     public function configureOptions(OptionsResolver $resolver)

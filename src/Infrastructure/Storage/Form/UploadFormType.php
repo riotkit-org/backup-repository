@@ -3,8 +3,8 @@
 namespace App\Infrastructure\Storage\Form;
 
 use App\Domain\Storage\Form\UploadForm;
+use App\Infrastructure\Common\Transformer\BooleanTransformer;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -19,8 +19,12 @@ class UploadFormType extends AbstractType
                 'allow_add'    => true,
                 'allow_delete' => true
             ])
-            ->add('fileOverwrite', CheckboxType::class)
-            ->add('password',      TextType::class);
+            ->add('fileOverwrite', TextType::class)
+            ->add('password',      TextType::class)
+            ->add('public',        TextType::class);
+
+        $builder->get('public')->addModelTransformer(new BooleanTransformer());
+        $builder->get('fileOverwrite')->addModelTransformer(new BooleanTransformer());
     }
 
     public function configureOptions(OptionsResolver $resolver)
