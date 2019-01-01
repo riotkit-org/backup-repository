@@ -23,7 +23,7 @@ class BackupSubmitResponse implements \JsonSerializable
     private $version;
 
     /**
-     * @var int
+     * @var int|null
      */
     private $errorCode;
 

@@ -46,3 +46,17 @@ backup.submit_version:
     methods: ['POST']
     defaults:
         _secured: true
+
+backup.list_versions:
+    path: /repository/collection/{collectionId}/backup
+    controller: 'App\Controller\Backup\Version\VersionListingController::handleAction'
+    methods: ['GET']
+    defaults:
+        _secured: true
+
+backup.delete_version:
+    path: /repository/collection/{collectionId}/backup/{backupId}
+    controller: 'App\Controller\Backup\Version\VersionDeleteController::handleAction'
+    methods: ['DELETE']
+    defaults:
+        _secured: true

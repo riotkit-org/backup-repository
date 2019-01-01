@@ -3,6 +3,7 @@
 namespace App\Domain\Common\SharedEntity;
 
 use App\Domain\Common\ValueObject\Filename;
+use App\Domain\Common\ValueObject\Checksum;
 
 abstract class StoredFile
 {
@@ -15,6 +16,11 @@ abstract class StoredFile
      * @var string
      */
     protected $fileName;
+
+    /**
+     * @var string
+     */
+    protected $contentHash = '';
 
     /**
      * @return Filename
@@ -38,6 +44,28 @@ abstract class StoredFile
     public function isSameAs(StoredFile $file): bool
     {
         return $file->getId() === $this->getId()
-            || $file->getFilename()->getValue() === $this->getFilename()->getValue();
+            || $file->getFilename()->getValue() === $this->getFilename()->getValue()
+            || $file->getContentHash() === $this->getContentHash();
+    }
+
+    public function wasAlreadyStored(): bool
+    {
+        return $this->contentHash !== '';
+    }
+
+    /**
+     * @param Checksum $contentHash
+     *
+     * @return StoredFile
+     */
+    public function setContentHash(Checksum $contentHash): StoredFile
+    {
+        $this->contentHash = $contentHash->getValue();
+        return $this;
+    }
+
+    public function getContentHash(): string
+    {
+        return $this->contentHash;
     }
 }

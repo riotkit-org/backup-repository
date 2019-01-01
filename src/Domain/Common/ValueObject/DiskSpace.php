@@ -29,11 +29,6 @@ class DiskSpace extends PositiveNumberOrZero implements \JsonSerializable
         return new static($bytes . 'b');
     }
 
-    public function getValue(): int
-    {
-        return $this->value;
-    }
-
     public function toHumanReadable(): string
     {
         return \ByteUnits\Metric::bytes($this->value)->format();

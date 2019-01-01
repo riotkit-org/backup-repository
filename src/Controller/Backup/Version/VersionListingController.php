@@ -3,18 +3,21 @@
 namespace App\Controller\Backup\Version;
 
 use App\Controller\BaseController;
-use App\Domain\Backup\ActionHandler\Version\BackupSubmitHandler;
+use App\Domain\Backup\ActionHandler\Version\VersionsListingHandler;
 use App\Domain\Backup\Factory\SecurityContextFactory;
-use App\Domain\Backup\Form\BackupSubmitForm;
-use App\Infrastructure\Backup\Form\Version\BackupSubmitFormType;
+use App\Domain\Backup\Form\Version\VersionsListingForm;
+use App\Infrastructure\Backup\Form\Version\VersionListingFormType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class SubmitVersionController extends BaseController
+/**
+ * Attach/detach a token of given Id to the collection
+ */
+class VersionListingController extends BaseController
 {
     /**
-     * @var BackupSubmitHandler
+     * @var VersionsListingHandler
      */
     private $handler;
 
@@ -23,9 +26,9 @@ class SubmitVersionController extends BaseController
      */
     private $authFactory;
 
-    public function __construct(BackupSubmitHandler $handler, SecurityContextFactory $authFactory)
+    public function __construct(VersionsListingHandler $handler, SecurityContextFactory $authFactory)
     {
-        $this->handler = $handler;
+        $this->handler     = $handler;
         $this->authFactory = $authFactory;
     }
 
@@ -39,10 +42,10 @@ class SubmitVersionController extends BaseController
      */
     public function handleAction(Request $request, string $collectionId): Response
     {
-        $form = new BackupSubmitForm();
-        $infrastructureForm = $this->createForm(BackupSubmitFormType::class, $form);
+        $form = new VersionsListingForm();
+        $infrastructureForm = $this->createForm(VersionListingFormType::class, $form);
         $infrastructureForm->submit([
-            'collection' => $collectionId,
+            'collection' => $collectionId
         ]);
 
         if (!$infrastructureForm->isValid()) {
@@ -54,8 +57,7 @@ class SubmitVersionController extends BaseController
                 $response = $this->handler->handle(
                     $form,
                     $this->authFactory->createVersioningContext($this->getLoggedUserToken()),
-                    $this->createBaseUrl($request),
-                    $this->getLoggedUserToken()
+                    $this->createBaseUrl($request)
                 );
 
                 return new JsonResponse($response, $response->getExitCode());

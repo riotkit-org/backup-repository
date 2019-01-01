@@ -3,7 +3,6 @@
 namespace App\Domain\Storage\Entity;
 
 use App\Domain\Common\ValueObject\Password;
-use App\Domain\Storage\ValueObject\Checksum;
 use App\Domain\Storage\ValueObject\Filename;
 use App\Domain\Storage\ValueObject\Mime;
 use App\Domain\Common\SharedEntity\StoredFile as StoredFileFromCommon;
@@ -15,11 +14,6 @@ use App\Domain\Common\SharedEntity\StoredFile as StoredFileFromCommon;
  */
 class StoredFile extends StoredFileFromCommon implements \JsonSerializable
 {
-    /**
-     * @var string
-     */
-    protected $contentHash = '';
-
     /**
      * @var \DateTimeImmutable
      */
@@ -126,22 +120,6 @@ class StoredFile extends StoredFileFromCommon implements \JsonSerializable
         return false;
     }
 
-    public function wasAlreadyStored(): bool
-    {
-        return $this->contentHash !== '';
-    }
-
-    /**
-     * @param Checksum $contentHash
-     *
-     * @return StoredFile
-     */
-    public function setContentHash(Checksum $contentHash): StoredFile
-    {
-        $this->contentHash = $contentHash->getValue();
-        return $this;
-    }
-
     /**
      * @param Mime $mimeType
      *
@@ -204,11 +182,6 @@ class StoredFile extends StoredFileFromCommon implements \JsonSerializable
         return $this->encryptPassword($password) === $this->password;
     }
 
-    public function checkContentHashMatchesEtag(string $etag): bool
-    {
-        return $this->contentHash === $etag;
-    }
-
     private function encryptPassword(string $password): string
     {
         return hash('sha256', $password);
@@ -219,14 +192,15 @@ class StoredFile extends StoredFileFromCommon implements \JsonSerializable
         return $this->dateAdded;
     }
 
-    public function getContentHash(): string
-    {
-        return $this->contentHash;
-    }
 
     public function isPublic(): bool
     {
         return $this->public;
+    }
+
+    public function checkContentHashMatchesEtag(string $etag): bool
+    {
+        return $this->contentHash === $etag;
     }
 
     public function jsonSerialize()

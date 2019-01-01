@@ -2,6 +2,7 @@
 
 namespace App\Domain\Backup\Validation;
 
+use App\Domain\Backup\Entity\BackupCollection;
 use App\Domain\Backup\Entity\StoredVersion;
 use App\Domain\Backup\Exception\ValidationException;
 use App\Domain\Backup\Repository\VersionRepository;
@@ -36,6 +37,19 @@ class BackupValidator
         $this->validateFileSizeNotExceedsCollectionSummaryLimit($version);
         $this->validateMaxCollectionLengthReached($version);
         $this->validateFileIsUnique($version);
+    }
+
+    /**
+     * @param StoredVersion    $version
+     * @param BackupCollection $collection
+     *
+     * @throws ValidationException
+     */
+    public function validateBeforeDeletingBackup(
+        StoredVersion $version,
+        BackupCollection $collection
+    ): void {
+        $this->validateCollectionMatches($version, $collection);
     }
 
     /**
@@ -106,7 +120,7 @@ class BackupValidator
     private function validateMaxCollectionLengthReached(StoredVersion $version): void
     {
         $max = $version->getCollection()->getMaxBackupsCount();
-        $actual = $this->versionRepository->findCollectionVersions($version->getCollection())->getCount();
+        $actual = $this->versionRepository->findCollectionVersions($version->getCollection())->getCount()->incrementVersion();
 
         if ($actual->isHigherThan($max)) {
             throw ValidationException::createFromFieldError(
@@ -114,6 +128,24 @@ class BackupValidator
                 'maxBackupsCount',
                 ValidationException::CODE_MAX_BACKUPS_COUNT_EXCEEDED,
                 ['max' => $max]
+            );
+        }
+    }
+
+    /**
+     * @param StoredVersion    $version
+     * @param BackupCollection $collection
+     *
+     * @throws ValidationException
+     */
+    private function validateCollectionMatches(StoredVersion $version, BackupCollection $collection): void
+    {
+        if (!$version->getCollection() || !$version->getCollection()->isSameAsCollection($collection)) {
+            throw ValidationException::createFromFieldError(
+                'version_collection_mismatch',
+                'collection',
+                ValidationException::CODE_VERSION_COLLECTION_DOES_NOT_MATCH_SUBMITTED_COLLECTION,
+                []
             );
         }
     }

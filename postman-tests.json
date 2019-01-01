@@ -1211,7 +1211,7 @@
 										{
 											"listen": "test",
 											"script": {
-												"id": "4f0bda2c-f849-4752-9c73-fa982ac59d67",
+												"id": "0755515f-95e1-49cf-bec7-07bbf9586899",
 												"type": "text/javascript",
 												"exec": [
 													"var jsonData = pm.response.json();",
@@ -1223,7 +1223,7 @@
 													"pm.test(\"All fields are at its place\", function () {",
 													"    pm.expect(jsonData.errors.maxBackupsCount).to.eql('number_cannot_be_negative_value');",
 													"    pm.expect(jsonData.errors.maxOneVersionSize).to.eql('cannot_parse_disk_space_check_format');",
-													"    pm.expect(jsonData.errors.strategy).to.eql('Unknown strategy \"invalid_strategy\". Allowed: delete_oldest_when_adding_new, alert_when_backup_limit_reached');",
+													"    pm.expect(jsonData.errors.strategy).to.eql('unknown_strategy_allowed___delete_oldest_when_adding_new___or__alert_when_backup_limit_reached');",
 													"});",
 													""
 												]
@@ -1235,7 +1235,7 @@
 										"header": [],
 										"body": {
 											"mode": "raw",
-											"raw": "{\n\t\"maxBackupsCount\": -5,\n\t\"maxOneVersionSize\": \"invalid-format-cannot-parse\",\n\t\"maxCollectionSize\": \"1111\",\n\t\"strategy\": \"invalid_strategy\",\n\t\"description\": null\n}\n"
+											"raw": "{\n\t\"maxBackupsCount\": -5,\n\t\"maxOneVersionSize\": \"invalid-format-cannot-parse\",\n\t\"maxCollectionSize\": \"1111\",\n\t\"strategy\": \"invalid_strategy\",\n\t\"description\": null,\n\t\"filename\": \"valid-filname.txt\"\n}\n"
 										},
 										"url": {
 											"raw": "{{appUrl}}/repository/collection?_token=test-token-full-permissions",
@@ -1284,7 +1284,7 @@
 										"header": [],
 										"body": {
 											"mode": "raw",
-											"raw": "{\n\t\"maxBackupsCount\": 4,\n\t\"maxOneVersionSize\": \"11MB\",\n\t\"maxCollectionSize\": \"10MB\",\n\t\"strategy\": \"alert_when_backup_limit_reached\",\n\t\"description\": null\n}\n"
+											"raw": "{\n\t\"maxBackupsCount\": 4,\n\t\"maxOneVersionSize\": \"11MB\",\n\t\"maxCollectionSize\": \"10MB\",\n\t\"strategy\": \"alert_when_backup_limit_reached\",\n\t\"description\": null,\n\t\"filename\": \"zsp-net-pl.sql.gz\"\n}\n"
 										},
 										"url": {
 											"raw": "{{appUrl}}/repository/collection?_token=test-token-full-permissions",
@@ -1333,7 +1333,7 @@
 										"header": [],
 										"body": {
 											"mode": "raw",
-											"raw": "{\n\t\"maxBackupsCount\": 4,\n\t\"maxOneVersionSize\": \"50MB\",\n\t\"maxCollectionSize\": \"10MB\",\n\t\"strategy\": \"alert_when_backup_limit_reached\",\n\t\"description\": null\n}\n"
+											"raw": "{\n\t\"maxBackupsCount\": 4,\n\t\"maxOneVersionSize\": \"50MB\",\n\t\"maxCollectionSize\": \"10MB\",\n\t\"strategy\": \"alert_when_backup_limit_reached\",\n\t\"description\": null,\n\t\"filename\": \"zsp-net-pl.sql.gz\"\n}\n"
 										},
 										"url": {
 											"raw": "{{appUrl}}/repository/collection?_token=test-token-full-permissions",
@@ -1382,7 +1382,7 @@
 										"header": [],
 										"body": {
 											"mode": "raw",
-											"raw": "{\n\t\"maxBackupsCount\": 4,\n\t\"maxOneVersionSize\": \"1MB\",\n\t\"maxCollectionSize\": \"5TB\",\n\t\"strategy\": \"alert_when_backup_limit_reached\",\n\t\"description\": null\n}\n"
+											"raw": "{\n\t\"maxBackupsCount\": 4,\n\t\"maxOneVersionSize\": \"1MB\",\n\t\"maxCollectionSize\": \"5TB\",\n\t\"strategy\": \"alert_when_backup_limit_reached\",\n\t\"description\": null,\n\t\"filename\": \"zsp-net-pl.sql.gz\"\n}\n"
 										},
 										"url": {
 											"raw": "{{appUrl}}/repository/collection?_token=test-token-full-permissions",
@@ -1431,7 +1431,7 @@
 										"header": [],
 										"body": {
 											"mode": "raw",
-											"raw": "{\n\t\"maxBackupsCount\": 9000,\n\t\"maxOneVersionSize\": \"5MB\",\n\t\"maxCollectionSize\": \"10MB\",\n\t\"strategy\": \"alert_when_backup_limit_reached\",\n\t\"description\": null\n}\n"
+											"raw": "{\n\t\"maxBackupsCount\": 9000,\n\t\"maxOneVersionSize\": \"5MB\",\n\t\"maxCollectionSize\": \"10MB\",\n\t\"strategy\": \"alert_when_backup_limit_reached\",\n\t\"description\": null,\n\t\"filename\": \"zsp-net-pl.sql.gz\"\n}\n"
 										},
 										"url": {
 											"raw": "{{appUrl}}/repository/collection?_token=test-token-full-permissions",
@@ -1480,7 +1480,7 @@
 										"header": [],
 										"body": {
 											"mode": "raw",
-											"raw": "{\n\t\"maxBackupsCount\": 5,\n\t\"maxOneVersionSize\": \"5MB\",\n\t\"maxCollectionSize\": \"5MB\",\n\t\"strategy\": \"alert_when_backup_limit_reached\",\n\t\"description\": null\n}\n"
+											"raw": "{\n\t\"maxBackupsCount\": 5,\n\t\"maxOneVersionSize\": \"5MB\",\n\t\"maxCollectionSize\": \"5MB\",\n\t\"strategy\": \"alert_when_backup_limit_reached\",\n\t\"description\": null,\n\t\"filename\": \"zsp-net-pl.sql.gz\"\n}\n"
 										},
 										"url": {
 											"raw": "{{appUrl}}/repository/collection?_token=test-token-full-permissions&simulate=true",
@@ -1696,7 +1696,7 @@
 										"header": [],
 										"body": {
 											"mode": "raw",
-											"raw": "{\n\t\"maxBackupsCount\": 5,\n\t\"maxOneVersionSize\": 0,\n\t\"maxCollectionSize\": \"5MB\",\n\t\"strategy\": \"delete_oldest_when_adding_new\",\n\t\"description\": \"Test collection\"\n}\n"
+											"raw": "{\n\t\"maxBackupsCount\": 5,\n\t\"maxOneVersionSize\": 0,\n\t\"maxCollectionSize\": \"5MB\",\n\t\"strategy\": \"delete_oldest_when_adding_new\",\n\t\"description\": \"Test collection\",\n\t\"filename\": \"zsp-net-pl.sql.gz\"\n}\n"
 										},
 										"url": {
 											"raw": "{{appUrl}}/repository/collection?_token={{token_unlimited_collections}}&simulate=true",
@@ -1810,7 +1810,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n\t\"maxBackupsCount\": 5,\n\t\"maxOneVersionSize\": \"1MB\",\n\t\"maxCollectionSize\": \"5MB\",\n\t\"strategy\": \"delete_oldest_when_adding_new\",\n\t\"description\": \"ZSP uploads directory\"\n}\n"
+									"raw": "{\n\t\"maxBackupsCount\": 5,\n\t\"maxOneVersionSize\": \"1MB\",\n\t\"maxCollectionSize\": \"5MB\",\n\t\"strategy\": \"delete_oldest_when_adding_new\",\n\t\"description\": \"ZSP uploads directory\",\n\t\"filename\": \"zsp-net-pl.sql.gz\"\n}\n"
 								},
 								"url": {
 									"raw": "{{appUrl}}/repository/collection?_token={{token_create_collections}}",
@@ -1871,7 +1871,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n\t\"collection\": \"{{collection_1}}\",\n\t\"maxBackupsCount\": 5,\n\t\"maxOneVersionSize\": 0,\n\t\"maxCollectionSize\": \"5MB\",\n\t\"strategy\": \"delete_oldest_when_adding_new\",\n\t\"description\": \"Test collection (modified)\"\n}\n"
+									"raw": "{\n\t\"collection\": \"{{collection_1}}\",\n\t\"maxBackupsCount\": 5,\n\t\"maxOneVersionSize\": 0,\n\t\"maxCollectionSize\": \"5MB\",\n\t\"strategy\": \"delete_oldest_when_adding_new\",\n\t\"description\": \"Test collection (modified)\",\n\t\"filename\": \"zsp-net-pl.sql.gz\"\n}\n"
 								},
 								"url": {
 									"raw": "{{appUrl}}/repository/collection?_token=test-token-full-permissions",
@@ -1959,7 +1959,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n\t\"maxBackupsCount\": 5,\n\t\"maxOneVersionSize\": \"1MB\",\n\t\"maxCollectionSize\": \"5MB\",\n\t\"strategy\": \"delete_oldest_when_adding_new\",\n\t\"description\": \"IWA-AIT.org old format backups\"\n}\n"
+									"raw": "{\n\t\"maxBackupsCount\": 5,\n\t\"maxOneVersionSize\": \"1MB\",\n\t\"maxCollectionSize\": \"5MB\",\n\t\"strategy\": \"delete_oldest_when_adding_new\",\n\t\"description\": \"IWA-AIT.org old format backups\",\n\t\"filename\": \"iwa-ait-old-backups.zip\"\n}\n"
 								},
 								"url": {
 									"raw": "{{appUrl}}/repository/collection?_token={{token_create_collections}}",
@@ -2170,7 +2170,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n\t\"maxBackupsCount\": 5,\n\t\"maxOneVersionSize\": \"1MB\",\n\t\"maxCollectionSize\": \"5MB\",\n\t\"strategy\": \"delete_oldest_when_adding_new\",\n\t\"description\": \"Solidarity Federation documents backup\"\n}\n"
+									"raw": "{\n\t\"maxBackupsCount\": 5,\n\t\"maxOneVersionSize\": \"1MB\",\n\t\"maxCollectionSize\": \"5MB\",\n\t\"strategy\": \"delete_oldest_when_adding_new\",\n\t\"description\": \"Solidarity Federation documents backup\",\n\t\"filename\": \"solfed-docs.tar.gz\"\n}\n"
 								},
 								"url": {
 									"raw": "{{appUrl}}/repository/collection?_token={{token_create_collections}}",
@@ -2497,7 +2497,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n\t\"maxBackupsCount\": 5,\n\t\"maxOneVersionSize\": \"1MB\",\n\t\"maxCollectionSize\": \"5MB\",\n\t\"strategy\": \"delete_oldest_when_adding_new\",\n\t\"description\": \"Grassroot workers organizations documents\"\n}\n"
+									"raw": "{\n\t\"maxBackupsCount\": 5,\n\t\"maxOneVersionSize\": \"1MB\",\n\t\"maxCollectionSize\": \"5MB\",\n\t\"strategy\": \"delete_oldest_when_adding_new\",\n\t\"description\": \"Grassroot workers organizations documents\",\n\t\"filename\": \"grass-docs.zip\"\n}\n"
 								},
 								"url": {
 									"raw": "{{appUrl}}/repository/collection?_token={{token_create_collections}}",
@@ -2617,276 +2617,1273 @@
 					"name": "Backup upload",
 					"item": [
 						{
-							"name": "Create a token that allows to create collections",
+							"name": "Strategy: Delete oldest if collection is full",
+							"item": [
+								{
+									"name": "Create a token that allows to create collections",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "0fb68bc5-c302-4e99-b07f-44907e0de989",
+												"type": "text/javascript",
+												"exec": [
+													"var jsonData = pm.response.json();",
+													"",
+													"pm.test(\"Status code is 202\", function () {",
+													"    pm.response.to.have.status(202);",
+													"});",
+													"",
+													"pm.globals.set(\"token_create_collections\", jsonData.tokenId);",
+													""
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"roles\": [\n    \t\"collections.create_new\", \n    \t\"collections.add_tokens_to_allowed_collections\",\n    \t\"collections.upload_to_allowed_collections\",\n    \t\"collections.list_versions_for_allowed_collections\",\n    \t\"upload.backup\"\n    ],\n    \"data\": {\n        \"tags\": [\"user_uploads.u123\", \"user_uploads\"],\n        \"allowedMimeTypes\": [\"image/jpeg\", \"image/png\", \"image/gif\"],\n        \"maxAllowedFileSize\": 14579\n    }\n}\n"
+										},
+										"url": {
+											"raw": "{{appUrl}}/auth/token/generate?_token=test-token-full-permissions",
+											"host": [
+												"{{appUrl}}"
+											],
+											"path": [
+												"auth",
+												"token",
+												"generate"
+											],
+											"query": [
+												{
+													"key": "_token",
+													"value": "test-token-full-permissions"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Create collection where we will upload our versions #5",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "51b1b8a6-0321-417a-8adc-c0df05abf5ef",
+												"type": "text/javascript",
+												"exec": [
+													"var jsonData = pm.response.json();",
+													"",
+													"pm.test(\"Status code is 202\", function () {",
+													"    pm.response.to.have.status(202);",
+													"});",
+													"",
+													"pm.test(\"Id is 36 length UUID\", function () {",
+													"    pm.expect(jsonData.collection.id.length).to.eql(36);",
+													"});",
+													"",
+													"pm.test(\"All fields are at its place\", function () {",
+													"    pm.expect(jsonData.collection.max_backups_count).to.eql(2);",
+													"    pm.expect(jsonData.collection.max_one_backup_version_size).to.eql(1000000);",
+													"    pm.expect(jsonData.collection.max_collection_size).to.eql(5000000);",
+													"    pm.expect(jsonData.collection.strategy).to.eql('delete_oldest_when_adding_new');",
+													"    pm.expect(jsonData.collection.description).to.eql('Title: Solidarity with Postal Workers, Against State Repression!');",
+													"});",
+													"",
+													"",
+													"pm.globals.set(\"collection_5_to_upload_versions\", jsonData.collection.id);"
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n\t\"maxBackupsCount\": 2,\n\t\"maxOneVersionSize\": \"1MB\",\n\t\"maxCollectionSize\": \"5MB\",\n\t\"strategy\": \"delete_oldest_when_adding_new\",\n\t\"description\": \"Title: Solidarity with Postal Workers, Against State Repression!\",\n\t\"password\": \"solidarity-forever\",\n\t\"filename\": \"solidarity-with-postal-workers-article\"\n}\n"
+										},
+										"url": {
+											"raw": "{{appUrl}}/repository/collection?_token={{token_create_collections}}",
+											"host": [
+												"{{appUrl}}"
+											],
+											"path": [
+												"repository",
+												"collection"
+											],
+											"query": [
+												{
+													"key": "_token",
+													"value": "{{token_create_collections}}"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Upload a backup (v1)",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "b4bc8e4e-fcec-43e3-96f6-f00a0262001a",
+												"type": "text/javascript",
+												"exec": [
+													"var jsonData = pm.response.json();",
+													"",
+													"pm.test(\"Status code is 200\", function () {",
+													"    pm.response.to.have.status(200);",
+													"});",
+													"",
+													"pm.test(\"It's a first version of the backup\", function () {",
+													"    pm.expect(jsonData.version.version).to.eql(1);",
+													"});",
+													"",
+													"pm.test(\"File has proper 'v1' in name\", function () {",
+													"    pm.expect(jsonData.version.file.filename).to.contain('solidarity-with-postal-workers-article-v1');",
+													"});",
+													""
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "ZSP-lWA calls for a week of protest action against the repression of workers from the Post Office in Poland\n"
+										},
+										"url": {
+											"raw": "{{appUrl}}/repository/collection/{{collection_5_to_upload_versions}}/backup?_token={{token_create_collections}}",
+											"host": [
+												"{{appUrl}}"
+											],
+											"path": [
+												"repository",
+												"collection",
+												"{{collection_5_to_upload_versions}}",
+												"backup"
+											],
+											"query": [
+												{
+													"key": "_token",
+													"value": "{{token_create_collections}}"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Upload: Second time same file (v1)",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "84008f5f-b7de-4922-858b-c5cecb160e05",
+												"type": "text/javascript",
+												"exec": [
+													"var jsonData = pm.response.json();",
+													"",
+													"pm.test(\"Status code is 400\", function () {",
+													"    pm.response.to.have.status(400);",
+													"});",
+													"",
+													"pm.test(\"Response informs about a fact that the backup was uploaded two times - is a duplicate of existing version\", function () {",
+													"    pm.expect(jsonData.status).to.eql('backup_version_uploaded_twice');",
+													"});",
+													"",
+													"pm.test(\"Duplication error has proper error code\", function () {",
+													"    pm.expect(jsonData.error_code).to.eql(4008);",
+													"});",
+													""
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "ZSP-lWA calls for a week of protest action against the repression of workers from the Post Office in Poland\n"
+										},
+										"url": {
+											"raw": "{{appUrl}}/repository/collection/{{collection_5_to_upload_versions}}/backup?_token={{token_create_collections}}",
+											"host": [
+												"{{appUrl}}"
+											],
+											"path": [
+												"repository",
+												"collection",
+												"{{collection_5_to_upload_versions}}",
+												"backup"
+											],
+											"query": [
+												{
+													"key": "_token",
+													"value": "{{token_create_collections}}"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Upload: Second version - with a title in markdown (v2)",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "06dc6f92-10cf-4002-a013-1a6317752807",
+												"type": "text/javascript",
+												"exec": [
+													"var jsonData = pm.response.json();",
+													"",
+													"pm.test(\"Status code is 200\", function () {",
+													"    pm.response.to.have.status(200);",
+													"});",
+													"",
+													"pm.test(\"It's a second version of the backup\", function () {",
+													"    pm.expect(jsonData.version.version).to.eql(2);",
+													"});",
+													"",
+													"pm.test(\"File has proper 'v2' in name\", function () {",
+													"    pm.expect(jsonData.version.file.filename).to.contain('solidarity-with-postal-workers-article-v2');",
+													"});",
+													""
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "ZSP-lWA calls for a week of protest action against the repression of workers from the Post Office in Poland\n===========================================================================================================\n"
+										},
+										"url": {
+											"raw": "{{appUrl}}/repository/collection/{{collection_5_to_upload_versions}}/backup?_token={{token_create_collections}}",
+											"host": [
+												"{{appUrl}}"
+											],
+											"path": [
+												"repository",
+												"collection",
+												"{{collection_5_to_upload_versions}}",
+												"backup"
+											],
+											"query": [
+												{
+													"key": "_token",
+													"value": "{{token_create_collections}}"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Verify: There should be v1 and v2",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "d58dd8e4-dc0e-41fd-8d5c-4b0a0b534bcc",
+												"type": "text/javascript",
+												"exec": [
+													"var jsonData = pm.response.json();",
+													"",
+													"pm.test(\"Status code is 200\", function () {",
+													"    pm.response.to.have.status(200);",
+													"});",
+													"",
+													"pm.test(\"There are backups: v1 and v2\", function () {",
+													"    let versions = \"\";",
+													"    ",
+													"    for (let versionIndex in jsonData.versions) {",
+													"        let version = jsonData.versions[versionIndex];",
+													"        ",
+													"        versions += \" -> v\" + version.details.version;",
+													"    }",
+													"    ",
+													"    pm.expect(versions).to.equal(' -> v1 -> v2');",
+													"});",
+													""
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": ""
+										},
+										"url": {
+											"raw": "{{appUrl}}/repository/collection/{{collection_5_to_upload_versions}}/backup?_token={{token_create_collections}}",
+											"host": [
+												"{{appUrl}}"
+											],
+											"path": [
+												"repository",
+												"collection",
+												"{{collection_5_to_upload_versions}}",
+												"backup"
+											],
+											"query": [
+												{
+													"key": "_token",
+													"value": "{{token_create_collections}}"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Upload: First version should be removed when (v3) last is uploaded",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "29c55d54-4e2c-4b89-b828-0b4bdfc1aa4c",
+												"type": "text/javascript",
+												"exec": [
+													"var jsonData = pm.response.json();",
+													"",
+													"pm.test(\"Status code is 200\", function () {",
+													"    pm.response.to.have.status(200);",
+													"});",
+													"",
+													"pm.test(\"It's a second version of the backup\", function () {",
+													"    pm.expect(jsonData.version.version).to.eql(3);",
+													"});",
+													"",
+													"pm.test(\"File has proper 'v3' in name\", function () {",
+													"    pm.expect(jsonData.version.file.filename).to.contain('solidarity-with-postal-workers-article-v3');",
+													"});",
+													""
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "ZSP-lWA calls for a week of protest action against the repression of workers from the Post Office in Poland\n===========================================================================================================\n\nFebruary 26 - March 4, 2018\n\nFor almost two years, postal workers around Poland have been protesting for better working conditions. ZSP has been active in attempts to coordinate national networks, actions and to unionize workers, together with hundreds of other workers spread around the country. All of the workers shared two things in common: they are fed up with the very poor working conditions and were not satisfied with the role of the representative unions which signed various agreements on their behalf with the employer.\n\nMajor actions of the ZSP have included exposing the problems in the Post Office and providing a forum for thousands of workers to network, making contacts all over the country and organizing national meetings, promoting alternative unionism and organizing and taking part in organizing national protests, together with thousands of workers.\n\nThis work was immediately attacked by representatives both of Solidarity and by the management of the Post Office, which is a state-owned enterprise. Solidarity at the Post Office carried out a vile disinformation campaign, which sought to present the ZSP as if it was a Soviet paramilitary organization – such a grotesque misrepresentation that it would have been hilarious if it weren't such a part of the current far-right political hysteria.\n\nWhen workers began to organize and call for protests on a national level, calling for a significant pay rise and other demands, the management of the Post Office, together with their union servants, started a campaign of harrassment and threats against the workers. Throughout Poland, workers were visited, told that the protests were illegal, threatened with disciplinary action, etc.\n\nFinally, after last years' large national protests, Klaudiusz and Rafal were fired and now Zbyszek. He had been active after the protests in trying to organize workers.\n\nBesides this retaliation against the postal workers, there have also been various attempts to bring criminal cases against another member of ZSP from Warsaw, Jakub. The Post Office tried (unsuccessfully) to have him prosecuted under the amazing charge of „organizing a bloody revolution”. Although this was so stupid it was hysterical, it is actually a very serious charge, completely out of line with the real crime – helping to coordinate the national workers protest. Unfortunately the Post Office, backed by the State, is trying to prosecute on lesser criminal charges, which are also complete nonsense.\n\nAlthough our organization has born the brunt of the repression, it is important to recognize that in fact, they are repressing all workers.\n\nIn connection with the recent round of repression, an international week of solidarity and protest has been called for Febuary 26 - March 4, with some protests planned at various representations of the Polish State around the globe. More information on planned protests to follow.\n\nIf you would like to show other forms of solidarity, please contact is@zsp.net.pl.\n\nRelated articles in English:\nhttp://zsp.net.pl/postal-workers-protest-warsaw\nzsp.net.pl/no-protest-allowed-post-office\nhttp://zsp.net.pl/postal-workers-protest-all-over-poland\nhttp://zsp.net.pl/solidarity-postal-workers-down-bosses\nzsp.net.pl/post-office-workers-make-demands\nhttp://zsp.net.pl/third-national-meeting-postal-workers-adopt-libertaria...\nhttp://zsp.net.pl/%E2%80%9Esolidarity%E2%80%9D-screws-postal-workers-aga...\n\nIn Polish:\nhttp://zsp.net.pl/kampanie/poczta-polska\nlistonosze.pl"
+										},
+										"url": {
+											"raw": "{{appUrl}}/repository/collection/{{collection_5_to_upload_versions}}/backup?_token={{token_create_collections}}",
+											"host": [
+												"{{appUrl}}"
+											],
+											"path": [
+												"repository",
+												"collection",
+												"{{collection_5_to_upload_versions}}",
+												"backup"
+											],
+											"query": [
+												{
+													"key": "_token",
+													"value": "{{token_create_collections}}"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Verify: v2 and v3 should be (v3 replaces v1)",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "1e11c76c-1854-4a88-a4c0-22700a70d11f",
+												"type": "text/javascript",
+												"exec": [
+													"var jsonData = pm.response.json();",
+													"",
+													"pm.test(\"Status code is 200\", function () {",
+													"    pm.response.to.have.status(200);",
+													"});",
+													"",
+													"pm.test(\"There are backups: v2 and v3\", function () {",
+													"    let versions = \"\";",
+													"    ",
+													"    for (let versionIndex in jsonData.versions) {",
+													"        let version = jsonData.versions[versionIndex];",
+													"        ",
+													"        versions += \" -> v\" + version.details.version;",
+													"    }",
+													"    ",
+													"    pm.expect(versions).to.equal(' -> v2 -> v3');",
+													"});",
+													""
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": ""
+										},
+										"url": {
+											"raw": "{{appUrl}}/repository/collection/{{collection_5_to_upload_versions}}/backup?_token={{token_create_collections}}",
+											"host": [
+												"{{appUrl}}"
+											],
+											"path": [
+												"repository",
+												"collection",
+												"{{collection_5_to_upload_versions}}",
+												"backup"
+											],
+											"query": [
+												{
+													"key": "_token",
+													"value": "{{token_create_collections}}"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Upload: v3 should be already uploaded",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "20206fd7-a235-4cf1-910e-9247da643fb9",
+												"type": "text/javascript",
+												"exec": [
+													"var jsonData = pm.response.json();",
+													"",
+													"pm.test(\"Status code is 400\", function () {",
+													"    pm.response.to.have.status(400);",
+													"});",
+													"",
+													"pm.test(\"Response informs about a fact that the backup was uploaded two times - is a duplicate of existing version\", function () {",
+													"    pm.expect(jsonData.status).to.eql('backup_version_uploaded_twice');",
+													"});",
+													"",
+													"pm.test(\"Duplication error has proper error code\", function () {",
+													"    pm.expect(jsonData.error_code).to.eql(4008);",
+													"});",
+													""
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "ZSP-lWA calls for a week of protest action against the repression of workers from the Post Office in Poland\n===========================================================================================================\n\nFebruary 26 - March 4, 2018\n\nFor almost two years, postal workers around Poland have been protesting for better working conditions. ZSP has been active in attempts to coordinate national networks, actions and to unionize workers, together with hundreds of other workers spread around the country. All of the workers shared two things in common: they are fed up with the very poor working conditions and were not satisfied with the role of the representative unions which signed various agreements on their behalf with the employer.\n\nMajor actions of the ZSP have included exposing the problems in the Post Office and providing a forum for thousands of workers to network, making contacts all over the country and organizing national meetings, promoting alternative unionism and organizing and taking part in organizing national protests, together with thousands of workers.\n\nThis work was immediately attacked by representatives both of Solidarity and by the management of the Post Office, which is a state-owned enterprise. Solidarity at the Post Office carried out a vile disinformation campaign, which sought to present the ZSP as if it was a Soviet paramilitary organization – such a grotesque misrepresentation that it would have been hilarious if it weren't such a part of the current far-right political hysteria.\n\nWhen workers began to organize and call for protests on a national level, calling for a significant pay rise and other demands, the management of the Post Office, together with their union servants, started a campaign of harrassment and threats against the workers. Throughout Poland, workers were visited, told that the protests were illegal, threatened with disciplinary action, etc.\n\nFinally, after last years' large national protests, Klaudiusz and Rafal were fired and now Zbyszek. He had been active after the protests in trying to organize workers.\n\nBesides this retaliation against the postal workers, there have also been various attempts to bring criminal cases against another member of ZSP from Warsaw, Jakub. The Post Office tried (unsuccessfully) to have him prosecuted under the amazing charge of „organizing a bloody revolution”. Although this was so stupid it was hysterical, it is actually a very serious charge, completely out of line with the real crime – helping to coordinate the national workers protest. Unfortunately the Post Office, backed by the State, is trying to prosecute on lesser criminal charges, which are also complete nonsense.\n\nAlthough our organization has born the brunt of the repression, it is important to recognize that in fact, they are repressing all workers.\n\nIn connection with the recent round of repression, an international week of solidarity and protest has been called for Febuary 26 - March 4, with some protests planned at various representations of the Polish State around the globe. More information on planned protests to follow.\n\nIf you would like to show other forms of solidarity, please contact is@zsp.net.pl.\n\nRelated articles in English:\nhttp://zsp.net.pl/postal-workers-protest-warsaw\nzsp.net.pl/no-protest-allowed-post-office\nhttp://zsp.net.pl/postal-workers-protest-all-over-poland\nhttp://zsp.net.pl/solidarity-postal-workers-down-bosses\nzsp.net.pl/post-office-workers-make-demands\nhttp://zsp.net.pl/third-national-meeting-postal-workers-adopt-libertaria...\nhttp://zsp.net.pl/%E2%80%9Esolidarity%E2%80%9D-screws-postal-workers-aga...\n\nIn Polish:\nhttp://zsp.net.pl/kampanie/poczta-polska\nlistonosze.pl"
+										},
+										"url": {
+											"raw": "{{appUrl}}/repository/collection/{{collection_5_to_upload_versions}}/backup?_token={{token_create_collections}}",
+											"host": [
+												"{{appUrl}}"
+											],
+											"path": [
+												"repository",
+												"collection",
+												"{{collection_5_to_upload_versions}}",
+												"backup"
+											],
+											"query": [
+												{
+													"key": "_token",
+													"value": "{{token_create_collections}}"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Upload: v1 can be uploaded again as v3",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "4abdc8a1-da6c-427b-a115-874225abbb13",
+												"type": "text/javascript",
+												"exec": [
+													"var jsonData = pm.response.json();",
+													"",
+													"pm.test(\"Status code is 200\", function () {",
+													"    pm.response.to.have.status(200);",
+													"});",
+													"",
+													"pm.test(\"It's a first version of the backup\", function () {",
+													"    pm.expect(jsonData.version.version).to.eql(4);",
+													"});",
+													"",
+													"pm.test(\"File has proper 'v4' in name\", function () {",
+													"    pm.expect(jsonData.version.file.filename).to.contain('solidarity-with-postal-workers-article-v4');",
+													"});",
+													""
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "ZSP-lWA calls for a week of protest action against the repression of workers from the Post Office in Poland\n"
+										},
+										"url": {
+											"raw": "{{appUrl}}/repository/collection/{{collection_5_to_upload_versions}}/backup?_token={{token_create_collections}}",
+											"host": [
+												"{{appUrl}}"
+											],
+											"path": [
+												"repository",
+												"collection",
+												"{{collection_5_to_upload_versions}}",
+												"backup"
+											],
+											"query": [
+												{
+													"key": "_token",
+													"value": "{{token_create_collections}}"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Verify: v1 was uploaded again, now it's last as v4",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "ca0b3d6c-9549-40e5-bb66-ca7eb4eff3f7",
+												"type": "text/javascript",
+												"exec": [
+													"var jsonData = pm.response.json();",
+													"",
+													"pm.test(\"Status code is 200\", function () {",
+													"    pm.response.to.have.status(200);",
+													"});",
+													"",
+													"pm.test(\"There are backups: v3 and v4\", function () {",
+													"    let versions = \"\";",
+													"    ",
+													"    for (let versionIndex in jsonData.versions) {",
+													"        let version = jsonData.versions[versionIndex];",
+													"        ",
+													"        versions += \" -> v\" + version.details.version;",
+													"    }",
+													"    ",
+													"    pm.expect(versions).to.equal(' -> v3 -> v4');",
+													"});",
+													"",
+													"pm.globals.set(\"postal_workers_article_v3\", jsonData.versions['3'].url);",
+													"pm.globals.set(\"postal_workers_article_v4\", jsonData.versions['4'].url);",
+													""
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": ""
+										},
+										"url": {
+											"raw": "{{appUrl}}/repository/collection/{{collection_5_to_upload_versions}}/backup?_token={{token_create_collections}}",
+											"host": [
+												"{{appUrl}}"
+											],
+											"path": [
+												"repository",
+												"collection",
+												"{{collection_5_to_upload_versions}}",
+												"backup"
+											],
+											"query": [
+												{
+													"key": "_token",
+													"value": "{{token_create_collections}}"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Verify content: v3",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "ea6e61c7-c559-41b9-ac65-e18d137b2fb5",
+												"type": "text/javascript",
+												"exec": [
+													"pm.test(\"Content contains a snippet from submitted file\", function () {",
+													"    pm.expect(pm.response.text()).to.include(\"Major actions of the ZSP have included exposing the problems in the Post Office\");",
+													"});",
+													""
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [],
+										"body": {},
+										"url": {
+											"raw": "{{postal_workers_article_v3}}?password=solidarity-forever",
+											"host": [
+												"{{postal_workers_article_v3}}"
+											],
+											"query": [
+												{
+													"key": "password",
+													"value": "solidarity-forever"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Verify content: v4 (resubmitted v1)",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "e6645ebc-edbf-4c68-a0d4-ee3ba13be2bc",
+												"type": "text/javascript",
+												"exec": [
+													"pm.test(\"Content is shorter, as this is an earlier version - v1\", function () {",
+													"    pm.expect(pm.response.text()).to.not.include(\"Major actions of the ZSP have included exposing the problems in the Post Office\");",
+													"});",
+													""
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [],
+										"body": {},
+										"url": {
+											"raw": "{{postal_workers_article_v4}}?password=solidarity-forever",
+											"host": [
+												"{{postal_workers_article_v4}}"
+											],
+											"query": [
+												{
+													"key": "password",
+													"value": "solidarity-forever"
+												}
+											]
+										}
+									},
+									"response": []
+								}
+							],
+							"_postman_isSubFolder": true
+						},
+						{
+							"name": "Strategy: Alert when collection is full + manual deletion",
+							"item": [
+								{
+									"name": "Create a token that allows to create collections",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "0fb68bc5-c302-4e99-b07f-44907e0de989",
+												"type": "text/javascript",
+												"exec": [
+													"var jsonData = pm.response.json();",
+													"",
+													"pm.test(\"Status code is 202\", function () {",
+													"    pm.response.to.have.status(202);",
+													"});",
+													"",
+													"pm.globals.set(\"token_create_collections\", jsonData.tokenId);",
+													""
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n    \"roles\": [\n    \t\"collections.create_new\", \n    \t\"collections.upload_to_allowed_collections\",\n    \t\"collections.delete_versions_for_allowed_collections\",\n    \t\"collections.list_versions_for_allowed_collections\",\n    \t\"upload.backup\"\n    ],\n    \"data\": {\n        \"tags\": [\"user_uploads.u123\", \"user_uploads\"],\n        \"allowedMimeTypes\": [\"image/jpeg\", \"image/png\", \"image/gif\"],\n        \"maxAllowedFileSize\": 14579\n    }\n}\n"
+										},
+										"url": {
+											"raw": "{{appUrl}}/auth/token/generate?_token=test-token-full-permissions",
+											"host": [
+												"{{appUrl}}"
+											],
+											"path": [
+												"auth",
+												"token",
+												"generate"
+											],
+											"query": [
+												{
+													"key": "_token",
+													"value": "test-token-full-permissions"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Create collection where we will upload our versions #5",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "1c1ac998-a6d6-4ac2-a419-3a74898082a5",
+												"type": "text/javascript",
+												"exec": [
+													"var jsonData = pm.response.json();",
+													"",
+													"pm.test(\"Status code is 202\", function () {",
+													"    pm.response.to.have.status(202);",
+													"});",
+													"",
+													"pm.test(\"Id is 36 length UUID\", function () {",
+													"    pm.expect(jsonData.collection.id.length).to.eql(36);",
+													"});",
+													"",
+													"pm.test(\"All fields are at its place\", function () {",
+													"    pm.expect(jsonData.collection.max_backups_count).to.eql(2);",
+													"    pm.expect(jsonData.collection.max_one_backup_version_size).to.eql(1000000);",
+													"    pm.expect(jsonData.collection.max_collection_size).to.eql(5000000);",
+													"    pm.expect(jsonData.collection.strategy).to.eql('alert_when_backup_limit_reached');",
+													"    pm.expect(jsonData.collection.description).to.eql('Title: Brighton Solidarity Federation: the first five months of 2018');",
+													"});",
+													"",
+													"",
+													"pm.globals.set(\"collection_5_to_upload_versions\", jsonData.collection.id);"
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "{\n\t\"maxBackupsCount\": 2,\n\t\"maxOneVersionSize\": \"1MB\",\n\t\"maxCollectionSize\": \"5MB\",\n\t\"strategy\": \"alert_when_backup_limit_reached\",\n\t\"description\": \"Title: Brighton Solidarity Federation: the first five months of 2018\",\n\t\"password\": \"solfed\",\n\t\"filename\": \"solfed-2018-activity-till-may\"\n}\n"
+										},
+										"url": {
+											"raw": "{{appUrl}}/repository/collection?_token={{token_create_collections}}",
+											"host": [
+												"{{appUrl}}"
+											],
+											"path": [
+												"repository",
+												"collection"
+											],
+											"query": [
+												{
+													"key": "_token",
+													"value": "{{token_create_collections}}"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Upload a backup (v1)",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "7ed25af1-ab6a-4932-b7a8-aaf2ae61d898",
+												"type": "text/javascript",
+												"exec": [
+													"var jsonData = pm.response.json();",
+													"",
+													"pm.test(\"Status code is 200\", function () {",
+													"    pm.response.to.have.status(200);",
+													"});",
+													"",
+													"pm.test(\"It's a first version of the backup\", function () {",
+													"    pm.expect(jsonData.version.version).to.eql(1);",
+													"});",
+													"",
+													"pm.test(\"File has proper 'v1' in name\", function () {",
+													"    pm.expect(jsonData.version.file.filename).to.contain('solfed-2018-activity-till-may-v1');",
+													"});",
+													"",
+													"pm.globals.set(\"solfed_article_v1\", jsonData.version.id);",
+													""
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "Brighton Solidarity Federation: the first five months of 2018\n\n"
+										},
+										"url": {
+											"raw": "{{appUrl}}/repository/collection/{{collection_5_to_upload_versions}}/backup?_token={{token_create_collections}}",
+											"host": [
+												"{{appUrl}}"
+											],
+											"path": [
+												"repository",
+												"collection",
+												"{{collection_5_to_upload_versions}}",
+												"backup"
+											],
+											"query": [
+												{
+													"key": "_token",
+													"value": "{{token_create_collections}}"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Upload: Second version",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "3887923d-89f7-41ea-9f97-3ea27b98f9f2",
+												"type": "text/javascript",
+												"exec": [
+													"var jsonData = pm.response.json();",
+													"",
+													"pm.test(\"Status code is 200\", function () {",
+													"    pm.response.to.have.status(200);",
+													"});",
+													"",
+													"pm.test(\"It's a second version of the backup\", function () {",
+													"    pm.expect(jsonData.version.version).to.eql(2);",
+													"});",
+													"",
+													"pm.test(\"File has proper 'v2' in name\", function () {",
+													"    pm.expect(jsonData.version.file.filename).to.contain('solfed-2018-activity-till-may-v2');",
+													"});",
+													"",
+													"pm.globals.set(\"solfed_article_v2\", jsonData.version.id);",
+													""
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "Brighton Solidarity Federation: the first five months of 2018\n=============================================================\n\nA summary of the activity of Brighton Solfed in the start of 2018, showcasing the cases we've dealt with up to May.\nAfter a busy 2017, ending with a string of victories, 2018 looks set to be even busier for Brighton Solidarity Federation. In the first 5 months of the year, we’ve had many cases, both with our housing union and workplace disputes.\n\nWith a task as huge as that which we’ve set ourselves, it always seems like there’s more to do, and so it’s often easy for our disputes along the way to be forgotten. With this in mind, we felt it important to catalogue and bring attention to some of our results so far – if only to show that when we fight back against rip off landlords and exploitative bosses, we can win.\nThe year began with a successful end to our long running case against Café Plenty, which saw several pickets at the end of last year (we haven’t had time to write up this case yet, but here are articles from earlier in the dispute , resulting in the best part of the £7500 in unpaid wages going to the worker. This set the scene for the year to go on!\n\nAs well as Café Plenty, we carried over 2 cases from 2017 – first was a housing case against G4 Lets , which we concluded less successfully in March – tenants felt at this point the research that accompanied our campaign, which proved the agency had ignored a council environmental health report would give them enough leverage that going down a legalistic route as opposed to a direct action one, would have a higher chance of success. At this point we wished them well in their new direction. Coming out of this, a well attended housing rights workshop specifically aimed at other G4 Lets tenants (G4Lets are one of the larger student letting agents in the city) was organised with the support of the tenants. Since concluding the dispute, we have been approached by several G4 Lets tenants for advice, a group of which were able to get back part of their deposit.\n\nThe other case we carried on from 2017 was against Youngs. This case involved tenant, who due to major damp issues was unable to use his bedroom for months, and had spent significant amounts of money and time repairing the damage, with the promise that this would be refunded. This case has been a major focus of the local this year so far – in January we held a march on the agency as a show of strength against this treatment. The case is currently ongoing, with major escalations on the part of the agency and landlord including an attempt at revenge eviction of the tenant , and recently violence from the agent against solfed members. Solfed have extended the campaign to Halls letting agents, who rent Youngs their office, demanding they evict the evictors. We are determined to show we can’t be bullied down, and the campaign continues, intensified. More information on the case can be found here and an interview with the tenant can be found here .\n\nAlongside these major cases, we’ve had a number of shorter cases throughout the year. In February we opened a dispute with one of Brighton’s more corporate lettings agencies after part of a tenant’s deposit was withheld, alongside other issues. Despite attempts by the agency to threaten us legally, our escalating campaign had the desired result, with the tenant getting the money she wanted.\n\nWe also had a series of shorter cases – winning £1200 in unpaid wages from a sushi restaurant after a single picket, winning against a major hotel chain again after one picket (dispute not yet written up – we just won last week!) and over £1000 owed from a local dry cleaning firm, with just the threat of a picket.\n\nHowever our goal is more than just helping individuals and winning cases: as an anarcho-syndicalist union, we want to build a culture of solidarity and resistance amongst working class people. Every dispute that ends in success takes us closer to that goal because it shows that when we stand up to bosses and landlords, we can win. But disputes that are not a clear-cut victory - such as the G4 Lets campaign - are important in building that culture of solidarity and resistance too: they send a strong signal to lettings agencies that even in difficult cases we are prepared to campaign for months. It is through fighting back regardless of the prospect of winning that we are beginning to change what landlords and bosses can get away with in Brighton - and nothing is more gratifying than the emails we occasionally receive of tenants or workers telling us that they were able to resolve a housing or workplace problem by threatening to approach SolFed for support.\nAlongside all of this, we’ve also held a series of fundraisers, a regular series of film showings (sub.media’s Trouble series) - and we are continuing to grow our membership. Our members continue to organise in their own workplaces, often able to use the skills, confidence and tactics we’ve developed in these cases into our own cases to build long term workplace strength, and a culture of collectively standing up to improve our conditions.\n\nAll in all, we think it bodes pretty well for the rest of the year, as we continue to make anarcho-syndicalism a reality in Brighton, and take the fight to the bosses and landlords – we aren’t going anywhere, and we aren’t stopping any time soon!\n"
+										},
+										"url": {
+											"raw": "{{appUrl}}/repository/collection/{{collection_5_to_upload_versions}}/backup?_token={{token_create_collections}}",
+											"host": [
+												"{{appUrl}}"
+											],
+											"path": [
+												"repository",
+												"collection",
+												"{{collection_5_to_upload_versions}}",
+												"backup"
+											],
+											"query": [
+												{
+													"key": "_token",
+													"value": "{{token_create_collections}}"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Verify: There should be v1 and v2",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "d58dd8e4-dc0e-41fd-8d5c-4b0a0b534bcc",
+												"type": "text/javascript",
+												"exec": [
+													"var jsonData = pm.response.json();",
+													"",
+													"pm.test(\"Status code is 200\", function () {",
+													"    pm.response.to.have.status(200);",
+													"});",
+													"",
+													"pm.test(\"There are backups: v1 and v2\", function () {",
+													"    let versions = \"\";",
+													"    ",
+													"    for (let versionIndex in jsonData.versions) {",
+													"        let version = jsonData.versions[versionIndex];",
+													"        ",
+													"        versions += \" -> v\" + version.details.version;",
+													"    }",
+													"    ",
+													"    pm.expect(versions).to.equal(' -> v1 -> v2');",
+													"});",
+													""
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": ""
+										},
+										"url": {
+											"raw": "{{appUrl}}/repository/collection/{{collection_5_to_upload_versions}}/backup?_token={{token_create_collections}}",
+											"host": [
+												"{{appUrl}}"
+											],
+											"path": [
+												"repository",
+												"collection",
+												"{{collection_5_to_upload_versions}}",
+												"backup"
+											],
+											"query": [
+												{
+													"key": "_token",
+													"value": "{{token_create_collections}}"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Upload: There should be an alert, that the collection is FULL",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "8ac2a0d6-499e-478e-bd0f-340f7788426f",
+												"type": "text/javascript",
+												"exec": [
+													"var jsonData = pm.response.json();",
+													"",
+													"pm.test(\"Status code is 200\", function () {",
+													"    pm.response.to.have.status(400);",
+													"});",
+													"",
+													"pm.test(\"There should be an alert that we cannot upload more backups\", function () {",
+													"    pm.expect(jsonData.status).to.eql('max_backups_count_too_many');",
+													"});",
+													""
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "Some other version of that text"
+										},
+										"url": {
+											"raw": "{{appUrl}}/repository/collection/{{collection_5_to_upload_versions}}/backup?_token={{token_create_collections}}",
+											"host": [
+												"{{appUrl}}"
+											],
+											"path": [
+												"repository",
+												"collection",
+												"{{collection_5_to_upload_versions}}",
+												"backup"
+											],
+											"query": [
+												{
+													"key": "_token",
+													"value": "{{token_create_collections}}"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Delete: v1 to make space to create next version",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "3545739f-6afa-4500-ac31-7a515d0f4513",
+												"type": "text/javascript",
+												"exec": [
+													"var jsonData = pm.response.json();",
+													"",
+													"pm.test(\"Status code is 200\", function () {",
+													"    pm.response.to.have.status(200);",
+													"});",
+													"",
+													"// pm.test(\"It's a first version of the backup\", function () {",
+													"//     pm.expect(jsonData.version.version).to.eql(1);",
+													"// });",
+													"",
+													"// pm.test(\"File has proper 'v1' in name\", function () {",
+													"//     pm.expect(jsonData.version.file.filename).to.contain('solfed-2018-activity-till-may-v1');",
+													"// });",
+													""
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "DELETE",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "Brighton Solidarity Federation: the first five months of 2018\n\n"
+										},
+										"url": {
+											"raw": "{{appUrl}}/repository/collection/{{collection_5_to_upload_versions}}/backup/{{solfed_article_v1}}?_token={{token_create_collections}}",
+											"host": [
+												"{{appUrl}}"
+											],
+											"path": [
+												"repository",
+												"collection",
+												"{{collection_5_to_upload_versions}}",
+												"backup",
+												"{{solfed_article_v1}}"
+											],
+											"query": [
+												{
+													"key": "_token",
+													"value": "{{token_create_collections}}"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Verify: There should be just v2, as we deleted v1",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "88a44965-356c-4057-902b-361304bb1845",
+												"type": "text/javascript",
+												"exec": [
+													"var jsonData = pm.response.json();",
+													"",
+													"pm.test(\"Status code is 200\", function () {",
+													"    pm.response.to.have.status(200);",
+													"});",
+													"",
+													"pm.test(\"There are backups: v1 and v2\", function () {",
+													"    let versions = \"\";",
+													"    ",
+													"    for (let versionIndex in jsonData.versions) {",
+													"        let version = jsonData.versions[versionIndex];",
+													"        ",
+													"        versions += \" -> v\" + version.details.version;",
+													"    }",
+													"    ",
+													"    pm.expect(versions).to.equal(' -> v2');",
+													"});",
+													""
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": ""
+										},
+										"url": {
+											"raw": "{{appUrl}}/repository/collection/{{collection_5_to_upload_versions}}/backup?_token={{token_create_collections}}",
+											"host": [
+												"{{appUrl}}"
+											],
+											"path": [
+												"repository",
+												"collection",
+												"{{collection_5_to_upload_versions}}",
+												"backup"
+											],
+											"query": [
+												{
+													"key": "_token",
+													"value": "{{token_create_collections}}"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Delete: v2 to make the collection empty",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "027f572b-84dc-404b-9da1-165c10df967a",
+												"type": "text/javascript",
+												"exec": [
+													"var jsonData = pm.response.json();",
+													"",
+													"pm.test(\"Status code is 200\", function () {",
+													"    pm.response.to.have.status(200);",
+													"});",
+													"",
+													""
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "DELETE",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "Brighton Solidarity Federation: the first five months of 2018\n\n"
+										},
+										"url": {
+											"raw": "{{appUrl}}/repository/collection/{{collection_5_to_upload_versions}}/backup/{{solfed_article_v2}}?_token={{token_create_collections}}",
+											"host": [
+												"{{appUrl}}"
+											],
+											"path": [
+												"repository",
+												"collection",
+												"{{collection_5_to_upload_versions}}",
+												"backup",
+												"{{solfed_article_v2}}"
+											],
+											"query": [
+												{
+													"key": "_token",
+													"value": "{{token_create_collections}}"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Verify: There are no versions in the collection",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "5d141f66-1315-4036-b720-9b663604f7cc",
+												"type": "text/javascript",
+												"exec": [
+													"var jsonData = pm.response.json();",
+													"",
+													"pm.test(\"Status code is 200\", function () {",
+													"    pm.response.to.have.status(200);",
+													"});",
+													"",
+													"pm.test(\"There should be no backups available\", function () {",
+													"    pm.expect(jsonData.versions.length).to.equal(0);",
+													"});",
+													""
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": ""
+										},
+										"url": {
+											"raw": "{{appUrl}}/repository/collection/{{collection_5_to_upload_versions}}/backup?_token={{token_create_collections}}",
+											"host": [
+												"{{appUrl}}"
+											],
+											"path": [
+												"repository",
+												"collection",
+												"{{collection_5_to_upload_versions}}",
+												"backup"
+											],
+											"query": [
+												{
+													"key": "_token",
+													"value": "{{token_create_collections}}"
+												}
+											]
+										}
+									},
+									"response": []
+								}
+							],
 							"event": [
+								{
+									"listen": "prerequest",
+									"script": {
+										"id": "54923059-f515-450d-bbd7-6efb1b0a448b",
+										"type": "text/javascript",
+										"exec": [
+											""
+										]
+									}
+								},
 								{
 									"listen": "test",
 									"script": {
-										"id": "0fb68bc5-c302-4e99-b07f-44907e0de989",
+										"id": "ff3e4774-e4e0-4e19-bb5f-4968f4934186",
 										"type": "text/javascript",
 										"exec": [
-											"var jsonData = pm.response.json();",
-											"",
-											"pm.test(\"Status code is 202\", function () {",
-											"    pm.response.to.have.status(202);",
-											"});",
-											"",
-											"pm.globals.set(\"token_create_collections\", jsonData.tokenId);",
 											""
 										]
 									}
 								}
 							],
-							"request": {
-								"method": "POST",
-								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n    \"roles\": [\n    \t\"collections.create_new\", \n    \t\"collections.add_tokens_to_allowed_collections\",\n    \t\"collections.upload_to_allowed_collections\",\n    \t\"upload.backup\"\n    ],\n    \"data\": {\n        \"tags\": [\"user_uploads.u123\", \"user_uploads\"],\n        \"allowedMimeTypes\": [\"image/jpeg\", \"image/png\", \"image/gif\"],\n        \"maxAllowedFileSize\": 14579\n    }\n}\n"
-								},
-								"url": {
-									"raw": "{{appUrl}}/auth/token/generate?_token=test-token-full-permissions",
-									"host": [
-										"{{appUrl}}"
-									],
-									"path": [
-										"auth",
-										"token",
-										"generate"
-									],
-									"query": [
-										{
-											"key": "_token",
-											"value": "test-token-full-permissions"
-										}
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Create collection where we will upload our versions #5",
-							"event": [
-								{
-									"listen": "test",
-									"script": {
-										"id": "63662ab9-5c44-46f2-99ee-0053b0e675af",
-										"type": "text/javascript",
-										"exec": [
-											"var jsonData = pm.response.json();",
-											"",
-											"pm.test(\"Status code is 202\", function () {",
-											"    pm.response.to.have.status(202);",
-											"});",
-											"",
-											"pm.test(\"Id is 36 length UUID\", function () {",
-											"    pm.expect(jsonData.collection.id.length).to.eql(36);",
-											"});",
-											"",
-											"pm.test(\"All fields are at its place\", function () {",
-											"    pm.expect(jsonData.collection.max_backups_count).to.eql(5);",
-											"    pm.expect(jsonData.collection.max_one_backup_version_size).to.eql(1000000);",
-											"    pm.expect(jsonData.collection.max_collection_size).to.eql(5000000);",
-											"    pm.expect(jsonData.collection.strategy).to.eql('delete_oldest_when_adding_new');",
-											"    pm.expect(jsonData.collection.description).to.eql('Title: Solidarity with Postal Workers, Against State Repression!');",
-											"});",
-											"",
-											"",
-											"pm.globals.set(\"collection_5_to_upload_versions\", jsonData.collection.id);"
-										]
-									}
-								}
-							],
-							"request": {
-								"method": "POST",
-								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": "{\n\t\"maxBackupsCount\": 5,\n\t\"maxOneVersionSize\": \"1MB\",\n\t\"maxCollectionSize\": \"5MB\",\n\t\"strategy\": \"delete_oldest_when_adding_new\",\n\t\"description\": \"Title: Solidarity with Postal Workers, Against State Repression!\",\n\t\"password\": \"solidarity-forever\",\n\t\"filename\": \"solidarity-with-postal-workers-article\"\n}\n"
-								},
-								"url": {
-									"raw": "{{appUrl}}/repository/collection?_token={{token_create_collections}}",
-									"host": [
-										"{{appUrl}}"
-									],
-									"path": [
-										"repository",
-										"collection"
-									],
-									"query": [
-										{
-											"key": "_token",
-											"value": "{{token_create_collections}}"
-										}
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Upload a backup",
-							"event": [
-								{
-									"listen": "test",
-									"script": {
-										"id": "b4bc8e4e-fcec-43e3-96f6-f00a0262001a",
-										"type": "text/javascript",
-										"exec": [
-											"var jsonData = pm.response.json();",
-											"",
-											"pm.test(\"Status code is 200\", function () {",
-											"    pm.response.to.have.status(200);",
-											"});",
-											"",
-											"pm.test(\"It's a first version of the backup\", function () {",
-											"    pm.expect(jsonData.version.version).to.eql(1);",
-											"});",
-											"",
-											"pm.test(\"File has proper 'v1' in name\", function () {",
-											"    pm.expect(jsonData.version.file.filename).to.contain('solidarity-with-postal-workers-article-v1');",
-											"});",
-											""
-										]
-									}
-								}
-							],
-							"request": {
-								"method": "POST",
-								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": "ZSP-lWA calls for a week of protest action against the repression of workers from the Post Office in Poland\n\nFebruary 26 - March 4, 2018\n\nFor almost two years, postal workers around Poland have been protesting for better working conditions. ZSP has been active in attempts to coordinate national networks, actions and to unionize workers, together with hundreds of other workers spread around the country. All of the workers shared two things in common: they are fed up with the very poor working conditions and were not satisfied with the role of the representative unions which signed various agreements on their behalf with the employer.\n\nMajor actions of the ZSP have included exposing the problems in the Post Office and providing a forum for thousands of workers to network, making contacts all over the country and organizing national meetings, promoting alternative unionism and organizing and taking part in organizing national protests, together with thousands of workers.\n\nThis work was immediately attacked by representatives both of Solidarity and by the management of the Post Office, which is a state-owned enterprise. Solidarity at the Post Office carried out a vile disinformation campaign, which sought to present the ZSP as if it was a Soviet paramilitary organization – such a grotesque misrepresentation that it would have been hilarious if it weren't such a part of the current far-right political hysteria.\n\nWhen workers began to organize and call for protests on a national level, calling for a significant pay rise and other demands, the management of the Post Office, together with their union servants, started a campaign of harrassment and threats against the workers. Throughout Poland, workers were visited, told that the protests were illegal, threatened with disciplinary action, etc.\n\nFinally, after last years' large national protests, Klaudiusz and Rafal were fired and now Zbyszek. He had been active after the protests in trying to organize workers.\n\nBesides this retaliation against the postal workers, there have also been various attempts to bring criminal cases against another member of ZSP from Warsaw, Jakub. The Post Office tried (unsuccessfully) to have him prosecuted under the amazing charge of „organizing a bloody revolution”. Although this was so stupid it was hysterical, it is actually a very serious charge, completely out of line with the real crime – helping to coordinate the national workers protest. Unfortunately the Post Office, backed by the State, is trying to prosecute on lesser criminal charges, which are also complete nonsense.\n\nAlthough our organization has born the brunt of the repression, it is important to recognize that in fact, they are repressing all workers.\n\nIn connection with the recent round of repression, an international week of solidarity and protest has been called for Febuary 26 - March 4, with some protests planned at various representations of the Polish State around the globe. More information on planned protests to follow.\n\nIf you would like to show other forms of solidarity, please contact is@zsp.net.pl.\n\nRelated articles in English:\nhttp://zsp.net.pl/postal-workers-protest-warsaw\nzsp.net.pl/no-protest-allowed-post-office\nhttp://zsp.net.pl/postal-workers-protest-all-over-poland\nhttp://zsp.net.pl/solidarity-postal-workers-down-bosses\nzsp.net.pl/post-office-workers-make-demands\nhttp://zsp.net.pl/third-national-meeting-postal-workers-adopt-libertaria...\nhttp://zsp.net.pl/%E2%80%9Esolidarity%E2%80%9D-screws-postal-workers-aga...\n\nIn Polish:\nhttp://zsp.net.pl/kampanie/poczta-polska\nlistonosze.pl"
-								},
-								"url": {
-									"raw": "{{appUrl}}/repository/collection/{{collection_5_to_upload_versions}}/backup?_token={{token_create_collections}}",
-									"host": [
-										"{{appUrl}}"
-									],
-									"path": [
-										"repository",
-										"collection",
-										"{{collection_5_to_upload_versions}}",
-										"backup"
-									],
-									"query": [
-										{
-											"key": "_token",
-											"value": "{{token_create_collections}}"
-										}
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Upload: Second time same file",
-							"event": [
-								{
-									"listen": "test",
-									"script": {
-										"id": "84008f5f-b7de-4922-858b-c5cecb160e05",
-										"type": "text/javascript",
-										"exec": [
-											"var jsonData = pm.response.json();",
-											"",
-											"pm.test(\"Status code is 400\", function () {",
-											"    pm.response.to.have.status(400);",
-											"});",
-											"",
-											"pm.test(\"Response informs about a fact that the backup was uploaded two times - is a duplicate of existing version\", function () {",
-											"    pm.expect(jsonData.status).to.eql('backup_version_uploaded_twice');",
-											"});",
-											"",
-											"pm.test(\"Duplication error has proper error code\", function () {",
-											"    pm.expect(jsonData.error_code).to.eql(4008);",
-											"});",
-											""
-										]
-									}
-								}
-							],
-							"request": {
-								"method": "POST",
-								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": "ZSP-lWA calls for a week of protest action against the repression of workers from the Post Office in Poland\n\nFebruary 26 - March 4, 2018\n\nFor almost two years, postal workers around Poland have been protesting for better working conditions. ZSP has been active in attempts to coordinate national networks, actions and to unionize workers, together with hundreds of other workers spread around the country. All of the workers shared two things in common: they are fed up with the very poor working conditions and were not satisfied with the role of the representative unions which signed various agreements on their behalf with the employer.\n\nMajor actions of the ZSP have included exposing the problems in the Post Office and providing a forum for thousands of workers to network, making contacts all over the country and organizing national meetings, promoting alternative unionism and organizing and taking part in organizing national protests, together with thousands of workers.\n\nThis work was immediately attacked by representatives both of Solidarity and by the management of the Post Office, which is a state-owned enterprise. Solidarity at the Post Office carried out a vile disinformation campaign, which sought to present the ZSP as if it was a Soviet paramilitary organization – such a grotesque misrepresentation that it would have been hilarious if it weren't such a part of the current far-right political hysteria.\n\nWhen workers began to organize and call for protests on a national level, calling for a significant pay rise and other demands, the management of the Post Office, together with their union servants, started a campaign of harrassment and threats against the workers. Throughout Poland, workers were visited, told that the protests were illegal, threatened with disciplinary action, etc.\n\nFinally, after last years' large national protests, Klaudiusz and Rafal were fired and now Zbyszek. He had been active after the protests in trying to organize workers.\n\nBesides this retaliation against the postal workers, there have also been various attempts to bring criminal cases against another member of ZSP from Warsaw, Jakub. The Post Office tried (unsuccessfully) to have him prosecuted under the amazing charge of „organizing a bloody revolution”. Although this was so stupid it was hysterical, it is actually a very serious charge, completely out of line with the real crime – helping to coordinate the national workers protest. Unfortunately the Post Office, backed by the State, is trying to prosecute on lesser criminal charges, which are also complete nonsense.\n\nAlthough our organization has born the brunt of the repression, it is important to recognize that in fact, they are repressing all workers.\n\nIn connection with the recent round of repression, an international week of solidarity and protest has been called for Febuary 26 - March 4, with some protests planned at various representations of the Polish State around the globe. More information on planned protests to follow.\n\nIf you would like to show other forms of solidarity, please contact is@zsp.net.pl.\n\nRelated articles in English:\nhttp://zsp.net.pl/postal-workers-protest-warsaw\nzsp.net.pl/no-protest-allowed-post-office\nhttp://zsp.net.pl/postal-workers-protest-all-over-poland\nhttp://zsp.net.pl/solidarity-postal-workers-down-bosses\nzsp.net.pl/post-office-workers-make-demands\nhttp://zsp.net.pl/third-national-meeting-postal-workers-adopt-libertaria...\nhttp://zsp.net.pl/%E2%80%9Esolidarity%E2%80%9D-screws-postal-workers-aga...\n\nIn Polish:\nhttp://zsp.net.pl/kampanie/poczta-polska\nlistonosze.pl"
-								},
-								"url": {
-									"raw": "{{appUrl}}/repository/collection/{{collection_5_to_upload_versions}}/backup?_token={{token_create_collections}}",
-									"host": [
-										"{{appUrl}}"
-									],
-									"path": [
-										"repository",
-										"collection",
-										"{{collection_5_to_upload_versions}}",
-										"backup"
-									],
-									"query": [
-										{
-											"key": "_token",
-											"value": "{{token_create_collections}}"
-										}
-									]
-								}
-							},
-							"response": []
-						},
-						{
-							"name": "Upload: Second version - with a title in markdown",
-							"event": [
-								{
-									"listen": "test",
-									"script": {
-										"id": "06dc6f92-10cf-4002-a013-1a6317752807",
-										"type": "text/javascript",
-										"exec": [
-											"var jsonData = pm.response.json();",
-											"",
-											"pm.test(\"Status code is 200\", function () {",
-											"    pm.response.to.have.status(200);",
-											"});",
-											"",
-											"pm.test(\"It's a second version of the backup\", function () {",
-											"    pm.expect(jsonData.version.version).to.eql(2);",
-											"});",
-											"",
-											"pm.test(\"File has proper 'v2' in name\", function () {",
-											"    pm.expect(jsonData.version.file.filename).to.contain('solidarity-with-postal-workers-article-v2');",
-											"});",
-											""
-										]
-									}
-								}
-							],
-							"request": {
-								"method": "POST",
-								"header": [],
-								"body": {
-									"mode": "raw",
-									"raw": "ZSP-lWA calls for a week of protest action against the repression of workers from the Post Office in Poland\n===========================================================================================================\n\nFebruary 26 - March 4, 2018\n\nFor almost two years, postal workers around Poland have been protesting for better working conditions. ZSP has been active in attempts to coordinate national networks, actions and to unionize workers, together with hundreds of other workers spread around the country. All of the workers shared two things in common: they are fed up with the very poor working conditions and were not satisfied with the role of the representative unions which signed various agreements on their behalf with the employer.\n\nMajor actions of the ZSP have included exposing the problems in the Post Office and providing a forum for thousands of workers to network, making contacts all over the country and organizing national meetings, promoting alternative unionism and organizing and taking part in organizing national protests, together with thousands of workers.\n\nThis work was immediately attacked by representatives both of Solidarity and by the management of the Post Office, which is a state-owned enterprise. Solidarity at the Post Office carried out a vile disinformation campaign, which sought to present the ZSP as if it was a Soviet paramilitary organization – such a grotesque misrepresentation that it would have been hilarious if it weren't such a part of the current far-right political hysteria.\n\nWhen workers began to organize and call for protests on a national level, calling for a significant pay rise and other demands, the management of the Post Office, together with their union servants, started a campaign of harrassment and threats against the workers. Throughout Poland, workers were visited, told that the protests were illegal, threatened with disciplinary action, etc.\n\nFinally, after last years' large national protests, Klaudiusz and Rafal were fired and now Zbyszek. He had been active after the protests in trying to organize workers.\n\nBesides this retaliation against the postal workers, there have also been various attempts to bring criminal cases against another member of ZSP from Warsaw, Jakub. The Post Office tried (unsuccessfully) to have him prosecuted under the amazing charge of „organizing a bloody revolution”. Although this was so stupid it was hysterical, it is actually a very serious charge, completely out of line with the real crime – helping to coordinate the national workers protest. Unfortunately the Post Office, backed by the State, is trying to prosecute on lesser criminal charges, which are also complete nonsense.\n\nAlthough our organization has born the brunt of the repression, it is important to recognize that in fact, they are repressing all workers.\n\nIn connection with the recent round of repression, an international week of solidarity and protest has been called for Febuary 26 - March 4, with some protests planned at various representations of the Polish State around the globe. More information on planned protests to follow.\n\nIf you would like to show other forms of solidarity, please contact is@zsp.net.pl.\n\nRelated articles in English:\nhttp://zsp.net.pl/postal-workers-protest-warsaw\nzsp.net.pl/no-protest-allowed-post-office\nhttp://zsp.net.pl/postal-workers-protest-all-over-poland\nhttp://zsp.net.pl/solidarity-postal-workers-down-bosses\nzsp.net.pl/post-office-workers-make-demands\nhttp://zsp.net.pl/third-national-meeting-postal-workers-adopt-libertaria...\nhttp://zsp.net.pl/%E2%80%9Esolidarity%E2%80%9D-screws-postal-workers-aga...\n\nIn Polish:\nhttp://zsp.net.pl/kampanie/poczta-polska\nlistonosze.pl"
-								},
-								"url": {
-									"raw": "{{appUrl}}/repository/collection/{{collection_5_to_upload_versions}}/backup?_token={{token_create_collections}}",
-									"host": [
-										"{{appUrl}}"
-									],
-									"path": [
-										"repository",
-										"collection",
-										"{{collection_5_to_upload_versions}}",
-										"backup"
-									],
-									"query": [
-										{
-											"key": "_token",
-											"value": "{{token_create_collections}}"
-										}
-									]
-								}
-							},
-							"response": []
+							"_postman_isSubFolder": true
 						}
 					],
 					"_postman_isSubFolder": true

@@ -27,6 +27,16 @@ class Url extends BaseValueObject implements \JsonSerializable
         }
     }
 
+    /**
+     * @param Url $url
+     *
+     * @return static
+     */
+    public static function fromBasicVersion($url)
+    {
+        return new static($url->getValue());
+    }
+
     public function getValue(): string
     {
         return $this->value;

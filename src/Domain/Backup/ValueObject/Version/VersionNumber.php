@@ -11,12 +11,4 @@ class VersionNumber extends PositiveNumber
     {
         return ValueObjectException::class;
     }
-
-    public function incrementVersion(): VersionNumber
-    {
-        $new = clone $this;
-        ++$new->value;
-
-        return $new;
-    }
 }

@@ -13,6 +13,7 @@ class ValidationException extends BackupException
     public const CODE_NEW_VERSION_EXCEEDS_SINGLE_ELEMENT_LIMIT               = 4006;
     public const CODE_NEW_VERSION_MAKES_COLLECTION_TOO_BIG_ON_DISK           = 4007;
     public const CODE_BACKUP_VERSION_DUPLICATED                              = 4008;
+    public const CODE_VERSION_COLLECTION_DOES_NOT_MATCH_SUBMITTED_COLLECTION = 4009;
 
     /**
      * @var string

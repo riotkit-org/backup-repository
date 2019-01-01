@@ -32,7 +32,7 @@ class ListingHandler
      */
     public function handle(ListingForm $form, CollectionManagementContext $securityContext): ListingResponse
     {
-        $this->assertHasRights($securityContext, $form);
+        $this->assertHasRights($securityContext);
 
         $params   = ListingParameters::createFromArray($form->toArray());
         $elements = $this->repository->findElementsBy($params);
@@ -49,13 +49,12 @@ class ListingHandler
 
     /**
      * @param CollectionManagementContext $securityContext
-     * @param ListingForm                 $form
      *
      * @throws AuthenticationException
      */
-    private function assertHasRights(CollectionManagementContext $securityContext, ListingForm $form): void
+    private function assertHasRights(CollectionManagementContext $securityContext): void
     {
-        if (!$securityContext->canListMultipleCollections($form)) {
+        if (!$securityContext->canListMultipleCollections()) {
             throw new AuthenticationException(
                 'Current token does not allow to use listing endpoint',
                 AuthenticationException::CODES['not_authenticated']

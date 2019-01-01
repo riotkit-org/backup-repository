@@ -44,4 +44,9 @@ class BackupStrategy implements \JsonSerializable
     {
         return $this->getValue();
     }
+
+    public function shouldCollectionRotateAutomatically(): bool
+    {
+        return $this->getValue() === self::STRATEGY_AUTO;
+    }
 }

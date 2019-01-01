@@ -2,7 +2,9 @@
 
 namespace App\Domain\Common\ValueObject;
 
-class Filename implements \JsonSerializable
+use App\Domain\Backup\Exception\ValueObjectException;
+
+class Filename extends BaseValueObject implements \JsonSerializable
 {
     /**
      * @var string
@@ -14,7 +16,9 @@ class Filename implements \JsonSerializable
         $this->value = $value;
 
         if (!preg_match('/([A-Za-z0-9\.\-\_\+]+)/', $value)) {
-            throw new \InvalidArgumentException('File name is not valid, please normalize it');
+            $exceptionType = static::getExceptionType();
+
+            throw new $exceptionType('File name is not valid, please normalize it');
         }
     }
 
@@ -45,5 +49,10 @@ class Filename implements \JsonSerializable
         }
 
         return $self;
+    }
+
+    protected static function getExceptionType(): string
+    {
+        return ValueObjectException::class;
     }
 }

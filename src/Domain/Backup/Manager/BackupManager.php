@@ -8,6 +8,8 @@ use App\Domain\Backup\Exception\ValidationException;
 use App\Domain\Backup\Factory\VersionFactory;
 use App\Domain\Backup\Repository\StorageRepository;
 use App\Domain\Backup\Repository\VersionRepository;
+use App\Domain\Backup\Service\CollectionRotator;
+use App\Domain\Backup\Service\FileUploader;
 use App\Domain\Backup\Validation\BackupValidator;
 use App\Domain\Backup\Validation\CollectionValidator;
 
@@ -38,18 +40,32 @@ class BackupManager
      */
     protected $collectionValidator;
 
+    /**
+     * @var CollectionRotator
+     */
+    protected $collectionRotator;
+
+    /**
+     * @var FileUploader
+     */
+    protected $fileUploader;
+
     public function __construct(
         VersionRepository   $repository,
         VersionFactory      $factory,
         StorageRepository   $storageRepository,
         BackupValidator     $versionValidator,
-        CollectionValidator $collectionValidator
+        CollectionValidator $collectionValidator,
+        CollectionRotator   $collectionRotator,
+        FileUploader        $fileUploader
     ) {
         $this->versionRepository   = $repository;
         $this->versionFactory      = $factory;
         $this->storageRepository   = $storageRepository;
         $this->versionValidator    = $versionValidator;
         $this->collectionValidator = $collectionValidator;
+        $this->collectionRotator   = $collectionRotator;
+        $this->fileUploader        = $fileUploader;
     }
 
     /**
@@ -60,13 +76,15 @@ class BackupManager
      *
      * @throws ValidationException
      */
-    public function submitBackup(BackupCollection $collection, $fileId): StoredVersion
+    public function submitNewVersion(BackupCollection $collection, $fileId): StoredVersion
     {
         $storedFile = $this->storageRepository->findById($fileId);
 
         if (!$storedFile) {
             throw new \LogicException('Cannot submit a backup for a file that does not exist in the storage');
         }
+
+        $this->collectionRotator->rotate($collection, 1);
 
         $versionedBackupFile = $this->versionFactory->createVersion(
             $storedFile,
@@ -80,6 +98,25 @@ class BackupManager
         $this->versionRepository->persist($versionedBackupFile);
 
         return $versionedBackupFile;
+    }
+
+    /**
+     * @param StoredVersion $version
+     * @param BackupCollection $collection
+     *
+     * @return callable Use this callable to push changes to the database
+     *
+     * @throws ValidationException
+     */
+    public function deleteVersion(StoredVersion $version, BackupCollection $collection): callable
+    {
+        $this->versionValidator->validateBeforeDeletingBackup($version, $collection);
+        $this->versionRepository->delete($version);
+
+        return function () use ($version) {
+            $this->versionRepository->flush($version);
+            $this->fileUploader->deletePreviouslyUploaded($version->getFile()->getFilename());
+        };
     }
 
     public function flushAll(): void

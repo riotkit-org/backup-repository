@@ -313,4 +313,12 @@ class BackupCollection implements \JsonSerializable
             $this->getMaxOneVersionSize()->getValue() * $this->getMaxBackupsCount()->getValue()
         );
     }
+
+    /**
+     * @return BackupStrategy
+     */
+    public function getStrategy(): BackupStrategy
+    {
+        return $this->strategy;
+    }
 }

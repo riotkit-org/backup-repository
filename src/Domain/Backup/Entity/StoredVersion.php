@@ -91,6 +91,12 @@ class StoredVersion implements \JsonSerializable
         return $new;
     }
 
+    public function isSameAs(StoredVersion $version): bool
+    {
+        return $this->getId() === $version->getId()
+            || $this->getFile()->isSameAs($version->getFile());
+    }
+
     public function jsonSerialize()
     {
         return [

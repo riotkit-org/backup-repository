@@ -64,6 +64,10 @@ class VersionDoctrineRepository extends ServiceEntityRepository implements Versi
      */
     public function delete(StoredVersion $version): void
     {
+        if ($version->getCollection()) {
+            $this->findCollectionVersions($version->getCollection())->delete($version);
+        }
+
         $this->getEntityManager()->remove($version);
     }
 

@@ -5,6 +5,7 @@ namespace App\Domain\Storage\Factory;
 use App\Domain\Common\Factory\UrlFactory;
 use App\Domain\Common\ValueObject\BaseUrl;
 use App\Domain\Storage\Entity\StoredFile;
+use App\Domain\Storage\ValueObject\Filename;
 use App\Domain\Storage\ValueObject\Url;
 
 class PublicUrlFactory
@@ -45,14 +46,26 @@ class PublicUrlFactory
      * Return a public URL pointing to a $file
      *
      * @param StoredFile $file
+     * @param BaseUrl $baseUrl
      *
      * @return Url
      */
     public function fromStoredFile(StoredFile $file, BaseUrl $baseUrl): Url
     {
+        return $this->fromFilename($file->getFilename(), $baseUrl);
+    }
+
+    /**
+     * @param Filename $filename
+     * @param BaseUrl $baseUrl
+     *
+     * @return Url
+     */
+    public function fromFilename(Filename $filename, BaseUrl $baseUrl): Url
+    {
         return new Url(
             $this->urlFactory->generate('storage.get_file', [
-                'filename' => $file->getFilename()->getValue()
+                'filename' => $filename->getValue()
             ]),
             $baseUrl
         );

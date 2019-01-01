@@ -13,9 +13,4 @@ class PositiveNumberOrZero extends PositiveNumber
 
         $this->value = $number;
     }
-
-    public function getValue(): int
-    {
-        return $this->value;
-    }
 }

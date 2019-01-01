@@ -94,6 +94,12 @@ final class Roles
     /** Upload to allowed collections */
     public const ROLE_CAN_UPLOAD_TO_ALLOWED_COLLECTIONS = 'collections.upload_to_allowed_collections';
 
+    /** List versions for collections where the token was added as allowed */
+    public const ROLE_LIST_VERSIONS_FOR_ALLOWED_COLLECTIONS = 'collections.list_versions_for_allowed_collections';
+
+    /** Delete versions only from collections where the token was added as allowed */
+    public const ROLE_DELETE_VERSIONS_IN_ALLOWED_COLLECTIONS = 'collections.delete_versions_for_allowed_collections';
+
     /** Collection manager: Create, edit, delete collections */
     public const GROUP_COLLECTION_MANAGER = [
         self::ROLE_COLLECTION_ADD,
@@ -101,7 +107,10 @@ final class Roles
         self::ROLE_COLLECTION_MODIFY_ANY_COLLECTION,
         self::ROLE_COLLECTION_VIEW_ANY_COLLECTION,
         self::ROLE_CAN_USE_LISTING_COLLECTION_ENDPOINT,
-        self::ROLE_CAN_ADD_TOKENS_TO_ALLOWED_COLLECTIONS
+        self::ROLE_CAN_ADD_TOKENS_TO_ALLOWED_COLLECTIONS,
+        self::ROLE_CAN_UPLOAD_TO_ALLOWED_COLLECTIONS,
+        self::ROLE_LIST_VERSIONS_FOR_ALLOWED_COLLECTIONS,
+        self::ROLE_DELETE_VERSIONS_IN_ALLOWED_COLLECTIONS
     ];
 
     public const ROLES_LIST = [
@@ -124,6 +133,8 @@ final class Roles
         self::ROLE_COLLECTION_VIEW_ANY_COLLECTION,
         self::ROLE_CAN_USE_LISTING_COLLECTION_ENDPOINT,
         self::ROLE_CAN_ADD_TOKENS_TO_ALLOWED_COLLECTIONS,
-        self::ROLE_CAN_UPLOAD_TO_ALLOWED_COLLECTIONS
+        self::ROLE_CAN_UPLOAD_TO_ALLOWED_COLLECTIONS,
+        self::ROLE_LIST_VERSIONS_FOR_ALLOWED_COLLECTIONS,
+        self::ROLE_DELETE_VERSIONS_IN_ALLOWED_COLLECTIONS
     ];
 }

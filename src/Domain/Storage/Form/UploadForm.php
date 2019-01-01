@@ -30,4 +30,9 @@ class UploadForm
      * @var bool
      */
     public $public = true;
+
+    /**
+     * @var bool
+     */
+    public $duplicationAllowed = false;
 }

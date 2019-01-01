@@ -6,7 +6,6 @@ use App\Domain\Backup\Entity\BackupCollection;
 use App\Domain\Backup\Form\Collection\CreationForm;
 use App\Domain\Backup\Form\Collection\DeleteForm;
 use App\Domain\Backup\Form\Collection\EditForm;
-use App\Domain\Backup\Form\Collection\ListingForm;
 
 class CollectionManagementContext
 {
@@ -28,7 +27,7 @@ class CollectionManagementContext
     /**
      * @var bool
      */
-    private $canUseListingEndpoint;
+    private $canUseListingEndpointToFindCollections;
 
     /**
      * @var bool
@@ -39,11 +38,6 @@ class CollectionManagementContext
      * @var bool
      */
     private $canAddTokensToAllowedCollections;
-
-    /**
-     * @var bool
-     */
-    private $canUploadToAllowedCollections;
 
     /**
      * @var string|null
@@ -57,16 +51,14 @@ class CollectionManagementContext
         bool $canAccessAnyCollection,
         bool $canUseListingEndpoint,
         bool $canAddTokensToAllowedCollections,
-        bool $canUploadToAllowedCollections,
         ?string $tokenId
     ) {
         $this->canCreateCollections             = $canCreateCollections;
         $this->canCreateCollectionsWithoutLimit = $canCreateCollectionsWithoutLimit;
         $this->canModifyAnyCollection           = $canModifyAnyCollection;
         $this->canAccessAnyCollection           = $canAccessAnyCollection;
-        $this->canUseListingEndpoint            = $canUseListingEndpoint;
+        $this->canUseListingEndpointToFindCollections            = $canUseListingEndpoint;
         $this->canAddTokensToAllowedCollections = $canAddTokensToAllowedCollections;
-        $this->canUploadToAllowedCollections    = $canUploadToAllowedCollections;
         $this->tokenId                          = $tokenId;
     }
 
@@ -140,14 +132,14 @@ class CollectionManagementContext
         return $this->tokenId;
     }
 
-    public function canListMultipleCollections(ListingForm $form): bool
+    public function canListMultipleCollections(): bool
     {
-        return $this->canUseListingEndpoint;
+        return $this->canUseListingEndpointToFindCollections;
     }
 
     public function canSeeCollection(BackupCollection $collection): bool
     {
-        if (!$this->canUseListingEndpoint) {
+        if (!$this->canUseListingEndpointToFindCollections) {
             return false;
         }
 
@@ -174,19 +166,6 @@ class CollectionManagementContext
     public function canRevokeAccessToCollection(BackupCollection $collection): bool
     {
         if (!$this->canAddTokensToAllowedCollections) {
-            return false;
-        }
-
-        if ($this->canModifyAnyCollection) {
-            return true;
-        }
-
-        return $collection->isTokenIdAllowed($this->tokenId);
-    }
-
-    public function canUploadToCollection(BackupCollection $collection): bool
-    {
-        if (!$this->canUploadToAllowedCollections) {
             return false;
         }
 

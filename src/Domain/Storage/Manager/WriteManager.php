@@ -98,7 +98,8 @@ class WriteManager
             $stream,
             $existingFromRepository->getFilename(),
             $securityContext,
-            $existingFromRepository
+            $existingFromRepository,
+            false
         );
     }
 
@@ -120,7 +121,8 @@ class WriteManager
     {
         return $this->commitToRegistry(
             $this->staging->keepStreamAsTemporaryFile($this->fs->read($filename)),
-            $this->storedFileFactory->createFromForm($form, $filename)
+            $this->storedFileFactory->createFromForm($form, $filename),
+            $form->duplicationAllowed
         );
     }
 
@@ -151,7 +153,8 @@ class WriteManager
             $stream,
             $filename,
             $securityContext,
-            $this->storedFileFactory->createFromForm($form, $filename)
+            $this->storedFileFactory->createFromForm($form, $filename),
+            $form->duplicationAllowed
         );
     }
 
@@ -183,7 +186,8 @@ class WriteManager
         return $this->writeToBothRegistryAndStorage(
             $staged,
             $filename,
-            $existingFromRepository
+            $existingFromRepository,
+            false
         );
     }
 
@@ -192,6 +196,7 @@ class WriteManager
      * @param Filename $filename
      * @param UploadSecurityContext $securityContext
      * @param StoredFile $storedFile
+     * @param bool $isDuplicationAllowed
      *
      * @return StoredFile
      *
@@ -202,8 +207,10 @@ class WriteManager
         Stream $stream,
         Filename $filename,
         UploadSecurityContext $securityContext,
-        StoredFile $storedFile
+        StoredFile $storedFile,
+        bool $isDuplicationAllowed
     ): StoredFile {
+
         // 1. Keep file in temporary dir
         $staged = $this->staging->keepStreamAsTemporaryFile($stream);
 
@@ -211,7 +218,9 @@ class WriteManager
         $info = $this->fileInfoFactory->generateForStagedFile($staged);
 
         // 3. Avoid content duplications
-        $this->assertThereIsNoFileByChecksum($storedFile, $info->getChecksum());
+        if (!$isDuplicationAllowed) {
+            $this->validator->assertThereIsNoFileByChecksum($storedFile, $info->getChecksum());
+        }
 
         // each new file needs to be validated
         $this->validator->validateAfterUpload($staged, $securityContext);
@@ -220,7 +229,8 @@ class WriteManager
         return $this->writeToBothRegistryAndStorage(
             $staged,
             $filename,
-            $storedFile
+            $storedFile,
+            $isDuplicationAllowed
         );
     }
 
@@ -228,29 +238,35 @@ class WriteManager
      * @param StagedFile $stagedFile
      * @param Filename $filename
      * @param StoredFile $storedFile
+     * @param bool $isDuplicationAllowed
      *
      * @return StoredFile
+     *
      * @throws DuplicatedContentException
+     * @throws ValidationException
      */
     private function writeToBothRegistryAndStorage(
         StagedFile $stagedFile,
         Filename $filename,
-        StoredFile $storedFile
+        StoredFile $storedFile,
+        bool $isDuplicationAllowed
     ): StoredFile {
 
         $this->fs->write($filename, $stagedFile->openAsStream());
 
-        return $this->commitToRegistry($stagedFile, $storedFile);
+        return $this->commitToRegistry($stagedFile, $storedFile, $isDuplicationAllowed);
     }
 
     /**
      * @param StagedFile|Path $stagedFile
      * @param StoredFile $file
+     * @param bool $isDuplicationAllowed
      *
      * @return StoredFile
      * @throws DuplicatedContentException
+     * @throws ValidationException
      */
-    private function commitToRegistry($stagedFile, StoredFile $file): StoredFile
+    private function commitToRegistry($stagedFile, StoredFile $file, bool $isDuplicationAllowed): StoredFile
     {
         // fill up the metadata
         if (!$file->wasAlreadyStored()) {
@@ -259,33 +275,16 @@ class WriteManager
             $file->setContentHash($info->getChecksum());
             $file->setMimeType($info->getMime());
 
-            $this->assertThereIsNoFileByChecksum($file, $info->getChecksum());
+            if (!$isDuplicationAllowed) {
+                $this->validator->assertThereIsNoFileByChecksum($file, $info->getChecksum());
+            }
+
+            $this->validator->assertThereIsNoFileByFilename($file);
         }
 
         $this->repository->persist($file);
         $this->repository->flush();
 
         return $file;
-    }
-
-    /**
-     * @param StoredFile $file
-     * @param Checksum $checksum
-     *
-     * @throws DuplicatedContentException
-     */
-    private function assertThereIsNoFileByChecksum(StoredFile $file, Checksum $checksum): void
-    {
-        $existingFromRepository = $this->repository->findByHash($checksum);
-
-        if ($existingFromRepository) {
-
-            // when the found file is the same we are uploading, then allow to overwrite with the same content
-            if ($file->getFilename()->getValue() === $existingFromRepository->getFilename()->getValue()) {
-                return;
-            }
-
-            throw DuplicatedContentException::create($existingFromRepository);
-        }
     }
 }

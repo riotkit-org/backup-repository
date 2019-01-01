@@ -2,6 +2,6 @@
 
 namespace App\Domain\Backup\Exception;
 
-class ValueObjectException extends \Exception
+class ValueObjectException extends \App\Domain\Common\Exception\ValueObjectException
 {
 }

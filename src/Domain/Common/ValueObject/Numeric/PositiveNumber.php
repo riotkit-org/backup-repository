@@ -28,7 +28,7 @@ class PositiveNumber extends BaseValueObject implements \JsonSerializable
 
     public function getValue(): int
     {
-        return $this->value;
+        return (int) $this->value;
     }
 
     public function isSameAs(PositiveNumber $number): bool
@@ -63,7 +63,37 @@ class PositiveNumber extends BaseValueObject implements \JsonSerializable
 
     public function isHigherThanInteger(int $num): bool
     {
-        return $this->getValue() > 0;
+        return $this->getValue() > $num;
+    }
+
+    /**
+     * @return static
+     */
+    public function incrementVersion()
+    {
+        $new = clone $this;
+        ++$new->value;
+
+        return $new;
+    }
+
+    /**
+     * @param int $num
+     *
+     * @return static
+     */
+    public function addInteger(int $num)
+    {
+        $new = clone $this;
+        $new->value += $num;
+
+        if ($new->value < 0) {
+            $exceptionClass = static::getExceptionType();
+
+            throw new $exceptionClass('After adding an integer the number is no longer positive');
+        }
+
+        return $new;
     }
 
     public function jsonSerialize()

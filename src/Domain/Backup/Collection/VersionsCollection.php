@@ -39,6 +39,8 @@ class VersionsCollection
 
         $this->fsSizeCheck = $fsSizeCheck;
         $this->versions    = $versions;
+
+        $this->updateInternalOrder();
     }
 
     public function sumAllVersionsDiskSpace(): FileSize
@@ -65,18 +67,18 @@ class VersionsCollection
 
     public function getLast(): ?StoredVersion
     {
-        /**
-         * @var StoredVersion|null $latest
-         */
-        $latest = null;
+        $last = end($this->versions);
 
-        foreach ($this->versions as $storedVersion) {
-            if (!$latest || $latest->getVersionNumber() < $storedVersion->getVersionNumber()) {
-                $latest = $storedVersion;
-            }
+        if ($last) {
+            return $last;
         }
 
-        return $latest;
+        return null;
+    }
+
+    public function getFirst(): ?StoredVersion
+    {
+        return $this->versions[0] ?? null;
     }
 
     public function getNextVersionNumber(): VersionNumber
@@ -86,6 +88,24 @@ class VersionsCollection
         }
 
         return new VersionNumber(1);
+    }
+
+    /**
+     * @return StoredVersion[]
+     */
+    public function getAll(): array
+    {
+        return $this->versions;
+    }
+
+    private function updateInternalOrder(): void
+    {
+        usort(
+            $this->versions,
+            function (StoredVersion $first, StoredVersion $second) {
+                return $first->getVersionNumber()->getValue() < $second->getVersionNumber()->getValue() ? -1 : 1;
+            }
+        );
     }
 
     private function getFileSize(Filename $filename): FileSize
@@ -104,5 +124,15 @@ class VersionsCollection
         }
 
         return false;
+    }
+
+    public function delete(StoredVersion $version): void
+    {
+        foreach ($this->versions as $key => $currentVersion) {
+            if ($currentVersion->isSameAs($version)) {
+                unset($this->versions[$key]);
+                return;
+            }
+        }
     }
 }

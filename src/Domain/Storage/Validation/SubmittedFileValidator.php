@@ -3,10 +3,14 @@
 namespace App\Domain\Storage\Validation;
 
 use App\Domain\Storage\Entity\StagedFile;
+use App\Domain\Storage\Entity\StoredFile;
+use App\Domain\Storage\Exception\DuplicatedContentException;
 use App\Domain\Storage\Exception\ValidationException;
 use App\Domain\Storage\Factory\FileInfoFactory;
 use App\Domain\Storage\Form\UploadForm;
+use App\Domain\Storage\Repository\FileRepository;
 use App\Domain\Storage\Security\UploadSecurityContext;
+use App\Domain\Storage\ValueObject\Checksum;
 
 class SubmittedFileValidator
 {
@@ -15,9 +19,15 @@ class SubmittedFileValidator
      */
     private $fileInfoFactory;
 
-    public function __construct(FileInfoFactory $fileInfoFactory)
+    /**
+     * @var FileRepository
+     */
+    private $repository;
+
+    public function __construct(FileInfoFactory $fileInfoFactory, FileRepository $repository)
     {
         $this->fileInfoFactory = $fileInfoFactory;
+        $this->repository      = $repository;
     }
 
     /**
@@ -60,6 +70,48 @@ class SubmittedFileValidator
                     ValidationException::CODE_TAG_NOT_ALLOWED
                 );
             }
+        }
+    }
+
+    /**
+     * @param StoredFile $file
+     * @param Checksum $checksum
+     *
+     * @throws DuplicatedContentException
+     */
+    public function assertThereIsNoFileByChecksum(StoredFile $file, Checksum $checksum): void
+    {
+        $existingFromRepository = $this->repository->findByHash($checksum);
+
+        if ($existingFromRepository) {
+
+            // when the found file is the same we are uploading, then allow to overwrite with the same content
+            if ($file->getFilename()->getValue() === $existingFromRepository->getFilename()->getValue()) {
+                return;
+            }
+
+            throw DuplicatedContentException::create($existingFromRepository);
+        }
+    }
+
+    /**
+     * @param StoredFile $file
+     *
+     * @throws ValidationException
+     */
+    public function assertThereIsNoFileByFilename(StoredFile $file): void
+    {
+        if ($file->wasAlreadyStored()) {
+            return;
+        }
+
+        $existingFromRepository = $this->repository->findByName($file->getFilename());
+
+        if ($existingFromRepository) {
+            throw new ValidationException(
+                'Duplicated filename "' . $file->getFilename()->getValue() . '"',
+                ValidationException::CODE_FILENAME_ALREADY_TAKEN
+            );
         }
     }
 }

@@ -9,9 +9,9 @@ use App\Domain\Backup\Exception\CollectionMappingError;
 use App\Domain\Backup\Exception\ValidationException;
 use App\Domain\Backup\Form\BackupSubmitForm;
 use App\Domain\Backup\Manager\BackupManager;
-use App\Domain\Backup\Manager\UploadManager;
+use App\Domain\Backup\Security\VersioningContext;
+use App\Domain\Backup\Service\FileUploader;
 use App\Domain\Backup\Response\Version\BackupSubmitResponse;
-use App\Domain\Backup\Security\CollectionManagementContext;
 use App\Domain\Common\ValueObject\BaseUrl;
 
 class BackupSubmitHandler
@@ -22,19 +22,29 @@ class BackupSubmitHandler
     private $backupManager;
 
     /**
-     * @var UploadManager
+     * @var \App\Domain\Backup\Service\FileUploader
      */
-    private $uploadManager;
+    private $fileUploader;
 
-    public function __construct(UploadManager $uploadManager, BackupManager $collectionManager)
+    public function __construct(FileUploader $fileUploader, BackupManager $collectionManager)
     {
         $this->backupManager = $collectionManager;
-        $this->uploadManager = $uploadManager;
+        $this->fileUploader = $fileUploader;
     }
 
+    /**
+     * @param BackupSubmitForm $form
+     * @param VersioningContext $securityContext
+     * @param BaseUrl $baseUrl
+     * @param Token $token
+     *
+     * @return BackupSubmitResponse
+     *
+     * @throws AuthenticationException
+     */
     public function handle(
         BackupSubmitForm $form,
-        CollectionManagementContext $securityContext,
+        VersioningContext $securityContext,
         BaseUrl $baseUrl,
         Token $token
     ): BackupSubmitResponse {
@@ -50,24 +60,24 @@ class BackupSubmitHandler
         //
 
         try {
-            $result = $this->uploadManager->upload($form->collection, $baseUrl, $token);
+            $result = $this->fileUploader->upload($form->collection, $baseUrl, $token);
 
             if ($result->isSuccess()) {
-                $backup = $this->backupManager->submitBackup($form->collection, $result->getFileId());
+                $backup = $this->backupManager->submitNewVersion($form->collection, $result->getFileId());
                 $this->backupManager->flushAll();
 
                 return BackupSubmitResponse::createSuccessResponse($backup, $form->collection);
             }
 
         } catch (CollectionMappingError $mappingError) {
-            $this->uploadManager->rollback($result);
+            $this->fileUploader->rollback($result);
 
             return BackupSubmitResponse::createWithValidationErrors($mappingError->getErrors());
 
         } catch (ValidationException $validationException) {
             // corner case: cannot delete a file that was reported as duplication because we would delete an origin file
             if ($validationException->getCode() !== ValidationException::CODE_BACKUP_VERSION_DUPLICATED) {
-                $this->uploadManager->rollback($result);
+                $this->fileUploader->rollback($result);
             }
 
             return BackupSubmitResponse::createFromFailure(
@@ -77,7 +87,7 @@ class BackupSubmitHandler
             );
         }
 
-        $this->uploadManager->rollback($result);
+        $this->fileUploader->rollback($result);
 
         return BackupSubmitResponse::createFromFailure(
             $result->getStatus(),
@@ -86,7 +96,13 @@ class BackupSubmitHandler
         );
     }
 
-    private function assertHasPermissions(CollectionManagementContext $securityContext, BackupCollection $collection): void
+    /**
+     * @param VersioningContext $securityContext
+     * @param BackupCollection  $collection
+     *
+     * @throws AuthenticationException
+     */
+    private function assertHasPermissions(VersioningContext $securityContext, BackupCollection $collection): void
     {
         if (!$securityContext->canUploadToCollection($collection)) {
             throw new AuthenticationException(
