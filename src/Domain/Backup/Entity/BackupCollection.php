@@ -53,11 +53,6 @@ class BackupCollection implements \JsonSerializable
     protected $maxCollectionSize;
 
     /**
-     * @var Webhook[]
-     */
-    protected $webhooks;
-
-    /**
      * @var Token[]
      */
     protected $allowedTokens = [];
@@ -89,7 +84,6 @@ class BackupCollection implements \JsonSerializable
         $clone->id            = null;
         $clone->description   = 'Anonymous';
         $clone->allowedTokens = [];
-        $clone->webhooks      = [];
 
         return $clone;
     }
