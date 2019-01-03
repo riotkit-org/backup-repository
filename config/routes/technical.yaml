@@ -1,0 +1,13 @@
+technical.routing_map:
+    path: /repository/routing/map
+    controller: 'App\Controller\Technical\RoutingMapController::listAction'
+    methods: ['GET']
+    defaults:
+        _secured: false
+
+technical.hello:
+    path: /
+    controller: 'App\Controller\Technical\HelloController::sayHelloAction'
+    methods: ['GET']
+    defaults:
+        _secured: false

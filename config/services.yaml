@@ -1,0 +1,74 @@
+# This file is the entry point to configure your own services.
+# Files in the packages/ subdirectory configure your dependencies.
+
+# Put parameters here that don't need to change on each machine where the app is deployed
+# https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
+parameters:
+    env(BACKUP_MAX_VERSIONS): 5
+    env(BACKUP_ONE_VERSION_MAX_SIZE): "25MB"
+    env(BACKUP_COLLECTION_MAX_SIZE): "125MB"
+
+services:
+    # default configuration for services in *this* file
+    _defaults:
+        autowire: true      # Automatically injects dependencies in your services.
+        autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
+        public: false       # Allows optimizing the container by removing unused services; this also means
+                            # fetching services directly from the container via $container->get() won't work.
+                            # The best practice is to be explicit about your dependencies anyway.
+
+    # makes classes in src/ available to be used as services
+    # this creates a service per class whose id is the fully-qualified class name
+    App\:
+        resource: '../src/*'
+        exclude: '../src/{Kernel.php,Domain/*/Entity,Domain/*/ValueObject,Migrations,Domain/Common/Service/Bus/*}'
+
+    # controllers are imported separately to make sure services can be injected
+    # as action arguments even if you don't extend any base controller class
+    App\Controller\:
+        resource: '../src/Controller'
+        tags: ['controller.service_arguments']
+
+    App\Domain\Authentication\ActionHandler\TokenGenerationHandler:
+        class: App\Domain\Authentication\ActionHandler\TokenGenerationHandler
+        arguments:
+            $manager: '@App\Domain\Authentication\Manager\TokenManager'
+            $expirationTime: '+30 minutes' # @todo: Move to a env variable
+
+    App\Domain\Storage\Factory\PathFactory:
+        class: App\Domain\Storage\Factory\PathFactory
+        arguments:
+            $basePath: /tmp/ # @todo use env variable
+
+    App\Infrastructure\Authentication\Service\AESDecryptionService:
+        arguments:
+            $secret: 'test123' # @todo use env variable
+
+    App\Infrastructure\Authentication\Event\Subscriber\TokenSubscriber:
+        class: App\Infrastructure\Authentication\Event\Subscriber\TokenSubscriber
+        arguments:
+            $factory: '@App\Domain\Authentication\Factory\IncomingTokenFactory'
+            $tokenStorage: '@security.token_storage'
+            $isDev: '%kernel.debug%'
+
+    App\Domain\Storage\Repository\StagingAreaRepository:
+        class: App\Domain\Storage\Repository\StagingAreaRepository
+        arguments:
+            $tempPath: '/tmp'
+
+    App\Infrastructure\Storage\Manager\DownloadViaGuzzleProvider:
+        class: App\Infrastructure\Storage\Manager\DownloadViaGuzzleProvider
+        arguments:
+            $state: '@App\Domain\Common\Manager\StateManager'
+
+    App\Infrastructure\Storage\Manager\TestHttpDownloadProvider:
+        class: App\Infrastructure\Storage\Manager\TestHttpDownloadProvider
+        arguments:
+            $parentProvider: '@App\Infrastructure\Storage\Manager\DownloadViaGuzzleProvider'
+
+    App\Domain\Backup\Settings\BackupSettings:
+        class: App\Domain\Backup\Settings\BackupSettings
+        arguments:
+            $maxBackupsCountPerCollection: '%env(BACKUP_MAX_VERSIONS)%'
+            $maxOneBackupVersionSize: '%env(BACKUP_ONE_VERSION_MAX_SIZE)%'
+            $maxWholeCollectionSize: '%env(BACKUP_COLLECTION_MAX_SIZE)%'
