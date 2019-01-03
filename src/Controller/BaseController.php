@@ -104,6 +104,31 @@ abstract class BaseController extends AbstractController
         }
     }
 
+    protected function toBoolean($value, bool $onNull): bool
+    {
+        if (\is_numeric($value)) {
+            $value = (int) $value;
+
+            return $value > 0;
+        }
+
+        if (\is_string($value)) {
+            $normalized = \strtolower(\trim($value));
+
+            return $normalized === 'true' || $normalized === 'yes';
+        }
+
+        if (\is_bool($value)) {
+            return $value;
+        }
+
+        if ($value === null) {
+            return $onNull;
+        }
+
+        throw new \InvalidArgumentException('Invalid data type "' . \gettype($value) . '" specified, cannot parse boolean');
+    }
+
     protected function createBaseUrl(Request $request): BaseUrl
     {
         return new BaseUrl($request->isSecure(), $request->getHttpHost());

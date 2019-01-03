@@ -3065,6 +3065,57 @@
 									"response": []
 								},
 								{
+									"name": "Fetch recent version: v3",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "887f7dce-a153-470d-a88d-559bdca9394f",
+												"type": "text/javascript",
+												"exec": [
+													"pm.test(\"Content is full\", function () {",
+													"    pm.expect(pm.response.text()).to.include(\"Major actions of the ZSP have included exposing the problems in the Post Office\");",
+													"});",
+													"",
+													"pm.test(\"Content contains the beginning of the text\", function () {",
+													"    pm.expect(pm.response.text()).to.include(\"ZSP-lWA calls for a week of protest action against the repression of workers from the Post Office in Poland\");",
+													"});",
+													""
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [],
+										"body": {},
+										"url": {
+											"raw": "{{appUrl}}/repository/collection/{{collection_5_to_upload_versions}}/backup/latest?password=solidarity-forever&_token={{token_create_collections}}",
+											"host": [
+												"{{appUrl}}"
+											],
+											"path": [
+												"repository",
+												"collection",
+												"{{collection_5_to_upload_versions}}",
+												"backup",
+												"latest"
+											],
+											"query": [
+												{
+													"key": "password",
+													"value": "solidarity-forever"
+												},
+												{
+													"key": "_token",
+													"value": "{{token_create_collections}}"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
 									"name": "Upload: v3 should be already uploaded",
 									"event": [
 										{
@@ -3180,7 +3231,7 @@
 										{
 											"listen": "test",
 											"script": {
-												"id": "ca0b3d6c-9549-40e5-bb66-ca7eb4eff3f7",
+												"id": "52011ae8-f36c-44c5-a294-c7fffc0b01e4",
 												"type": "text/javascript",
 												"exec": [
 													"var jsonData = pm.response.json();",
@@ -3203,7 +3254,7 @@
 													"",
 													"pm.globals.set(\"postal_workers_article_v3\", jsonData.versions['3'].url);",
 													"pm.globals.set(\"postal_workers_article_v4\", jsonData.versions['4'].url);",
-													""
+													"pm.globals.set(\"postal_workers_article_v4_id\", jsonData.versions['4'].details.id);"
 												]
 											}
 										}
@@ -3302,6 +3353,159 @@
 												{
 													"key": "password",
 													"value": "solidarity-forever"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Fetch recent version: v4",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "dd7a4b0b-81e7-4896-ae37-2ec64fb6f0c9",
+												"type": "text/javascript",
+												"exec": [
+													"pm.test(\"Content is shorter, as this is an earlier version - v1\", function () {",
+													"    pm.expect(pm.response.text()).to.not.include(\"Major actions of the ZSP have included exposing the problems in the Post Office\");",
+													"});",
+													"",
+													"pm.test(\"Content contains the beginning of the text\", function () {",
+													"    pm.expect(pm.response.text()).to.include(\"ZSP-lWA calls for a week of protest action against the repression of workers from the Post Office in Poland\");",
+													"});",
+													""
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [],
+										"body": {},
+										"url": {
+											"raw": "{{appUrl}}/repository/collection/{{collection_5_to_upload_versions}}/backup/latest?password=solidarity-forever&_token={{token_create_collections}}",
+											"host": [
+												"{{appUrl}}"
+											],
+											"path": [
+												"repository",
+												"collection",
+												"{{collection_5_to_upload_versions}}",
+												"backup",
+												"latest"
+											],
+											"query": [
+												{
+													"key": "password",
+													"value": "solidarity-forever"
+												},
+												{
+													"key": "_token",
+													"value": "{{token_create_collections}}"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Fetch: v3 by version number",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "e9a1f4bd-33d9-449f-8d62-69d149e154a5",
+												"type": "text/javascript",
+												"exec": [
+													"pm.test(\"Content contains what has v3 but v4 does not have\", function () {",
+													"    pm.expect(pm.response.text()).to.include(\"Major actions of the ZSP have included exposing the problems in the Post Office\");",
+													"});",
+													"",
+													"pm.test(\"Content contains the beginning of the text\", function () {",
+													"    pm.expect(pm.response.text()).to.include(\"ZSP-lWA calls for a week of protest action against the repression of workers from the Post Office in Poland\");",
+													"});",
+													""
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [],
+										"body": {},
+										"url": {
+											"raw": "{{appUrl}}/repository/collection/{{collection_5_to_upload_versions}}/backup/v3?password=solidarity-forever&_token={{token_create_collections}}",
+											"host": [
+												"{{appUrl}}"
+											],
+											"path": [
+												"repository",
+												"collection",
+												"{{collection_5_to_upload_versions}}",
+												"backup",
+												"v3"
+											],
+											"query": [
+												{
+													"key": "password",
+													"value": "solidarity-forever"
+												},
+												{
+													"key": "_token",
+													"value": "{{token_create_collections}}"
+												}
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "Fetch: v4 by UUID",
+									"event": [
+										{
+											"listen": "test",
+											"script": {
+												"id": "86a3ff4a-7f02-45ec-b2ff-d09a9e9dd032",
+												"type": "text/javascript",
+												"exec": [
+													"pm.test(\"It's a v1 version uploaded as v4, so it does not have all of the text\", function () {",
+													"    pm.expect(pm.response.text()).to.not.include(\"Major actions of the ZSP have included exposing the problems in the Post Office\");",
+													"});",
+													"",
+													"pm.test(\"Content contains the beginning of the text\", function () {",
+													"    pm.expect(pm.response.text()).to.include(\"ZSP-lWA calls for a week of protest action against the repression of workers from the Post Office in Poland\");",
+													"});",
+													""
+												]
+											}
+										}
+									],
+									"request": {
+										"method": "GET",
+										"header": [],
+										"body": {},
+										"url": {
+											"raw": "{{appUrl}}/repository/collection/{{collection_5_to_upload_versions}}/backup/{{postal_workers_article_v4_id}}?password=solidarity-forever&_token={{token_create_collections}}",
+											"host": [
+												"{{appUrl}}"
+											],
+											"path": [
+												"repository",
+												"collection",
+												"{{collection_5_to_upload_versions}}",
+												"backup",
+												"{{postal_workers_article_v4_id}}"
+											],
+											"query": [
+												{
+													"key": "password",
+													"value": "solidarity-forever"
+												},
+												{
+													"key": "_token",
+													"value": "{{token_create_collections}}"
 												}
 											]
 										}

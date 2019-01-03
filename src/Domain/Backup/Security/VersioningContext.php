@@ -83,4 +83,9 @@ class VersioningContext
 
         return $collection->isTokenIdAllowed($this->tokenId);
     }
+
+    public function canFetchSingleVersion(BackupCollection $collection): bool
+    {
+        return $this->canListCollectionVersions($collection);
+    }
 }

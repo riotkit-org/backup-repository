@@ -12,6 +12,11 @@ use App\Domain\Backup\ValueObject\Version\VersionNumber;
 
 class VersionsCollection
 {
+    private const FIND_MATCHER_FIRST  = 'first';
+    private const FIND_MATCHER_LAST   = 'latest';
+    private const FIND_MATCHER_RECENT = 'recent';
+    private const FIND_MATCHER_VERSION_NUMBER = '/v(\d+)/';
+
     /**
      * @var StoredVersion
      */
@@ -79,6 +84,45 @@ class VersionsCollection
     public function getFirst(): ?StoredVersion
     {
         return $this->versions[0] ?? null;
+    }
+
+    public function find(string $id): ?StoredVersion
+    {
+        if ($id === static::FIND_MATCHER_FIRST) {
+            return $this->getFirst();
+        }
+
+        if ($id === static::FIND_MATCHER_LAST || $id === static::FIND_MATCHER_RECENT) {
+            return $this->getLast();
+        }
+
+        if (preg_match(static::FIND_MATCHER_VERSION_NUMBER, $id, $versionNumberMatches)) {
+            return $this->findByNumber((int) $versionNumberMatches[1]);
+        }
+
+        return $this->findById($id);
+    }
+
+    public function findByNumber(int $number): ?StoredVersion
+    {
+        foreach ($this->versions as $version) {
+            if ($version->getVersionNumber()->getValue() === $number) {
+                return $version;
+            }
+        }
+
+        return null;
+    }
+
+    public function findById(string $id): ?StoredVersion
+    {
+        foreach ($this->versions as $version) {
+            if ($version->getId() === $id) {
+                return $version;
+            }
+        }
+
+        return null;
     }
 
     public function getNextVersionNumber(): VersionNumber

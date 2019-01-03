@@ -60,6 +60,30 @@ class Url extends BaseValueObject implements \JsonSerializable
         return $new;
     }
 
+    /**
+     * @param string $key
+     * @param string $value
+     *
+     * @return static
+     */
+    public function withQueryParam(string $key, string $value)
+    {
+        $parsed = parse_url($this->value);
+        $urlWithoutQS = ($parsed['scheme'] ?? 'http') . '://' . ($parsed['host'] ?? '')
+            . (isset($parsed['port']) ? ':' . $parsed['port'] : '')
+            . ($parsed['path'] ?? '/');
+
+        $params = [];
+        parse_str($parsed['query'] ?? '', $params);
+        $params[$key] = $value;
+
+
+        $new = clone $this;
+        $new->value = $urlWithoutQS . '?' . http_build_query($params);
+
+        return $new;
+    }
+
     public function isLocalFileUrl(): bool
     {
         return strtolower(parse_url($this->getValue(), PHP_URL_SCHEME)) === 'file';

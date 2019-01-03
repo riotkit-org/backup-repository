@@ -60,3 +60,10 @@ backup.delete_version:
     methods: ['DELETE']
     defaults:
         _secured: true
+
+backup.fetch_version:
+    path: /repository/collection/{collectionId}/backup/{backupId}
+    controller: 'App\Controller\Backup\Version\FetchController::handleAction'
+    methods: ['GET']
+    defaults:
+        _secured: true

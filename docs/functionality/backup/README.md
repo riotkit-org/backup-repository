@@ -1,7 +1,25 @@
 Backup
 ======
 
-Backups allows to store multiple versions of same file.
+Backup collections allows to store multiple versions of the same file.
+Each submitted version has automatically incremented version number by one.
+
+Example scenario with strategy "delete_oldest_when_adding_new":
+```
+Given we have DATABASE dumps of iwa-ait.org website
+And our backup collection can contain only 3 versions (maximum)
+
+When we upload a sql dump file THEN IT'S a v1 version
+When we upload a next sql dump file THEN IT'S a v2 version
+When we upload a next sql dump file THEN IT'S a v3 version
+
+Then we have v1, v2, v3
+
+When we upload a sql dump file THEN IT'S a v4 version
+But v1 gets deleted because collection is full
+
+Then we have v2, v3, v4
+```
 
 Endpoints
 ---------
@@ -21,7 +39,8 @@ POST {{appUrl}}/repository/collection?_token=test-token-full-permissions
     "maxOneVersionSize": 0,
     "maxCollectionSize": "250MB",
     "strategy": "delete_oldest_when_adding_new",
-    "description": "Test collection"
+    "description": "iwa-ait.org database backup",
+    "filename": "iwa-ait-org.sql.gz"
 }
 ```
 
@@ -45,7 +64,8 @@ PUT {{appUrl}}/repository/collection?_token=test-token-full-permissions
     "maxOneVersionSize": 0,
     "maxCollectionSize": "250MB",
     "strategy": "delete_oldest_when_adding_new",
-    "description": "Test collection (modified)"
+    "description": "iwa-ait.org database backup (modified)",
+    "filename": "iwa-ait-org.sql.gz"
 }
 ```
 
