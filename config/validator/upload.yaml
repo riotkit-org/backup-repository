@@ -1,0 +1,75 @@
+App\Domain\Storage\Form\UploadForm:
+    properties:
+        tags:
+            - Type:
+                  type: array
+                  message: "Tags should be specified as array"
+
+            - All:
+                  - NotBlank:
+                        message: "Tag should not be blank"
+
+                  - Length:
+                        min: 3
+                        max: 32
+                        minMessage: "A tag should be at least 3 characters"
+                        maxMessage: "A tag should be up to 32 characters, not more"
+
+                  - Regex:
+                        pattern: '/^[a-z0-9\.\-\_]+$/i'
+                        message: "Tag should not have any special characters"
+
+        fileOverwrite:
+            - Type:
+                  type: bool
+                  message: "File overwrite flag should be a boolean"
+
+        password:
+            - Type:
+                  type: string
+
+            - Length:
+                  min: 0
+                  max: 250
+                  minMessage: "Password should be at least 0 characters"
+                  maxMessage: "Password should be up to 250 characters"
+
+        backUrl:
+            - Type:
+                  type: string
+
+            - Url:
+                  message: "backUrl should be empty or a valid URL"
+
+
+App\Domain\Storage\Form\UploadByPostForm:
+    properties:
+        fileName:
+            - Type:
+                  type: string
+                  message: "File name should be a string"
+
+            - NotBlank:
+                  message: "File name is required"
+
+            - Length:
+                  min: 6
+                  max: 68
+                  maxMessage: "File name is too long, allowed up to 68 characters"
+                  minMessage: "FIle name is too short, minimum 6 characters are allowed"
+
+
+App\Domain\Storage\Form\UploadByUrlForm:
+    properties:
+        fileUrl:
+            - Type:
+                  type: string
+
+            #- Url:
+            #      message: "Expected a valid URL"
+
+            - Length:
+                  min: 10
+                  max: 250
+                  maxMessage: "URL is too long, allowed up to 250 characters"
+                  minMessage: "URL is too short"

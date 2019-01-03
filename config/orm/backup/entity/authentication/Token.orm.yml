@@ -1,0 +1,14 @@
+App\Domain\Backup\Entity\Authentication\Token:
+    type: entity
+    table: tokens
+    read_only: true
+
+    id:
+        id:
+            type: guid
+            unique: true
+            nullable: false
+            id: true
+            length: 36
+            generator:
+                strategy: UUID

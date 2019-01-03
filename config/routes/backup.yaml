@@ -1,0 +1,69 @@
+backup.collection_create_and_edit:
+    path: /repository/collection
+    controller: 'App\Controller\Backup\Collection\CreateEditController::handleAction'
+    methods: ['POST', 'PUT']
+    defaults:
+        _secured: true
+
+backup.collection_delete:
+    path: /repository/collection/{id}
+    controller: 'App\Controller\Backup\Collection\DeleteController::handleAction'
+    methods: ['DELETE']
+    defaults:
+        _secured: true
+
+backup.collection_fetch:
+    path: /repository/collection/{id}
+    controller: 'App\Controller\Backup\Collection\FetchController::handleAction'
+    methods: ['GET']
+    defaults:
+        _secured: true
+
+backup.collection_listing:
+    path: /repository/collection
+    controller: 'App\Controller\Backup\Collection\ListingController::handleAction'
+    methods: ['GET']
+    defaults:
+        _secured: true
+
+backup.collection_add_token:
+    path: /repository/collection/{id}/token
+    controller: 'App\Controller\Backup\Security\ManageAllowedTokensController::handleAction'
+    methods: ['POST']
+    defaults:
+        _secured: true
+
+backup.collection_delete_token:
+    path: /repository/collection/{id}/token/{tokenId}
+    controller: 'App\Controller\Backup\Security\ManageAllowedTokensController::handleAction'
+    methods: ['DELETE']
+    defaults:
+        _secured: true
+
+backup.submit_version:
+    path: /repository/collection/{collectionId}/backup
+    controller: 'App\Controller\Backup\Version\SubmitVersionController::handleAction'
+    methods: ['POST']
+    defaults:
+        _secured: true
+
+backup.list_versions:
+    path: /repository/collection/{collectionId}/backup
+    controller: 'App\Controller\Backup\Version\VersionListingController::handleAction'
+    methods: ['GET']
+    defaults:
+        _secured: true
+
+backup.delete_version:
+    path: /repository/collection/{collectionId}/backup/{backupId}
+    controller: 'App\Controller\Backup\Version\VersionDeleteController::handleAction'
+    methods: ['DELETE']
+    defaults:
+        _secured: true
+
+backup.fetch_version:
+    path: /repository/collection/{collectionId}/backup/{backupId}
+    controller: 'App\Controller\Backup\Version\FetchController::handleAction'
+    methods: ['GET']
+    defaults:
+        _secured: true
