@@ -14,10 +14,12 @@ class SecurityContextFactory
         return new CollectionManagementContext(
             $token->hasRole(Roles::ROLE_COLLECTION_ADD),
             $token->hasRole(Roles::ROLE_COLLECTION_ADD_WITH_INFINITE_LIMITS),
+            $token->hasRole(Roles::ROLE_MODIFY_ALLOWED_COLLECTIONS),
             $token->hasRole(Roles::ROLE_COLLECTION_MODIFY_ANY_COLLECTION),
             $token->hasRole(Roles::ROLE_COLLECTION_VIEW_ANY_COLLECTION),
             $token->hasRole(Roles::ROLE_CAN_USE_LISTING_COLLECTION_ENDPOINT),
-            $token->hasRole(Roles::ROLE_CAN_ADD_TOKENS_TO_ALLOWED_COLLECTIONS),
+            $token->hasRole(Roles::ROLE_CAN_MANAGE_TOKENS_IN_ALLOWED_COLLECTIONS),
+            $token->hasRole(Roles::ROLE_CAN_DELETE_ALLOWED_COLLECTIONS),
             $token->getId()
         );
     }

@@ -22,6 +22,11 @@ class CollectionManagementContext
     /**
      * @var bool
      */
+    private $canModifyAllowedCollections;
+
+    /**
+     * @var bool
+     */
     private $canModifyAnyCollection;
 
     /**
@@ -37,7 +42,12 @@ class CollectionManagementContext
     /**
      * @var bool
      */
-    private $canAddTokensToAllowedCollections;
+    private $canManageTokensInAllowedCollections;
+
+    /**
+     * @var bool
+     */
+    private $canDeleteAllowedCollections;
 
     /**
      * @var string|null
@@ -47,18 +57,22 @@ class CollectionManagementContext
     public function __construct(
         bool $canCreateCollections,
         bool $canCreateCollectionsWithoutLimit,
+        bool $canModifyAllowedCollections,
         bool $canModifyAnyCollection,
         bool $canAccessAnyCollection,
         bool $canUseListingEndpoint,
-        bool $canAddTokensToAllowedCollections,
+        bool $canManageTokensInAllowedCollections,
+        bool $canDeleteAllowedCollections,
         ?string $tokenId
     ) {
         $this->canCreateCollections             = $canCreateCollections;
         $this->canCreateCollectionsWithoutLimit = $canCreateCollectionsWithoutLimit;
+        $this->canModifyAllowedCollections      = $canModifyAllowedCollections;
         $this->canModifyAnyCollection           = $canModifyAnyCollection;
         $this->canAccessAnyCollection           = $canAccessAnyCollection;
-        $this->canUseListingEndpointToFindCollections            = $canUseListingEndpoint;
-        $this->canAddTokensToAllowedCollections = $canAddTokensToAllowedCollections;
+        $this->canUseListingEndpointToFindCollections = $canUseListingEndpoint;
+        $this->canManageTokensInAllowedCollections    = $canManageTokensInAllowedCollections;
+        $this->canDeleteAllowedCollections            = $canDeleteAllowedCollections;
         $this->tokenId                          = $tokenId;
     }
 
@@ -90,6 +104,10 @@ class CollectionManagementContext
             return true;
         }
 
+        if (!$this->canModifyAllowedCollections) {
+            return false;
+        }
+
         return $this->isTokenAllowedFor($form->collection);
     }
 
@@ -101,6 +119,10 @@ class CollectionManagementContext
 
         if ($this->canModifyAnyCollection) {
             return true;
+        }
+
+        if (!$this->canDeleteAllowedCollections) {
+            return false;
         }
 
         return $this->isTokenAllowedFor($form->collection);
@@ -152,7 +174,7 @@ class CollectionManagementContext
 
     public function canAddTokensToCollection(BackupCollection $collection): bool
     {
-        if (!$this->canAddTokensToAllowedCollections) {
+        if (!$this->canManageTokensInAllowedCollections) {
             return false;
         }
 
@@ -165,7 +187,7 @@ class CollectionManagementContext
 
     public function canRevokeAccessToCollection(BackupCollection $collection): bool
     {
-        if (!$this->canAddTokensToAllowedCollections) {
+        if (!$this->canManageTokensInAllowedCollections) {
             return false;
         }
 
