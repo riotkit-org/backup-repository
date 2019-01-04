@@ -79,6 +79,9 @@ final class Roles
     /** Allow creating backup collections that have no limits on size and length */
     public const ROLE_COLLECTION_ADD_WITH_INFINITE_LIMITS = 'collections.allow_infinite_limits';
 
+    /** Edit collections where token is added as allowed */
+    public const ROLE_MODIFY_ALLOWED_COLLECTIONS = 'collections.modify_details_of_allowed_collections';
+
     /** Allow to modify ALL collections. Collection don't have to allow such token which has this role */
     public const ROLE_COLLECTION_MODIFY_ANY_COLLECTION = 'collections.modify_any_collection_regardless_if_token_was_allowed_by_collection';
 
@@ -88,8 +91,11 @@ final class Roles
     /** Can use an endpoint that will allow to browse and search collections? */
     public const ROLE_CAN_USE_LISTING_COLLECTION_ENDPOINT = 'collections.can_use_listing_endpoint';
 
-    /** Attach new tokens to the collections where our current token is already added as allowed */
-    public const ROLE_CAN_ADD_TOKENS_TO_ALLOWED_COLLECTIONS = 'collections.add_tokens_to_allowed_collections';
+    /** Manage tokens in the collections where our current token is already added as allowed */
+    public const ROLE_CAN_MANAGE_TOKENS_IN_ALLOWED_COLLECTIONS = 'collections.manage_tokens_in_allowed_collections';
+
+    /** Delete collections where token is added as allowed */
+    public const ROLE_CAN_DELETE_ALLOWED_COLLECTIONS = 'collections.delete_allowed_collections';
 
     /** Upload to allowed collections */
     public const ROLE_CAN_UPLOAD_TO_ALLOWED_COLLECTIONS = 'collections.upload_to_allowed_collections';
@@ -107,7 +113,7 @@ final class Roles
         self::ROLE_COLLECTION_MODIFY_ANY_COLLECTION,
         self::ROLE_COLLECTION_VIEW_ANY_COLLECTION,
         self::ROLE_CAN_USE_LISTING_COLLECTION_ENDPOINT,
-        self::ROLE_CAN_ADD_TOKENS_TO_ALLOWED_COLLECTIONS,
+        self::ROLE_CAN_MANAGE_TOKENS_IN_ALLOWED_COLLECTIONS,
         self::ROLE_CAN_UPLOAD_TO_ALLOWED_COLLECTIONS,
         self::ROLE_LIST_VERSIONS_FOR_ALLOWED_COLLECTIONS,
         self::ROLE_DELETE_VERSIONS_IN_ALLOWED_COLLECTIONS
@@ -132,7 +138,7 @@ final class Roles
         self::ROLE_COLLECTION_MODIFY_ANY_COLLECTION,
         self::ROLE_COLLECTION_VIEW_ANY_COLLECTION,
         self::ROLE_CAN_USE_LISTING_COLLECTION_ENDPOINT,
-        self::ROLE_CAN_ADD_TOKENS_TO_ALLOWED_COLLECTIONS,
+        self::ROLE_CAN_MANAGE_TOKENS_IN_ALLOWED_COLLECTIONS,
         self::ROLE_CAN_UPLOAD_TO_ALLOWED_COLLECTIONS,
         self::ROLE_LIST_VERSIONS_FOR_ALLOWED_COLLECTIONS,
         self::ROLE_DELETE_VERSIONS_IN_ALLOWED_COLLECTIONS
