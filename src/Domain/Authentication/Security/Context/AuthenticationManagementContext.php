@@ -2,6 +2,9 @@
 
 namespace App\Domain\Authentication\Security\Context;
 
+use App\Domain\Authentication\Entity\Token;
+use App\Domain\Roles;
+
 class AuthenticationManagementContext
 {
     /**
@@ -19,25 +22,68 @@ class AuthenticationManagementContext
      */
     private $canUseTechnicalEndpoints;
 
-    public function __construct(bool $canLookup, bool $canGenerate, bool $canUseTechnicalEndpoints)
-    {
+    /**
+     * @var bool
+     */
+    private $isAdministrator;
+
+    /**
+     * @var bool
+     */
+    private $canRevokeTokens;
+
+    public function __construct(
+        bool $canLookup,
+        bool $canGenerate,
+        bool $canUseTechnicalEndpoints,
+        bool $isAdministrator,
+        bool $canRevokeTokens
+    ) {
         $this->canLookup                = $canLookup;
         $this->canGenerateTokens        = $canGenerate;
         $this->canUseTechnicalEndpoints = $canUseTechnicalEndpoints;
+        $this->isAdministrator          = $isAdministrator;
+        $this->canRevokeTokens          = $canRevokeTokens;
     }
 
     public function canLookupAnyToken(): bool
     {
+        if ($this->isAdministrator) {
+            return true;
+        }
+
         return $this->canLookup;
     }
 
     public function canGenerateNewToken(): bool
     {
+        if ($this->isAdministrator) {
+            return true;
+        }
+
         return $this->canGenerateTokens;
     }
 
     public function canUseTechnicalEndpoints(): bool
     {
+        if ($this->isAdministrator) {
+            return true;
+        }
+
         return $this->canUseTechnicalEndpoints;
+    }
+
+    public function canRevokeToken(Token $token): bool
+    {
+        if ($this->isAdministrator) {
+            return true;
+        }
+
+        // a non-administrator cannot revoke access for the administrator
+        if (!$this->isAdministrator && $token->hasRole(Roles::ROLE_ADMINISTRATOR)) {
+            return false;
+        }
+
+        return $this->canRevokeTokens;
     }
 }

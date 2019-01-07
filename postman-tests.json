@@ -92,7 +92,7 @@
 							"raw": "{\n    \"roles\": [\"upload.images\", \"this-role-is-invalid\"]\n}\n"
 						},
 						"url": {
-							"raw": "{{appUrl}}/auth/token/lookup/{{token_basic}}?_token=test-token-full-permissions",
+							"raw": "{{appUrl}}/auth/token/{{token_basic}}?_token=test-token-full-permissions",
 							"host": [
 								"{{appUrl}}"
 							],
@@ -200,7 +200,7 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "{{appUrl}}/auth/token/lookup/{{token_with_tags_and_mimes}}?_token=test-token-full-permissions",
+							"raw": "{{appUrl}}/auth/token/{{token_with_tags_and_mimes}}?_token=test-token-full-permissions",
 							"host": [
 								"{{appUrl}}"
 							],
@@ -436,7 +436,7 @@
 							"raw": "{\n    \"roles\": [\"upload.images\", \"this-role-is-invalid\"]\n}\n"
 						},
 						"url": {
-							"raw": "{{appUrl}}/auth/token/lookup/{{token_basic}}?_token={{token_with_tags_and_mimes}}",
+							"raw": "{{appUrl}}/auth/token/{{token_basic}}?_token={{token_with_tags_and_mimes}}",
 							"host": [
 								"{{appUrl}}"
 							],
@@ -3879,10 +3879,7 @@
 									"request": {
 										"method": "DELETE",
 										"header": [],
-										"body": {
-											"mode": "raw",
-											"raw": "Brighton Solidarity Federation: the first five months of 2018\n\n"
-										},
+										"body": {},
 										"url": {
 											"raw": "{{appUrl}}/repository/collection/{{collection_5_to_upload_versions}}/backup/{{solfed_article_v1}}?_token={{token_create_collections}}",
 											"host": [

@@ -1,0 +1,2 @@
+- files: Example files used by automatic tests 
+- docker: example docker environment

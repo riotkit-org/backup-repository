@@ -1,18 +1,9 @@
 .SILENT:
 
-DEV=0
-
 ## Colors
 COLOR_RESET   = \033[0m
 COLOR_INFO    = \033[32m
 COLOR_COMMENT = \033[33m
-
-## Version information
-ifndef CI_COMMIT_REF_NAME
-    VERSION='dev'
-else
-    VERSION=$(CI_COMMIT_REF_NAME)
-endif
 
 ## Help
 help:
@@ -29,10 +20,31 @@ help:
 	} \
 	{ lastLine = $$0 }' $(MAKEFILE_LIST)
 
+## Install the application
+install:
+	mkdir -p ./var/uploads
+	composer install
+	./bin/console doctrine:migrations:migrate --no-interaction -vv
+
 ## Build documentation
 build_docs:
 	cd ./docs && make html
 
+# Run a developer web server (do not use on production)
+run_dev:
+	./bin/console server:start
+
 ## Browse documentation in web browser
 browse_docs:
 	xdg-open ./docs/build/html/index.html
+
+## Deploy the application
+deploy: install
+
+## Build x86_64 image
+build@x86_64:
+	sudo docker build . -f ./Dockerfile.x86_64 -t wolnosciowiec/file-repository:v2
+
+## Build arm7hf image
+build@arm7hf:
+	sudo docker build . -f ./Dockerfile.arm7hf -t wolnosciowiec/file-repository:v2-arm7hf

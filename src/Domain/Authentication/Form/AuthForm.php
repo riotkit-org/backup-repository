@@ -16,6 +16,11 @@ class AuthForm
      */
     public $data;
 
+    /**
+     * @var string|null
+     */
+    public $expires;
+
     public static function getAvailableRoles(): array
     {
         return Roles::ROLES_LIST;

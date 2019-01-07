@@ -5,13 +5,6 @@ authentication.generate_token:
     defaults:
         _secured: true
 
-authentication.lookup:
-    path: /auth/token/lookup/{token}
-    controller: 'App\Controller\Authentication\LookupTokenController::handle'
-    methods: ['GET']
-    defaults:
-        _secured: true
-
 authentication.clear_expired_tokens:
     path: /jobs/token/expired/clear
     controller: 'App\Controller\Authentication\ClearExpiredTokensController::clearAction'
@@ -23,5 +16,19 @@ authentication.roles_listing:
     path: /auth/roles
     controller: 'App\Controller\Authentication\RolesListingController::handle'
     methods: ['GET']
+    defaults:
+        _secured: true
+
+authentication.lookup:
+    path: /auth/token/{token}
+    controller: 'App\Controller\Authentication\LookupTokenController::handle'
+    methods: ['GET']
+    defaults:
+        _secured: true
+
+authentication.delete:
+    path: /auth/token/{token}
+    controller: 'App\Controller\Authentication\DeleteTokenController::handle'
+    methods: ['DELETE']
     defaults:
         _secured: true
