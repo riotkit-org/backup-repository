@@ -20,4 +20,20 @@ Main functionality:
    :maxdepth: 2
    :caption: Contents:
 
+   first-steps
+   configuration-reference
+   postman
    domain/backup/index
+   domain/authentication/index
+
+From authors
+============
+
+Project was created in *Domain Driven* like design in PHP7, with Symfony 4 framework.
+There are API tests written in *Postman* and unit tests written in *PhpUnit*.
+Feel free to submit pull requests, report issues, or join our team.
+The project is licensed with a MIT license.
+
+.. rst-class:: language-de align-center
+
+*GrassDev Collective*

@@ -16,3 +16,4 @@
 /.idea
 
 /docs/build
+/examples/docker/.env

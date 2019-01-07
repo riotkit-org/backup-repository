@@ -39,6 +39,7 @@ class GenerateTokenCommand extends Command
             ->addOption('tags', null, InputOption::VALUE_REQUIRED)
             ->addOption('mimes', null, InputOption::VALUE_REQUIRED)
             ->addOption('max-file-size', null, InputOption::VALUE_REQUIRED)
+            ->addOption('expires', null, InputOption::VALUE_REQUIRED)
             ->setHelp('Allows to generate a token you can use later to authenticate in application for a specific thing');
     }
 
@@ -57,6 +58,7 @@ class GenerateTokenCommand extends Command
         $form->data->tags               = $this->getMultipleValueOption($input, 'tags');
         $form->data->allowedMimeTypes   = $this->getMultipleValueOption($input, 'mimes');
         $form->data->maxAllowedFileSize = (int) $input->getOption('max-file-size');
+        $form->expires                  = $input->getOption('expires');
         $form->roles                    = $this->getMultipleValueOption($input, 'roles');
 
         $output->writeln('Form:');

@@ -1,0 +1,28 @@
+FROM wolnosciowiec/docker-php-app
+
+RUN docker-php-ext-install bcmath
+
+ENV APP_ENV="prod" \
+    DATABASE_URL="sqlite:///%kernel.project_dir%/var/data.db" \
+    FS_ADAPTER=local \
+    FS_LOCAL_DIRECTORY="%kernel.root_dir%/var/uploads" \
+    FS_LOCAL_LAZY=1 \
+    FS_LOCAL_WRITEFLAGS= \
+    FS_LOCAL_LINKHANDLING= \
+    FS_LOCAL_PERMISSIONS= \
+    FS_AWSS3_CLIENT=s3_client \
+    FS_AWSS3_BUCKET= \
+    FS_AWSS3_PREFIX= \
+    FS_FTP_HOST=localhost \
+    FS_FTP_PORT=21 \
+    FS_FTP_USERNAME=user \
+    FS_FTP_PASSWORD=password \
+    FS_FTP_ROOT=/ \
+    FS_FTP_SSL=1 \
+    FS_FTP_TIMEOUT=120 \
+    FS_FTP_PERMPRIVATE= \
+    FS_FTP_PERMPUBLIC= \
+    FS_FTP_PASSIVE=0
+
+ADD . /var/www/html
+RUN cd /var/www/html && make deploy

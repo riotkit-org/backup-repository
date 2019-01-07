@@ -43,6 +43,12 @@ final class Roles
     /** User can use technical endpoints to manage the application */
     public const ROLE_USE_TECHNICAL_ENDPOINTS = 'security.use_technical_endpoints';
 
+    /** User can expire other token, so it will be not valid anymore */
+    public const ROLE_REVOKE_TOKENS           = 'security.revoke_tokens';
+
+    /** Special: Marking - tokens with this marking will not be able to be revoked by non-administrators */
+    public const ROLE_ADMINISTRATOR           = 'security.administrator';
+
     //
     //
     // deletion
@@ -132,6 +138,8 @@ final class Roles
         self::ROLE_VIEW_ALL_PROTECTED_FILES,
         self::ROLE_BROWSE_LIST_OF_FILES_BY_ANY_TAG,
         self::ROLE_ACCESS_LISTING_ENDPOINT,
+        self::ROLE_REVOKE_TOKENS,
+        self::ROLE_ADMINISTRATOR,
 
         self::ROLE_COLLECTION_ADD,
         self::ROLE_COLLECTION_ADD_WITH_INFINITE_LIMITS,

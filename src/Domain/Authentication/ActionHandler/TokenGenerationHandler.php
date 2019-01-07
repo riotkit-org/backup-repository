@@ -10,6 +10,9 @@ use Exception;
 
 class TokenGenerationHandler
 {
+    private const DATE_MODIFIER_AUTO = ['auto', 'automatic'];
+    private const DATE_MODIFIER_NEVER = ['never', null];
+
     /**
      * @var TokenManager
      */
@@ -40,7 +43,7 @@ class TokenGenerationHandler
 
         $token = $this->tokenManager->generateNewToken(
             $form->roles,
-            (new \DateTimeImmutable())->modify($this->expirationTimeModifier),
+            $this->generateExpirationDate($form->expires),
             $form->data->toArray()
         );
 
@@ -50,6 +53,30 @@ class TokenGenerationHandler
             'tokenId' => $token->getId(),
             'expires' => $token->getExpirationDate()->format('Y-m-d H:i:s')
         ];
+    }
+
+    /**
+     * @param $expires
+     *
+     * @return \DateTimeImmutable
+     *
+     * @throws Exception
+     */
+    private function generateExpirationDate($expires): \DateTimeImmutable
+    {
+        if (\in_array($expires, static::DATE_MODIFIER_AUTO, true)) {
+            return (new \DateTimeImmutable())->modify($this->expirationTimeModifier);
+        }
+
+        if (\in_array($expires, static::DATE_MODIFIER_NEVER, true)) {
+            return (new \DateTimeImmutable())->modify('+20 years');
+        }
+
+        if (!\strtotime($expires)) {
+            throw new \InvalidArgumentException('Invalid date format');
+        }
+
+        return new \DateTimeImmutable($expires);
     }
 
     /**

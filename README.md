@@ -13,6 +13,12 @@ Main functionality:
 - **Backups management**, you can define a collection of file versions that can **rotate on adding a new version**
 - Pure API, you can choose any frontend, use it internally in your application, or create your own frontend
 
+Requirements:
+- PHP 7.2+ with bcmath, openssl, iconv, ctype, fileinfo
+- Composer (PHP package manager)
+- sphinx-glpi-theme (for documentation)
+- sphinx (for documentation)
+
 Copyleft
 --------
 
