@@ -43,8 +43,8 @@ Required roles:
 
 
 
-Lookup a token
---------------
+Looking up a token
+------------------
 
 .. code:: json
 

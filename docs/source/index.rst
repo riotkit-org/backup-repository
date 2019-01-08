@@ -23,8 +23,9 @@ Main functionality:
    first-steps
    configuration-reference
    postman
-   domain/backup/index
    domain/authentication/index
+   domain/storage/index
+   domain/backup/index
 
 From authors
 ============

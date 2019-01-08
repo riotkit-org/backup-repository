@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Domain\Authentication\Entity\Token;
+use App\Domain\Authentication\Exception\ValidationException;
 use App\Domain\Common\Exception\AuthenticationException;
 use App\Domain\Common\ValueObject\BaseUrl;
 use App\Domain\Storage\Exception\StorageException;
@@ -51,7 +52,12 @@ abstract class BaseController extends AbstractController
     protected function createValidationErrorResponse(FormInterface $form): JsonResponse
     {
         return new JsonResponse(
-            $this->collectErrorsForForm($form, 'form', []),
+            [
+                'status' => 'Validation error',
+                'http_code' => 400,
+                'exit_code' => 400,
+                'fields' => $this->collectErrorsForForm($form, 'form', [])
+            ],
             JsonResponse::HTTP_BAD_REQUEST
         );
     }
@@ -94,6 +100,16 @@ abstract class BaseController extends AbstractController
 
         } catch (AuthenticationException $exception) {
             return $this->createAccessDeniedResponse($exception->getMessage());
+
+        } catch (ValidationException $exception) {
+            return new JsonResponse(
+                [
+                    'status' => 'Validation error',
+                    'http_code' => 400,
+                    'exit_code' => 400,
+                    'fields' => $exception->getFields()
+                ]
+            );
 
         } catch (StorageException $storageException) {
             if ($storageException->getCode() === StorageException::codes['file_not_found']) {

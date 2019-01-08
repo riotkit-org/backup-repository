@@ -39,7 +39,6 @@ class TokenDeleteHandler
         $token = $this->repository->findTokenById($tokenToDelete);
 
         if (!$token instanceof Token) {
-            // @todo: Raise an exception here
             return null;
         }
 
