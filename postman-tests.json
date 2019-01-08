@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "101b2f6d-85d5-4c78-aa91-fc19c9836058",
+		"_postman_id": "8251160c-1ea1-4b9a-a610-e462df85a548",
 		"name": "[Wolnościowiec] File Repository",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -99,7 +99,6 @@
 							"path": [
 								"auth",
 								"token",
-								"lookup",
 								"{{token_basic}}"
 							],
 							"query": [
@@ -207,7 +206,6 @@
 							"path": [
 								"auth",
 								"token",
-								"lookup",
 								"{{token_with_tags_and_mimes}}"
 							],
 							"query": [
@@ -436,7 +434,7 @@
 							"raw": "{\n    \"roles\": [\"upload.images\", \"this-role-is-invalid\"]\n}\n"
 						},
 						"url": {
-							"raw": "{{appUrl}}/auth/token/{{token_basic}}?_token={{token_with_tags_and_mimes}}",
+							"raw": "{{appUrl}}/auth/token/lookup/{{token_basic}}?_token={{token_with_tags_and_mimes}}",
 							"host": [
 								"{{appUrl}}"
 							],
@@ -534,6 +532,105 @@
 							"path": [
 								"auth",
 								"roles"
+							],
+							"query": [
+								{
+									"key": "_token",
+									"value": "test-token-full-permissions"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Generate token to test deletion",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "57ba4224-a35b-4135-89b1-b5d7994a0c4d",
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Status code is 202\", function () {",
+									"    pm.response.to.have.status(202);",
+									"});",
+									"",
+									"",
+									"pm.globals.set(\"token_to_delete\", jsonData.tokenId);",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"roles\": [\"upload.images\"],\n    \"expires\": \"never\"\n}"
+						},
+						"url": {
+							"raw": "{{appUrl}}/auth/token/generate?_token=test-token-full-permissions",
+							"host": [
+								"{{appUrl}}"
+							],
+							"path": [
+								"auth",
+								"token",
+								"generate"
+							],
+							"query": [
+								{
+									"key": "_token",
+									"value": "test-token-full-permissions"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete token",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "f7abd0cb-fb79-4baf-87b6-fd7abfb78e20",
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Status code is 200\", function () {",
+									"    pm.response.to.have.status(200);",
+									"});",
+									"",
+									"pm.test(\"Text status is ok\", function () {",
+									"    pm.expect(jsonData.status).to.equal('OK');",
+									"});",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"roles\": [\"upload.images\", \"this-role-is-invalid\"]\n}\n"
+						},
+						"url": {
+							"raw": "{{appUrl}}/auth/token/{{token_to_delete}}?_token=test-token-full-permissions",
+							"host": [
+								"{{appUrl}}"
+							],
+							"path": [
+								"auth",
+								"token",
+								"{{token_to_delete}}"
 							],
 							"query": [
 								{
@@ -665,7 +762,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"fileUrl\": \"https://iwa-ait.org/sites/default/files/iwaait_1.png\",\n    \"password\": \"InternationalWorkersAssociation\",\n    \"tags\": []\n}\n"
+							"raw": ""
 						},
 						"url": {
 							"raw": "{{appUrl}}/repository/file/f8f39c14c7df5976aa1257f05692337c71bb749012022fe7eba74539248ae376_barroness_logo.png?_token=test-token-full-permissions",
@@ -818,6 +915,67 @@
 							"path": [
 								"repository",
 								"image",
+								"upload"
+							],
+							"query": [
+								{
+									"key": "_token",
+									"value": "{{token_with_low_file_size_limit}}"
+								},
+								{
+									"key": "fileName",
+									"value": "heart.png"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "[Upload] Upload by HTTP form (POST input field): File too big",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "493f77a0-c885-42b5-979d-6d3cd495e801",
+								"type": "text/javascript",
+								"exec": [
+									"var jsonData = pm.response.json();",
+									"",
+									"pm.test(\"Checks the file size is validated\", function () {",
+									"    pm.expect(jsonData.status).to.eql('File size is too big');",
+									"    pm.expect(jsonData.http_code).to.eql(400);",
+									"});",
+									""
+								]
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/x-www-form-urlencoded"
+							}
+						],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "file",
+									"type": "file"
+								}
+							]
+						},
+						"url": {
+							"raw": "{{appUrl}}/repository/file/upload?_token={{token_with_low_file_size_limit}}&fileName=heart.png",
+							"host": [
+								"{{appUrl}}"
+							],
+							"path": [
+								"repository",
+								"file",
 								"upload"
 							],
 							"query": [
@@ -2587,7 +2745,10 @@
 							"request": {
 								"method": "DELETE",
 								"header": [],
-								"body": {},
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{appUrl}}/repository/collection/{{collection_4}}/token/{{token_other_to_add_as_allowed}}?_token={{token_create_collections}}",
 									"host": [
@@ -3088,7 +3249,10 @@
 									"request": {
 										"method": "GET",
 										"header": [],
-										"body": {},
+										"body": {
+											"mode": "raw",
+											"raw": ""
+										},
 										"url": {
 											"raw": "{{appUrl}}/repository/collection/{{collection_5_to_upload_versions}}/backup/latest?password=solidarity-forever&_token={{token_create_collections}}",
 											"host": [
@@ -3307,7 +3471,10 @@
 									"request": {
 										"method": "GET",
 										"header": [],
-										"body": {},
+										"body": {
+											"mode": "raw",
+											"raw": ""
+										},
 										"url": {
 											"raw": "{{postal_workers_article_v3}}?password=solidarity-forever",
 											"host": [
@@ -3343,7 +3510,10 @@
 									"request": {
 										"method": "GET",
 										"header": [],
-										"body": {},
+										"body": {
+											"mode": "raw",
+											"raw": ""
+										},
 										"url": {
 											"raw": "{{postal_workers_article_v4}}?password=solidarity-forever",
 											"host": [
@@ -3383,7 +3553,10 @@
 									"request": {
 										"method": "GET",
 										"header": [],
-										"body": {},
+										"body": {
+											"mode": "raw",
+											"raw": ""
+										},
 										"url": {
 											"raw": "{{appUrl}}/repository/collection/{{collection_5_to_upload_versions}}/backup/latest?password=solidarity-forever&_token={{token_create_collections}}",
 											"host": [
@@ -3434,7 +3607,10 @@
 									"request": {
 										"method": "GET",
 										"header": [],
-										"body": {},
+										"body": {
+											"mode": "raw",
+											"raw": ""
+										},
 										"url": {
 											"raw": "{{appUrl}}/repository/collection/{{collection_5_to_upload_versions}}/backup/v3?password=solidarity-forever&_token={{token_create_collections}}",
 											"host": [
@@ -3485,7 +3661,10 @@
 									"request": {
 										"method": "GET",
 										"header": [],
-										"body": {},
+										"body": {
+											"mode": "raw",
+											"raw": ""
+										},
 										"url": {
 											"raw": "{{appUrl}}/repository/collection/{{collection_5_to_upload_versions}}/backup/{{postal_workers_article_v4_id}}?password=solidarity-forever&_token={{token_create_collections}}",
 											"host": [
@@ -3879,7 +4058,10 @@
 									"request": {
 										"method": "DELETE",
 										"header": [],
-										"body": {},
+										"body": {
+											"mode": "raw",
+											"raw": ""
+										},
 										"url": {
 											"raw": "{{appUrl}}/repository/collection/{{collection_5_to_upload_versions}}/backup/{{solfed_article_v1}}?_token={{token_create_collections}}",
 											"host": [

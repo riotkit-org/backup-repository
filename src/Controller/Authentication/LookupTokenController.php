@@ -38,13 +38,16 @@ class LookupTokenController extends BaseController
     {
         return $this->wrap(
             function () use ($token) {
-                return new JsonResponse(
-                    $this->handler->handle(
-                        $token,
-                        $this->authFactory->createFromToken($this->getLoggedUserToken())
-                    ),
-                    JsonResponse::HTTP_OK
+                $response = $this->handler->handle(
+                    $token,
+                    $this->authFactory->createFromToken($this->getLoggedUserToken())
                 );
+
+                if ($response === null) {
+                    return $this->createNotFoundResponse();
+                }
+
+                return new JsonResponse($response, JsonResponse::HTTP_OK);
             }
         );
     }

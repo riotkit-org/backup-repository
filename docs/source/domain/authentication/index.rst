@@ -16,4 +16,4 @@ An access token is identified by long UUIDv4, and has assigned information about
    :maxdepth: 2
    :caption: Contents:
 
-   creating-token
+   operating-tokens

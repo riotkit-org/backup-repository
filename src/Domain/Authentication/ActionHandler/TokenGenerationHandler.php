@@ -3,6 +3,7 @@
 namespace App\Domain\Authentication\ActionHandler;
 
 use App\Domain\Authentication\Exception\AuthenticationException;
+use App\Domain\Authentication\Exception\ValidationException;
 use App\Domain\Authentication\Form\AuthForm;
 use App\Domain\Authentication\Manager\TokenManager;
 use App\Domain\Authentication\Security\Context\AuthenticationManagementContext;
@@ -10,8 +11,8 @@ use Exception;
 
 class TokenGenerationHandler
 {
-    private const DATE_MODIFIER_AUTO = ['auto', 'automatic'];
-    private const DATE_MODIFIER_NEVER = ['never', null];
+    private const DATE_MODIFIER_AUTO  = ['auto', 'automatic', null];
+    private const DATE_MODIFIER_NEVER = ['never'];
 
     /**
      * @var TokenManager
@@ -73,7 +74,9 @@ class TokenGenerationHandler
         }
 
         if (!\strtotime($expires)) {
-            throw new \InvalidArgumentException('Invalid date format');
+            throw ValidationException::createFromFieldsList([
+                'expires' => ['invalid_date_format_and_not_an_expression']
+            ]);
         }
 
         return new \DateTimeImmutable($expires);
