@@ -2,13 +2,13 @@
 
 namespace App\Controller\Technical;
 
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 
 /**
  * Lists all public routes
  */
-class HelloController extends Controller
+class HelloController extends AbstractController
 {
     public function sayHelloAction(): JsonResponse
     {

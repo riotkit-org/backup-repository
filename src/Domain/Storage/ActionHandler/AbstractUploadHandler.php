@@ -69,7 +69,9 @@ abstract class AbstractUploadHandler
     {
         $context = $this->securityFactory->createUploadContextFromToken($token);
 
-        if (!$context->isActionAllowed($form)) {
+        $this->applyRestrictions($form, $context);
+
+        if (!$context->isActionAllowed($form, $context)) {
             return $this->finalize(FileUploadedResponse::createWithNoAccessError());
         }
 
@@ -107,7 +109,8 @@ abstract class AbstractUploadHandler
         } catch (ValidationException $exception) {
             return $this->finalize(FileUploadedResponse::createWithValidationError(
                 $exception->getReason(),
-                $exception->getCode()
+                $exception->getCode(),
+                $exception->getContext()
             ));
 
         } catch (StorageException $exception) {
@@ -120,6 +123,15 @@ abstract class AbstractUploadHandler
         $this->staging->deleteAllTemporaryFiles();
 
         return $response;
+    }
+
+    private function applyRestrictions(UploadForm $form, UploadSecurityContext $securityContext): void
+    {
+        $tagsToEnforce = $securityContext->getTagsThatShouldBeEnforced();
+
+        if (!empty($tagsToEnforce)) {
+            $form->tags = $tagsToEnforce;
+        }
     }
 
     /**

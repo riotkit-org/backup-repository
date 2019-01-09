@@ -17,3 +17,6 @@
 
 /docs/build
 /examples/docker/.env
+
+# bower
+/public/minimumui/components

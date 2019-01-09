@@ -1,0 +1,6 @@
+minimumui.upload_image:
+    path: /minimum.ui/upload/image
+    controller: 'App\Controller\MinimumUi\UploadImageController::handle'
+    methods: ['GET']
+    defaults:
+        _secured: true

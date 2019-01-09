@@ -23,6 +23,6 @@ class AuthForm
 
     public static function getAvailableRoles(): array
     {
-        return Roles::ROLES_LIST;
+        return Roles::getRolesList();
     }
 }

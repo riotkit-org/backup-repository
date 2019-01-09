@@ -41,9 +41,12 @@ class SubmittedFileValidator
         $info = $this->fileInfoFactory->generateForStagedFile($stagedFile);
 
         if (!$context->isMimeAllowed($info->getMime())) {
-            throw new ValidationException(
+            throw ValidationException::createWithContext(
                 'The mime type "' . $info->getMime()->getValue() . '" is not allowed to upload',
-                ValidationException::CODE_MIME_NOT_ALLOWED
+                ValidationException::CODE_MIME_NOT_ALLOWED,
+                [
+                    'mime' => $info->getMime()->getValue()
+                ]
             );
         }
 

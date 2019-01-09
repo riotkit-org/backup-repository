@@ -34,7 +34,10 @@ class SecurityContextFactory
                 || $token->hasRole(Roles::ROLE_UPLOAD_IMAGES)
                 || $token->hasRole(Roles::ROLE_UPLOAD_BACKUP),
             $token->hasRole(Roles::ROLE_ALLOW_OVERWRITE_FILES),
-            $token->getMaxAllowedFileSize()
+            $token->getMaxAllowedFileSize(),
+            $token->hasRole(Roles::ROLE_UPLOAD_ENFORCE_TOKEN_TAGS),
+            $token->hasRole(Roles::ROLE_UPLOAD_ENFORCE_NO_PASSWORD),
+            $token->hasRole(Roles::ROLE_ADMINISTRATOR)
         );
     }
 
