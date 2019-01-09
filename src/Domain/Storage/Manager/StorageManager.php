@@ -13,6 +13,7 @@ use App\Domain\Storage\Repository\FileRepository;
 use App\Domain\Storage\Security\UploadSecurityContext;
 use App\Domain\Storage\Validation\SubmittedFileValidator;
 use App\Domain\Storage\ValueObject\Filename;
+use App\Domain\Storage\ValueObject\InputEncoding;
 use App\Domain\Storage\ValueObject\Stream;
 
 /**
@@ -84,6 +85,8 @@ class StorageManager
         UploadForm $form
     ): StoredFile {
 
+        $encoding = new InputEncoding($form->encoding);
+
         $existingFromRepository = $this->repository->findByName($name);
         $existsOnDisk = $this->fs->fileExist($name);
         $existsAtAll = $existingFromRepository && $existsOnDisk;
@@ -99,20 +102,20 @@ class StorageManager
 
         // case: overwriting a file
         if ($existsAtAll && $canOverwriteFile) {
-            return $this->writeManager->overwriteFile($existingFromRepository, $stream, $securityContext);
+            return $this->writeManager->overwriteFile($existingFromRepository, $stream, $securityContext, $encoding);
         }
 
         // case: somehow file was lost in the repository, entry will be rewritten
         //       possibly eg. a replication may be delayed on database level
         //       if there is any replication set up outside of the application (eg. MySQL + NFS)
         if (!$existingFromRepository && $existsOnDisk) {
-            return $this->writeManager->submitFileLostInRepositoryButExistingInStorage($name, $form);
+            return $this->writeManager->submitFileLostInRepositoryButExistingInStorage($name, $form, $encoding);
         }
 
         // case: file is new
         // case: the file already exists but under different name
         if (!$existingFromRepository && !$existsOnDisk) {
-            return $this->writeManager->submitNewFile($stream, $name, $securityContext, $form);
+            return $this->writeManager->submitNewFile($stream, $name, $securityContext, $form, $encoding);
         }
 
         // case: the file may be lost on the disk or not synchronized yet?
@@ -121,7 +124,8 @@ class StorageManager
                 $stream,
                 $name,
                 $existingFromRepository,
-                $securityContext
+                $securityContext,
+                $encoding
             );
         }
 

@@ -34,18 +34,39 @@ class UploadSecurityContext
      */
     private $maxAllowedFileSize;
 
+    /**
+     * @var bool
+     */
+    private $enforceTokenTags;
+
+    /**
+     * @var bool
+     */
+    private $enforceNoPassword;
+
+    /**
+     * @var bool
+     */
+    private $isAdministrator;
+
     public function __construct(
         array $allowedMimes,
         array $allowedTags,
         bool $isAllowedToUploadAnything,
         bool $allowedToOverwrite,
-        int $maxAllowedFileSize
+        int $maxAllowedFileSize,
+        bool $enforceTokenTags,
+        bool $enforceNoPassword,
+        bool $isAdministrator
     ) {
         $this->allowedMimes = $allowedMimes;
         $this->allowedTags = $allowedTags;
         $this->isAllowedToUpload = $isAllowedToUploadAnything;
         $this->allowedToOverwrite = $allowedToOverwrite;
         $this->maxAllowedFileSize = $maxAllowedFileSize;
+        $this->enforceTokenTags   = $enforceTokenTags;
+        $this->enforceNoPassword  = $enforceNoPassword;
+        $this->isAdministrator    = $isAdministrator;
     }
 
     public function isMimeAllowed(Mime $mime): bool
@@ -58,8 +79,12 @@ class UploadSecurityContext
         return !$this->allowedTags || \in_array($tag, $this->allowedTags, true);
     }
 
-    public function isActionAllowed(UploadForm $form): bool
+    public function isActionAllowed(UploadForm $form, UploadSecurityContext $securityContext): bool
     {
+        if ($form->password && !$securityContext->canSetPassword()) {
+            return false;
+        }
+
         foreach ($form->tags as $tag) {
             if (!$this->isTagAllowed($tag)) {
                 return false;
@@ -92,6 +117,20 @@ class UploadSecurityContext
 
         // password from form must match the old file password to confirm that the authorized person can replace the file
         return $file->checkPasswordMatchesWith($form->password);
+    }
+
+    public function getTagsThatShouldBeEnforced(): array
+    {
+        if (!$this->enforceTokenTags) {
+            return [];
+        }
+
+        return $this->allowedTags;
+    }
+
+    public function canSetPassword(): bool
+    {
+        return !$this->enforceNoPassword;
     }
 
     public function getMaximumFileSize(): int

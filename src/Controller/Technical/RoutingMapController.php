@@ -2,7 +2,7 @@
 
 namespace App\Controller\Technical;
 
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Route;
@@ -12,7 +12,7 @@ use Symfony\Component\Routing\RouterInterface;
 /**
  * Lists all public routes
  */
-class RoutingMapController extends Controller
+class RoutingMapController extends AbstractController
 {
     /**
      * @var RouterInterface

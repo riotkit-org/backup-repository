@@ -3,7 +3,9 @@
 namespace App\Domain\Storage\Repository;
 
 use App\Domain\Storage\Entity\StagedFile;
+use App\Domain\Storage\Service\FileDecoder;
 use App\Domain\Storage\ValueObject\Filename;
+use App\Domain\Storage\ValueObject\InputEncoding;
 use App\Domain\Storage\ValueObject\Path;
 use App\Domain\Storage\ValueObject\Stream;
 
@@ -19,12 +21,18 @@ class StagingAreaRepository
      */
     private $tempPath;
 
-    public function __construct(string $tempPath)
+    /**
+     * @var FileDecoder
+     */
+    private $fileDecoder;
+
+    public function __construct(string $tempPath, FileDecoder $fileDecoder)
     {
-        $this->tempPath = $tempPath;
+        $this->tempPath    = $tempPath;
+        $this->fileDecoder = $fileDecoder;
     }
 
-    public function keepStreamAsTemporaryFile(Stream $stream): StagedFile
+    public function keepStreamAsTemporaryFile(Stream $stream, InputEncoding $encoding): StagedFile
     {
         $filePath = tempnam($this->tempPath, 'wolnosciowiec-file-repository-hash');
 
@@ -33,12 +41,15 @@ class StagingAreaRepository
         stream_copy_to_stream($stream->attachTo(), $tempHandle);
         fclose($tempHandle);
 
-        $stagedFile = new StagedFile(
-            new Path(
-                \dirname($filePath),
-                new Filename(\basename($filePath))
-            )
+        $path = new Path(
+            \dirname($filePath),
+            new Filename(\basename($filePath))
         );
+
+        // if the file is encoded eg. with base64, gzip etc. then decode it at first
+        $this->fileDecoder->decode($path, $encoding);
+
+        $stagedFile = new StagedFile($path);
 
         $this->files[] = $stagedFile;
 

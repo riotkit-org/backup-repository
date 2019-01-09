@@ -21,7 +21,8 @@ class UploadFormType extends AbstractType
             ])
             ->add('fileOverwrite', TextType::class)
             ->add('password',      TextType::class)
-            ->add('public',        TextType::class);
+            ->add('public',        TextType::class)
+            ->add('encoding',      TextType::class);
 
         $builder->get('public')->addModelTransformer(new BooleanTransformer());
         $builder->get('fileOverwrite')->addModelTransformer(new BooleanTransformer());

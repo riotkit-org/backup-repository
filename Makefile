@@ -24,13 +24,19 @@ help:
 install:
 	mkdir -p ./var/uploads
 	composer install
+	make install_frontend
 	./bin/console doctrine:migrations:migrate --no-interaction -vv
+
+## Install MinimumUi dependencies
+install_frontend:
+	bower install
+	mv bower_components ./public/minimumui/components
 
 ## Build documentation
 build_docs:
 	cd ./docs && make html
 
-# Run a developer web server (do not use on production)
+## Run a developer web server (do not use on production)
 run_dev:
 	./bin/console server:start
 

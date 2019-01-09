@@ -3,6 +3,7 @@
 namespace App\Domain\Storage\Form;
 
 use App\Domain\Common\ValueObject\Password;
+use App\Domain\Storage\ValueObject\InputEncoding;
 
 class UploadForm
 {
@@ -35,4 +36,11 @@ class UploadForm
      * @var bool
      */
     public $duplicationAllowed = false;
+
+    /**
+     * eg. base64 (if the data in body is encoded with base64 and needs to be decoded)
+     *
+     * @var string|null
+     */
+    public $encoding;
 }

@@ -117,7 +117,7 @@ class TokenSubscriber implements EventSubscriberInterface
     {
         $token = new Token();
         $token->setId(self::TEST_TOKEN);
-        $token->setRoles(Roles::ROLES_LIST);
+        $token->setRoles(Roles::GRANTS_LIST);
 
         $this->tokenStorage->setToken(
             new TokenTransport(self::TEST_TOKEN, $token)

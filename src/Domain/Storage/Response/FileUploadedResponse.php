@@ -43,6 +43,11 @@ class FileUploadedResponse implements \JsonSerializable
     private $filename;
 
     /**
+     * @var array
+     */
+    private $context;
+
+    /**
      * @param Url $url
      * @param Url $backUrl
      * @param string|int $id
@@ -103,16 +108,19 @@ class FileUploadedResponse implements \JsonSerializable
 
     /**
      * @param string $message
+     * @param int    $code
+     * @param array  $context
      *
      * @return FileUploadedResponse
      */
-    public static function createWithValidationError(string $message, int $code): FileUploadedResponse
+    public static function createWithValidationError(string $message, int $code, array $context): FileUploadedResponse
     {
         $new = new static();
         $new->status       = $message;
         $new->errorCode    = $code;
         $new->exitCode     = 400;
         $new->url          = null;
+        $new->context      = $context;
 
         return $new;
     }
@@ -155,7 +163,8 @@ class FileUploadedResponse implements \JsonSerializable
             'url'        => $this->url,
             'back'       => $this->backUrl,
             'id'         => $this->id,
-            'filename'   => $this->filename
+            'filename'   => $this->filename,
+            'context'    => $this->context
        ];
     }
 

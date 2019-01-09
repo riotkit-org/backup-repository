@@ -25,6 +25,12 @@ final class Roles
     /** Allows to upload ALL types of files regardless of mime type */
     public const ROLE_UPLOAD                   = 'upload.all';
 
+    /** Enforce no password for all uploads for this token */
+    public const ROLE_UPLOAD_ENFORCE_NO_PASSWORD = 'upload.enforce_no_password';
+
+    /** Enforce token tags. In result every uploaded file will have tags specified in token regardless if they were sent in request */
+    public const ROLE_UPLOAD_ENFORCE_TOKEN_TAGS = 'upload.enforce_tags_selected_in_token';
+
     //
     //
     // authentication and tokens
@@ -125,7 +131,7 @@ final class Roles
         self::ROLE_DELETE_VERSIONS_IN_ALLOWED_COLLECTIONS
     ];
 
-    public const ROLES_LIST = [
+    public const GRANTS_LIST = [
         self::ROLE_UPLOAD_IMAGES,
         self::ROLE_UPLOAD_DOCS,
         self::ROLE_UPLOAD_BACKUP,
@@ -151,4 +157,14 @@ final class Roles
         self::ROLE_LIST_VERSIONS_FOR_ALLOWED_COLLECTIONS,
         self::ROLE_DELETE_VERSIONS_IN_ALLOWED_COLLECTIONS
     ];
+
+    public const RESTRICTIONS_LIST = [
+        self::ROLE_UPLOAD_ENFORCE_NO_PASSWORD,
+        self::ROLE_UPLOAD_ENFORCE_TOKEN_TAGS
+    ];
+
+    public static function getRolesList(): array
+    {
+        return \array_merge(self::GRANTS_LIST, self::RESTRICTIONS_LIST);
+    }
 }
