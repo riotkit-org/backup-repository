@@ -18,6 +18,26 @@ function ImageUpload(aspectRatio, apiKey, redirectUrl) {
             responsive: true,
             guides: true
         });
+
+        window.setTimeout(this._setCropperToCoverWholeImage, 100);
+    };
+
+    this._setCropperToCoverWholeImage = function() {
+        var imageData = image_upload.cropper.getImageData();
+        var pos = image_upload.cropper.getCanvasData();
+
+        image_upload.cropper.setCropBoxData({
+            "rotate":0,
+            "scaleX":1,
+            "scaleY":1,
+            "naturalWidth": imageData.naturalWidth,
+            "naturalHeight": imageData.naturalHeight,
+            "aspectRatio":  imageData.aspectRatio,
+            "width":imageData.naturalWidth,
+            "height":imageData.naturalHeight,
+            "left": pos.left,
+            "top": pos.top
+        });
     };
 
     /**
@@ -34,6 +54,14 @@ function ImageUpload(aspectRatio, apiKey, redirectUrl) {
     };
 
     this.getRawImage = function () {
+        if (!image_upload.cropper.canvas) {
+            return;
+        }
+
+        return image_upload.cropper.canvas.children[0].src;
+    };
+
+    this.getCroppedImage = function () {
         if (!image_upload.cropper.canvas) {
             return;
         }
@@ -62,7 +90,7 @@ function ImageUpload(aspectRatio, apiKey, redirectUrl) {
         }
 
         // crop
-        image_upload.image.src = image_upload.getRawImage();
+        image_upload.image.src = image_upload.getCroppedImage();
         image_upload.destroy();
         image_upload.initializeCropper();
     };
@@ -79,7 +107,12 @@ function ImageUpload(aspectRatio, apiKey, redirectUrl) {
     };
 
     this.toggleModal = function () {
-        $('#squarespaceModal').modal('toggle');
+        $('#submitModal').modal('toggle');
+    };
+
+    this.showUploadedUrlModal = function (url) {
+        $('#linkConfirmationModal').modal();
+        $('#resultUrl').val(url);
     };
 
     /**
@@ -127,6 +160,7 @@ function ImageUpload(aspectRatio, apiKey, redirectUrl) {
 
     this.uploadFinished = function (url) {
         image_upload.toggleModal();
+
         window.console.info('URL:', url);
 
         if (this.redirectUrl) {
@@ -134,6 +168,12 @@ function ImageUpload(aspectRatio, apiKey, redirectUrl) {
             return null;
         }
 
+        if (typeof window.parent.file_repository_callback !== 'undefined') {
+            window.parent.file_repository_callback(url);
+            return;
+        }
+
+        this.showUploadedUrlModal(url);
         window.close();
     };
 

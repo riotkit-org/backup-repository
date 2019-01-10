@@ -50,7 +50,7 @@
 </div>
 
 <!-- Submit modal -->
-<div class="modal fade" id="squarespaceModal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+<div class="modal fade" id="submitModal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-body">
@@ -93,9 +93,29 @@
     </div>
 </div>
 
+<div class="modal fade" id="linkConfirmationModal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="exampleInputPassword1">URL address</label>
+                    <input type="text" class="form-control" name="fileName" id="resultUrl" placeholder="Filename" readonly>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <div class="btn-group btn-group-justified" role="group" aria-label="group button">
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-default" data-dismiss="modal"  role="button">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script src="/minimumui/js/image_upload.js"></script>
 <script type="text/javascript">
-    image_upload = new ImageUpload({{ aspectRatio }}, '{{ tokenId }}', '{{ backUrl }}');
+    image_upload = new ImageUpload({% if not aspectRatio %}null{% else %}{{ aspectRatio }}{% endif %}, '{{ tokenId }}', '{{ backUrl }}');
     document.getElementById('file').addEventListener('change', image_upload.handleImageUpload, false);
 </script>
 </body>
