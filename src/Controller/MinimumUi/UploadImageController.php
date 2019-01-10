@@ -17,7 +17,7 @@ class UploadImageController extends BaseController
         return $this->render('minimumui/ImageUpload.html.twig', [
             'tokenId'           => $token->getId(),
             'backUrl'           => $backUrl,
-            'aspectRatio'       => abs((float) $request->get('ratio', 16/9)),
+            'aspectRatio'       => $request->get('ratio') ? abs((float) $request->get('ratio', 16/9)) : null,
             'passwordIsAllowed' => !$token->hasRole(Roles::ROLE_UPLOAD_ENFORCE_NO_PASSWORD),
             'tags'              => $token->hasRole(Roles::ROLE_UPLOAD_ENFORCE_TOKEN_TAGS) ? [] : $token->getTags()
         ]);
