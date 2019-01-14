@@ -1,32 +1,35 @@
-function ImageUpload(aspectRatio, apiKey, redirectUrl) {
-    var image_upload = this;
+class ImageUpload extends BaseUpload {
 
-    this.aspectRatio = aspectRatio;
-    this.apiKey      = apiKey;
-    this.cropper     = null;
-    this.image       = document.getElementById('image');
-    this.redirectUrl = redirectUrl;
+    constructor(aspectRatio, apiKey, redirectUrl) {
+        super();
+
+        this.aspectRatio = aspectRatio;
+        this.apiKey = apiKey;
+        this.cropper = null;
+        this.image = document.getElementById('image');
+        this.redirectUrl = redirectUrl;
+    }
 
     /**
      * Initializes and re-initializes the cropper
      */
-    this.initializeCropper = function () {
-        image_upload.image.style.display = 'block';
+    initializeCropper() {
+        this.image.style.display = 'block';
 
-        image_upload.cropper = new Cropper(image, {
+        this.cropper = new Cropper(image, {
             aspectRatio: this.aspectRatio,
             responsive: true,
             guides: true
         });
 
         window.setTimeout(this._setCropperToCoverWholeImage, 100);
-    };
+    }
 
-    this._setCropperToCoverWholeImage = function() {
-        var imageData = image_upload.cropper.getImageData();
-        var pos = image_upload.cropper.getCanvasData();
+    setCropperToCoverWholeImage() {
+        var imageData = this.cropper.getImageData();
+        var pos = this.cropper.getCanvasData();
 
-        image_upload.cropper.setCropBoxData({
+        this.cropper.setCropBoxData({
             "rotate":0,
             "scaleX":1,
             "scaleY":1,
@@ -38,94 +41,90 @@ function ImageUpload(aspectRatio, apiKey, redirectUrl) {
             "left": pos.left,
             "top": pos.top
         });
-    };
+    }
 
     /**
      * Gets the base64 encoded image URL
      *
      * @returns {string}
      */
-    this.getImage = function() {
-        if (!image_upload.cropper.canvas) {
+    getImage() {
+        if (!this.cropper.canvas) {
             return;
         }
 
         return this.getRawImage().split('base64,')[1];
     };
 
-    this.getRawImage = function () {
-        if (!image_upload.cropper.canvas) {
+    getRawImage() {
+        if (!this.cropper.canvas) {
             return;
         }
 
-        return image_upload.cropper.canvas.children[0].src;
-    };
+        return this.cropper.canvas.children[0].src;
+    }
 
-    this.getCroppedImage = function () {
-        if (!image_upload.cropper.canvas) {
+    getCroppedImage() {
+        if (!this.cropper.canvas) {
             return;
         }
 
-        return image_upload.cropper.getCroppedCanvas().toDataURL();
-    };
+        return this.cropper.getCroppedCanvas().toDataURL();
+    }
 
     /**
      * Change the mode between moving and cropping
      *
      * @param {string} mode
      */
-    this.changeMode = function (mode) {
-        if (image_upload.cropper != null) {
-            image_upload.cropper.setDragMode(mode);
+    changeMode(mode) {
+        if (this.cropper != null) {
+            this.cropper.setDragMode(mode);
         }
-    };
+    }
 
     /**
      * Crop the image
      */
-    this.crop = function () {
-        if (image_upload.cropper === null) {
+    crop() {
+        if (this.cropper === null) {
 
             return null;
         }
 
         // crop
-        image_upload.image.src = image_upload.getCroppedImage();
-        image_upload.destroy();
-        image_upload.initializeCropper();
-    };
+        this.image.src = this.getCroppedImage();
+        this.destroy();
+        this.initializeCropper();
+    }
 
     /**
      * Upload the image
      */
-    this.accept = function () {
-        if (image_upload.cropper === null) {
+    accept() {
+        if (this.cropper === null) {
             return null;
         }
 
-        image_upload.toggleModal();
-    };
+        this.toggleModal();
+    }
 
-    this.toggleModal = function () {
+    toggleModal() {
         $('#submitModal').modal('toggle');
-    };
-
-    this.showUploadedUrlModal = function (url) {
-        $('#linkConfirmationModal').modal();
-        $('#resultUrl').val(url);
-    };
+    }
 
     /**
      * Upload the image to the server
      * and redirect ot the callback url specified in the constructor
      */
-    this.upload = function () {
+    upload() {
         var params = $('#submitForm').serialize();
+        var image_upload = this;
 
         var xmlHttp = new XMLHttpRequest();
-        xmlHttp.open('POST', '/repository/file/upload?encoding=base64&_token=' + image_upload.apiKey + '&' + params);
+        xmlHttp.open('POST', '/repository/file/upload?encoding=base64&_token=' + this.apiKey + '&' + params);
         xmlHttp.setRequestHeader('Content-Type', 'application/json');
-        xmlHttp.onreadystatechange = function() {
+        xmlHttp.onreadystatechange = () => {
             if (xmlHttp.readyState === XMLHttpRequest.DONE) {
                 var response = JSON.parse(xmlHttp.responseText);
 
@@ -139,29 +138,10 @@ function ImageUpload(aspectRatio, apiKey, redirectUrl) {
             }
         };
         xmlHttp.send(this.getRawImage());
-    };
+    }
 
-    this.validationFailure = function (byField, overallStatus) {
-
-        var statusByField = '';
-
-        for (var field in byField) {
-            statusByField += field + ": \n";
-
-            for (var messageNum in byField[field]) {
-                statusByField += ' - ' + byField[field][messageNum] + "\n"
-            }
-
-            statusByField += "\n\n";
-        }
-
-        window.alert(overallStatus + "\n\n" + statusByField);
-    };
-
-    this.uploadFinished = function (url) {
-        image_upload.toggleModal();
-
-        window.console.info('URL:', url);
+    uploadFinished(url) {
+        this.toggleModal();
 
         if (this.redirectUrl) {
             window.location.href = this.redirectUrl.replace('FILE_REPOSITORY_URL', encodeURIComponent(url));
@@ -173,35 +153,36 @@ function ImageUpload(aspectRatio, apiKey, redirectUrl) {
             return;
         }
 
-        this.showUploadedUrlModal(url);
+        this.showFileUrl(url);
         window.close();
-    };
+    }
 
     /**
      * Deinitialize the cropper
      */
-    this.destroy = function () {
-        if (image_upload.cropper != null) {
-            image_upload.cropper.destroy();
+    destroy() {
+        if (this.cropper != null) {
+            this.cropper.destroy();
         }
-    };
+    }
 
     /**
      * Handles upload event
      *
      * @param e
      */
-    this.handleImageUpload = function(e) {
+    handleImageUpload(e) {
         var reader = new FileReader();
+        var self = window.app;
 
-        reader.onload = function(event){
+        reader.onload = (event) => {
             // replace image and initialize the cropper again
-            image_upload.image.src = event.target.result;
-            image_upload.destroy();
-            image_upload.initializeCropper();
+            self.image.src = event.target.result;
+            self.destroy();
+            self.initializeCropper();
         };
         reader.readAsDataURL(e.target.files[0]);
-    };
+    }
 }
 
 function b64EncodeUnicode(str) {

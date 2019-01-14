@@ -1,71 +1,42 @@
-<!DOCTYPE html>
-<html lang="pl" prefix="og: http://ogp.me/ns# fb: http://ogp.me/ns/fb#">
-<head>
-    <title>File upload</title>
-    <meta http-equiv="X-UA-Compatible" content="IE=10">
-    <meta name="viewport" content="width=776, height=431">
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <meta name="robots" content="noindex">
+{% extends "minimumui/Layout.html.twig" %}
 
-    <link href="/minimumui/components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+{% block title %}File upload{% endblock %}
+{% block js_libraries %}
+    <script src="/minimumui/components/filepond/dist/filepond.js"></script>
+    <script src="/minimumui/components/filepond-plugin-file-validate-size/dist/filepond-plugin-file-validate-size.js"></script>
+    <script src="/minimumui/components/filepond-plugin-image-exif-orientation/dist/filepond-plugin-image-exif-orientation.js"></script>
+    <script src="/minimumui/components/filepond-plugin-image-preview/dist/filepond-plugin-image-preview.js"></script>
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="/minimumui/components/bootstrap/dist/js/bootstrap.min.js"></script>
+{% endblock %}
 
-    <style>
-        .container{
-            margin-top:20px;
-        }
-    </style>
-</head>
+{% block js_app %}
+    <script src="/minimumui/js/file_upload.js"></script>
+{% endblock %}
 
-<body>
-<div class="container">
-    <div class="row">
-        <div class="col-xs-12 col-md-6 col-md-offset-3 col-sm-8 col-sm-offset-2">
-            <form method="POST" action="{{ path('public.upload.files') }}" enctype="multipart/form-data">
-                <div class="form-group">
-                    <label for="exampleInputFile">Send a file</label>
+{% block css_libraries %}
+    <link rel="stylesheet" href="/minimumui/components/filepond/dist/filepond.css">
+    <link  href="/minimumui/components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link  href="/minimumui/components/filepond-plugin-image-preview/dist/filepond-plugin-image-preview.css" rel="stylesheet">
+{% endblock %}
 
-                    <input type="hidden" name="_token" value="{{ tokenId }}">
-                    <input type="hidden" name="file_name" id="file_name" value="">
-                    <input type="file" class="form-control-file" id="file_input" name="upload" aria-describedby="fileHelp">
-                    <input type="hidden" name="back_url" value="{{ backUrl }}">
-                    <small id="fileHelp" class="form-text text-muted">
-                        {{ allowedMimeTypes }}
-                    </small>
-                </div>
-
-                <input type="submit" class="btn btn-primary" value="Send">
-            </form>
+{% block body %}
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-md-12 col-md-offset-3 col-sm-8 col-sm-offset-2">
+                <input type="file"
+                       class="filepond"
+                       name="filepond"
+                       multiple
+                       data-max-file-size="3MB"
+                       data-max-files="3" />
+            </div>
         </div>
     </div>
-</div>
 
-<script>
-    function basename (path, suffix) {
-        //  discuss at: http://locutus.io/php/basename/
-        // original by: Kevin van Zonneveld (http://kvz.io)
-        // improved by: Ash Searle (http://hexmen.com/blog/)
-        // improved by: Lincoln Ramsay
-        // improved by: djmix
-        // improved by: Dmitry Gorelenkov
-        var b = path
-        var lastChar = b.charAt(b.length - 1)
-
-        if (lastChar === '/' || lastChar === '\\') {
-            b = b.slice(0, -1)
-        }
-
-        b = b.replace(/^.*[\/\\]/g, '')
-
-        if (typeof suffix === 'string' && b.substr(b.length - suffix.length) === suffix) {
-            b = b.substr(0, b.length - suffix.length)
-        }
-
-        return b;
-    }
-
-    document.getElementById("file_input").addEventListener("change", function () {
-        document.getElementById('file_name').value = basename(document.getElementById('file_input').value);
-    }, true);
-</script>
-</body>
-</html>
+    <script>
+        $(document).ready(function () {
+            window.app = new FileUpload('{{ tokenId }}');
+        });
+    </script>
+{% endblock %}

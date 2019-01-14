@@ -84,7 +84,8 @@ abstract class AbstractUploadHandler
                     $publicUrl,
                     new Url($form->backUrl),
                     $uploadedFile->getId(),
-                    $uploadedFile->getFilename()
+                    $uploadedFile->getFilename(),
+                    $this->getRequestedFilename($form)
                 )
             );
 
@@ -93,7 +94,8 @@ abstract class AbstractUploadHandler
                 FileUploadedResponse::createWithMeaningFileWasAlreadyUploadedUnderOtherName(
                     $this->publicUrlFactory->fromStoredFile($exception->getAlreadyExistingFile(), $baseUrl),
                     $exception->getAlreadyExistingFile()->getId(),
-                    $exception->getAlreadyExistingFile()->getFilename()
+                    $exception->getAlreadyExistingFile()->getFilename(),
+                    $this->getRequestedFilename($form)
                 )
             );
 
@@ -102,7 +104,8 @@ abstract class AbstractUploadHandler
                 FileUploadedResponse::createWithMeaningFileWasAlreadyUploaded(
                     $this->publicUrlFactory->fromStoredFile($exception->getAlreadyExistingFile(), $baseUrl),
                     $exception->getAlreadyExistingFile()->getId(),
-                    $exception->getAlreadyExistingFile()->getFilename()
+                    $exception->getAlreadyExistingFile()->getFilename(),
+                    $this->getRequestedFilename($form)
                 )
             );
 
@@ -163,6 +166,13 @@ abstract class AbstractUploadHandler
      * @return Filename
      */
     abstract protected function createFileName($form): Filename;
+
+    /**
+     * @param $form
+     *
+     * @return Filename
+     */
+    abstract protected function getRequestedFilename($form): Filename;
 
     /**
      * @param object $form
