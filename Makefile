@@ -29,8 +29,9 @@ install:
 
 ## Install MinimumUi dependencies
 install_frontend:
-	bower install
-	mv bower_components ./public/minimumui/components
+	npm install
+	rm -rf ./public/minimumui/components
+	mv node_modules ./public/minimumui/components
 
 ## Build documentation
 build_docs:

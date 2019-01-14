@@ -54,6 +54,16 @@ class UploadFileByPostHandler extends AbstractUploadHandler
     }
 
     /**
+     * @param UploadByPostForm $form
+     *
+     * @return Filename
+     */
+    protected function getRequestedFilename($form): Filename
+    {
+        return new Filename($form->fileName);
+    }
+
+    /**
      * @param UploadByUrlForm $form
      *
      * @return Stream

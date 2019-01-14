@@ -55,6 +55,16 @@ class UploadFileByUrlHandler extends AbstractUploadHandler
     /**
      * @param UploadByUrlForm $form
      *
+     * @return Filename
+     */
+    protected function getRequestedFilename($form): Filename
+    {
+        return $this->createFileName($form);
+    }
+
+    /**
+     * @param UploadByUrlForm $form
+     *
      * @return Stream
      */
     protected function createStream($form): Stream

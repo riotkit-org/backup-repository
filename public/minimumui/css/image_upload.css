@@ -28,7 +28,6 @@ img {
 }
 
 .menu_button {
-    padding-top: 13px;
     float: left;
     display: block;
     width: 48px;
@@ -38,7 +37,7 @@ img {
     line-height: 48px;
     text-align: center;
     background-color: transparent;
-    color: #fff;
+    color: white !important;
     cursor: pointer;
 }
 

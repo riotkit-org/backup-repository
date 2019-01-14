@@ -1,122 +1,63 @@
-<html>
-<head>
-    <title>Pick an image to upload and crop</title>
+{% extends "minimumui/Layout.html.twig" %}
 
+{% block title %}Pick an image to upload and crop{% endblock %}
+{% block js_libraries %}
+    <script src="/minimumui/components/cropperjs/dist/cropper.min.js"></script>
+    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="/minimumui/components/bootstrap/dist/js/bootstrap.min.js"></script>
+{% endblock %}
+
+{% block js_app %}
+    <script src="/minimumui/js/image_upload.js"></script>
+    <script type="text/javascript">
+        $(document).ready(function () {
+            window.app = new ImageUpload({% if not aspectRatio %}null{% else %}{{ aspectRatio }}{% endif %}, '{{ tokenId }}', '{{ backUrl }}');
+            document.getElementById('file').addEventListener('change', window.app.handleImageUpload, false);
+        });
+    </script>
+{% endblock %}
+
+{% block css_libraries %}
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.6.3/css/font-awesome.min.css">
     <link  href="/minimumui/components/cropperjs/dist/cropper.min.css" rel="stylesheet">
     <link  href="/minimumui/components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
     <link  href="/minimumui/css/image_upload.css" rel="stylesheet">
-    <script src="/minimumui/components/cropperjs/dist/cropper.min.js"></script>
-    <script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
-    <script src="/minimumui/components/bootstrap/dist/js/bootstrap.min.js"></script>
-</head>
+{% endblock %}
 
-<body>
+{% block body %}
+    <!-- Navigation bar -->
+    <header class="header">
+        <div class="menu_left">
+            <a data-action="clear" title="Move" class="menu_button" onclick="window.app.changeMode('move')">
+                <span class="fa fa-arrows"></span>
+            </a>
 
-<!-- Navigation bar -->
-<header class="header">
-    <div class="menu_left">
-        <a data-action="clear" title="Move" class="menu_button" onclick="image_upload.changeMode('move')">
-            <span class="fa fa-arrows"></span>
-        </a>
-
-        <a data-action="clear" title="Crop" class="menu_button" onclick="image_upload.changeMode('drag')">
-            <span class="fa fa-crop"></span>
-        </a>
-    </div>
-
-    <div class="menu">
-        <label for="file" title="Upload" class="menu_button">
-            <span class="fa fa-upload"></span>
-        </label>
-        <a data-action="clear" title="Cancel" class="menu_button">
-            <span class="fa fa-ban"></span>
-        </a>
-        <a data-action="crop" title="Crop" class="menu_button" onclick="image_upload.crop();">
-            <span class="fa fa-crop"></span>
-        </a>
-        <a data-action="crop" title="Accept" class="menu_button" onclick="image_upload.accept();">
-            <span class="fa fa-check"></span>
-        </a>
-
-        <input id="file" type="file" accept="image/*" class="sr-only">
-    </div>
-</header>
-
-<!-- Image container -->
-
-<div class="image_container">
-    <img id="image" style="display: none;">
-</div>
-
-<!-- Submit modal -->
-<div class="modal fade" id="submitModal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-body">
-                <form id="submitForm">
-
-                    {% if tags %}
-                    <div class="form-group">
-                        <label for="exampleInputEmail1">Tags</label><br>
-
-                        {% for tag in tags %}
-                            <input type="checkbox" name="tags[]" value="{{ tag }}"> {{ tag }}<br>
-                        {% endfor %}
-                    </div>
-                    {% endif %}
-
-                    {% if passwordIsAllowed %}
-                    <div class="form-group">
-                        <label for="exampleInputPassword1">Password (optional)</label>
-                        <input type="password" class="form-control" name="password" placeholder="Password">
-                    </div>
-                    {% endif %}
-
-                    <div class="form-group">
-                        <label for="exampleInputPassword1">Filename</label>
-                        <input type="text" class="form-control" name="fileName" placeholder="Filename">
-                    </div>
-                </form>
-            </div>
-            <div class="modal-footer">
-                <div class="btn-group btn-group-justified" role="group" aria-label="group button">
-                    <div class="btn-group" role="group">
-                        <button type="button" class="btn btn-default" data-dismiss="modal"  role="button">Cancel</button>
-                    </div>
-                    <div class="btn-group" role="group">
-                        <button type="button" id="saveImage" class="btn btn-default btn-hover-green" data-action="save" role="button" onclick="image_upload.upload()">Upload</button>
-                    </div>
-                </div>
-            </div>
+            <a data-action="clear" title="Crop" class="menu_button" onclick="window.app.changeMode('drag')">
+                <span class="fa fa-crop"></span>
+            </a>
         </div>
-    </div>
-</div>
 
-<div class="modal fade" id="linkConfirmationModal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-body">
-                <div class="form-group">
-                    <label for="exampleInputPassword1">URL address</label>
-                    <input type="text" class="form-control" name="fileName" id="resultUrl" placeholder="Filename" readonly>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <div class="btn-group btn-group-justified" role="group" aria-label="group button">
-                    <div class="btn-group" role="group">
-                        <button type="button" class="btn btn-default" data-dismiss="modal"  role="button">Close</button>
-                    </div>
-                </div>
-            </div>
+        <div class="menu">
+            <label for="file" title="Upload" class="menu_button">
+                <span class="fa fa-upload"></span>
+            </label>
+            <a data-action="clear" title="Cancel" class="menu_button">
+                <span class="fa fa-ban"></span>
+            </a>
+            <a data-action="crop" title="Crop" class="menu_button" onclick="window.app.crop();">
+                <span class="fa fa-crop"></span>
+            </a>
+            <a data-action="crop" title="Accept" class="menu_button" onclick="window.app.accept();">
+                <span class="fa fa-check"></span>
+            </a>
+
+            <input id="file" type="file" accept="image/*" class="sr-only">
         </div>
-    </div>
-</div>
+    </header>
 
-<script src="/minimumui/js/image_upload.js"></script>
-<script type="text/javascript">
-    image_upload = new ImageUpload({% if not aspectRatio %}null{% else %}{{ aspectRatio }}{% endif %}, '{{ tokenId }}', '{{ backUrl }}');
-    document.getElementById('file').addEventListener('change', image_upload.handleImageUpload, false);
-</script>
-</body>
-</html>
+    <!-- Image container -->
+
+    <div class="image_container">
+        <img id="image" style="display: none;">
+    </div>
+{% endblock %}

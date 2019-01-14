@@ -44,7 +44,9 @@ abstract class BaseController extends AbstractController
     protected function submitFormFromRequestQuery(Request $request, $formObject, string $formType): FormInterface
     {
         $infrastructureForm = $this->createForm($formType, $formObject);
-        $infrastructureForm->submit($request->query->all());
+        $infrastructureForm->submit(
+            \array_merge($request->query->all(), $request->request->all())
+        );
 
         return $infrastructureForm;
     }
