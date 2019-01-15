@@ -33,7 +33,7 @@ Example response:
 
     {
         "tokenId": "D0D12FFF-DD04-4514-8E5D-D51542DEBCFA",
-        "expires": "2019-01-07 06:30:43"
+        "expires": "2020-05-05 08:00:00"
     }
 
 
@@ -90,7 +90,7 @@ Example response:
 
     {
         "tokenId": "D0D12FFF-DD04-4514-8E5D-D51542DEBCFA",
-        "expires": "2019-01-07 06:30:43"
+        "expires": "2019-01-06 09:20:16"
     }
 
 

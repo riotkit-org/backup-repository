@@ -11,7 +11,10 @@ Common parameters for       all endpoints
 tags                       List of tags where the file will be listed
 public                     Should be listed/searched? (true/false)
 password                   Optionally allows to protect access to the file and it's metadata
+encoding                   Allows to upload encoded file, example values: base64, '' (helpful for frontend implementation)
 ========================  =============================================================================================
+
+
 
 From external resource by URL
 -----------------------------
