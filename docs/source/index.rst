@@ -26,6 +26,7 @@ Main functionality:
    domain/authentication/index
    domain/storage/index
    domain/backup/index
+   domain/minimumui/index
 
 From authors
 ============
