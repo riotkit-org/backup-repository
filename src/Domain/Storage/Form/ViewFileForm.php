@@ -4,4 +4,10 @@ namespace App\Domain\Storage\Form;
 
 class ViewFileForm extends BasicFileAccessForm
 {
+    /**
+     * Bytes range in HTTP format
+     *
+     * @var string
+     */
+    public $bytesRange;
 }

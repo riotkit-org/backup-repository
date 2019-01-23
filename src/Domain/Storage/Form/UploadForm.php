@@ -33,9 +33,9 @@ class UploadForm
     public $public = true;
 
     /**
-     * @var bool
+     * @var string
      */
-    public $duplicationAllowed = false;
+    public $contentIdent = '';
 
     /**
      * eg. base64 (if the data in body is encoded with base64 and needs to be decoded)

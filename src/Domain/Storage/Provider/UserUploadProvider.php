@@ -23,7 +23,7 @@ class UserUploadProvider
      */
     public function getStreamFromHttp(): Stream
     {
-        if ($this->hasPostedViaFormUrlEncoded()) {
+        if ($this->hasPostedViaPHPUploadMechanism()) {
             $filesIndexes = array_keys($_FILES);
             $file = $_FILES[$filesIndexes[0]];
 
@@ -34,10 +34,14 @@ class UserUploadProvider
             return new Stream(fopen('php://input', 'rb'));
         }
 
+        if ($this->isMultipart() && !$this->hasPostedViaPHPUploadMechanism()) {
+            throw new \LogicException('Multipart was not parsed by PHP, it can be causedby too low value of "post_max_size" in php.ini');
+        }
+
         throw new \LogicException('User not provided any valid source of file with the HTTP protocol');
     }
 
-    private function hasPostedViaFormUrlEncoded(): bool
+    private function hasPostedViaPHPUploadMechanism(): bool
     {
         // could check $this->hasUserSentUrlEncodedContentType(), but will not, we can be more fault-tolerant
         return \count($_FILES) > 0;
@@ -45,7 +49,7 @@ class UserUploadProvider
 
     private function hasPostedRaw(): bool
     {
-        if ($this->hasUserSentUrlEncodedContentType()) {
+        if ($this->hasUserSentUrlEncodedContentType() || $this->isMultipart()) {
             return false;
         }
 
@@ -54,6 +58,13 @@ class UserUploadProvider
         fclose($input);
 
         return \strlen($part) > 8;
+    }
+
+    private function isMultipart(): bool
+    {
+        $contentType = strtolower($this->requestHeaders['CONTENT_TYPE'] ?? '');
+
+        return strpos($contentType, 'multipart/form-data') !== false;
     }
 
     private function hasUserSentUrlEncodedContentType(): bool

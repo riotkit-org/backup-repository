@@ -24,14 +24,18 @@ help:
 install:
 	mkdir -p ./var/uploads
 	composer install
+	make migrate
 	make install_frontend
-	./bin/console doctrine:migrations:migrate --no-interaction -vv
 
 ## Install MinimumUi dependencies
 install_frontend:
 	npm install
 	rm -rf ./public/minimumui/components
 	mv node_modules ./public/minimumui/components
+
+## Upgrade database to the recent version of the structure
+migrate:
+	./bin/console doctrine:migrations:migrate --no-interaction -vv
 
 ## Build documentation
 build_docs:
@@ -55,3 +59,26 @@ build@x86_64:
 ## Build arm7hf image
 build@arm7hf:
 	sudo docker build . -f ./Dockerfile.arm7hf -t wolnosciowiec/file-repository:v2-arm7hf
+
+_configure_ci_environment:
+	make _set_env NAME=APP_ENV VALUE=test
+
+_erase_all_data:
+	rm -rf ./var/uploads/* || true
+	rm ./var/data.db || true
+	rm -rf ./var/cache/* || true
+	composer install
+	make migrate
+
+_set_env:
+	if grep -q "${NAME}=" .env; then \
+		sed -i.bak "s/${NAME}=.*/${NAME}=${VALUE}/g" .env; \
+		rm .env.bak || true; \
+	else\
+		echo "${NAME}=${VALUE}" >> .env;\
+	fi
+
+## Run API tests in a docker container
+test_api:
+	sudo docker build . -f ./Dockerfile.x86_64_postman -t wolnosciowiec/file-repository:v2-postman
+	sudo docker run wolnosciowiec/file-repository:v2-postman

@@ -56,11 +56,8 @@ class FileInfoFactory
 
     private function getMimeForFile(Path $path): string
     {
-        $info = finfo_open(FILEINFO_MIME_TYPE);
-        $mime = finfo_file($info, $path->getValue());
-        finfo_close($info);
-
-        return $mime;
+        // fileinfo native PHP extension consumes too much memory for unknown reason
+        return trim(shell_exec('file -b --mime-type "' . $path->getValue() . '"'));
     }
 
     private function doCheckSum(Path $path): string

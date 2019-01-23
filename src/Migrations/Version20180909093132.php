@@ -27,7 +27,7 @@ final class Version20180909093132 extends AbstractMigration
             $middleTable->addColumn('file_id', Type::STRING, ['length' => 36]);
             $middleTable->addColumn('tag_id',  Type::STRING, ['length' => 36]);
 
-            $middleTable->setPrimaryKey(['file_id']);
+            $middleTable->setPrimaryKey(['file_id', 'tag_id']);
         }
     }
 
