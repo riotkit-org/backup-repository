@@ -33,12 +33,13 @@ class FileUploader
     {
         $responseAsArray = $this->bus->call(Bus::STORAGE_UPLOAD, [
             'form' => [
-                'fileName'      => $this->nameFactory->getNextVersionName($collection)->getValue(),
-                'fileOverwrite' => false,
-                'password'      => $collection->getPassword(),
-                'tags'          => [],
-                'backUrl'       => '',
-                'public'        => false
+                'fileName'       => $this->nameFactory->getNextVersionName($collection)->getValue(),
+                'fileOverwrite'  => false,
+                'password'       => $collection->getPassword(),
+                'tags'           => [],
+                'backUrl'        => '',
+                'public'         => false,
+                'contentIdent'   => '_COLLECTION_' . $collection->getId()
             ],
 
             'baseUrl' => $baseUrl,

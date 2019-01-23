@@ -30,11 +30,11 @@ class TokenSubscriber implements EventSubscriberInterface
     private $tokenStorage;
 
     /**
-     * @var string
+     * @var bool
      */
     private $isDev;
 
-    public function __construct(IncomingTokenFactory $factory, TokenStorageInterface $tokenStorage, string $isDev)
+    public function __construct(IncomingTokenFactory $factory, TokenStorageInterface $tokenStorage, bool $isDev)
     {
         $this->factory = $factory;
         $this->tokenStorage = $tokenStorage;

@@ -55,19 +55,19 @@ class WriteManager
     private $staging;
 
     public function __construct(
-        FilesystemManager $fs,
-        FileRepository $repository,
-        FileInfoFactory $fileInfoFactory,
+        FilesystemManager      $fs,
+        FileRepository         $repository,
+        FileInfoFactory        $fileInfoFactory,
         SubmittedFileValidator $validator,
-        StoredFileFactory $storedFileFactory,
-        StagingAreaRepository $staging
+        StoredFileFactory      $storedFileFactory,
+        StagingAreaRepository  $staging
     ) {
-        $this->fs = $fs;
-        $this->repository = $repository;
-        $this->fileInfoFactory = $fileInfoFactory;
-        $this->validator = $validator;
+        $this->fs                = $fs;
+        $this->repository        = $repository;
+        $this->fileInfoFactory   = $fileInfoFactory;
+        $this->validator         = $validator;
         $this->storedFileFactory = $storedFileFactory;
-        $this->staging = $staging;
+        $this->staging           = $staging;
     }
 
     /**
@@ -101,7 +101,7 @@ class WriteManager
             $existingFromRepository->getFilename(),
             $securityContext,
             $existingFromRepository,
-            false,
+            '',
             $encoding
         );
     }
@@ -130,7 +130,7 @@ class WriteManager
         return $this->commitToRegistry(
             $this->staging->keepStreamAsTemporaryFile($this->fs->read($filename), $encoding),
             $this->storedFileFactory->createFromForm($form, $filename),
-            $form->duplicationAllowed
+            $form->contentIdent
         );
     }
 
@@ -164,7 +164,7 @@ class WriteManager
             $filename,
             $securityContext,
             $this->storedFileFactory->createFromForm($form, $filename),
-            $form->duplicationAllowed,
+            $form->contentIdent,
             $encoding
         );
     }
@@ -200,7 +200,7 @@ class WriteManager
             $staged,
             $filename,
             $existingFromRepository,
-            false
+            ''
         );
     }
 
@@ -209,7 +209,7 @@ class WriteManager
      * @param Filename $filename
      * @param UploadSecurityContext $securityContext
      * @param StoredFile $storedFile
-     * @param bool $isDuplicationAllowed
+     * @param string $contentIdent
      *
      * @param InputEncoding $encoding
      * @return StoredFile
@@ -222,7 +222,7 @@ class WriteManager
         Filename $filename,
         UploadSecurityContext $securityContext,
         StoredFile $storedFile,
-        bool $isDuplicationAllowed,
+        string $contentIdent,
         InputEncoding $encoding
     ): StoredFile {
 
@@ -230,12 +230,10 @@ class WriteManager
         $staged = $this->staging->keepStreamAsTemporaryFile($stream, $encoding);
 
         // 2. Get all info about the file
-        $info = $this->fileInfoFactory->generateForStagedFile($staged);
+        $info = $this->fileInfoFactory->generateForStagedFile($staged, $contentIdent);
 
         // 3. Avoid content duplications
-        if (!$isDuplicationAllowed) {
-            $this->validator->assertThereIsNoFileByChecksum($storedFile, $info->getChecksum());
-        }
+        $this->validator->assertThereIsNoFileByChecksum($storedFile, $info->getChecksum());
 
         // each new file needs to be validated
         $this->validator->validateAfterUpload($staged, $securityContext);
@@ -245,7 +243,7 @@ class WriteManager
             $staged,
             $filename,
             $storedFile,
-            $isDuplicationAllowed
+            $contentIdent
         );
     }
 
@@ -253,7 +251,7 @@ class WriteManager
      * @param StagedFile $stagedFile
      * @param Filename $filename
      * @param StoredFile $storedFile
-     * @param bool $isDuplicationAllowed
+     * @param string $contentIdent
      *
      * @return StoredFile
      *
@@ -264,35 +262,33 @@ class WriteManager
         StagedFile $stagedFile,
         Filename $filename,
         StoredFile $storedFile,
-        bool $isDuplicationAllowed
+        string $contentIdent
     ): StoredFile {
 
         $this->fs->write($filename, $stagedFile->openAsStream());
 
-        return $this->commitToRegistry($stagedFile, $storedFile, $isDuplicationAllowed);
+        return $this->commitToRegistry($stagedFile, $storedFile, $contentIdent);
     }
 
     /**
      * @param StagedFile|Path $stagedFile
      * @param StoredFile $file
-     * @param bool $isDuplicationAllowed
+     * @param string $contentIdent
      *
      * @return StoredFile
      * @throws DuplicatedContentException
      * @throws ValidationException
      */
-    private function commitToRegistry($stagedFile, StoredFile $file, bool $isDuplicationAllowed): StoredFile
+    private function commitToRegistry($stagedFile, StoredFile $file, string $contentIdent): StoredFile
     {
         // fill up the metadata
         if (!$file->wasAlreadyStored()) {
-            $info = $this->fileInfoFactory->generateForStagedFile($stagedFile);
+            $info = $this->fileInfoFactory->generateForStagedFile($stagedFile, $contentIdent);
 
             $file->setContentHash($info->getChecksum());
             $file->setMimeType($info->getMime());
 
-            if (!$isDuplicationAllowed) {
-                $this->validator->assertThereIsNoFileByChecksum($file, $info->getChecksum());
-            }
+            $this->validator->assertThereIsNoFileByChecksum($file, $info->getChecksum());
 
             $this->validator->assertThereIsNoFileByFilename($file);
         }

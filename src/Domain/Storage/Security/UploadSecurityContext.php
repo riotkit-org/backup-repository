@@ -71,6 +71,10 @@ class UploadSecurityContext
 
     public function isMimeAllowed(Mime $mime): bool
     {
+        if ($this->isAdministrator) {
+            return true;
+        }
+
         return !$this->allowedMimes || \in_array($mime->getValue(), $this->allowedMimes, true);
     }
 

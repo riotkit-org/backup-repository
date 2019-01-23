@@ -14,7 +14,7 @@ final class Version20180909103605 extends AbstractMigration
             $table = $schema->createTable('file_registry');
             $table->addColumn('id',          Type::INTEGER, ['length' => 8, 'autoincrement' => true]);
             $table->addColumn('fileName',    Type::STRING, ['length' => 254, 'null' => false]);
-            $table->addColumn('contentHash', Type::STRING, ['length' => 32]);
+            $table->addColumn('contentHash', Type::STRING, ['length' => 128]);
             $table->addColumn('dateAdded',   Type::DATETIME_IMMUTABLE, ['length' => 32]);
             $table->addColumn('mimeType',    Type::STRING, ['length' => 24, 'null' => false]);
             $table->addColumn('password',    Type::STRING, ['length' => 254, 'null' => true]);

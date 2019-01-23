@@ -35,7 +35,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"roles\": [\"upload.images\"]\n}"
+							"raw": "{\n    \"roles\": [\n    \t\"upload.images\",\n    \t\"upload.enforce_no_password\",\n    \t\"upload.enforce_tags_selected_in_token\"\n    ],\n    \"data\": {\n    \t\"tags\": [\"gallery\"]\n    }\n}"
 						},
 						"url": {
 							"raw": "{{appUrl}}/auth/token/generate?_token=test-token-full-permissions",
@@ -89,7 +89,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"roles\": [\"upload.images\", \"this-role-is-invalid\"]\n}\n"
+							"raw": ""
 						},
 						"url": {
 							"raw": "{{appUrl}}/auth/token/{{token_basic}}?_token=test-token-full-permissions",
@@ -240,7 +240,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"roles\": [\"upload.images\", \"this-role-is-invalid\"]\n}\n"
+							"raw": ""
 						},
 						"url": {
 							"raw": "{{appUrl}}/jobs/token/expired/clear?_token=test-token-full-permissions",
@@ -270,7 +270,6 @@
 							"listen": "test",
 							"script": {
 								"id": "8f8cd581-cea0-4038-af88-1ea8e09fc8b7",
-								"type": "text/javascript",
 								"exec": [
 									"var jsonData = pm.response.json();",
 									"",
@@ -280,7 +279,8 @@
 									"",
 									"pm.globals.set(\"token_with_low_file_size_limit\", jsonData.tokenId);",
 									""
-								]
+								],
+								"type": "text/javascript"
 							}
 						}
 					],
@@ -289,7 +289,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"roles\": [\"upload.images\"],\n    \"data\": {\n        \"tags\": [\"user_uploads.u123\", \"user_uploads\"],\n        \"allowedMimeTypes\": [\"image/jpeg\", \"image/png\", \"image/gif\"],\n        \"maxAllowedFileSize\": 100\n    }\n}\n"
+							"raw": "{\n    \"roles\": [\"upload.images\"],\n    \"data\": {\n        \"tags\": [\"user_uploads.u123\", \"user_uploads\"],\n        \"allowedMimeTypes\": [\"image/jpeg\", \"image/png\", \"image/gif\", \"text/plain\"],\n        \"maxAllowedFileSize\": 100\n    }\n}\n"
 						},
 						"url": {
 							"raw": "{{appUrl}}/auth/token/generate?_token=test-token-full-permissions",
@@ -414,7 +414,6 @@
 							"listen": "test",
 							"script": {
 								"id": "31215dc8-d91f-41ae-b801-1799542efaa6",
-								"type": "text/javascript",
 								"exec": [
 									"var jsonData = pm.response.json();",
 									"",
@@ -422,7 +421,8 @@
 									"    pm.response.to.have.status(403);",
 									"});",
 									""
-								]
+								],
+								"type": "text/javascript"
 							}
 						}
 					],
@@ -431,17 +431,16 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"roles\": [\"upload.images\", \"this-role-is-invalid\"]\n}\n"
+							"raw": ""
 						},
 						"url": {
-							"raw": "{{appUrl}}/auth/token/lookup/{{token_basic}}?_token={{token_with_tags_and_mimes}}",
+							"raw": "{{appUrl}}/auth/token/{{token_basic}}?_token={{token_with_tags_and_mimes}}",
 							"host": [
 								"{{appUrl}}"
 							],
 							"path": [
 								"auth",
 								"token",
-								"lookup",
 								"{{token_basic}}"
 							],
 							"query": [
@@ -476,7 +475,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"roles\": [\"upload.images\", \"this-role-is-invalid\"]\n}\n"
+							"raw": ""
 						},
 						"url": {
 							"raw": "{{appUrl}}/jobs/token/expired/clear?_token={{token_with_tags_and_mimes}}",
@@ -506,14 +505,14 @@
 							"listen": "test",
 							"script": {
 								"id": "c103d2a2-8227-4ba3-bce6-60465ab3489c",
-								"type": "text/javascript",
 								"exec": [
 									"pm.test(\"Contains roles list as a dict\", function () {",
 									"    var jsonData = pm.response.json();",
 									"    pm.expect(typeof jsonData.roles).to.eql('object');",
 									"});",
 									""
-								]
+								],
+								"type": "text/javascript"
 							}
 						}
 					],
@@ -522,7 +521,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"roles\": [\"upload.images\", \"this-role-is-invalid\"]\n}\n"
+							"raw": ""
 						},
 						"url": {
 							"raw": "{{appUrl}}/auth/roles?_token=test-token-full-permissions",
@@ -791,7 +790,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"fileUrl\": \"http://zsp.net.pl/files/barroness_logo.png\",\n    \"password\": \"InternationalWorkersAssociation\",\n    \"tags\": []\n}\n"
+							"raw": "{\n    \"fileUrl\": \"http://zsp.net.pl/files/barroness_logo.png\",\n    \"password\": \"InternationalWorkersAssociation\",\n    \"tags\": [],\n    \"public\": true\n}\n"
 						},
 						"url": {
 							"raw": "{{appUrl}}/repository/image/add-by-url?_token=test-token-full-permissions",
@@ -820,13 +819,13 @@
 							"listen": "test",
 							"script": {
 								"id": "18d6696c-d6c7-459e-a16e-65e919b53b21",
-								"type": "text/javascript",
 								"exec": [
 									"pm.test(\"Status code is 403\", function () {",
 									"    pm.response.to.have.status(403);",
 									"});",
 									""
-								]
+								],
+								"type": "text/javascript"
 							}
 						}
 					],
@@ -835,7 +834,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"fileUrl\": \"https://iwa-ait.org/sites/default/files/iwaait_1.png\",\n    \"password\": \"InternationalWorkersAssociation\",\n    \"tags\": []\n}\n"
+							"raw": ""
 						},
 						"url": {
 							"raw": "{{appUrl}}/repository/file/f8f39c14c7df5976aa1257f05692337c71bb749012022fe7eba74539248ae376_barroness_logo.png",
@@ -858,7 +857,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"fileUrl\": \"file://examples/files/image.jpg\",\n    \"tags\": [\n    \t\"grassroot\", \"memes\"\n    ]\n}\n"
+							"raw": "{\n    \"fileUrl\": \"file://examples/files/image.jpg\",\n    \"tags\": [\n    \t\"grassroot\", \"memes\"\n    ],\n    \"public\": true\n}\n"
 						},
 						"url": {
 							"raw": "{{appUrl}}/repository/image/add-by-url?_token=test-token-full-permissions",
@@ -887,7 +886,6 @@
 							"listen": "test",
 							"script": {
 								"id": "0ba44b81-0292-4503-91f9-7cdff9ca04c5",
-								"type": "text/javascript",
 								"exec": [
 									"var jsonData = pm.response.json();",
 									"",
@@ -896,7 +894,8 @@
 									"    pm.expect(jsonData.http_code).to.eql(400);",
 									"});",
 									""
-								]
+								],
+								"type": "text/javascript"
 							}
 						}
 					],
@@ -904,8 +903,8 @@
 						"method": "POST",
 						"header": [],
 						"body": {
-							"mode": "file",
-							"file": {}
+							"mode": "raw",
+							"raw": "Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. Too long text. "
 						},
 						"url": {
 							"raw": "{{appUrl}}/repository/image/upload?_token={{token_with_low_file_size_limit}}&fileName=heart.png",
@@ -932,83 +931,22 @@
 					"response": []
 				},
 				{
-					"name": "[Upload] Upload by HTTP form (POST input field): File too big",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "493f77a0-c885-42b5-979d-6d3cd495e801",
-								"type": "text/javascript",
-								"exec": [
-									"var jsonData = pm.response.json();",
-									"",
-									"pm.test(\"Checks the file size is validated\", function () {",
-									"    pm.expect(jsonData.status).to.eql('File size is too big');",
-									"    pm.expect(jsonData.http_code).to.eql(400);",
-									"});",
-									""
-								]
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "Content-Type",
-								"value": "application/x-www-form-urlencoded"
-							}
-						],
-						"body": {
-							"mode": "formdata",
-							"formdata": [
-								{
-									"key": "file",
-									"type": "file"
-								}
-							]
-						},
-						"url": {
-							"raw": "{{appUrl}}/repository/file/upload?_token={{token_with_low_file_size_limit}}&fileName=heart.png",
-							"host": [
-								"{{appUrl}}"
-							],
-							"path": [
-								"repository",
-								"file",
-								"upload"
-							],
-							"query": [
-								{
-									"key": "_token",
-									"value": "{{token_with_low_file_size_limit}}"
-								},
-								{
-									"key": "fileName",
-									"value": "heart.png"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
 					"name": "[Upload] Not allowed mime type",
 					"event": [
 						{
 							"listen": "test",
 							"script": {
 								"id": "8e4e64f0-1228-4e16-8c2f-ef280ed08309",
-								"type": "text/javascript",
 								"exec": [
 									"var jsonData = pm.response.json();",
 									"",
-									"pm.test(\"Checks the file size is validated\", function () {",
+									"pm.test(\"Checks the mime type is validated\", function () {",
 									"    pm.expect(jsonData.status).to.eql('Mime type not allowed');",
-									"    pm.expect(jsonData.code).to.eql(400);",
+									"    pm.expect(jsonData.http_code).to.eql(400);",
 									"});",
 									""
-								]
+								],
+								"type": "text/javascript"
 							}
 						}
 					],
@@ -1017,7 +955,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "one-two-three a plaintext file here\n"
+							"raw": "<html>DSadsadsQEqewe"
 						},
 						"url": {
 							"raw": "{{appUrl}}/repository/image/upload?_token={{token_with_low_file_size_limit}}&fileName=heart.png",
@@ -1126,13 +1064,8 @@
 							"listen": "test",
 							"script": {
 								"id": "2f1b3da9-20b5-469b-92a3-f365d8f96dd4",
-								"type": "text/javascript",
 								"exec": [
 									"var jsonData = pm.response.json();",
-									"",
-									"pm.test(\"Response time is less than 200ms\", function () {",
-									"    pm.expect(pm.response.responseTime).to.be.below(200);",
-									"});",
 									"",
 									"pm.test(\"Current page is first\", function () {",
 									"    pm.expect(jsonData.pagination.current).to.eql(1);",
@@ -1147,10 +1080,11 @@
 									"});",
 									"",
 									"pm.test(\"There are exactly 2 results\", function () {",
-									"    pm.expect(jsonData.results.length).to.eql(2);",
+									"    pm.expect(jsonData.results.length).to.be.above(0);",
 									"});",
 									""
-								]
+								],
+								"type": "text/javascript"
 							}
 						}
 					],
@@ -1883,13 +1817,12 @@
 							"_postman_isSubFolder": true
 						},
 						{
-							"name": "Create a token that allows to create collections",
+							"name": "Create a token that allows to create and delete collections",
 							"event": [
 								{
 									"listen": "test",
 									"script": {
 										"id": "0fb68bc5-c302-4e99-b07f-44907e0de989",
-										"type": "text/javascript",
 										"exec": [
 											"var jsonData = pm.response.json();",
 											"",
@@ -1899,7 +1832,8 @@
 											"",
 											"pm.globals.set(\"token_create_collections\", jsonData.tokenId);",
 											""
-										]
+										],
+										"type": "text/javascript"
 									}
 								}
 							],
@@ -1908,7 +1842,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n    \"roles\": [\"collections.create_new\", \"collections.add_tokens_to_allowed_collections\"],\n    \"data\": {\n        \"tags\": [\"user_uploads.u123\", \"user_uploads\"],\n        \"allowedMimeTypes\": [\"image/jpeg\", \"image/png\", \"image/gif\"],\n        \"maxAllowedFileSize\": 14579\n    }\n}\n"
+									"raw": "{\n    \"roles\": [\"collections.create_new\", \"collections.manage_tokens_in_allowed_collections\", \"collections.delete_allowed_collections\"],\n    \"data\": {\n        \"tags\": [\"user_uploads.u123\", \"user_uploads\"],\n        \"allowedMimeTypes\": [\"image/jpeg\", \"image/png\", \"image/gif\"],\n        \"maxAllowedFileSize\": 14579\n    }\n}\n"
 								},
 								"url": {
 									"raw": "{{appUrl}}/auth/token/generate?_token=test-token-full-permissions",
@@ -2085,7 +2019,6 @@
 									"listen": "test",
 									"script": {
 										"id": "a0df8cea-1236-4c59-9b3f-3281f904bc2a",
-										"type": "text/javascript",
 										"exec": [
 											"var jsonData = pm.response.json();",
 											"",
@@ -2108,7 +2041,8 @@
 											"",
 											"pm.globals.set(\"collection_2\", jsonData.collection.id);",
 											""
-										]
+										],
+										"type": "text/javascript"
 									}
 								}
 							],
@@ -2190,7 +2124,6 @@
 									"listen": "test",
 									"script": {
 										"id": "26ccbe46-0ae7-43d5-97e5-c8cb9eeff4d8",
-										"type": "text/javascript",
 										"exec": [
 											"var jsonData = pm.response.json();",
 											"",
@@ -2200,10 +2133,11 @@
 											"});",
 											"",
 											"pm.test(\"Error about that the collection was already deleted is present\", function () {",
-											"    pm.expect(jsonData['form.collection'][0]).to.eql('collection_no_longer_exists');",
+											"    pm.expect(jsonData['fields']['form.collection'][0]).to.eql('collection_no_longer_exists');",
 											"});",
 											""
-										]
+										],
+										"type": "text/javascript"
 									}
 								}
 							],
@@ -2241,7 +2175,6 @@
 									"listen": "test",
 									"script": {
 										"id": "0982e7ef-ffd0-4953-b79f-c371557faaee",
-										"type": "text/javascript",
 										"exec": [
 											"var jsonData = pm.response.json();",
 											"",
@@ -2251,10 +2184,11 @@
 											"});",
 											"",
 											"pm.test(\"Error about that the collection was already deleted is present\", function () {",
-											"    pm.expect(jsonData['form.collection'][0]).to.eql('collection_no_longer_exists');",
+											"    pm.expect(jsonData['fields']['form.collection'][0]).to.eql('collection_no_longer_exists');",
 											"});",
 											""
-										]
+										],
+										"type": "text/javascript"
 									}
 								}
 							],
@@ -2377,7 +2311,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n\t\"maxBackupsCount\": 5,\n\t\"maxOneVersionSize\": \"1MB\",\n\t\"maxCollectionSize\": \"5MB\",\n\t\"strategy\": \"delete_oldest_when_adding_new\",\n\t\"description\": \"Solidarity Federation documents backup\"\n}\n"
+									"raw": ""
 								},
 								"url": {
 									"raw": "{{appUrl}}/repository/collection/{{collection_3}}?_token={{token_create_collections}}",
@@ -2406,21 +2340,21 @@
 					"name": "Collection listing",
 					"item": [
 						{
-							"name": "Listing: Search for ZSP* -> should find \"ZSP uploads directory\"",
+							"name": "Listing: Search for IWA* -> should find \"IWA uploads directory\"",
 							"event": [
 								{
 									"listen": "test",
 									"script": {
 										"id": "c1a5f77d-b9d1-4945-ad9e-60186f679710",
-										"type": "text/javascript",
 										"exec": [
 											"var jsonData = pm.response.json();",
 											"",
-											"pm.test(\"Has element 'ZSP uploads directory'\", function () {",
-											"    pm.expect(jsonData.elements[0].description).to.eql('ZSP uploads directory');",
+											"pm.test(\"Has element 'Solidarity Federation documents backup'\", function () {",
+											"    pm.expect(jsonData.elements[0].description).to.eql('Solidarity Federation documents backup');",
 											"});",
 											""
-										]
+										],
+										"type": "text/javascript"
 									}
 								}
 							],
@@ -2429,10 +2363,10 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n\t\"maxBackupsCount\": 5,\n\t\"maxOneVersionSize\": \"1MB\",\n\t\"maxCollectionSize\": \"5MB\",\n\t\"strategy\": \"delete_oldest_when_adding_new\",\n\t\"description\": \"Solidarity Federation documents backup\"\n}\n"
+									"raw": ""
 								},
 								"url": {
-									"raw": "{{appUrl}}/repository/collection?_token=test-token-full-permissions&createdTo=2050-05-05&createdFrom=2018-01-01&searchQuery=ZSP",
+									"raw": "{{appUrl}}/repository/collection?_token=test-token-full-permissions&createdTo=2050-05-05&createdFrom=2018-01-01&searchQuery=Solidarity",
 									"host": [
 										"{{appUrl}}"
 									],
@@ -2455,7 +2389,7 @@
 										},
 										{
 											"key": "searchQuery",
-											"value": "ZSP"
+											"value": "Solidarity"
 										}
 									]
 								}
@@ -2486,7 +2420,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n\t\"maxBackupsCount\": 5,\n\t\"maxOneVersionSize\": \"1MB\",\n\t\"maxCollectionSize\": \"5MB\",\n\t\"strategy\": \"delete_oldest_when_adding_new\",\n\t\"description\": \"Solidarity Federation documents backup\"\n}\n"
+									"raw": ""
 								},
 								"url": {
 									"raw": "{{appUrl}}/repository/collection?_token=test-token-full-permissions&page=2&limit=3",
@@ -2528,7 +2462,6 @@
 									"listen": "test",
 									"script": {
 										"id": "0fb68bc5-c302-4e99-b07f-44907e0de989",
-										"type": "text/javascript",
 										"exec": [
 											"var jsonData = pm.response.json();",
 											"",
@@ -2538,7 +2471,8 @@
 											"",
 											"pm.globals.set(\"token_create_collections\", jsonData.tokenId);",
 											""
-										]
+										],
+										"type": "text/javascript"
 									}
 								}
 							],
@@ -2547,7 +2481,7 @@
 								"header": [],
 								"body": {
 									"mode": "raw",
-									"raw": "{\n    \"roles\": [\"collections.create_new\", \"collections.add_tokens_to_allowed_collections\"],\n    \"data\": {\n        \"tags\": [\"user_uploads.u123\", \"user_uploads\"],\n        \"allowedMimeTypes\": [\"image/jpeg\", \"image/png\", \"image/gif\"],\n        \"maxAllowedFileSize\": 14579\n    }\n}\n"
+									"raw": "{\n    \"roles\": [\"collections.create_new\", \"collections.manage_tokens_in_allowed_collections\"],\n    \"data\": {\n        \"tags\": [\"user_uploads.u123\", \"user_uploads\"],\n        \"allowedMimeTypes\": [\"image/jpeg\", \"image/png\", \"image/gif\"],\n        \"maxAllowedFileSize\": 14579\n    }\n}\n"
 								},
 								"url": {
 									"raw": "{{appUrl}}/auth/token/generate?_token=test-token-full-permissions",
@@ -2787,7 +2721,6 @@
 											"listen": "test",
 											"script": {
 												"id": "0fb68bc5-c302-4e99-b07f-44907e0de989",
-												"type": "text/javascript",
 												"exec": [
 													"var jsonData = pm.response.json();",
 													"",
@@ -2797,7 +2730,8 @@
 													"",
 													"pm.globals.set(\"token_create_collections\", jsonData.tokenId);",
 													""
-												]
+												],
+												"type": "text/javascript"
 											}
 										}
 									],
@@ -2806,7 +2740,7 @@
 										"header": [],
 										"body": {
 											"mode": "raw",
-											"raw": "{\n    \"roles\": [\n    \t\"collections.create_new\", \n    \t\"collections.add_tokens_to_allowed_collections\",\n    \t\"collections.upload_to_allowed_collections\",\n    \t\"collections.list_versions_for_allowed_collections\",\n    \t\"upload.backup\"\n    ],\n    \"data\": {\n        \"tags\": [\"user_uploads.u123\", \"user_uploads\"],\n        \"allowedMimeTypes\": [\"image/jpeg\", \"image/png\", \"image/gif\"],\n        \"maxAllowedFileSize\": 14579\n    }\n}\n"
+											"raw": "{\n    \"roles\": [\n    \t\"collections.create_new\", \n    \t\"collections.manage_tokens_in_allowed_collections\",\n    \t\"collections.upload_to_allowed_collections\",\n    \t\"collections.list_versions_for_allowed_collections\",\n    \t\"upload.backup\"\n    ],\n    \"data\": {\n        \"tags\": [\"user_uploads.u123\", \"user_uploads\"],\n        \"allowedMimeTypes\": [\"image/jpeg\", \"image/png\", \"image/gif\"],\n        \"maxAllowedFileSize\": 14579\n    }\n}\n"
 										},
 										"url": {
 											"raw": "{{appUrl}}/auth/token/generate?_token=test-token-full-permissions",
@@ -2894,7 +2828,6 @@
 											"listen": "test",
 											"script": {
 												"id": "b4bc8e4e-fcec-43e3-96f6-f00a0262001a",
-												"type": "text/javascript",
 												"exec": [
 													"var jsonData = pm.response.json();",
 													"",
@@ -2907,10 +2840,15 @@
 													"});",
 													"",
 													"pm.test(\"File has proper 'v1' in name\", function () {",
-													"    pm.expect(jsonData.version.file.filename).to.contain('solidarity-with-postal-workers-article-v1');",
+													"    pm.expect(",
+													"        // later the v1 is deleted and uploaded again as v4, when repeating this test multiple times",
+													"        // then the v1 stays as v4 in the repository, so we expect a \"FUTURE NAME\"",
+													"        jsonData.version.file.filename.match(/workers\\-article\\-(v1|v4)/).length > 0",
+													"    ).to.equal(true);",
 													"});",
 													""
-												]
+												],
+												"type": "text/javascript"
 											}
 										}
 									],
@@ -3004,7 +2942,6 @@
 											"listen": "test",
 											"script": {
 												"id": "06dc6f92-10cf-4002-a013-1a6317752807",
-												"type": "text/javascript",
 												"exec": [
 													"var jsonData = pm.response.json();",
 													"",
@@ -3020,7 +2957,8 @@
 													"    pm.expect(jsonData.version.file.filename).to.contain('solidarity-with-postal-workers-article-v2');",
 													"});",
 													""
-												]
+												],
+												"type": "text/javascript"
 											}
 										}
 									],
@@ -3335,7 +3273,7 @@
 									"response": []
 								},
 								{
-									"name": "Upload: v1 can be uploaded again as v3",
+									"name": "Upload: v1 can be uploaded again as v4",
 									"event": [
 										{
 											"listen": "test",
@@ -3704,7 +3642,6 @@
 											"listen": "test",
 											"script": {
 												"id": "0fb68bc5-c302-4e99-b07f-44907e0de989",
-												"type": "text/javascript",
 												"exec": [
 													"var jsonData = pm.response.json();",
 													"",
@@ -3714,7 +3651,8 @@
 													"",
 													"pm.globals.set(\"token_create_collections\", jsonData.tokenId);",
 													""
-												]
+												],
+												"type": "text/javascript"
 											}
 										}
 									],

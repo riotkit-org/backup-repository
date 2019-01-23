@@ -1,6 +1,15 @@
 FROM wolnosciowiec/docker-php-app
 
-RUN docker-php-ext-install bcmath
+# @todo: Switch FROM to point to the Dockerfile.x86_64
+
+RUN docker-php-ext-install bcmath \
+    && rm -rf /var/lib/apt/lists/* \
+    && apt-get update \
+    && apt-get install -y curl bash gnupg2 \
+    && curl -sL https://deb.nodesource.com/setup_8.x | bash - \
+    && apt-get install -y nodejs \
+    && apt-get clean \
+    && npm install -g newman
 
 ENV DATABASE_URL="sqlite:///%kernel.project_dir%/var/data.db" \
     FS_ADAPTER=local \
@@ -24,7 +33,13 @@ ENV DATABASE_URL="sqlite:///%kernel.project_dir%/var/data.db" \
     FS_FTP_PASSIVE=0
 
 ADD . /var/www/html
+ADD tests_entrypoint.sh /
 RUN cd /var/www/html \
-    && chown www-data:www-data /var/www/html -R \
-    && apk add --update nodejs curl bash \
-    && make deploy
+    && chown www-data:www-data /var/www -R \
+    && su www-data -s /bin/bash -c "make deploy" \
+    && mkdir -p /var/tests \
+    && chmod +x /tests_entrypoint.sh
+
+WORKDIR "/var/www/html"
+
+ENTRYPOINT "/tests_entrypoint.sh"

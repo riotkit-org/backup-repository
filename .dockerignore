@@ -1,0 +1,10 @@
+var/cache
+var/log
+var/uploads
+var/data.db
+Dockerfile.x86_64_postman
+Dockerfile.x86_64
+README.md
+.env
+.gitignore
+.git

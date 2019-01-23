@@ -2,11 +2,13 @@
 
 namespace App\Domain\Storage\ActionHandler;
 
+use App\Domain\Storage\Aggregate\BytesRangeAggregate;
 use App\Domain\Storage\Context\CachingContext;
 use App\Domain\Storage\Entity\StoredFile;
 use App\Domain\Storage\Exception\AuthenticationException;
 use App\Domain\Storage\Exception\StorageException;
 use App\Domain\Storage\Form\ViewFileForm;
+use App\Domain\Storage\Manager\FilesystemManager;
 use App\Domain\Storage\Manager\StorageManager;
 use App\Domain\Storage\Response\FileDownloadResponse;
 use App\Domain\Storage\Security\ReadSecurityContext;
@@ -19,9 +21,15 @@ class ViewFileHandler
      */
     private $storageManager;
 
-    public function __construct(StorageManager $storageManager)
+    /**
+     * @var FilesystemManager
+     */
+    private $fs;
+
+    public function __construct(StorageManager $storageManager, FilesystemManager $fs)
     {
         $this->storageManager = $storageManager;
+        $this->fs             = $fs;
     }
 
     /**
@@ -60,13 +68,32 @@ class ViewFileHandler
             });
         }
 
-        return new FileDownloadResponse('OK', 200, function () use ($file) {
+        return new FileDownloadResponse('OK', 200, function () use ($file, $form) {
             $out = fopen('php://output', 'wb');
             $res = $file->getStream()->attachTo();
 
-            $this->sendHttpHeaders($file->getStoredFile());
+            //
+            // Bytes range support (for streaming bigger files eg. video files)
+            //
+            $bytesRange = new BytesRangeAggregate(
+                $form->bytesRange,
+                $this->fs->getFileSize($file->getStoredFile()->getFilename())
+            );
 
-            stream_copy_to_stream($res, $out);
+            $maxLength = null;
+            $offset = null;
+
+            if ($bytesRange->getFrom()->isHigherThanInteger(0) && $bytesRange->getTo()->isHigherThanInteger(0)) {
+                $offset = $bytesRange->getFrom();
+                $maxLength = $bytesRange->getTo()->getValue() - $bytesRange->getFrom()->getValue();
+
+                if ($maxLength < 0) {
+                    throw new \LogicException('Bytes range is invalid, cannot be minus.');
+                }
+            }
+
+            $this->sendHttpHeaders($file->getStoredFile());
+            $maxLength && $offset ? stream_copy_to_stream($res, $out, $maxLength, $offset) : stream_copy_to_stream($res, $out);
             fclose($out);
             fclose($res);
         });
@@ -78,5 +105,7 @@ class ViewFileHandler
         header('Last-Modified:  ' . $file->getDateAdded()->format('D, d M Y H:i:s') . ' GMT');
         header('ETag: ' . $file->getContentHash());
         header('Cache-Control: public, max-age=25200');
+        header('Accept-Ranges: bytes');
+        header('Content-Length: ' . $this->fs->getFileSize($file->getFilename()));
     }
 }

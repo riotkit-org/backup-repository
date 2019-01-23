@@ -18,6 +18,8 @@ Requirements:
 - Composer (PHP package manager)
 - sphinx-glpi-theme (for documentation)
 - sphinx (for documentation)
+- file
+- sha256sum
 
 Copyleft
 --------

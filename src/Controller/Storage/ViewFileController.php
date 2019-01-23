@@ -44,7 +44,8 @@ class ViewFileController extends BaseController
     {
         $form = new ViewFileForm();
         $infrastructureForm = $this->submitFormFromRequestQuery($request, $form, ViewFileFormType::class);
-        $form->filename = $filename;
+        $form->filename   = $filename;
+        $form->bytesRange = $request->headers->get('Range', '');
 
         if (!$infrastructureForm->isValid()) {
             return $this->createValidationErrorResponse($infrastructureForm);
