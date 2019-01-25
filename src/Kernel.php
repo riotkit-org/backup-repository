@@ -3,6 +3,7 @@
 namespace App;
 
 use App\Infrastructure\Common\DependencyInjection\DomainBusPass;
+use App\Infrastructure\Storage\DependencyInjection\AntiHotlinkFeatureCompilerPass;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\Config\Resource\FileResource;
@@ -51,6 +52,7 @@ class Kernel extends BaseKernel
         $loader->load($confDir.'/{services}_' . $this->environment.self::CONFIG_EXTS, 'glob');
 
         $container->addCompilerPass(new DomainBusPass());
+        $container->addCompilerPass(new AntiHotlinkFeatureCompilerPass());
     }
 
     protected function configureRoutes(RouteCollectionBuilder $routes)

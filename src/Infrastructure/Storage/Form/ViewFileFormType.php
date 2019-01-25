@@ -29,6 +29,7 @@ class ViewFileFormType extends AbstractType
         return $resolver->setDefaults([
             'data_class'           => ViewFileForm::class,
             'csrf_protection'      => false,
+            'allow_extra_fields'   => true,
             'extra_fields_message' => 'This request does not support extra parameters such as {{ extra_fields }}'
         ]);
     }

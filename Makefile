@@ -56,12 +56,18 @@ deploy: install
 build@x86_64:
 	sudo docker build . -f ./Dockerfile.x86_64 -t wolnosciowiec/file-repository:v2
 
+## Run x86_64 image
+run@x86_64:
+	sudo docker run --rm --name file-repository -p 80:80 wolnosciowiec/file-repository:v2
+
 ## Build arm7hf image
 build@arm7hf:
 	sudo docker build . -f ./Dockerfile.arm7hf -t wolnosciowiec/file-repository:v2-arm7hf
 
 _configure_ci_environment:
 	make _set_env NAME=APP_ENV VALUE=test
+	make _set_env NAME=ANTI_HOTLINK_SECRET_METHOD VALUE='"\\$$$$http_x_expiration_time\\$$$$http_test_header MY-AWESOME-SUFFIX"'
+	cp ./config/ids_mapping.yaml.example ./config/ids_mapping.yaml
 
 _erase_all_data:
 	rm -rf ./var/uploads/* || true
@@ -72,10 +78,10 @@ _erase_all_data:
 
 _set_env:
 	if grep -q "${NAME}=" .env; then \
-		sed -i.bak "s/${NAME}=.*/${NAME}=${VALUE}/g" .env; \
+		sed -i.bak 's/${NAME}=.*/${NAME}=${VALUE}/g' .env; \
 		rm .env.bak || true; \
 	else\
-		echo "${NAME}=${VALUE}" >> .env;\
+		echo '${NAME}=${VALUE}' >> .env;\
 	fi
 
 ## Run API tests in a docker container

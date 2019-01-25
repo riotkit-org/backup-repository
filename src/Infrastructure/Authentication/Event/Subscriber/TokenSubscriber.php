@@ -73,7 +73,7 @@ class TokenSubscriber implements EventSubscriberInterface
         }
 
         // Development token
-        if ($this->isDev && $tokenString === self::TEST_TOKEN) {
+        if ($this->isDev && ($tokenString === self::TEST_TOKEN || $this->isProfilerRoute($event->getRequest()))) {
             $this->handleTestToken();
             return;
         }
@@ -108,6 +108,11 @@ class TokenSubscriber implements EventSubscriberInterface
     private function isPublicEndpoint(Request $request): bool
     {
         return !($request->attributes->get('_route_params')['_secured'] ?? true);
+    }
+
+    private function isProfilerRoute(Request $request): bool
+    {
+        return \strpos($request->getPathInfo(), '/_profiler/') === 0;
     }
 
     /**

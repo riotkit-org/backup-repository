@@ -12,6 +12,7 @@ use App\Domain\Storage\Manager\FilesystemManager;
 use App\Domain\Storage\Manager\StorageManager;
 use App\Domain\Storage\Response\FileDownloadResponse;
 use App\Domain\Storage\Security\ReadSecurityContext;
+use App\Domain\Storage\Service\AlternativeFilenameResolver;
 use App\Domain\Storage\ValueObject\Filename;
 
 class ViewFileHandler
@@ -26,10 +27,19 @@ class ViewFileHandler
      */
     private $fs;
 
-    public function __construct(StorageManager $storageManager, FilesystemManager $fs)
-    {
+    /**
+     * @var AlternativeFilenameResolver
+     */
+    private $nameResolver;
+
+    public function __construct(
+        StorageManager $storageManager,
+        FilesystemManager $fs,
+        AlternativeFilenameResolver $nameResolver
+    ) {
         $this->storageManager = $storageManager;
         $this->fs             = $fs;
+        $this->nameResolver   = $nameResolver;
     }
 
     /**
@@ -43,6 +53,8 @@ class ViewFileHandler
      */
     public function handle(ViewFileForm $form, ReadSecurityContext $securityContext, CachingContext $cachingContext): FileDownloadResponse
     {
+        $this->preProcessForm($form);
+
         try {
             $file = $this->storageManager->retrieve(new Filename((string) $form->filename));
 
@@ -97,6 +109,11 @@ class ViewFileHandler
             fclose($out);
             fclose($res);
         });
+    }
+
+    private function preProcessForm(ViewFileForm $form): void
+    {
+        $form->filename = $this->nameResolver->resolveFilename(new Filename($form->filename))->getValue();
     }
 
     private function sendHttpHeaders(StoredFile $file): void

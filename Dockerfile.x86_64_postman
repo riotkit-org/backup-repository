@@ -33,7 +33,9 @@ ENV DATABASE_URL="sqlite:///%kernel.project_dir%/var/data.db" \
     FS_FTP_PASSIVE=0
 
 ADD . /var/www/html
+ADD ./filerepository.php.ini /usr/local/etc/php/conf.d/filerepository.php.ini
 ADD tests_entrypoint.sh /
+
 RUN cd /var/www/html \
     && chown www-data:www-data /var/www -R \
     && su www-data -s /bin/bash -c "make deploy" \
