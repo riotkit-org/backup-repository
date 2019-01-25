@@ -20,3 +20,5 @@
 
 # bower
 /public/minimumui/components
+
+/config/ids_mapping.yaml

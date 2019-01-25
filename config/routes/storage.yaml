@@ -21,25 +21,11 @@ storage.upload_by_post:
         _secured: true
         type: image
 
-storage.get_file:
-    path: /public/download/{filename}
-    controller: 'App\Controller\Storage\ViewFileController::handle'
-    methods: ['GET']
-    defaults:
-        _secured: false
-
 # REST
 storage.rest_delete:
     path: /repository/file/{filename}
     controller: 'App\Controller\Storage\DeleteFileController::handle'
     methods: ['DELETE']
-    defaults:
-        _secured: true
-
-storage.rest_get:
-    path: /repository/file/{filename}
-    controller: 'App\Controller\Storage\ViewFileController::handle'
-    methods: ['GET']
     defaults:
         _secured: true
 
