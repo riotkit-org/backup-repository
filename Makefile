@@ -5,6 +5,8 @@ COLOR_RESET   = \033[0m
 COLOR_INFO    = \033[32m
 COLOR_COMMENT = \033[33m
 
+SUDO = sudo
+
 ## Help
 help:
 	printf "${COLOR_COMMENT}Usage:${COLOR_RESET}\n"
@@ -54,15 +56,15 @@ deploy: install
 
 ## Build x86_64 image
 build@x86_64:
-	sudo docker build . -f ./Dockerfile.x86_64 -t wolnosciowiec/file-repository:v2
+	${SUDO} docker build . -f ./Dockerfile.x86_64 -t wolnosciowiec/file-repository:v2
 
 ## Run x86_64 image
 run@x86_64:
-	sudo docker run --rm --name file-repository -p 80:80 wolnosciowiec/file-repository:v2
+	${SUDO} docker run --rm --name file-repository -p 80:80 wolnosciowiec/file-repository:v2
 
 ## Build arm7hf image
 build@arm7hf:
-	sudo docker build . -f ./Dockerfile.arm7hf -t wolnosciowiec/file-repository:v2-arm7hf
+	${SUDO} docker build . -f ./Dockerfile.arm7hf -t wolnosciowiec/file-repository:v2-arm7hf
 
 _configure_ci_environment:
 	make _set_env NAME=APP_ENV VALUE=test
@@ -86,5 +88,5 @@ _set_env:
 
 ## Run API tests in a docker container
 test_api:
-	sudo docker build . -f ./Dockerfile.x86_64_postman -t wolnosciowiec/file-repository:v2-postman
-	sudo docker run wolnosciowiec/file-repository:v2-postman
+	${SUDO} docker build . -f ./Dockerfile.x86_64_postman -t wolnosciowiec/file-repository:v2-postman
+	${SUDO} docker run wolnosciowiec/file-repository:v2-postman
