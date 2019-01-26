@@ -3,15 +3,38 @@
 use Symfony\Component\Routing\RouteCollection;
 use Symfony\Component\Routing\Route;
 
+if (!\function_exists('getEnvValue')) {
+    function getEnvValue(string $envName, $defaults)
+    {
+        $value = \getenv($envName);
+
+        if ($value === null || $value === false) {
+            return $defaults;
+        }
+
+        $toCompare = \is_string($value) ? \strtolower($value) : $value;
+
+        if ($toCompare === 'false' || $toCompare === '0') {
+            return false;
+        }
+
+        if ($toCompare === 'true' || $toCompare === '1') {
+            return true;
+        }
+
+        return $toCompare;
+    }
+}
+
 /*
  * NOTICE: Application REBUILD (cache:clear) is MANDATORY for the changes to be applied in PROD mode
  */
 
 $routes = new RouteCollection();
 
-$hotlinkProtectionEnabled = getenv('ANTI_HOTLINK_PROTECTION_ENABLED') ?? true;
-$restrictRegularUrls       = getenv('ANTI_HOTLINK_RESTRICT_REGULAR_URLS') ?? false;
-$antiHotlinkRoute         = getenv('ANTI_HOTLINK_URL') ?: '/stream/{accessToken}/{expirationTime}/{fileId}';
+$hotlinkProtectionEnabled = getEnvValue('ANTI_HOTLINK_PROTECTION_ENABLED', true);
+$restrictRegularUrls      = getEnvValue('ANTI_HOTLINK_RESTRICT_REGULAR_URLS', false);
+$antiHotlinkRoute         = getEnvValue('ANTI_HOTLINK_URL', '/stream/{accessToken}/{expirationTime}/{fileId}');
 
 $securedFromRawAccess = $hotlinkProtectionEnabled && $restrictRegularUrls;
 
