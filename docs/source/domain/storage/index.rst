@@ -19,4 +19,7 @@ In short words the **File Storage** is a specialized group of functionality that
 
    security
    uploading
+   downloading
+   aliases
+   hotlink_protection
 

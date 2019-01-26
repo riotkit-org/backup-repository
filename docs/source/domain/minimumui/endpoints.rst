@@ -17,6 +17,7 @@ upload.enforce_tags_selected_in_token    Tag uploaded file with tags specified i
 upload.images                            Upload images
 ======================================  ====================================================================================================================
 
+
 Image Upload
 ------------
 
@@ -42,6 +43,7 @@ _token                                   Access token
 
 .. image:: ../../_static/screenshots/minimum-ui/cropper-2.png
 
+
 File upload
 -----------
 
@@ -56,3 +58,16 @@ File upload offers a multiple file upload, with drag & drop and fancy animations
 .. image:: ../../_static/screenshots/minimum-ui/file-uploader-2.png
 
 .. image:: ../../_static/screenshots/minimum-ui/file-uploader-3.png
+
+
+Video watching
+--------------
+
+File Repository is able to serve video files with possibility to rewind them, that's the responsibility of the download endpoint.
+MinimumUI exposes additional endpoint with a HTML5 <video> tag, so the video could be embedded easily on other website.
+
+.. code:: json
+
+    In the browser access URL: /minimum.ui/watch/video/some-file-name.mp4
+
+.. image:: ../../_static/screenshots/minimum-ui/watch-video.png
