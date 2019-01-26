@@ -23,6 +23,26 @@ if (!\function_exists('getDirSubDirs')) {
     }
 }
 
+if (!\function_exists('sortByLongestKey')) {
+    function sortByLongestKey(array $array)
+    {
+        $keys = [];
+        $results = [];
+
+        foreach ($array as $name => $value) {
+            $keys[$name] = \strlen($name);
+        }
+
+        arsort($keys);
+
+        foreach ($keys as $key => $length) {
+            $results[$key] = $array[$key];
+        }
+
+        return $results;
+    }
+}
+
 if (!\function_exists('addDoctrineMappings')) {
     function addDoctrineMappings(
         string $domainPath,
@@ -113,9 +133,6 @@ $container->loadFromExtension('doctrine', [
         'auto_generate_proxy_classes' => '%kernel.debug%',
         'naming_strategy'             => 'doctrine.orm.naming_strategy.underscore',
         'auto_mapping'                => true,
-        'mappings' => generateDoctrineMappings()
+        'mappings' => sortByLongestKey(generateDoctrineMappings())
     ]
 ]);
-
-dump(generateDoctrineMappings());
-die();
