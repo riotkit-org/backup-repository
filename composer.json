@@ -58,15 +58,18 @@
         "symfony/polyfill-php56": "*"
     },
     "scripts": {
-        "auto-scripts": {
-            "cache:clear": "symfony-cmd",
-            "assets:install %PUBLIC_DIR%": "symfony-cmd"
-        },
+        "update-scripts": [
+            "rm -rf ./var/cache/* || true",
+            "./bin/console cache:clear --env=prod -vvv",
+            "./bin/console cache:clear --env=test || true",
+            "./bin/console cache:clear --env=dev || true",
+            "./bin/console assets:install"
+        ],
         "post-install-cmd": [
-            "@auto-scripts"
+            "@update-scripts"
         ],
         "post-update-cmd": [
-            "@auto-scripts"
+            "@update-scripts"
         ]
     },
     "conflict": {
