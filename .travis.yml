@@ -1,0 +1,15 @@
+language: php
+
+services:
+    - docker
+
+php:
+    #- '7.2'
+    - '7.3'
+    #- nightly
+
+before_script:
+    - make install SUDO=""
+
+script:
+    - make test_api SUDO=""
