@@ -116,3 +116,6 @@ $container->loadFromExtension('doctrine', [
         'mappings' => generateDoctrineMappings()
     ]
 ]);
+
+dump(generateDoctrineMappings());
+die();
