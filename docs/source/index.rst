@@ -38,4 +38,4 @@ The project is licensed with a MIT license.
 
 .. rst-class:: language-de align-center
 
-*GrassDev Collective*
+*RiotKit Collective*

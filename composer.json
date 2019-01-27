@@ -1,6 +1,8 @@
 {
+    "name": "wolnosciowiec/file-repository",
     "type": "project",
-    "license": "proprietary",
+    "description": "File storage service, built for ultra-low budget shared hostings with no footprint on performance",
+    "license": "MIT",
     "require": {
         "php": ">=7.2",
         "ext-ctype": "*",

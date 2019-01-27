@@ -1,5 +1,5 @@
 project = 'File Repository'
-copyright = '2019, Wolnosciowiec Team'
+copyright = '2019, RiotKit Team'
 author = 'Wesolowski'
 
 version = ''
