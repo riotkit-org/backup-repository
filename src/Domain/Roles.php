@@ -4,6 +4,8 @@ namespace App\Domain;
 
 /**
  * List of roles which could be required for a temporary token
+ *
+ * @codeCoverageIgnore
  */
 final class Roles
 {

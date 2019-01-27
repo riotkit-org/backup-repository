@@ -33,6 +33,7 @@
     },
     "require-dev": {
         "symfony/dotenv": "*",
+        "symfony/test-pack": "^1.0",
         "symfony/web-server-bundle": "*"
     },
     "config": {

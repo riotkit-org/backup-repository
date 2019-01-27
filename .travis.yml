@@ -13,3 +13,4 @@ before_script:
 
 script:
     - make test_api SUDO=""
+    - make coverage

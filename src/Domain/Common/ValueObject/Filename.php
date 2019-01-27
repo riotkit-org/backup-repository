@@ -15,7 +15,7 @@ class Filename extends BaseValueObject implements \JsonSerializable
     {
         $this->value = $value;
 
-        if (!preg_match('/([A-Za-z0-9\.\-\_\+]+)/', $value)) {
+        if (!preg_match('/^([A-Za-z0-9\.\-\_\+]+)$/', $value)) {
             $exceptionType = static::getExceptionType();
 
             throw new $exceptionType('File name is not valid, please normalize it');
@@ -42,7 +42,7 @@ class Filename extends BaseValueObject implements \JsonSerializable
         $extension = pathinfo($this->value, PATHINFO_EXTENSION);
 
         $self = clone $this;
-        $self->value = pathinfo($self->value, PATHINFO_BASENAME) . $suffix;
+        $self->value = pathinfo($self->value, PATHINFO_FILENAME) . $suffix;
 
         if ($extension) {
             $self->value .= '.' . $extension;

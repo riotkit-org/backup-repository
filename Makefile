@@ -64,7 +64,7 @@ run@x86_64:
 
 ## Build arm7hf image
 build@arm7hf:
-	${SUDO} docker build . -f ./Dockerfile.arm7hf -t wolnosciowiec/file-repository:v2-arm7hf
+	${SUDO} docker build . -f ./Dockerfile.arm7hf -t wolnosciowiec/file-repository:v2-arm7hfPATHINFO_BASENAME
 
 _configure_ci_environment:
 	make _set_env NAME=APP_ENV VALUE=test
@@ -90,3 +90,6 @@ _set_env:
 test_api:
 	${SUDO} docker build . -f ./Dockerfile.x86_64_postman -t wolnosciowiec/file-repository:v2-postman
 	${SUDO} docker run wolnosciowiec/file-repository:v2-postman
+
+coverage:
+	./bin/phpunit --coverage-text

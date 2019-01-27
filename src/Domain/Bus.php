@@ -2,6 +2,9 @@
 
 namespace App\Domain;
 
+/**
+ * @codeCoverageIgnore
+ */
 final class Bus
 {
     public const STORAGE_GET_FILE_SIZE = 'storage.get_file_size';
