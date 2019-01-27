@@ -5,6 +5,8 @@ File Repository is a modern API application dedicated for storing files.
 It is able to use various storage backends including AWS S3, Dropbox, Google Drive and just filesystem.
 Lightweight, requires just PHP7 and at least SQLite3 or MySQL (other databases can be also supported in future due to using ORM).
 
+See the documentation there: https://file-repository.readthedocs.io/en/latest/index.html
+
 Main functionality:
 
 - Strict access control, you can **generate a token** that will have access to specific actions on specific items
@@ -24,9 +26,9 @@ Requirements:
 Copyleft
 --------
 
-Created by **GrassDev Collective** as part of Wolnościowiec initiative.
+Created by **RiotKit Collective** as part of Wolnościowiec initiative.
 Project initially created for three purposes: 
 
 - To store static files uploaded for users (libertarian/anarchist portal)
 - To store and serve video files (video archive)
-- To store backups and version them. Limit the disk space and permissions to create a shared space for multiple initiatives
+- To store backups and version them. Limit the disk space and permissions to create a shared space for multiple organizations fighting for human-rights, tenants-rights, working-class rights and animals-rights.
