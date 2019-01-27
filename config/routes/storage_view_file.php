@@ -22,7 +22,7 @@ if (!\function_exists('getEnvValue')) {
             return true;
         }
 
-        return $toCompare;
+        return $value;
     }
 }
 
