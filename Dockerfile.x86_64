@@ -1,6 +1,6 @@
 FROM wolnosciowiec/docker-php-app
 
-RUN docker-php-ext-install bcmath \
+RUN docker-php-ext-install bcmath zip \
     && rm -rf /var/lib/apt/lists/* \
     && apt-get update \
     && apt-get install -y curl bash gnupg2 \
