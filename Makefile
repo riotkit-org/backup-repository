@@ -70,6 +70,7 @@ _configure_ci_environment:
 	make _set_env NAME=APP_ENV VALUE=test
 	make _set_env NAME=ANTI_HOTLINK_SECRET_METHOD VALUE='"\\$$$$http_x_expiration_time\\$$$$http_test_header MY-AWESOME-SUFFIX"'
 	cp ./config/ids_mapping.yaml.example ./config/ids_mapping.yaml
+	./bin/console cache:clear --env=test
 
 _erase_all_data:
 	rm -rf ./var/uploads/* || true
@@ -91,5 +92,6 @@ test_api:
 	${SUDO} docker build . -f ./Dockerfile.x86_64_postman -t wolnosciowiec/file-repository:v2-postman
 	${SUDO} docker run wolnosciowiec/file-repository:v2-postman
 
+## Generate code coverage from unit testing
 coverage:
 	./bin/phpunit --coverage-text
