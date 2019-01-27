@@ -2,10 +2,10 @@ FROM wolnosciowiec/docker-php-app
 
 # @todo: Switch FROM to point to the Dockerfile.x86_64
 
-RUN docker-php-ext-install bcmath zip \
-    && rm -rf /var/lib/apt/lists/* \
+RUN rm -rf /var/lib/apt/lists/* \
     && apt-get update \
-    && apt-get install -y curl bash gnupg2 \
+    && apt-get install -y curl bash gnupg2 libzip-dev \
+    && docker-php-ext-install bcmath zip \
     && curl -sL https://deb.nodesource.com/setup_8.x | bash - \
     && apt-get install -y nodejs \
     && apt-get clean \
