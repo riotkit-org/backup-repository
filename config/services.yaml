@@ -72,3 +72,15 @@ services:
             $maxBackupsCountPerCollection: '%env(BACKUP_MAX_VERSIONS)%'
             $maxOneBackupVersionSize: '%env(BACKUP_ONE_VERSION_MAX_SIZE)%'
             $maxWholeCollectionSize: '%env(BACKUP_COLLECTION_MAX_SIZE)%'
+
+    s3_client:
+        class: Aws\S3\S3Client
+        arguments:
+            - version: '%env(FS_AWSS3V3_VERSION)%'
+              region: "%env(FS_AWSS3V3_REGION)%" # 'eu-central-1' for example
+              endpoint: "%env(FS_AWSS3V3_OPTIONS_ENDPOINT)%"
+              bucket_endpoint: false
+              use_path_style_endpoint: true
+              credentials:
+                  key: "%env(FS_AWSS3V3_KEY)%"
+                  secret: "%env(FS_AWSS3V3_SECRET)%"

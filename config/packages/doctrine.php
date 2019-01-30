@@ -116,11 +116,13 @@ if (!function_exists('generateDoctrineMappings')) {
 # environment variables are not available yet.
 # You should not need to change this value.
 $container->setParameter('env(DATABASE_URL)', '');
+$container->setParameter('env(DATABASE_DRIVER)', 'pdo_mysql');
+$container->setParameter('env(DATABASE_VERSION)', '5.7');
 
 $container->loadFromExtension('doctrine', [
     'dbal' => [
-        'driver'         => 'pdo_mysql',
-        'server_version' => '5.7',
+        'driver'         => '%env(resolve:DATABASE_DRIVER)%',
+        'server_version' => '%env(resolve:DATABASE_VERSION)%',
         'charset'        => 'utf8mb4',
         'default_table_options' => [
             'charset' => 'utf8mb4',

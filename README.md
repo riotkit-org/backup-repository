@@ -22,6 +22,7 @@ Requirements:
 - sphinx (for documentation)
 - file
 - sha256sum
+- MySQL 5.7+ / SQLite 3 / PostgreSQL (not officially supported but may work)
 
 Copyleft
 --------
