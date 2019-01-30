@@ -15,9 +15,14 @@ ENV DATABASE_URL="sqlite:///%kernel.project_dir%/var/data.db" \
     FS_LOCAL_WRITEFLAGS= \
     FS_LOCAL_LINKHANDLING= \
     FS_LOCAL_PERMISSIONS= \
-    FS_AWSS3_CLIENT=s3_client \
-    FS_AWSS3_BUCKET= \
-    FS_AWSS3_PREFIX= \
+    FS_AWSS3V3_CLIENT=s3_client \
+    FS_AWSS3V3_BUCKET=misc \
+    FS_AWSS3V3_PREFIX= \
+    FS_AWSS3V3_OPTIONS_ENDPOINT=http://localhost:9000 \
+    FS_AWSS3V3_VERSION=latest \
+    FS_AWSS3V3_REGION=eu-central-1 \
+    FS_AWSS3V3_KEY=some-key \
+    FS_AWSS3V3_SECRET=some-secret \
     FS_FTP_HOST=localhost \
     FS_FTP_PORT=21 \
     FS_FTP_USERNAME=user \
@@ -31,8 +36,10 @@ ENV DATABASE_URL="sqlite:///%kernel.project_dir%/var/data.db" \
 
 ADD . /var/www/html
 ADD ./filerepository.php.ini /usr/local/etc/php/conf.d/filerepository.php.ini
+ADD prod_entrypoint.sh /
 
 RUN cd /var/www/html \
     && chown www-data:www-data /var/www -R \
     && su www-data -s /bin/bash -c "make deploy"
 
+ENTRYPOINT "/prod_entrypoint.sh"
