@@ -3,6 +3,7 @@
 namespace App\Command\Authentication;
 
 use App\Domain\Authentication\ActionHandler\TokenGenerationHandler;
+use App\Domain\Authentication\Exception\ValidationException;
 use App\Domain\Authentication\Factory\Context\SecurityContextFactory;
 use App\Domain\Authentication\Form\AuthForm;
 use App\Domain\Authentication\Form\TokenDetailsForm;
@@ -13,6 +14,8 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class GenerateTokenCommand extends Command
 {
+    public const NAME = 'auth:create-token';
+
     /**
      * @var TokenGenerationHandler
      */
@@ -39,7 +42,7 @@ class GenerateTokenCommand extends Command
             ->addOption('tags', null, InputOption::VALUE_REQUIRED)
             ->addOption('mimes', null, InputOption::VALUE_REQUIRED)
             ->addOption('max-file-size', null, InputOption::VALUE_REQUIRED)
-            ->addOption('expires', null, InputOption::VALUE_REQUIRED)
+            ->addOption('expires', null, InputOption::VALUE_REQUIRED, 'Example: 2020-05-01 or +10 years')
             ->setHelp('Allows to generate a token you can use later to authenticate in application for a specific thing');
     }
 
@@ -61,8 +64,8 @@ class GenerateTokenCommand extends Command
         $form->expires                  = $input->getOption('expires');
         $form->roles                    = $this->getMultipleValueOption($input, 'roles');
 
-        $output->writeln('Form:');
         $output->writeln('========================');
+        $output->writeln('Form:');
 
         foreach ($form->data->tags as $tag) {
             $output->writeln(' [Tag] -> ' . $tag);
@@ -76,10 +79,23 @@ class GenerateTokenCommand extends Command
             $output->writeln(' [Role] -> ' . $role);
         }
 
-        $response = $this->handler->handle(
-            $form,
-            $this->authFactory->createShellContext()
-        );
+        try {
+            $response = $this->handler->handle(
+                $form,
+                $this->authFactory->createShellContext()
+            );
+        } catch (ValidationException $validationException) {
+            $output->writeln('========================');
+            $output->writeln('Validation error:');
+
+            foreach ($validationException->getFields() as $field => $errors) {
+                $output->writeln(' Field "' . $field . '":');
+
+                foreach ($errors as $error) {
+                    $output->writeln(' - ' . $error);
+                }
+            }
+        }
 
         $output->writeln("\nResponse:");
         $output->writeln('========================');
