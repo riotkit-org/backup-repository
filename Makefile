@@ -56,11 +56,11 @@ deploy: install
 
 ## Build x86_64 image
 build@x86_64:
-	${SUDO} docker build . -f ./Dockerfile.x86_64 -t wolnosciowiec/file-repository:v2
+	${SUDO} docker build . -f ./Dockerfile.x86_64 -t wolnosciowiec/file-repository
 
 ## Run x86_64 image
 run@x86_64:
-	${SUDO} docker run --rm --name file-repository -p 80:80 wolnosciowiec/file-repository:v2
+	${SUDO} docker run --rm --name file-repository -p 80:80 wolnosciowiec/file-repository
 
 ## Build arm7hf image
 build@arm7hf:
