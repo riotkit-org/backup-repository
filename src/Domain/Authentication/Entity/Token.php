@@ -2,6 +2,8 @@
 
 namespace App\Domain\Authentication\Entity;
 
+use App\Domain\Roles;
+
 class Token
 {
     public const REQUIRED_FIELDS = [
@@ -92,6 +94,10 @@ class Token
 
     public function setRoles(array $roles): Token
     {
+        if (\in_array(Roles::ROLE_ADMINISTRATOR, $roles, true)) {
+            $roles = \array_merge($roles, Roles::GRANTS_LIST);
+        }
+
         $this->roles = $roles;
         return $this;
     }
