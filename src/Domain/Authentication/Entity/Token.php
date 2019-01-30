@@ -23,6 +23,11 @@ class Token
     private $roles = [];
 
     /**
+     * @var bool
+     */
+    private $alreadyGrantedAdminAccess = false;
+
+    /**
      * @var \DateTimeImmutable $creationDate
      */
     private $creationDate;
@@ -65,6 +70,11 @@ class Token
 
     public function getRoles(): array
     {
+        if (!$this->alreadyGrantedAdminAccess && \in_array(Roles::ROLE_ADMINISTRATOR, $this->roles, true)) {
+            $this->roles = \array_merge($this->roles, Roles::GRANTS_LIST);
+            $this->alreadyGrantedAdminAccess = true;
+        }
+
         return $this->roles;
     }
 
@@ -94,10 +104,6 @@ class Token
 
     public function setRoles(array $roles): Token
     {
-        if (\in_array(Roles::ROLE_ADMINISTRATOR, $roles, true)) {
-            $roles = \array_merge($roles, Roles::GRANTS_LIST);
-        }
-
         $this->roles = $roles;
         return $this;
     }
