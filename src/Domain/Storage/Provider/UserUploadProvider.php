@@ -24,8 +24,12 @@ class UserUploadProvider
     public function getStreamFromHttp(): Stream
     {
         if ($this->hasPostedViaPHPUploadMechanism()) {
-            $filesIndexes = array_keys($_FILES);
+            $filesIndexes = \array_keys($_FILES);
             $file = $_FILES[$filesIndexes[0]];
+
+            if ($file['error'] === 1) {
+                throw new \LogicException('"upload_max_filesize" in PHP configuration does not allow such big file to be uploaded');
+            }
 
             return new Stream(fopen($file['tmp_name'], 'rb'));
         }
