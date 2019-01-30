@@ -36,10 +36,8 @@ ENV DATABASE_URL="sqlite:///%kernel.project_dir%/var/data.db" \
 
 ADD . /var/www/html
 ADD ./filerepository.php.ini /usr/local/etc/php/conf.d/filerepository.php.ini
-ADD prod_entrypoint.sh /
+ADD prod_entrypoint.d.sh /entrypoint.d/
 
 RUN cd /var/www/html \
     && chown www-data:www-data /var/www -R \
     && su www-data -s /bin/bash -c "make deploy"
-
-ENTRYPOINT "/prod_entrypoint.sh"
