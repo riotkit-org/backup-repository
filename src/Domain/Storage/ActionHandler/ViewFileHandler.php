@@ -14,6 +14,9 @@ use App\Domain\Storage\Response\FileDownloadResponse;
 use App\Domain\Storage\Security\ReadSecurityContext;
 use App\Domain\Storage\Service\AlternativeFilenameResolver;
 use App\Domain\Storage\ValueObject\Filename;
+use GuzzleHttp\Psr7\Request;
+use Ramsey\Http\Range\Range;
+use Ramsey\Http\Range\UnitFactory;
 
 class ViewFileHandler
 {
@@ -84,27 +87,34 @@ class ViewFileHandler
             $out = fopen('php://output', 'wb');
             $res = $file->getStream()->attachTo();
 
+            $allowLastModifiedHeader = true;
+            $etagSuffix = '';
+            $contentLength = $this->fs->getFileSize($file->getStoredFile()->getFilename());
+            $acceptRange = 'bytes';
+
             //
             // Bytes range support (for streaming bigger files eg. video files)
             //
-            $bytesRange = new BytesRangeAggregate(
-                $form->bytesRange,
-                $this->fs->getFileSize($file->getStoredFile()->getFilename())
-            );
+            $bytesRange = new BytesRangeAggregate($form->bytesRange, $contentLength);
 
             $maxLength = null;
             $offset = null;
 
-            if ($bytesRange->getFrom()->isHigherThanInteger(0) && $bytesRange->getTo()->isHigherThanInteger(0)) {
-                $offset = $bytesRange->getFrom();
+            if ($bytesRange->shouldServePartialContent()) {
                 $maxLength = $bytesRange->getTo()->getValue() - $bytesRange->getFrom()->getValue();
-
-                if ($maxLength < 0) {
-                    throw new \LogicException('Bytes range is invalid, cannot be minus.');
-                }
+                $offset    = $bytesRange->getFrom()->getValue();
+                $etagSuffix = $bytesRange->toHash();
+                $acceptRange = $bytesRange->toBytesResponseString();
             }
 
-            $this->sendHttpHeaders($file->getStoredFile());
+            $this->sendHttpHeaders(
+                $file->getStoredFile(),
+                $etagSuffix,
+                $allowLastModifiedHeader,
+                $acceptRange,
+                $contentLength
+            );
+
             $maxLength && $offset ? stream_copy_to_stream($res, $out, $maxLength, $offset) : stream_copy_to_stream($res, $out);
             fclose($out);
             fclose($res);
@@ -116,13 +126,30 @@ class ViewFileHandler
         $form->filename = $this->nameResolver->resolveFilename(new Filename($form->filename))->getValue();
     }
 
-    private function sendHttpHeaders(StoredFile $file): void
+    private function sendHttpHeaders(StoredFile $file, string $eTagSuffix, bool $allowLastModifiedHeader, string $acceptRange, int $contentLength): void
     {
-        header('Content-Type: ' . $file->getMimeType());
-        header('Last-Modified:  ' . $file->getDateAdded()->format('D, d M Y H:i:s') . ' GMT');
-        header('ETag: ' . $file->getContentHash());
+        if ($acceptRange) {
+            header('Accept-Ranges: bytes');
+        }
+
+        if ($contentLength) {
+            header('Content-Length: ' . $contentLength);
+        }
+
+        //
+        // caching
+        //
+        if ($allowLastModifiedHeader) {
+            header('Last-Modified:  ' . $file->getDateAdded()->format('D, d M Y H:i:s') . ' GMT');
+        }
+
+        header('ETag: ' . $file->getContentHash() . $eTagSuffix);
         header('Cache-Control: public, max-age=25200');
-        header('Accept-Ranges: bytes');
-        header('Content-Length: ' . $this->fs->getFileSize($file->getFilename()));
+
+        //
+        // others
+        //
+        header('Content-Type: ' . $file->getMimeType());
+        header('Content-Disposition: attachment; filename="' . $file->getFilename()->getValue() . '"');
     }
 }

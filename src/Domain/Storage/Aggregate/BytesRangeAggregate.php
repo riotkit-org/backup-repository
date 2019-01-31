@@ -24,6 +24,16 @@ class BytesRangeAggregate
     private $length;
 
     /**
+     * @var PositiveNumberOrZero
+     */
+    private $contentLength;
+
+    /**
+     * @var PositiveNumberOrZero
+     */
+    private $fileSize;
+
+    /**
      * @param string $headerValue
      * @param int $fileSize
      *
@@ -31,11 +41,13 @@ class BytesRangeAggregate
      */
     public function __construct(string $headerValue, int $fileSize)
     {
-        [$from, $to, $length] = $this->parse($headerValue, $fileSize);
+        [$from, $to, $length, $contentLength] = $this->parse($headerValue, $fileSize);
 
-        $this->from   = new PositiveNumberOrZero($from);
-        $this->to     = new PositiveNumberOrZero($to);
-        $this->length = new Filesize($length);
+        $this->from          = new PositiveNumberOrZero($from);
+        $this->to            = new PositiveNumberOrZero($to);
+        $this->length        = new Filesize($length);
+        $this->contentLength = new PositiveNumberOrZero($contentLength);
+        $this->fileSize      = new PositiveNumberOrZero($fileSize);
     }
 
     public function getFrom(): PositiveNumberOrZero
@@ -53,6 +65,11 @@ class BytesRangeAggregate
         return $this->length;
     }
 
+    public function getContentLength(): PositiveNumberOrZero
+    {
+        return $this->contentLength;
+    }
+
     /**
      * @param string $headerValue
      * @param int $fileSize
@@ -63,41 +80,65 @@ class BytesRangeAggregate
      */
     private function parse(string $headerValue, int $fileSize): array
     {
-        if (!$headerValue) {
-            return [0, 0, 0];
-        }
-
-        $length     = $fileSize;
+        $length     = $fileSize + 1;
         $beginning  = 0;
-        $fullEnding = $fileSize - 1;
+        $ending     = $fileSize;
 
-        $streamEnd   = $fullEnding;
+        if (!$headerValue) {
+            return [
+                $beginning,
+                $ending,
+                $length,
+                $ending - $beginning
+            ];
+        }
 
         [, $range] = explode('=', $headerValue, 2);
 
         if (\strpos($range, ',') !== false) {
-            throw new ContentRangeInvalidException($beginning, $fullEnding, $length);
+            throw new ContentRangeInvalidException($beginning, $ending, $length);
         }
 
-        if ($range === '-') {
-            $streamStart = $fileSize - substr($range, 1);
+        [$start, $end] = explode('-', $range);
+        $start = (int) $start;
+        $end   = (int) $end;
 
-        } else {
-            $range  = explode('-', $range);
-            $streamStart = $range[0];
-            $streamEnd   = (isset($range[1]) && is_numeric($range[1])) ? $range[1] : $length;
+        if ($start < $end && $start > 0 && $start < $fileSize) {
+            $beginning = $start;
         }
 
-        $streamEnd = ($streamEnd > $fullEnding) ? $fullEnding : $streamEnd;
-
-        if ($streamStart > $streamEnd || $streamStart > $length - 1 || $streamEnd >= $length) {
-            throw new ContentRangeInvalidException($beginning, $fullEnding, $length);
+        if ($end <= $fileSize && $end > 0 && $end >= $start) {
+            $ending = $end;
         }
 
         return [
-            (int) $streamStart,
-            (int) $streamEnd,
-            ($fullEnding - $beginning) + 1
+            $beginning,
+            $ending,
+            $length,
+            $ending - $beginning
         ];
+    }
+
+    public function shouldServePartialContent(): bool
+    {
+        return $this->getFrom()->isHigherThanInteger(0)
+            && !$this->getTo()->isSameAs($this->fileSize);
+    }
+
+    public function toHash(): string
+    {
+        return \hash(
+            'md5',
+            $this->getFrom()->getValue() . '_' .
+            $this->getTo()->getValue() . '_' .
+            $this->getLength()->getValue()
+        );
+    }
+
+    public function toBytesResponseString(): string
+    {
+        return 'bytes ' . $this->getFrom()->getValue() . '-' .
+            $this->getTo()->getValue() . '/' .
+            $this->getLength()->getValue();
     }
 }
