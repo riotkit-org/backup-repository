@@ -79,7 +79,13 @@ class ViewFileHandler
 
         if (!$cachingContext->isCacheExpiredForFile($file->getStoredFile())) {
             return new FileDownloadResponse('Not Modified', 304, function () use ($file) {
-                $this->sendHttpHeaders($file->getStoredFile());
+                $this->sendHttpHeaders(
+                    $file->getStoredFile(),
+                    '',
+                    true,
+                    'bytes',
+                    $this->fs->getFileSize($file->getStoredFile()->getFilename())
+                );
             });
         }
 
