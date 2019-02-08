@@ -1,0 +1,108 @@
+accesses:
+    backup_one:
+        url: http://localhost:8000
+        token: test-token-full-permissions
+
+encryption:
+
+    #
+    # Example of AES-256-CBC encryption (uses OpenSSL)
+    #
+    #   Decryption command example:
+    #     cat 0ad166b4cfbackup.tar-v5.gz| openssl enc -aes-256-cbc -pbkdf2 -d -pass pass:some-encryption-key-here > ./backup.tar.gz
+    #
+    enc1:
+        passphrase: some-encryption-key-here
+        method: aes-256-cbc
+
+backups:
+
+    #
+    # Online / Hot-backup of docker container example
+    #
+    #   Copies data from running container.
+    #   NOTICE: May be dangerous to your data, please make sure you know what you do.
+    #           In most cases please choose "docker_volumes" method for safe, offline backup.
+    #
+    www_uploads:
+        type: docker_hot_volumes
+        container: "iwa_ait_db_mysql_1"
+        access: backup_one
+        encryption: enc1
+        collection_id: "some-collection-id"
+        paths:
+            - /etc
+            - /var/log
+
+        # optional
+        tar_cmd: "tar -czf"
+        docker_bin: "sudo docker"
+
+    #
+    # Offline backup of docker container
+    #
+    #   Stops the container, copies the data, then starts it again
+    #   Fully safe method of backup for all types of services. Makes a downtime, but guarantees a non-corrupted
+    #   backup data.
+    #
+    www_docker_offline:
+        type: docker_volumes
+        container: "iwa_ait_db_mysql_1"
+        access: backup_one
+        encryption: enc1
+        collection_id: "724AC433-54D4-4511-A2C3-4CA5152ED766"
+        paths:
+            - /etc
+            - /var/lib/mysql
+            - /var/log
+
+        # optional
+        docker_bin: "sudo docker"
+        tar_cmd: "tar -czf"
+        temp_image_name: "alpine:3.9"
+        temp_image_cmd: "apk add --update xz bzip2 && sleep 3600"
+
+    mysql_native_single_database:
+        type: mysql
+        host: localhost
+        port: 3306
+        user: root
+        password: root
+        database: ""
+        access: backup_one
+        encryption: enc1
+        collection_id: "some-collection-id"
+
+        # optional:
+        tar_cmd: "tar -czf"
+
+    docker_command_output:
+        type: docker_output
+        container: "iwa_ait_gateway_1"
+        command: "cat /bin/bash"
+        access: backup_one
+        encryption: enc1
+        collection_id: "724AC433-54D4-4511-A2C3-4CA5152ED766"
+
+        # optional
+        docker_bin: "sudo docker"
+
+    local_command_output:
+        type: command_output
+        command: "cat /bin/bash"
+        access: backup_one
+        encryption: enc1
+        collection_id: "724AC433-54D4-4511-A2C3-4CA5152ED766"
+
+        # optional
+        tar_cmd: "tar -czf"
+
+    local_configuration:
+        type: directory
+        path: /etc
+        access: backup_one
+        encryption: enc1
+        collection_id: "724AC433-54D4-4511-A2C3-4CA5152ED766"
+
+        # optional
+        tar_cmd: "tar -czf"
