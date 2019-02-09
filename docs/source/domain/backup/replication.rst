@@ -1,5 +1,5 @@
 Data replication
-===========
+================
 
 File Repository does not support replication itself.
 The replication could be enabled on storage backend level.

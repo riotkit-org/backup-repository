@@ -27,6 +27,7 @@ Main functionality:
    domain/storage/index
    domain/backup/index
    domain/minimumui/index
+   client/bahub.rst
 
 From authors
 ============

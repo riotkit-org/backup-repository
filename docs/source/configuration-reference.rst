@@ -31,7 +31,7 @@ How to read the list by example:
 
 Legend:
 
-    - Between /** and */ is the description
+    - Between /\*\* and \*/ is the description
     - **upload.images** is the role name
 
 
