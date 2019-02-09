@@ -1,15 +1,21 @@
 
 from . import BackupHandler
+from ..result import CommandExecutionResult
 from ..entity.definition import CommandOutputDefinition
-from _io import BufferedReader
 
 
 class CommandOutputBackup(BackupHandler):
 
-    def _validate(self, definition: CommandOutputDefinition):
+    def _get_definition(self) -> CommandOutputDefinition:
+        return self._definition
+
+    def _validate(self):
         pass
 
-    def _read(self, definition: CommandOutputDefinition) -> [BufferedReader, BufferedReader]:
+    def _read(self) -> CommandExecutionResult:
         return self._execute_command(
-            self._pipe_factory.create(definition.get_command(), definition)
+            self._pipe_factory.create_backup_command(
+                self._get_definition().get_command(),
+                self._get_definition()
+            )
         )

@@ -10,14 +10,17 @@ class BackupDefinition:
     _type = ""           # type: str
     _encryption = None   # type: Encryption
     _collection_id = ""  # type: str
-    _tar_cmd = ""
+    _tar_pack_cmd = 'tar -czf %stdin% %paths%'
+    _tar_unpack_cmd = 'tar -xzf %stdin% %target%'
 
-    def __init__(self, access: ServerAccess, _type: str, collection_id: str, encryption: Encryption, tar_cmd: str):
+    def __init__(self, access: ServerAccess, _type: str, collection_id: str, encryption: Encryption,
+                 tar_pack_cmd: str, tar_unpack_cmd: str):
         self._access = access
         self._type = _type
         self._encryption = encryption
         self._collection_id = collection_id
-        self._tar_cmd = tar_cmd
+        self._tar_pack_cmd = tar_pack_cmd
+        self._tar_unpack_cmd = tar_unpack_cmd
 
     @staticmethod
     def from_config(config: dict):
@@ -26,8 +29,28 @@ class BackupDefinition:
             _type=config['type'],
             collection_id=config['collection_id'],
             encryption=config['encryption'],
-            tar_cmd=config.get('tar_cmd', 'tar -czf')
+            tar_pack_cmd=config.get('tar_pack_cmd', BackupDefinition._tar_pack_cmd),
+            tar_unpack_cmd=config.get('tar_unpack_cmd', BackupDefinition._tar_unpack_cmd)
         )
+
+    def get_pack_cmd(self, paths: list):
+        return self._tar_pack_cmd \
+            .replace('%stdin%', '-') \
+            .replace('%paths%', self.join_paths_quotes_into_string(paths))
+
+    def get_unpack_cmd(self):
+        return self._tar_unpack_cmd \
+            .replace('%target%', '-C /') \
+            .replace('%stdin%', '-')
+
+    @staticmethod
+    def join_paths_quotes_into_string(paths: list):
+        joined = ""
+
+        for path in paths:
+            joined += '"' + path + '" '
+
+        return joined
 
     def get_access(self) -> ServerAccess:
         return self._access
@@ -52,12 +75,13 @@ class DockerVolumesDefinition(BackupDefinition):
                  _type: str,
                  collection_id: str,
                  encryption: Encryption,
-                 tar_cmd: str,
+                 tar_pack_cmd: str,
+                 tar_unpack_cmd: str,
                  container: str,
                  docker_bin: str,
                  paths: list):
 
-        super().__init__(access, _type, collection_id, encryption, tar_cmd)
+        super().__init__(access, _type, collection_id, encryption, tar_pack_cmd, tar_unpack_cmd)
         self._container = container
         self._docker_bin = docker_bin
         self._paths = paths
@@ -78,7 +102,8 @@ class DockerVolumesDefinition(BackupDefinition):
             _type=config['type'],
             collection_id=config['collection_id'],
             encryption=config['encryption'],
-            tar_cmd=config.get('tar_cmd', 'tar -czf'),
+            tar_pack_cmd=config.get('tar_pack_cmd', BackupDefinition._tar_pack_cmd),
+            tar_unpack_cmd=config.get('tar_unpack_cmd', BackupDefinition._tar_unpack_cmd),
             container=config['container'],
             docker_bin=config.get('docker_bin', 'sudo docker'),
             paths=config['paths']
@@ -97,13 +122,15 @@ class DockerOfflineVolumesDefinition(DockerVolumesDefinition):
                  _type: str,
                  collection_id: str,
                  encryption: Encryption,
-                 tar_cmd: str,
+                 tar_pack_cmd: str,
+                 tar_unpack_cmd: str,
                  container: str,
                  docker_bin: str,
                  paths: list,
                  temp_image_name: str,
                  temp_cmd: str):
-        super().__init__(access, _type, collection_id, encryption, tar_cmd, container, docker_bin, paths)
+        super().__init__(access, _type, collection_id, encryption, tar_pack_cmd,
+                         tar_unpack_cmd, container, docker_bin, paths)
 
         self._container = container
         self._docker_bin = docker_bin
@@ -124,7 +151,8 @@ class DockerOfflineVolumesDefinition(DockerVolumesDefinition):
             _type=config['type'],
             collection_id=config['collection_id'],
             encryption=config['encryption'],
-            tar_cmd=config.get('tar_cmd', 'tar -czf'),
+            tar_pack_cmd=config.get('tar_pack_cmd', BackupDefinition._tar_pack_cmd),
+            tar_unpack_cmd=config.get('tar_unpack_cmd', BackupDefinition._tar_unpack_cmd),
             container=config['container'],
             docker_bin=config.get('docker_bin', 'sudo docker'),
             paths=config['paths'],
@@ -143,12 +171,13 @@ class DockerOutputDefinition(BackupDefinition):
                  _type: str,
                  collection_id: str,
                  encryption: Encryption,
-                 tar_cmd: str,
+                 tar_pack_cmd: str,
+                 tar_unpack_cmd: str,
                  container: str,
                  command: str,
                  docker_bin: str):
 
-        super().__init__(access, _type, collection_id, encryption, tar_cmd)
+        super().__init__(access, _type, collection_id, encryption, tar_pack_cmd, tar_unpack_cmd)
         self._container = container
         self._command = command
         self._docker_bin = docker_bin if docker_bin else "sudo docker"
@@ -169,7 +198,8 @@ class DockerOutputDefinition(BackupDefinition):
             _type=config['type'],
             collection_id=config['collection_id'],
             encryption=config['encryption'],
-            tar_cmd=config.get('tar_cmd', 'tar -czf'),
+            tar_pack_cmd=config.get('tar_pack_cmd', BackupDefinition._tar_pack_cmd),
+            tar_unpack_cmd=config.get('tar_unpack_cmd', BackupDefinition._tar_unpack_cmd),
             container=config['container'],
             command=config['command'],
             docker_bin=config.get('docker_bin')
@@ -189,7 +219,8 @@ class MySQLDefinition(BackupDefinition):
                  _type: str,
                  collection_id: str,
                  encryption: Encryption,
-                 tar_cmd: str,
+                 tar_pack_cmd: str,
+                 tar_unpack_cmd: str,
                  host: str,
                  port: int,
                  user: str,
@@ -197,7 +228,7 @@ class MySQLDefinition(BackupDefinition):
                  database: str,
                  opts: str):
 
-        super().__init__(access, _type, collection_id, encryption, tar_cmd)
+        super().__init__(access, _type, collection_id, encryption, tar_pack_cmd, tar_unpack_cmd)
         self._host = host
         self._port = port
         self._user = user
@@ -222,7 +253,8 @@ class MySQLDefinition(BackupDefinition):
             _type=config['type'],
             collection_id=config['collection_id'],
             encryption=config['encryption'],
-            tar_cmd=config.get('tar_cmd', 'tar -czf'),
+            tar_pack_cmd=config.get('tar_pack_cmd', BackupDefinition._tar_pack_cmd),
+            tar_unpack_cmd=config.get('tar_unpack_cmd', BackupDefinition._tar_unpack_cmd),
             host=config['host'],
             port=int(config['port']),
             user=config['user'],
@@ -240,10 +272,11 @@ class CommandOutputDefinition(BackupDefinition):
                  _type: str,
                  collection_id: str,
                  encryption: Encryption,
-                 tar_cmd: str,
+                 tar_pack_cmd: str,
+                 tar_unpack_cmd: str,
                  command: str):
 
-        super().__init__(access, _type, collection_id, encryption, tar_cmd)
+        super().__init__(access, _type, collection_id, encryption, tar_pack_cmd, tar_unpack_cmd)
         self._command = command
 
     def get_command(self) -> str:
@@ -256,27 +289,29 @@ class CommandOutputDefinition(BackupDefinition):
             _type=config['type'],
             collection_id=config['collection_id'],
             encryption=config['encryption'],
-            tar_cmd=config.get('tar_cmd', 'tar -czf'),
+            tar_pack_cmd=config.get('tar_pack_cmd', BackupDefinition._tar_pack_cmd),
+            tar_unpack_cmd=config.get('tar_unpack_cmd', BackupDefinition._tar_unpack_cmd),
             command=config['command']
         )
 
 
 class LocalFileDefinition(BackupDefinition):
-    _path = ""
+    _paths = ""
 
     def __init__(self,
                  access: ServerAccess,
                  _type: str,
                  collection_id: str,
                  encryption: Encryption,
-                 tar_cmd: str,
-                 path: str):
+                 tar_pack_cmd: str,
+                 tar_unpack_cmd: str,
+                 paths: list):
 
-        super().__init__(access, _type, collection_id, encryption, tar_cmd)
-        self._path = path
+        super().__init__(access, _type, collection_id, encryption, tar_pack_cmd, tar_unpack_cmd)
+        self._paths = paths
 
-    def get_path(self) -> str:
-        return self._path
+    def get_paths(self) -> list:
+        return self._paths
 
     @staticmethod
     def from_config(config: dict):
@@ -285,6 +320,7 @@ class LocalFileDefinition(BackupDefinition):
             _type=config['type'],
             collection_id=config['collection_id'],
             encryption=config['encryption'],
-            tar_cmd=config.get('tar_cmd', 'tar -czf'),
-            path=config['path']
+            tar_pack_cmd=config.get('tar_pack_cmd', BackupDefinition._tar_pack_cmd),
+            tar_unpack_cmd=config.get('tar_unpack_cmd', BackupDefinition._tar_unpack_cmd),
+            paths=config['paths']
         )

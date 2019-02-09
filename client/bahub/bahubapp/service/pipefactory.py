@@ -5,13 +5,23 @@ from ..entity.definition import BackupDefinition
 class PipeFactory:
 
     @staticmethod
-    def create(command: str, definition: BackupDefinition, with_crypto=True):
+    def create_backup_command(command: str, definition: BackupDefinition, with_crypto=True):
         piped = 'set -eo pipefail && ' + command
-        crypto_method = definition.get_encryption().get_method()
+        enc = definition.get_encryption()
 
-        if with_crypto and crypto_method in ['aes-256-cbc', 'aes-128-cbc']:
+        if with_crypto and enc.should_use_crypto():
             # append "-d" to decrypt the encrypted file
-            piped += "| openssl enc -" + crypto_method + " -pbkdf2 -pass pass:" + \
-                     str(definition.get_encryption().get_passphrase())
+            piped += "| " + enc.create_encrypt_command()
 
+        return piped
+
+    @staticmethod
+    def create_restore_command(command: str, definition: BackupDefinition, with_crypto=True):
+        piped = ''
+        enc = definition.get_encryption()
+
+        if with_crypto and enc.should_use_crypto():
+            piped += ' ' + enc.create_decrypt_command() + ' | '
+
+        piped += command
         return piped

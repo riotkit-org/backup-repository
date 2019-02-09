@@ -48,6 +48,12 @@ class DefinitionFactory:
                 self._backups[key] = factory_method.from_config(values)
 
     def get_definition(self, name: str) -> BackupDefinition:
+
+        if name not in self._backups:
+            raise DefinitionFactoryException(
+                'No such backup definition, maybe a typo? Please check the configuration file'
+            )
+
         return self._backups[name]
 
 

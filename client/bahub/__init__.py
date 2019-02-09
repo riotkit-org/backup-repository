@@ -26,7 +26,7 @@ if __name__ == "__main__":
     #
     parser = argparse.ArgumentParser()
     parser.add_argument('options', metavar='options', type=str, nargs='+',
-                        help='[command] [command-option-1] [command-option-n]')
+                        help='[backup/restore/list] [backup-name]')
 
     parser.add_argument('--debug', help='Prints debugging messages', default=False, action="store_true")
 
@@ -38,10 +38,19 @@ if __name__ == "__main__":
                         help='Logs path',
                         default=os.path.expanduser('/tmp'))
 
+    parser.description = 'Bahub - backup automation client for File Repository API'
+
     parsed = parser.parse_args()
 
-    if len(parsed.options) > 0 and len(parsed.options) != 2:
+    if 0 < len(parsed.options) < 2:
         print(' You need to specify two options eg. "backup some-name"')
+        print('')
+        print('Example usage:')
+        print('  backup my_db_1')
+        print('  restore my_db_1 latest')
+        print('  restore my_db_1 v2')
+        print('  list my_db_1')
+        print('')
         sys.exit(1)
 
     if not os.path.isfile(parsed.config):
@@ -63,7 +72,7 @@ if __name__ == "__main__":
             logger=LoggerFactory.create(parsed.debug, parsed.logs_path)
         )
 
-        app.run_controller(parsed.options[0], parsed.options[1], parsed.debug)
+        app.run_controller(parsed.options[0], parsed.options[1], parsed.debug, parsed.options)
 
     except ApplicationException as e:
         if parsed.debug:

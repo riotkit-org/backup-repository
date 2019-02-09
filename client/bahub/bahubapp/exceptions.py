@@ -21,5 +21,5 @@ class InvalidRequestException(ApplicationException):
         return self._json
 
 
-class SourceReadException(ApplicationException):
+class ReadWriteException(ApplicationException):
     pass

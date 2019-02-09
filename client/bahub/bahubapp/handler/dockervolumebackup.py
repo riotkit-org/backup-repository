@@ -1,6 +1,7 @@
 from .abstractdocker import AbstractDocker
 from ..entity.definition import DockerVolumesDefinition, DockerOfflineVolumesDefinition
-from ..exceptions import SourceReadException
+from ..result import CommandExecutionResult
+from ..exceptions import ReadWriteException
 
 
 class DockerVolumeHotBackup(AbstractDocker):
@@ -10,7 +11,12 @@ class DockerVolumeHotBackup(AbstractDocker):
     Gets into the container and makes a backup of directories into a single tar file.
     """
 
-    def _validate(self, definition: DockerVolumesDefinition):
+    def _get_definition(self) -> DockerVolumesDefinition:
+        return self._get_definition()
+
+    def _validate(self):
+        definition = self._get_definition()
+
         self.assert_container_running(
             definition.get_docker_bin(),
             definition.get_container()
@@ -19,7 +25,9 @@ class DockerVolumeHotBackup(AbstractDocker):
         for path in definition.get_paths():
             self._assert_path_exists_in_container(path, definition)
 
-    def _read(self, definition: DockerVolumesDefinition):
+    def _read(self):
+        definition = self._get_definition()
+
         return self.backup_directories(
             definition.get_docker_bin(),
             definition.get_container(),
@@ -37,12 +45,14 @@ class DockerVolumeBackup(AbstractDocker):
 
     _container_id = ""
 
+    def _get_definition(self) -> DockerOfflineVolumesDefinition:
+        return self._definition
+
     def _spawn_temporary_container(self,
                                    docker_bin: str,
                                    origin_container: str,
                                    temp_image_name: str,
-                                   temp_container_cmd: str,
-                                   definition: DockerOfflineVolumesDefinition):
+                                   temp_container_cmd: str):
         """ Runs a temporary container that has mounted volumes from other container """
 
         temp_container_name = origin_container + '_backup_' + self.generate_id()
@@ -52,19 +62,20 @@ class DockerVolumeBackup(AbstractDocker):
                                    ' ' + temp_image_name + \
                                    ' /bin/sh -c "' + temp_container_cmd + '"'
 
-        out, err, code, process = self._execute_command(
-            self._pipe_factory.create(
+        result = self._execute_command(
+            self._pipe_factory.create_backup_command(
                 run_command,
-                definition,
+                self._get_definition(),
                 with_crypto=False
             )
         )
 
-        out, code = process.communicate()
+        out, code = result.process.communicate()
         container_id = out.decode('utf-8').strip()
 
-        if not container_id or (process.returncode != 0 and process.returncode is not None):
-            raise SourceReadException('Cannot run temporary docker container, please verify image and command. Output: ' + container_id)
+        if not container_id or (result.process.returncode != 0 and result.process.returncode is not None):
+            raise ReadWriteException('Cannot run temporary docker container, please verify image and command. Output: '
+                                     + container_id)
 
         return container_id
 
@@ -81,19 +92,20 @@ class DockerVolumeBackup(AbstractDocker):
         self._assert_container_name_present(out, container_name, 'start')
 
     @staticmethod
-    def _assert_container_name_present(out, container_name: str, operation_name: str):
-        stdout = out[0].read().decode('utf-8').replace('"', '').replace("'", '').strip()
+    def _assert_container_name_present(out: CommandExecutionResult, container_name: str, operation_name: str):
+        stdout = out.stdout.read().decode('utf-8').replace('"', '').replace("'", '').strip()
         container_name = container_name.replace('"', '').strip()
 
         if not stdout == container_name:
-            raise SourceReadException('Cannot ' + operation_name + ' container "' + container_name + '". ' + stdout)
+            raise ReadWriteException('Cannot ' + operation_name + ' container "' + container_name + '". ' + stdout)
 
-    def _validate(self, definition: DockerOfflineVolumesDefinition):
-        # check if container exists (may be stopped)
-        # check if has paths in volumes?
+    def _validate(self):
+        # check if container exists (may be stopped)?
         pass
 
-    def _read(self, definition: DockerOfflineVolumesDefinition):
+    def _read(self):
+        definition = self._get_definition()
+
         self._logger.info('Stopping origin container')
         self._stop_container(definition.get_docker_bin(), definition.get_container())
 
@@ -102,8 +114,7 @@ class DockerVolumeBackup(AbstractDocker):
             definition.get_docker_bin(),
             definition.get_container(),
             definition.get_temp_image_name(),
-            definition.get_temp_cmd(),
-            definition
+            definition.get_temp_cmd()
         )
 
         self._logger.info('Performing backup of origin container in offline mode')
@@ -114,10 +125,13 @@ class DockerVolumeBackup(AbstractDocker):
             definition
         )
 
-    def _close(self, definition: DockerOfflineVolumesDefinition):
+    def _close(self):
+        definition = self._get_definition()
+
         try:
             self._logger.info('Killing temporary container')
             self._kill_container(definition.get_docker_bin(), self._container_id)
+
         except Exception:
             self._logger.warning('Cannot kill temporary container "' + self._container_id + '"')
 

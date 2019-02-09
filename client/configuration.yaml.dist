@@ -1,8 +1,17 @@
+
+#
+# Access information about the storage server (File Repository), the URL, token
+# In "backups" section you should use name of an access as a reference in field "access"
+#
 accesses:
     backup_one:
         url: http://localhost:8000
         token: test-token-full-permissions
 
+#
+# Allows to define an encryption and identify it with name
+# In "backups" section you should use just the name as reference in "encryption" key of a backup
+#
 encryption:
 
     #
@@ -13,8 +22,18 @@ encryption:
     #
     enc1:
         passphrase: some-encryption-key-here
-        method: aes-256-cbc
+        method: aes-256-cbc      # possible values: aes-256-cbc, aes-256-ecb, aes-128-cbc, aes-128-ecb, des-ecb
 
+    none:
+        passphrase: ""
+        method: ""
+
+
+#
+# Backups - list of backups, each backup = single archive = single collection.
+#           To backup invoke the shell command with a backup name eg. bahub backup www_uploads
+#           To restore invoke eg. bahub restore www_uploads latest
+#
 backups:
 
     #
@@ -35,8 +54,9 @@ backups:
             - /var/log
 
         # optional
-        tar_cmd: "tar -czf"
-        docker_bin: "sudo docker"
+        #tar_pack_cmd: "tar -czf %stdin% %paths%"
+        #tar_unpack_cmd: "tar -xzf %stdin% %target%"
+        #docker_bin: "sudo docker"
 
     #
     # Offline backup of docker container
@@ -58,10 +78,16 @@ backups:
 
         # optional
         docker_bin: "sudo docker"
-        tar_cmd: "tar -czf"
+        tar_pack_cmd: "tar -czf %stdin% %paths%"
+        tar_unpack_cmd: "tar -xzf %stdin% %target%"
         temp_image_name: "alpine:3.9"
         temp_image_cmd: "apk add --update xz bzip2 && sleep 3600"
 
+    #
+    # MySQL online backup using mysqldump
+    #
+    #   Can backup a single database or all databases from any MySQL server, local, in-docker or remote.
+    #
     mysql_native_single_database:
         type: mysql
         host: localhost
@@ -74,35 +100,57 @@ backups:
         collection_id: "some-collection-id"
 
         # optional:
-        tar_cmd: "tar -czf"
+        #tar_pack_cmd: "tar -czf %stdin% %paths%"
+        #tar_unpack_cmd: "tar -xzf %stdin% %target%"
 
+    #
+    # Docker command output online backup
+    #
+    #   Executes command in a Docker container and captures output
+    #
+    #   Notice: Does not support restore due to technical reasons at this moment
+    #
     docker_command_output:
         type: docker_output
         container: "iwa_ait_gateway_1"
         command: "cat /bin/bash"
+        restore_command: "cat - > /tmp/bash.restored"
         access: backup_one
         encryption: enc1
         collection_id: "724AC433-54D4-4511-A2C3-4CA5152ED766"
 
         # optional
-        docker_bin: "sudo docker"
+        #docker_bin: "sudo docker"
 
+    #
+    # Execute a local command
+    #
+    #   Executes command on this machine/environment on local shell and captures output
+    #
+    #   Notice: Does not support restore due to technical reasons at this moment
+    #
     local_command_output:
         type: command_output
         command: "cat /bin/bash"
+        restore_command: "cat - > /tmp/bash.restored"
         access: backup_one
         encryption: enc1
         collection_id: "724AC433-54D4-4511-A2C3-4CA5152ED766"
 
-        # optional
-        tar_cmd: "tar -czf"
-
-    local_configuration:
+    #
+    # Local file/directory backup
+    #
+    #   Packs a local directory or file
+    #
+    my_logs:
         type: directory
-        path: /etc
+        paths:
+            - /tmp/test
+            - /tmp/mozilla_damian0
         access: backup_one
         encryption: enc1
         collection_id: "724AC433-54D4-4511-A2C3-4CA5152ED766"
 
         # optional
-        tar_cmd: "tar -czf"
+        #tar_pack_cmd: "tar -czf %stdin% %paths%"
+        #tar_unpack_cmd: "tar -xzf %stdin% %target%"

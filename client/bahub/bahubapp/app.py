@@ -1,10 +1,14 @@
 
 from .service.definitionfactory import DefinitionFactory
 from .controller.backup import BackupController
+from .controller.restore import RestoreController
+from .controller.list import ListController
 from .mapping.handlers import HandlersMapping
+from .service.client import FileRepositoryClient
 from .exceptions import ApplicationException
 from logging import Logger
 import sys
+import json
 
 
 class Bahub:
@@ -19,12 +23,47 @@ class Bahub:
         self._logger = logger
         self._handlers = HandlersMapping()
 
-    def run_controller(self, action_name: str, param: str, debug: bool):
+    def run_controller(self, action_name: str, param: str, debug: bool, params: list):
         self._logger.info('Performing ' + action_name)
 
         try:
             if action_name == 'backup':
-                print(BackupController(self._factory, self._logger, self._handlers).perform(param))
+                controller = BackupController(
+                    self._factory,
+                    self._logger,
+                    self._handlers,
+                    FileRepositoryClient(_logger=self._logger)
+                )
+
+                print(controller.perform(param))
+
+            elif action_name == 'restore':
+                controller = RestoreController(
+                    self._factory,
+                    self._logger,
+                    self._handlers,
+                    FileRepositoryClient(_logger=self._logger)
+                )
+
+                print(controller.perform(
+                        param,
+                        params[2] if len(params) >= 3 else 'latest'
+                    )
+                )
+
+            elif action_name in ['ls', 'list']:
+                controller = ListController(
+                    self._factory,
+                    self._logger,
+                    self._handlers,
+                    FileRepositoryClient(_logger=self._logger)
+                )
+
+                response = controller.do_ls(self._factory.get_definition(param))
+
+                print(
+                    json.dumps(response, indent=4, sort_keys=True)
+                )
 
         except ApplicationException as e:
             if debug:

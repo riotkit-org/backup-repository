@@ -1,24 +1,32 @@
 
 from . import BackupHandler
+from ..result import CommandExecutionResult
 from ..entity.definition import MySQLDefinition
-from ..exceptions import SourceReadException
+from ..exceptions import ReadWriteException
 
 
 class MySQLBackup(BackupHandler):
-    def _validate(self, definition: MySQLDefinition):
+    def _get_definition(self) -> MySQLDefinition:
+        return self._definition
+
+    def _validate(self):
         pass
 
-    def _read(self, definition: MySQLDefinition):
-        stdout, stderr, return_code, process = self._execute_command(
-            self._pipe_factory.create(
-                definition.get_mysqldump_args(),
-                definition
+    def _read(self):
+        response = self._execute_command(
+            self._pipe_factory.create_backup_command(
+                self._get_definition().get_mysqldump_args(),
+                self._get_definition()
             )
         )
 
-        process.wait()
+        response.process.wait()
 
-        if process.returncode != 0:
-            raise SourceReadException('Command failed with non-zero exit code: ' + stderr.read().decode('utf-8'))
+        if response.process.returncode != 0:
+            raise ReadWriteException('Command failed with non-zero exit code: '
+                                     + response.stderr.read().decode('utf-8'))
 
-        return [stdout, stderr, return_code, process]
+        return response
+
+    def _write(self, stream) -> CommandExecutionResult:
+        raise Exception('MySQL adapter does not support restoring, YET')

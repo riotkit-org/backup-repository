@@ -19,11 +19,16 @@ class ServerAccess:
     def get_token(self):
         return self._token
 
-    def build_url(self, endpoint: str, with_token: bool):
+    def build_url(self, endpoint: str, with_token: bool, password: str = ''):
         url = self._url.rstrip('/') + '/' + endpoint.lstrip('/')
 
-        if with_token:
-            url += '?_token=' + self._token
+        qs = '?'
 
-        return url
+        if with_token:
+            qs += '&_token=' + self._token
+
+        if password:
+            qs += '&password=' + password
+
+        return url + qs.replace('?&', '?')
 

@@ -1,11 +1,7 @@
 
 
 from ..entity.definition import BackupDefinition
-from ..service.client import FileRepositoryClient
-from ..service.pipefactory import PipeFactory
-
 from . import AbstractController
-from ..handler import BackupHandler
 
 
 class BackupController(AbstractController):
@@ -19,25 +15,15 @@ class BackupController(AbstractController):
         handler = self._init_handler(definition)
 
         try:
-            result = handler.perform_backup(definition)
-            handler.close(definition)
+            result = handler.perform_backup()
+            handler.close()
 
         except KeyboardInterrupt:
-            handler.close(definition)
+            handler.close()
             result = ""
 
         except Exception as e:
-            handler.close(definition)
+            handler.close()
             raise e
 
         return result
-
-    def _init_handler(self, definition: BackupDefinition) -> BackupHandler:
-        if not self._mapping.has_handler(definition.get_type()):
-            raise Exception('Unknown type "' + definition.get_type() + '"')
-
-        return self._mapping.get(definition.get_type())(
-            _client=FileRepositoryClient(_logger=self._logger),
-            _pipe_factory=PipeFactory(),
-            _logger=self._logger
-        )
