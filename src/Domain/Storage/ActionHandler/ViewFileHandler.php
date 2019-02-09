@@ -14,9 +14,6 @@ use App\Domain\Storage\Response\FileDownloadResponse;
 use App\Domain\Storage\Security\ReadSecurityContext;
 use App\Domain\Storage\Service\AlternativeFilenameResolver;
 use App\Domain\Storage\ValueObject\Filename;
-use GuzzleHttp\Psr7\Request;
-use Ramsey\Http\Range\Range;
-use Ramsey\Http\Range\UnitFactory;
 
 class ViewFileHandler
 {
