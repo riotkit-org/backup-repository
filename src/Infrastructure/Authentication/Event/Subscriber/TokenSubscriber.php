@@ -64,17 +64,17 @@ class TokenSubscriber implements EventSubscriberInterface
 
         $tokenString = $this->getTokenStringFromRequest($event->getRequest());
 
+        // Development token
+        if ($this->isDev && ($tokenString === self::TEST_TOKEN || $this->isProfilerRoute($event->getRequest()))) {
+            $this->handleTestToken();
+            return;
+        }
+
         // Guest at public endpoints
         if ($this->isPublicEndpoint($event->getRequest())) {
             $this->tokenStorage->setToken(
                 new TokenTransport('anonymous', new Token())
             );
-            return;
-        }
-
-        // Development token
-        if ($this->isDev && ($tokenString === self::TEST_TOKEN || $this->isProfilerRoute($event->getRequest()))) {
-            $this->handleTestToken();
             return;
         }
 

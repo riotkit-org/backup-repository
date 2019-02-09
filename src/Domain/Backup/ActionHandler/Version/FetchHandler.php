@@ -56,7 +56,9 @@ class FetchHandler
         }
 
         return FetchResponse::createSuccessResponseFromUrl(
-            $this->urlFactory->getUrlForVersion($version, $baseUrl)->withQueryParam('password', $form->password),
+            $this->urlFactory->getUrlForVersion($version, $baseUrl)
+                ->withQueryParam('password', $form->password ?? '')
+                ->withQueryParam('_token', $form->token),
             $form->redirect
         );
     }

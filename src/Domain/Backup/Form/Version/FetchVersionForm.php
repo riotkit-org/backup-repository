@@ -25,4 +25,9 @@ class FetchVersionForm
      * @var string
      */
     public $password;
+
+    /**
+     * @var string
+     */
+    public $token;
 }

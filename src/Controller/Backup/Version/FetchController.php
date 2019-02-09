@@ -54,6 +54,9 @@ class FetchController extends BaseController
             return $this->createValidationErrorResponse($infraForm);
         }
 
+        // insert token as input, so the domain can pass it to the redirect
+        $form->token = $this->getLoggedUserToken()->getId();
+
         return $this->wrap(
             function () use ($form, $request) {
                 $response = $this->handler->handle(
