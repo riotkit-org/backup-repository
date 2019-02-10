@@ -20,7 +20,8 @@ else:
     from .bahubapp.service.logger import LoggerFactory
     from .bahubapp.exceptions import ApplicationException
 
-if __name__ == "__main__":
+
+def main():
     #
     # Arguments parsing
     #
@@ -80,3 +81,7 @@ if __name__ == "__main__":
 
         print(e)
         sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()

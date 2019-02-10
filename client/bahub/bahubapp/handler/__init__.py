@@ -4,7 +4,6 @@ from ..service.client import FileRepositoryClient
 from ..service.pipefactory import PipeFactory
 from ..exceptions import ReadWriteException
 from ..result import CommandExecutionResult
-from _io import BufferedReader
 from logging import Logger
 import string
 import random
