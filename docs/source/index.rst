@@ -28,15 +28,25 @@ Main functionality:
    domain/backup/index
    domain/minimumui/index
    client/bahub.rst
+   shell-access
 
 From authors
 ============
+
+Project was started as a part of RiotKit initiative, for the needs of grassroot organizations such as:
+
+- Fighting for better working conditions syndicalist (International Workers Association for example)
+- Tenants rights organizations
+- Various grassroot organizations that are helping people to organize themselves without authority
+
+
+Technical description:
 
 Project was created in *Domain Driven* like design in PHP7, with Symfony 4 framework.
 There are API tests written in *Postman* and unit tests written in *PhpUnit*.
 Feel free to submit pull requests, report issues, or join our team.
 The project is licensed with a MIT license.
 
-.. rst-class:: language-de align-center
+.. rst-class:: language-en align-center
 
 *RiotKit Collective*

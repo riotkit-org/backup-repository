@@ -154,6 +154,11 @@ class CollectionManagementContext
         return $this->tokenId;
     }
 
+    public function hasTokenAttached(): bool
+    {
+        return $this->tokenId !== null;
+    }
+
     public function canListMultipleCollections(): bool
     {
         return $this->canUseListingEndpointToFindCollections;

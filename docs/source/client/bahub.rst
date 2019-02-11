@@ -6,3 +6,10 @@ Works in shell, can work as a docker container in the same network with schedule
 as an UNIX daemon on the server without containerization.
 
 .. image:: ../_static/screenshots/bahub/bahub-1.png
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Contents:
+
+   configuration-reference
+   basic-usage

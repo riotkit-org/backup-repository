@@ -36,3 +36,4 @@ From security point of view there is a possibility to attach multiple tokens wit
    authorization
    versioning
    replication
+   shell-access

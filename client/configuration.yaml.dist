@@ -157,7 +157,7 @@ backups:
     #
     #   Packs a local directory or file
     #
-    my_logs:
+    some_local_dir:
         type: directory
         paths:
             - /tmp/test

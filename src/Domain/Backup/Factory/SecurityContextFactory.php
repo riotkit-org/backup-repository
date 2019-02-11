@@ -34,4 +34,11 @@ class SecurityContextFactory
             $token->getId()
         );
     }
+
+    public function createShellContext(): CollectionManagementContext
+    {
+        return new CollectionManagementContext(
+            true, true, true, true, true, true, true, true, null
+        );
+    }
 }

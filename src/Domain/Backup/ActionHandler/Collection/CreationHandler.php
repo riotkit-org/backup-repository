@@ -50,7 +50,9 @@ class CreationHandler
             $collection = $this->mapper->mapFormIntoCollection($form, new BackupCollection());
 
             // person/token who creates the collection needs to be allowed to later edit it :-)
-            $collection = $this->mapper->mapTokenIntoCollection($collection, $securityContext->getTokenId());
+            if ($securityContext->hasTokenAttached()) {
+                $collection = $this->mapper->mapTokenIntoCollection($collection, $securityContext->getTokenId());
+            }
 
             $collection = $this->manager->create($collection);
 

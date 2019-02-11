@@ -46,7 +46,7 @@ class DefinitionFactory:
 
         if len(invalid_vars) > 0:
             raise DefinitionFactoryException(
-                'Following environment variables are not resolved: ' + (', '.join(invalid_envs))
+                'Following environment variables are not resolved: ' + (', '.join(invalid_vars))
             )
 
         return content

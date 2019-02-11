@@ -74,7 +74,7 @@ class CrudResponse implements \JsonSerializable
         $new = new static();
         $new->status     = 'OK';
         $new->errorCode  = null;
-        $new->exitCode   = 202;
+        $new->exitCode   = $status;
         $new->errors     = [];
         $new->collection = $collection;
 
@@ -111,5 +111,15 @@ class CrudResponse implements \JsonSerializable
     public function getHttpCode(): int
     {
         return $this->exitCode;
+    }
+
+    public function isSuccess(): bool
+    {
+        return \strpos($this->status, 'OK') === 0;
+    }
+
+    public function getCollection(): ?BackupCollection
+    {
+        return $this->collection;
     }
 }
