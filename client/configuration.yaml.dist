@@ -43,14 +43,14 @@ backups:
     #   NOTICE: May be dangerous to your data, please make sure you know what you do.
     #           In most cases please choose "docker_volumes" method for safe, offline backup.
     #
-    www_uploads:
+    docker_hot_volumes_example:
         type: docker_hot_volumes
-        container: "iwa_ait_db_mysql_1"
+        container: "test_www"
         access: backup_one
-        encryption: enc1
-        collection_id: "some-collection-id"
+        encryption: none
+        collection_id: "${COLLECTION_ID}"
         paths:
-            - /etc
+            - /var/www
             - /var/log
 
         # optional
@@ -67,10 +67,10 @@ backups:
     #
     www_docker_offline:
         type: docker_volumes
-        container: "iwa_ait_db_mysql_1"
+        container: "test_www"
         access: backup_one
         encryption: enc1
-        collection_id: "724AC433-54D4-4511-A2C3-4CA5152ED766"
+        collection_id: "${COLLECTION_ID}"
         paths:
             - /etc
             - /var/lib/mysql
@@ -87,17 +87,36 @@ backups:
     # MySQL online backup using mysqldump
     #
     #   Can backup a single database or all databases from any MySQL server, local, in-docker or remote.
+    #   Notice: Restoring backups is only possible for SINGLE DATABASES
     #
     mysql_native_single_database:
+        type: mysql
+        host: "${DB_HOST}"
+        port: 3306
+        user: root
+        password: root
+        database: "${DB_DATABASE}"
+        access: backup_one
+        encryption: none
+        collection_id: "${COLLECTION_ID}"
+
+    #
+    # MySQL online backup using mysqldump (DOCKER)
+    #
+    #   Can backup a single database or all databases from any MySQL server, local, in-docker or remote.
+    #   Notice: Restoring backups is only possible for SINGLE DATABASES
+    #
+    mysql_docker_single_database:
         type: mysql
         host: localhost
         port: 3306
         user: root
         password: root
-        database: ""
+        database: "${DB_DATABASE}"
+        container: "test_mysql"    # this one is required to use a docker container
         access: backup_one
-        encryption: enc1
-        collection_id: "some-collection-id"
+        encryption: none
+        collection_id: "${COLLECTION_ID}"
 
         # optional:
         #tar_pack_cmd: "tar -czf %stdin% %paths%"
@@ -108,16 +127,14 @@ backups:
     #
     #   Executes command in a Docker container and captures output
     #
-    #   Notice: Does not support restore due to technical reasons at this moment
-    #
     docker_command_output:
         type: docker_output
-        container: "iwa_ait_gateway_1"
-        command: "cat /bin/bash"
-        restore_command: "cat - > /tmp/bash.restored"
+        container: "test_www"
+        command: "cat /bin/sh"
+        restore_command: "cat - > /tmp/sh.restored"
         access: backup_one
         encryption: enc1
-        collection_id: "724AC433-54D4-4511-A2C3-4CA5152ED766"
+        collection_id: "${COLLECTION_ID}"
 
         # optional
         #docker_bin: "sudo docker"
@@ -127,15 +144,13 @@ backups:
     #
     #   Executes command on this machine/environment on local shell and captures output
     #
-    #   Notice: Does not support restore due to technical reasons at this moment
-    #
     local_command_output:
         type: command_output
         command: "cat /bin/bash"
         restore_command: "cat - > /tmp/bash.restored"
         access: backup_one
         encryption: enc1
-        collection_id: "724AC433-54D4-4511-A2C3-4CA5152ED766"
+        collection_id: "${COLLECTION_ID}"
 
     #
     # Local file/directory backup
@@ -146,10 +161,9 @@ backups:
         type: directory
         paths:
             - /tmp/test
-            - /tmp/mozilla_damian0
         access: backup_one
         encryption: enc1
-        collection_id: "724AC433-54D4-4511-A2C3-4CA5152ED766"
+        collection_id: "${COLLECTION_ID}"
 
         # optional
         #tar_pack_cmd: "tar -czf %stdin% %paths%"

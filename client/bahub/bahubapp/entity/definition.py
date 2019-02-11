@@ -164,6 +164,7 @@ class DockerOfflineVolumesDefinition(DockerVolumesDefinition):
 class DockerOutputDefinition(BackupDefinition):
     _container = ""
     _command = ""
+    _restore_command = ""
     _docker_bin = ""
 
     def __init__(self,
@@ -175,15 +176,20 @@ class DockerOutputDefinition(BackupDefinition):
                  tar_unpack_cmd: str,
                  container: str,
                  command: str,
+                 restore_command: str,
                  docker_bin: str):
 
         super().__init__(access, _type, collection_id, encryption, tar_pack_cmd, tar_unpack_cmd)
         self._container = container
         self._command = command
         self._docker_bin = docker_bin if docker_bin else "sudo docker"
+        self._restore_command = restore_command
 
     def get_command(self) -> str:
         return self._command
+
+    def get_restore_command(self) -> str:
+        return self._restore_command
 
     def get_container(self) -> str:
         return self._container
@@ -202,6 +208,7 @@ class DockerOutputDefinition(BackupDefinition):
             tar_unpack_cmd=config.get('tar_unpack_cmd', BackupDefinition._tar_unpack_cmd),
             container=config['container'],
             command=config['command'],
+            restore_command=config.get('restore_command', ''),
             docker_bin=config.get('docker_bin')
         )
 
@@ -212,7 +219,11 @@ class MySQLDefinition(BackupDefinition):
     _user = "root"
     _password = "root"
     _database = ""
-    _opts = ""
+    _docker_bin = "sudo docker"
+    _container = ""
+    _mysql_dump_cmd = 'mysqldump --skip-lock-tables -u %user% -P %port% -p%password% -h %host% %database%'
+    _mysql_restore_cmd = 'mysql -u %user% -p%password% -h %host% -P %port% %database% %query_subcmd%'
+    _mysql_query_subcmd = ' -e "%query%"'
 
     def __init__(self,
                  access: ServerAccess,
@@ -226,7 +237,8 @@ class MySQLDefinition(BackupDefinition):
                  user: str,
                  password: str,
                  database: str,
-                 opts: str):
+                 docker_bin: str,
+                 container: str):
 
         super().__init__(access, _type, collection_id, encryption, tar_pack_cmd, tar_unpack_cmd)
         self._host = host
@@ -234,17 +246,40 @@ class MySQLDefinition(BackupDefinition):
         self._user = user
         self._password = password
         self._database = database
-        self._opts = opts
+        self._docker_bin = docker_bin
+        self._container = container
 
-    def get_mysqldump_args(self):
-        return 'mysqldump ' + \
-               self._opts + ' ' \
-               '--skip-lock-tables ' + \
-               '-u ' + self._user + ' ' + \
-               '-P ' + str(self._port) + ' ' + \
-               '-p' + self._password + ' ' + \
-               '-h ' + self._host + ' ' + \
-               (self._database if self._database else '--all-databases')
+    def get_container(self) -> str:
+        return self._container
+
+    def get_docker_bin(self) -> str:
+        return self._docker_bin
+
+    def should_use_docker(self) -> bool:
+        return self.get_container() != '' and self.get_docker_bin() != ''
+
+    def get_database(self) -> str:
+        return self._database if self._database else '--all-databases'
+
+    def is_copying_all_databases(self) -> bool:
+        return self.get_database() is "--all-databases"
+
+    def get_mysql_dump_args(self) -> str:
+        return self._fill_template(self._mysql_dump_cmd)
+
+    def get_mysql_command(self, query: str = '', use_database: bool = True):
+        subcmd = self._mysql_query_subcmd.replace('%query%', query) if query else ''
+
+        return self._fill_template(self._mysql_restore_cmd, use_database=use_database) \
+            .replace('%query_subcmd%', subcmd)
+
+    def _fill_template(self, template: str, use_database: bool = True):
+        return template\
+            .replace('%host%', self._host) \
+            .replace('%user%', self._user) \
+            .replace('%port%', str(self._port)) \
+            .replace('%database%', self._database if use_database else '') \
+            .replace('%password%', self._password)
 
     @staticmethod
     def from_config(config: dict):
@@ -260,12 +295,14 @@ class MySQLDefinition(BackupDefinition):
             user=config['user'],
             password=config['password'],
             database=config['database'],
-            opts=config.get('opts', '')
+            docker_bin=config.get('docker_bin', 'sudo docker'),
+            container=config.get('container', '')
         )
 
 
 class CommandOutputDefinition(BackupDefinition):
     _command = ""
+    _restore_command = ""
 
     def __init__(self,
                  access: ServerAccess,
@@ -274,13 +311,18 @@ class CommandOutputDefinition(BackupDefinition):
                  encryption: Encryption,
                  tar_pack_cmd: str,
                  tar_unpack_cmd: str,
-                 command: str):
+                 command: str,
+                 restore_command: str):
 
         super().__init__(access, _type, collection_id, encryption, tar_pack_cmd, tar_unpack_cmd)
         self._command = command
+        self._restore_command = restore_command
 
     def get_command(self) -> str:
         return self._command
+
+    def get_restore_command(self) -> str:
+        return self._restore_command
 
     @staticmethod
     def from_config(config: dict):
@@ -291,7 +333,8 @@ class CommandOutputDefinition(BackupDefinition):
             encryption=config['encryption'],
             tar_pack_cmd=config.get('tar_pack_cmd', BackupDefinition._tar_pack_cmd),
             tar_unpack_cmd=config.get('tar_unpack_cmd', BackupDefinition._tar_unpack_cmd),
-            command=config['command']
+            command=config['command'],
+            restore_command=config.get('restore_command', '')
         )
 
 

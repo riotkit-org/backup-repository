@@ -1,0 +1,170 @@
+CHANGES
+=======
+
+* Added initial support for setuptools
+* Clean up
+* Fixed issue when the guest session was more important than admin technical session
+* Initially added bahub to docs
+* Bahub restore and list commands
+* WIP: Bahub - a shell API client specialized in backups of local files, command outputs and docker containers
+* Fixed default environment variables values. The quotes are not good, because they are actually passed..
+* Fixed caching after adding range bytes
+* Added support for bytes range
+* Added initially support for catching upload errors that are coming from PHP upload mechanism
+* Improved implementation of access rights
+* Increased upload\_max\_filesize
+* Unified permissions implementation on dev and prod environments
+* Now the 'security.administrator' role is granting all permissions automatically
+* Fix: Application is now not forking into background
+* Fixed container names
+* - Added a prod entrypoint that will now deploy the update of the application before starting it. The deploy includes eg. migrations, cache clearing etc
+* - Support for Minio through S3 interface (awss3v3) - Refactored filesystem adapters configuration (ConfigParser), is now more elastic and gives possibility to configure more deep options (arrays in arrays of n depth are supported) - More clear S3 interface configuration with a ready-to-go example in .env.dist
+* Added a command to generate admin tokens from shell
+* Added MySQL example in .env.dist
+* Fixed travis build
+* Added required libzip
+* Added phpunit shortcut
+* Added required "zip" extension to the docker container
+* Added unit tests support and first unit test
+* Hotlink support: Fixed configuration reading problem, environment variable values were normalized to lower case which destroyed the ANTI\_HOTLINK\_SECRET\_METHOD value
+* Removed debug from API Tests
+* Travis debugging: SQLite3 will be the default database
+* Added link to the documentation, and improved the description about why the project was created
+* Changed file descriptions and set the license
+* Readthedocs: Fixing 'ascii' codec can't decode byte 0xc5 in position 11: ordinal not in range(128)
+* Readthedocs: Added sphinx-glpi-theme to the requirements.txt
+* Fixed the order of loading doctrine mappings
+* @debug
+* Travis: Composer debugging
+* Added travis integration
+* ANTI\_HOTLINK\_SECRET\_METHOD now has a better default that should be realistic to setup for most of the users
+* Added more documentation about aliasing and hotlink protection
+* Fixed invalid boolean casting
+* - Anti hotlink mechanism - Filename mapping mechanism
+* - MinimumUI: Added video player endpoint /minimum.ui/watch/video/{fileId} - Storage domain: Added partial support for BYTES RANGE - Storage domain: Deduplication is now not possible to turn off, it can be prefixed with "contentIdent" which is added to the checksum (only works internally when using DomainBus between domains eg. from Backup domain) - Migrations: Fixed incorrectly created constraints - Better recognition of invalid multipart uploads (will return a 500 if the POST MAX SIZE of PHP settings is reached and the file is submitted as body stream) - Partial CI environment based on Docker
+* Clean up + minimum ui documentation
+* - MinimumUI - first working version with files and images uploading - Switched Bower to NPM - API now does not return 301 HTTP codes when file already exists, now it returns 202 - Upgraded MinimumUI code to ES6 standard - Upload endpoint now returns also requested filename
+* WIP: MinimumUI - improvements to the images cropper
+* WIP: MinimumUI - uploading images and files, support for base64 encoded uploads (easier for implementation of frontends in web browser), roles - enforcing no password and tags from token
+* Better error handling in authentication domain, added a few postman tests, updated documentation
+* Improvements to documentation, token deletion, expiration date for tokens
+* Added documentation and improved permissions (added missing roles)
+* Deleted first version
+* Added endpoint for easier fetching of collection version eg. /repository/collection/some-collection/backup/latest     /repository/collection/some-collection/backup/first     /repository/collection/some-collection/backup/v1     /repository/collection/some-collection/backup/SOME-UUID-HERE
+* Cancelled Webhooks support for now. Need to focus on finalization of basic functionality
+* Added endpoints for listing and deleting versions
+* Added endpoint for uploading files to the collection
+* Added endpoint for revoking access to collections
+* Added endpoint for attaching tokens to collections
+* Added listing endpoint
+* Updated documentation
+* Added delete and fetch endpoints
+* Added collection creation endpoint
+* Domain logic validation for the creation endpoint
+* Collections creation endpoint
+* Updated dependencies versions
+* Domain models for Backup Domain
+* Access rights for listing
+* Listing endpoint
+* Roles list and response standarization
+* HTTP cache support
+* Deletion endpoint
+* - Improvements to the authentication and 403 error handling - Added additional roles in authentication domain - Added some postman api tests coverage
+* Tags support, test http provider in test and dev mode (supports file:// protocol for testing), several fixes
+* Initial commit
+* Sync dev front-controller with prod (allow images to be fetched...)
+* Fixed tests to fit current path of images
+* Added Heroku deploy button
+* Updated configuration documentation and added environmental variables to Heroku configuration file
+* Clean up of images
+* Fixed JSON support
+* Fixed bower install execution when its not installed globally
+* Updated documentation, naming
+* Added more detail licensing information
+* Added integration with Heroku
+* Updated logo
+* Loop config keys
+* Add comment for phinx configuration
+* Update gitignore
+* Remove .idea folder (PhpStorm/IntelliJ from JetBrains)
+* Configure automatically Phinx with \*.custom.php files
+* Enhance mime-type detection
+* [#10] Added support for database tables prefixing
+* Fix things about test env
+* Strict type
+* Remove dependency to val/doctrine-table-prefix-service-provider and use last version of doctrine receipt
+* Updated travis badge
+* Remove use statement and use full package name
+* Allow table to be prefixed (using val/doctrine-table-prefix-service-provider)
+* Make dev configuration customizable
+* Make database configurable
+* Fix: don't force weburl parameter in config/dev.php
+* Fixed support for SSL
+* Added tests and fixes existing tests
+* Implemented HTTP cache (ETag, Last modified), refactored the code a little bit - extracted code into service
+* Added search query paramater to the find action
+* Added order by to the search action
+* Improved callbacks, token handling, updated dependencies
+* Support for uploading regular files using temporary tokens, configurable aspect ratio for image upload
+* Added support for png files, upgraded version of cropperjs to 1.0
+* Exposing also the url of files
+* Fixed: Case when there were no results if offset and limit was higher
+* Added pagination information to the FindAction
+* Switched response to be snake case, upgraded libraries, updated README.md
+* Now handling also escaped variable |url|
+* Now handling also escaped variable |url|
+* Clean up
+* Added .idea to the .gitignore
+
+v1.1
+----
+
+* [https://github.com/Wolnosciowiec/image-repository/issues/1][https://github.com/Wolnosciowiec/image-repository/issues/3] Implemented tags support
+* Security fix: Escaping upload/download paths
+* Added bower to the package.json for Heroku
+* Added missing directory, updated dependencies
+* Connected travis-ci
+* Added automatic tests
+* - Generating temporary access tokens - Uploading images from HTML form with possibility to crop the image
+* Formatting fix
+* Fixed db problem
+* Added instructions how to install on a remote FTP server
+* Added instructions how to install on a remote FTP server
+* Added vendor to phploy deployment
+* Moved databases to the "data" directory, moved Phinx config to PHP format, added web deployment using "wolnosciowiec/wolnosciowiec-web-deploy"
+* Updated dependencies
+* Changed deployment method to phploy, which seems to be working very well
+* Whitelisted docker host address
+* Now the database is per environment - Phinx is now also building both environment databases
+* Now the database is per environment
+* Fixed last commit
+* Now the application should return only full links, not only relative paths
+* Added versioning
+* Fixed deployment script
+* Update README.md
+* Added API key to the URL for Heroku test app
+* Added Heroku badge
+* Added Heroku badge
+* Fixed heroku integration
+* Fixed heroku integration
+* Updated composer lock
+* Added heroku integration
+* Added heroku integration
+* Added heroku integration
+* Fixed
+* Exists and delete methods
+* Added travis-ci badge to the README.md
+* Added initial travis file to just test the deployment, phpunit tests will be implemented soon
+* Added Registry feature. From technical side: Added database and migrations support
+* Updated deployment script, now it has a possibility to remember passwords
+* Added examples
+* Added uploading with HTTP protocol support
+* Updated deployment scripts
+* Update README.md
+* Deployment script
+* Deployment script
+* Deployment script
+* Deployment script
+* htaccess for Apache, a few new controllers :)
+* First commit
+* initial commit

@@ -5,6 +5,9 @@ from ..entity.access import ServerAccess
 from ..entity.definition import BackupDefinition
 from ..mapping.definitions import DefinitionsMapping
 from ..exceptions import DefinitionFactoryException
+import yaml
+import os
+import re
 
 
 class DefinitionFactory:
@@ -15,14 +18,38 @@ class DefinitionFactory:
     _backups = {}     # type: dict[BackupDefinition]
     _debug = False    # type: bool
 
-    def __init__(self, configuration: dict, debug: bool):
+    def __init__(self, configuration_path: str, debug: bool):
         self._debug = debug
-        self._parse(configuration)
+        self._parse(self._read(configuration_path))
 
     def _parse(self, config: dict):
         self._parse_accesses(config['accesses'])
         self._parse_encryption(config['encryption'])
         self._parse_backups(config['backups'])
+
+    def _read(self, path: str):
+        f = open(path, 'rb')
+        config = yaml.load(self._process_env_variables(f.read().decode('utf-8')))
+        f.close()
+
+        return config
+
+    @staticmethod
+    def _process_env_variables(content: str) -> str:
+        env_list = list(dict(os.environ).items())
+        env_list.sort(key=lambda item: (-len(item[0]), item[0]))
+
+        for env in env_list:
+            content = content.replace('${' + env[0] + '}', env[1])
+
+        invalid_vars = set(re.findall('\${([A-Z0-9a-z_]+)}', content))
+
+        if len(invalid_vars) > 0:
+            raise DefinitionFactoryException(
+                'Following environment variables are not resolved: ' + (', '.join(invalid_envs))
+            )
+
+        return content
 
     def _parse_accesses(self, config: dict):
         for key, values in config.items():

@@ -2,7 +2,6 @@
 import sys
 import os
 import argparse
-import yaml
 
 t = sys.argv[0].replace(os.path.basename(sys.argv[0]), "") + "/"
 
@@ -58,13 +57,9 @@ def main():
         print(' Configuration file "' + str(parsed.config) + '" does not exist')
         sys.exit(1)
 
-    f = open(parsed.config, 'rb')
-    config = yaml.load(f.read())  # .iteritems() ?
-    f.close()
-
     try:
         app = Bahub(
-            factory=DefinitionFactory(config, parsed.debug),
+            factory=DefinitionFactory(parsed.config, parsed.debug),
             options={
                 'options': parsed.options,
                 'debug': parsed.debug,
