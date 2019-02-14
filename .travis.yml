@@ -18,7 +18,7 @@ matrix:
 
         - language: python
           services: docker
-          python: 3.7
+          python: 3.6
 
           before_script:
               - make build@x86_64 build_bahub@x86_64

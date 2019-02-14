@@ -39,9 +39,7 @@ before_local_command_output() { exec_in_bahub_container 'echo "something" > /tmp
 assert_local_command_output() {
     echo " >> Assert file has original content (/tmp/bash.restored)"
 
-    content=$(exec_in_bahub_container 'cat /tmp/bash.restored' || true)
-
-    if [[ ${content} == *"something"* ]]; then
+    if exec_in_bahub_container 'cat /tmp/bash.restored' | grep "something" > /dev/null; then
         echo " !! File has not been restored: ${content}"
         return 1
     fi
@@ -49,10 +47,13 @@ assert_local_command_output() {
     return 0
 }
 
-# test
-variants=(some_local_logs local_command_output docker_hot_volumes_example www_docker_offline)
+#
+# Execution of all cases, one-by-one
+#
+variants=(some_local_logs local_command_output docker_hot_volumes_example www_docker_offline mysql_docker_single_database)
 
 for variant in ${variants[@]}; do
+    echo ""
     echo " ... Testing variant '${variant}'"
 
     COLLECTION_ID=$(create_collection "Logs" "logs.tar.gz" 4 3GB 14GB)
@@ -62,7 +63,7 @@ for variant in ${variants[@]}; do
     fi
 
     echo " >> Assert it will be first backup in collection"
-    bahub --config /etc/bahub/without_crypto.conf.yaml backup ${variant}
+    bahub --config /etc/bahub/without_crypto.conf.yaml --debug backup ${variant}
     
     echo " >> Assert submitted backup will be found on listing"
     bahub --config /etc/bahub/without_crypto.conf.yaml list ${variant} | grep '"v1"' > /dev/null
@@ -77,9 +78,6 @@ for variant in ${variants[@]}; do
     if function_exists "assert_${variant}"; then
         eval "assert_${variant}"
     fi
-
-    echo " >> Prepare a v2"
-    bahub --config /etc/bahub/without_crypto.conf.yaml backup ${variant} | grep 'v2' > /dev/null
 
     echo " ... DONE"
     echo ""

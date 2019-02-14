@@ -13,7 +13,8 @@
 /config/packages/oneup_flysystem.yaml
 
 /.idea
-
+/supervisord.log
+/supervisord.pid
 /docs/build
 /examples/docker/.env
 

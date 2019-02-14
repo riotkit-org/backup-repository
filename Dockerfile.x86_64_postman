@@ -1,49 +1,8 @@
-FROM wolnosciowiec/docker-php-app
+FROM wolnosciowiec/file-repository
 
-# @todo: Switch FROM to point to the Dockerfile.x86_64
-
-RUN rm -rf /var/lib/apt/lists/* \
-    && apt-get update \
-    && apt-get install -y curl bash gnupg2 libzip-dev \
-    && docker-php-ext-install bcmath zip \
-    && curl -sL https://deb.nodesource.com/setup_8.x | bash - \
-    && apt-get install -y nodejs \
-    && apt-get clean \
-    && npm install -g newman
-
-ENV DATABASE_URL=sqlite:///%kernel.project_dir%/var/data.db \
-    FS_ADAPTER=local \
-    FS_LOCAL_DIRECTORY=%kernel.root_dir%/var/uploads \
-    FS_LOCAL_LAZY=1 \
-    FS_LOCAL_WRITEFLAGS= \
-    FS_LOCAL_LINKHANDLING= \
-    FS_LOCAL_PERMISSIONS= \
-    FS_AWSS3V3_CLIENT=s3_client \
-    FS_AWSS3V3_BUCKET=misc \
-    FS_AWSS3V3_PREFIX= \
-    FS_AWSS3V3_OPTIONS_ENDPOINT=http://localhost:9000 \
-    FS_AWSS3V3_VERSION=latest \
-    FS_AWSS3V3_REGION=eu-central-1 \
-    FS_AWSS3V3_KEY=some-key \
-    FS_AWSS3V3_SECRET=some-secret \
-    FS_FTP_HOST=localhost \
-    FS_FTP_PORT=21 \
-    FS_FTP_USERNAME=user \
-    FS_FTP_PASSWORD=password \
-    FS_FTP_ROOT=/ \
-    FS_FTP_SSL=1 \
-    FS_FTP_TIMEOUT=120 \
-    FS_FTP_PERMPRIVATE= \
-    FS_FTP_PERMPUBLIC= \
-    FS_FTP_PASSIVE=0
-
-ADD . /var/www/html
-ADD ./filerepository.php.ini /usr/local/etc/php/conf.d/filerepository.php.ini
 ADD tests_entrypoint.sh /
 
-RUN cd /var/www/html \
-    && chown www-data:www-data /var/www -R \
-    && su www-data -s /bin/bash -c "make deploy" \
+RUN npm install -g newman \
     && mkdir -p /var/tests \
     && chmod +x /tests_entrypoint.sh
 

@@ -18,18 +18,22 @@ create_collection () {
         ./bin/console backup:create-collection -d "${1}" -f "${2}" -b "${3}" -o "${4}" -c "${5}" | perl -pe 's/[^\w.-]+//g'
 }
 
-generate_admin_token() {
+generate_admin_token () {
     sudo docker-compose exec file-repository \
-        ./bin/console auth:generate-admin-token | perl -pe 's/[^\w.-]+//g'
+        ./bin/console --env=prod auth:generate-admin-token | perl -pe 's/[^\w.-]+//g'
 }
 
 console () {
     sudo docker-compose exec file-repository \
-        ./bin/console "$@" | perl -pe 's/[^\w.-]+//g'
+        ./bin/console --env=prod "$@" | perl -pe 's/[^\w.-]+//g'
 }
 
-exec_in_bahub_container() {
+exec_in_bahub_container () {
     sudo docker-compose exec bahub /bin/sh -c "$@"
+}
+
+read_logs () {
+    sudo docker-compose exec file-repository /bin/sh -c 'cat ./var/log/prod.log'
 }
 
 function_exists () {
@@ -38,4 +42,22 @@ function_exists () {
     fi
 
     return 1
+}
+
+prepare_file_repository_instance () {
+    sudo docker-compose up -d --force-recreate file-repository
+}
+
+wait_for_container_to_start () {
+    while ! sudo docker ps |grep "${1}" |grep "(healthy)" > /dev/null; do
+        sleep 1
+    done
+}
+
+before_running_all_tests () {
+    echo " ====> Preparing File Repository instance"
+    prepare_file_repository_instance 2&>1 > /dev/null
+
+    echo " ====> Waiting for application to get up"
+    wait_for_container_to_start "file-repository"
 }
