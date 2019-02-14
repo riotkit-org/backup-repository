@@ -15,6 +15,7 @@ matrix:
           script:
               - make test_api SUDO=""
               - make coverage
+              - cat ./var/log/prod.log
 
         - language: python
           services: docker
