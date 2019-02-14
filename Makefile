@@ -95,7 +95,7 @@ _set_env:
 test_api:
 	mkdir -p ./var/log
 	${SUDO} docker build . -f ./Dockerfile.x86_64_postman -t wolnosciowiec/file-repository:v2-postman
-	${SUDO} docker run -v ./var/log:/var/www/html/var/log wolnosciowiec/file-repository:v2-postman
+	${SUDO} docker run -v $$(pwd)/var/log:/var/www/html/var/log wolnosciowiec/file-repository:v2-postman
 
 ## Generate code coverage from unit testing
 coverage:
