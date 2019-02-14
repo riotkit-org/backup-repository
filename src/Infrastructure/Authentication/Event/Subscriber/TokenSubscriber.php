@@ -85,7 +85,7 @@ class TokenSubscriber implements EventSubscriberInterface
             $event->setResponse(
                 new JsonResponse(
                     [
-                        'status'     => 'Not authorized, no valid token present at all',
+                        'status'     => 'Invalid authorization. Details: ' . $exception->getMessage(),
                         'error_code' => 403,
                         'http_code'  => 403
                     ],

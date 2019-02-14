@@ -6,6 +6,8 @@ COLOR_INFO    = \033[32m
 COLOR_COMMENT = \033[33m
 
 PIP = sudo pip3
+PYTHON3_ROOT = sudo python3
+SUDO = sudo
 
 ## Help
 help:
@@ -27,3 +29,19 @@ build_package:
 	${PIP} install -r ./requirements.txt || true
 	python3 ./setup.py build
 
+## Install
+install: build_package
+	${PYTHON3_ROOT} ./setup.py install
+	bahub -h
+
+## Run testing containers and fork to the background
+run_test_containers:
+	cd tests && ${SUDO} docker-compose up -d
+
+## Stop and remove all containers
+kill_test_containers:
+	cd tests && ${SUDO} docker-compose down --rm
+
+## Run tests
+test:
+	./tests/run.sh

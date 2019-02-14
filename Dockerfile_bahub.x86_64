@@ -1,0 +1,18 @@
+FROM docker:latest
+
+RUN apk --update add python3 make bash sudo openssl-dev git openssl supervisor rsyslog xz bzip2
+
+ADD client /bahub
+ADD .git /bahub/.git
+
+RUN cd /bahub \
+    && make install \
+    && chmod +x /bahub/docker_entrypoint.sh \
+    && mv /usr/bin/bahub /usr/bin/bahub-origin \
+    && cp /bahub/docker_bahub.sh /usr/bin/bahub \
+    && chmod +x /usr/bin/bahub
+
+#VOLUME "/bahub.conf.yaml"
+#VOLUME "/cron"
+
+ENTRYPOINT ["/bahub/docker_entrypoint.sh"]

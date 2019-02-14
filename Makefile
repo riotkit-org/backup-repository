@@ -58,13 +58,17 @@ deploy: install
 build@x86_64:
 	${SUDO} docker build . -f ./Dockerfile.x86_64 -t wolnosciowiec/file-repository
 
+## Build a docker container
+build_bahub@x86_64:
+	${SUDO} docker build . -f ./Dockerfile_bahub.x86_64 -t wolnosciowiec/file-repository:bahub
+
 ## Run x86_64 image
 run@x86_64:
 	${SUDO} docker run --rm --name file-repository -p 80:80 wolnosciowiec/file-repository
 
 ## Build arm7hf image
 build@arm7hf:
-	${SUDO} docker build . -f ./Dockerfile.arm7hf -t wolnosciowiec/file-repository:v2-arm7hfPATHINFO_BASENAME
+	${SUDO} docker build . -f ./Dockerfile.arm7hf -t wolnosciowiec/file-repository:v2-arm7hf
 
 _configure_ci_environment:
 	make _set_env NAME=APP_ENV VALUE=test

@@ -71,6 +71,7 @@ class CreateCollectionCommand extends Command
         $form->filename    = $input->getOption('filename');
 
         $response = $this->handler->handle($form, $this->authFactory->createShellContext());
+        $this->handler->flush();
 
         if ($response->isSuccess()) {
             $output->writeln($response->getCollection()->getId());

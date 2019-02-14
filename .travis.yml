@@ -1,16 +1,29 @@
-language: php
+matrix:
+    include:
+        - language: php
+          services:
+              - docker
 
-services:
-    - docker
+          php:
+              #- '7.2'
+              - '7.3'
+              #- nightly
 
-php:
-    #- '7.2'
-    - '7.3'
-    #- nightly
+          before_script:
+              - make install SUDO=""
 
-before_script:
-    - make install SUDO=""
+          script:
+              - make test_api SUDO=""
+              - make coverage
 
-script:
-    - make test_api SUDO=""
-    - make coverage
+        - language: python
+          services: docker
+          python: 3.7
+
+          before_script:
+              - make build@x86_64 build_bahub@x86_64
+              - make install
+
+          script:
+              - make test
+              - cd client && make run_test_containers test

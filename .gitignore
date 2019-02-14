@@ -26,3 +26,9 @@
 .phpunit
 /phpunit.xml
 ###< symfony/phpunit-bridge ###
+
+# bahub
+/client/bahub.egg-info
+/client/build
+/client/.idea
+*.pyc

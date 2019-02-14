@@ -1,0 +1,30 @@
+version: "2"
+services:
+    test_www:
+        image: nginx:latest
+        volumes:
+            - ./files/www:/var/www/html
+        ports:
+            - "81:80"
+
+    test_database:
+        image: mariadb/server
+        environment:
+            - MARIADB_DATABASE=test_www_db
+            - MARIADB_USER=test_www_user
+            - MARIADB_ROOT_PASSWORD=root
+            - MARIADB_PASSWORD=password
+
+    file-repository:
+        image: wolnosciowiec/file-repository
+        ports:
+            - "80:80"
+
+    bahub:
+        image: wolnosciowiec/file-repository:bahub
+        volumes:
+            - ./conf:/etc/bahub
+            - /var/run/docker.sock:/var/run/docker.sock
+        environment:
+            - DB_DATABASE=test_www_db
+            - DB_HOST=test_database

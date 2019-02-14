@@ -31,7 +31,6 @@ class GenerateAdminTokenCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $output->writeln('Generating admin token...');
         $command = $this->getApplication()->find(GenerateTokenCommand::NAME);
 
         return $command->run(

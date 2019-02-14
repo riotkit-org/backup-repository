@@ -24,7 +24,7 @@ class FileRepositoryClient:
         except JSONDecodeError:
             _json = {}
 
-        self._logger.debug('Request for ' + str(BackupDefinition))
+        self._logger.debug('Request: ' + str(url))
         self._logger.debug('response(' + response.text + ')')
 
         if response.status_code >= 400:
@@ -43,7 +43,7 @@ class FileRepositoryClient:
 
         response = requests.get(url, stream=True)
 
-        self._logger.debug('Request for ' + url)
+        self._logger.debug('Request: ' + str(url))
         self._logger.debug('response_code=' + str(response.status_code))
 
         if response.status_code >= 400:

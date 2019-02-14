@@ -64,19 +64,19 @@ class GenerateTokenCommand extends Command
         $form->expires                  = $input->getOption('expires');
         $form->roles                    = $this->getMultipleValueOption($input, 'roles');
 
-        $output->writeln('========================');
-        $output->writeln('Form:');
+        $this->debug('========================', $output);
+        $this->debug('Form:', $output);
 
         foreach ($form->data->tags as $tag) {
-            $output->writeln(' [Tag] -> ' . $tag);
+            $this->debug(' [Tag] -> ' . $tag, $output);
         }
 
         foreach ($form->data->allowedMimeTypes as $mimes) {
-            $output->writeln(' [Mime] -> ' . $mimes);
+            $this->debug(' [Mime] -> ' . $mimes, $output);
         }
 
         foreach ($form->roles as $role) {
-            $output->writeln(' [Role] -> ' . $role);
+            $this->debug(' [Role] -> ' . $role, $output);
         }
 
         try {
@@ -85,21 +85,34 @@ class GenerateTokenCommand extends Command
                 $this->authFactory->createShellContext()
             );
         } catch (ValidationException $validationException) {
-            $output->writeln('========================');
-            $output->writeln('Validation error:');
+            $this->debug('========================', $output);
+            $this->debug('Validation error:', $output);
 
             foreach ($validationException->getFields() as $field => $errors) {
-                $output->writeln(' Field "' . $field . '":');
+                $this->debug(' Field "' . $field . '":', $output);
 
                 foreach ($errors as $error) {
-                    $output->writeln(' - ' . $error);
+                    $this->debug(' - ' . $error, $output);
                 }
             }
         }
 
-        $output->writeln("\nResponse:");
-        $output->writeln('========================');
-        $output->writeln(json_encode($response, JSON_PRETTY_PRINT));
+        $this->debug("\nResponse:", $output);
+        $this->debug('========================', $output);
+        $this->debug(json_encode($response, JSON_PRETTY_PRINT), $output);
+
+        if (!$output->isVerbose()) {
+            $output->writeln($response['tokenId']);
+        }
+    }
+
+    private function debug(string $message, OutputInterface $output): void
+    {
+        if (!$output->isVerbose()) {
+            return;
+        }
+
+        $output->writeln($message);
     }
 
     private function getMultipleValueOption(InputInterface $input, string $optionName): array
