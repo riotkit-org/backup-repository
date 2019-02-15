@@ -14,7 +14,7 @@ matrix:
               - mkdir -p ./var && chmod 777 ./var -R
 
           script:
-              - make test_api SUDO=""
+              - make build@x86_64 test_api SUDO=""
               - make coverage
               - cat ./var/log/*.log
 
