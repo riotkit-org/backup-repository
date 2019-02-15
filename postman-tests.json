@@ -2769,7 +2769,6 @@
 											"listen": "test",
 											"script": {
 												"id": "51b1b8a6-0321-417a-8adc-c0df05abf5ef",
-												"type": "text/javascript",
 												"exec": [
 													"var jsonData = pm.response.json();",
 													"",
@@ -2791,7 +2790,8 @@
 													"",
 													"",
 													"pm.globals.set(\"collection_5_to_upload_versions\", jsonData.collection.id);"
-												]
+												],
+												"type": "text/javascript"
 											}
 										}
 									],
@@ -4208,164 +4208,6 @@
 						}
 					],
 					"_postman_isSubFolder": true
-				}
-			]
-		},
-		{
-			"name": "Anti-Hotlink protection, filename mapping",
-			"item": [
-				{
-					"name": "Upload example file",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "83b31755-ace1-4eaf-9af5-f6e6a890a5f1",
-								"exec": [
-									"var jsonData = pm.response.json();",
-									"",
-									"pm.test(\"Has 202 status code\", function () {",
-									"    pm.expect(jsonData.http_code).to.eql(202);",
-									"});",
-									"",
-									"pm.globals.set(\"filename_antihotlink\", jsonData.filename);",
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "POST",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": "Hello, this is a test text file :-)\n"
-						},
-						"url": {
-							"raw": "{{appUrl}}/repository/file/upload?_token=test-token-full-permissions&fileName=mapped.txt&public=true",
-							"host": [
-								"{{appUrl}}"
-							],
-							"path": [
-								"repository",
-								"file",
-								"upload"
-							],
-							"query": [
-								{
-									"key": "_token",
-									"value": "test-token-full-permissions"
-								},
-								{
-									"key": "fileName",
-									"value": "mapped.txt"
-								},
-								{
-									"key": "public",
-									"value": "true"
-								}
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "[With hotllink token] Browse the file that has defined alias",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "84872d03-f053-4b1d-93f7-fe6498979412",
-								"exec": [
-									"pm.test(\"Body matches string\", function () {",
-									"    pm.expect(pm.response.text()).to.include(\"Hello\");",
-									"});",
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Test-Header",
-								"type": "text",
-								"value": "AAA"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
-						"url": {
-							"raw": "{{appUrl}}/stream/0be635f00625d72e19ad83a2a0d9fede/2219788800/example-alias",
-							"host": [
-								"{{appUrl}}"
-							],
-							"path": [
-								"stream",
-								"0be635f00625d72e19ad83a2a0d9fede",
-								"2219788800",
-								"example-alias"
-							]
-						},
-						"description": "\nLogs:\n-----\n\n[PatternResolver] Got accessToken=0be635f00625d72e19ad83a2a0d9fede to resolve for fileId=example-alias\n\n[PatternResolver] The pattern is \"$http_x_expiration_time$http_test_header MY-AWESOME-SUFFIX\", algorithm is \"md5\"\n\n[PatternResolver] Will compare requested \"0be635f00625d72e19ad83a2a0d9fede\" with raw=\"2219788800AAA MY-AWESOME-SUFFIX\", hashed=\"0be635f00625d72e19ad83a2a0d9fede\"\n\n\nHow to calculate the hash:\n--------------------------\n>>> md5('2219788800AAA MY-AWESOME-SUFFIX')\n=> \"0be635f00625d72e19ad83a2a0d9fede\""
-					},
-					"response": []
-				},
-				{
-					"name": "[Without hotlink token] Browse by alias",
-					"event": [
-						{
-							"listen": "test",
-							"script": {
-								"id": "84872d03-f053-4b1d-93f7-fe6498979412",
-								"exec": [
-									"pm.test(\"Body matches string\", function () {",
-									"    pm.expect(pm.response.text()).to.include(\"Hello\");",
-									"});",
-									""
-								],
-								"type": "text/javascript"
-							}
-						}
-					],
-					"request": {
-						"method": "GET",
-						"header": [
-							{
-								"key": "Test-Header",
-								"value": "AAA",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
-						"url": {
-							"raw": "{{appUrl}}/repository/file/example-alias?_token=test-token-full-permissions",
-							"host": [
-								"{{appUrl}}"
-							],
-							"path": [
-								"repository",
-								"file",
-								"example-alias"
-							],
-							"query": [
-								{
-									"key": "_token",
-									"value": "test-token-full-permissions"
-								}
-							]
-						},
-						"description": "\nLogs:\n-----\n\n[PatternResolver] Got accessToken=0be635f00625d72e19ad83a2a0d9fede to resolve for fileId=example-alias\n\n[PatternResolver] The pattern is \"$http_x_expiration_time$http_test_header MY-AWESOME-SUFFIX\", algorithm is \"md5\"\n\n[PatternResolver] Will compare requested \"0be635f00625d72e19ad83a2a0d9fede\" with raw=\"2219788800AAA MY-AWESOME-SUFFIX\", hashed=\"0be635f00625d72e19ad83a2a0d9fede\"\n\n\nHow to calculate the hash:\n--------------------------\n>>> md5('2219788800AAA MY-AWESOME-SUFFIX')\n=> \"0be635f00625d72e19ad83a2a0d9fede\""
-					},
-					"response": []
 				}
 			]
 		}
