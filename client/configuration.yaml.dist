@@ -23,6 +23,8 @@ encryption:
     enc1:
         passphrase: some-encryption-key-here
         method: aes-256-cbc      # possible values: aes-256-cbc, aes-256-ecb, aes-128-cbc, aes-128-ecb, des-ecb
+        #encrypt_cmd: openssl enc -%method% -pass pass:%pass%
+        #decrypt_cmd: openssl enc -d -%method% -pass pass:%pass%
 
     none:
         passphrase: ""

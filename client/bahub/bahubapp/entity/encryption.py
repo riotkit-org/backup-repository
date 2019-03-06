@@ -11,8 +11,8 @@ class Encryption:
     _passphrase = ""    # type: str
     _method = ""        # type: str
 
-    _encrypt_cmd = "openssl enc -%method% -pbkdf2 -pass pass:%pass%"
-    _decrypt_cmd = "openssl enc -d -%method% -pbkdf2 -pass pass:%pass%"
+    _encrypt_cmd = "openssl enc -%method% -pass pass:%pass%"
+    _decrypt_cmd = "openssl enc -d -%method% -pass pass:%pass%"
 
     def __init__(self, passphrase: str, method: str, _encrypt_cmd: str = '', _decrypt_cmd: str = ''):
         self._passphrase = passphrase
