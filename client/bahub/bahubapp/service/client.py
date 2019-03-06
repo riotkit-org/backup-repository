@@ -1,6 +1,6 @@
 
 from ..entity.definition import BackupDefinition
-from ..exceptions import InvalidRequestException
+from ..exceptions import InvalidRequestException, UnexpectedResponseException
 from logging import Logger
 import requests
 from simplejson.errors import JSONDecodeError
@@ -63,6 +63,9 @@ class FileRepositoryClient:
 
         if response.status_code >= 400:
             raise InvalidRequestException(response.text, response.json(), response.json().get('error_code', 0))
+
+        if 'versions' not in json:
+            raise UnexpectedResponseException(response.text)
 
         for k, version in json['versions'].items():
             versions['v' + str(version['details']['version'])] = {
