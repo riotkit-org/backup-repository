@@ -6,6 +6,7 @@ use App\Domain\Authentication\Entity\Token;
 use App\Domain\Common\ValueObject\BaseUrl;
 use App\Domain\Storage\Entity\StoredFile;
 use App\Domain\Storage\Exception\DuplicatedContentException;
+use App\Domain\Storage\Exception\FileRetrievalError;
 use App\Domain\Storage\Exception\FileUploadedTwiceException;
 use App\Domain\Storage\Exception\StorageException;
 use App\Domain\Storage\Exception\ValidationException;
@@ -114,6 +115,13 @@ abstract class AbstractUploadHandler
                 $exception->getReason(),
                 $exception->getCode(),
                 $exception->getContext()
+            ));
+
+        } catch (FileRetrievalError $exception) {
+            return $this->finalize(FileUploadedResponse::createWithValidationError(
+                $exception->getMessage(),
+                $exception->getCode(),
+                []
             ));
 
         } catch (StorageException $exception) {

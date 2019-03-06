@@ -2,6 +2,7 @@
 
 namespace App\Domain\Storage\Provider;
 
+use App\Domain\Storage\Exception\FileRetrievalError;
 use App\Domain\Storage\ValueObject\Stream;
 
 class UserUploadProvider
@@ -20,6 +21,8 @@ class UserUploadProvider
      * Read user input and create a stream from it
      *
      * @return Stream
+     *
+     * @throws FileRetrievalError
      */
     public function getStreamFromHttp(): Stream
     {
@@ -28,7 +31,10 @@ class UserUploadProvider
             $file = $_FILES[$filesIndexes[0]];
 
             if ($file['error'] === 1) {
-                throw new \LogicException('"upload_max_filesize" in PHP configuration does not allow such big file to be uploaded');
+                throw new FileRetrievalError(
+                    '"upload_max_filesize" in PHP configuration does not allow such big file to be uploaded',
+                    FileRetrievalError::CODE_UPLOAD_MAX_FILESIZE
+                );
             }
 
             return new Stream(fopen($file['tmp_name'], 'rb'));
@@ -39,10 +45,16 @@ class UserUploadProvider
         }
 
         if ($this->isMultipart() && !$this->hasPostedViaPHPUploadMechanism()) {
-            throw new \LogicException('Multipart was not parsed by PHP, it can be causedby too low value of "post_max_size" in php.ini');
+            throw new FileRetrievalError(
+                'Multipart was not parsed by PHP, it can be causedby too low value of "post_max_size" in php.ini',
+                FileRetrievalError::CODE_POST_MAX_FILESIZE
+            );
         }
 
-        throw new \LogicException('User not provided any valid source of file with the HTTP protocol');
+        throw new FileRetrievalError(
+            'User not provided any valid source of file with the HTTP protocol',
+            FileRetrievalError::EMPTY_REQUEST
+        );
     }
 
     private function hasPostedViaPHPUploadMechanism(): bool
