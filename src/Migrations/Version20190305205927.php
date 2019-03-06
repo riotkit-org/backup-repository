@@ -5,7 +5,7 @@ namespace DoctrineMigrations;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
 
-final class Version20190305205926 extends AbstractMigration
+final class Version20190305205927 extends AbstractMigration
 {
     public function getDescription() : string
     {
@@ -19,12 +19,12 @@ final class Version20190305205926 extends AbstractMigration
     public function up(Schema $schema) : void
     {
         $table = $schema->getTable('backup_collections');
-        $table->getColumn('max_one_version_size')->setLength(36);
+        $table->getColumn('max_collection_size')->setLength(36);
     }
 
     public function down(Schema $schema) : void
     {
         $table = $schema->getTable('backup_collections');
-        $table->getColumn('max_one_version_size')->setLength(16);
+        $table->getColumn('max_collection_size')->setLength(16);
     }
 }

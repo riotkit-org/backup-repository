@@ -16,8 +16,8 @@ final class Version20181205064126 extends AbstractMigration
             $table->addColumn('description',              Type::TEXT);
             $table->addColumn('creation_date',            Type::DATETIME_IMMUTABLE);
             $table->addColumn('max_backups_count',        Type::INTEGER, ['length' => 4,  'null' => false]);
-            $table->addColumn('max_one_version_size',     Type::INTEGER, ['length' => 16, 'null' => false]);
-            $table->addColumn('max_collection_size',      Type::STRING,  ['length' => 16, 'null' => false]);
+            $table->addColumn('max_one_version_size',     Type::INTEGER, ['length' => 36, 'null' => false]);
+            $table->addColumn('max_collection_size',      Type::STRING,  ['length' => 36, 'null' => false]);
             $table->addColumn('strategy',                 Type::STRING,  ['length' => 48, 'null' => true]);
 
             $table->setPrimaryKey(['id']);
