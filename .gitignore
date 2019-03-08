@@ -16,7 +16,7 @@
 /supervisord.log
 /supervisord.pid
 /docs/build
-/examples/docker/.env
+/examples/docker-s3-api-client/.env
 
 # bower
 /public/minimumui/components
