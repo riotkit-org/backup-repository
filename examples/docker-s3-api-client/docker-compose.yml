@@ -1,0 +1,90 @@
+version: '2'
+    services:
+        #
+        # Optional: You can use AWS S3, Minio, but actually you don't have to.
+        #           "local" adapter may be also used, then files would be stored locally on the disk
+        #
+        #           S3 gives possibility to replicate the data and/or redistribute it, relocate
+        #
+        app_minio:
+            image: minio/minio
+            volumes:
+                - ./data/minio:/data
+            expose:
+                - "9000"
+            command: server /data
+            restart: on-failure
+            mem_limit: 367001600 # 350M
+            environment:
+                - MINIO_DOMAIN=app_minio
+                - MINIO_ACCESS_KEY=hello
+                - MINIO_SECRET_KEY=hello123
+
+        #
+        # File Repository API application
+        #
+        app_storage:
+            image: wolnosciowiec/file-repository:latest
+            environment:
+                - DATABASE_URL=mysql://file_repository:playground@db_mysql:3306/file_repository
+                - DATABASE_DRIVER=pdo_mysql
+
+                # minio adapter setup
+                - FS_AWSS3V3_CLIENT=s3_client
+                - FS_AWSS3V3_BUCKET=misc
+                - FS_AWSS3V3_PREFIX=
+                - FS_AWSS3V3_OPTIONS_ENDPOINT=http://app_minio:9000
+                - FS_AWSS3V3_VERSION=latest
+                - FS_AWSS3V3_KEY=hello
+                - FS_AWSS3V3_SECRET=hello123
+                - BACKUP_ONE_VERSION_MAX_SIZE=25GB
+                - BACKUP_COLLECTION_MAX_SIZE=150GB
+
+                # local adapter setup:
+                #- FS_ADAPTER=local
+                #- FS_LOCAL_DIRECTORY=%kernel.root_dir%/../var/uploads
+            env_file:
+                - .env
+            expose:
+                - "80"
+            depends_on:
+                - db_mysql
+            restart: on-failure
+            mem_limit: 524288000 # 500M
+
+        #
+        # Optional: A SQLite3 can be used instead MySQL
+        #           MySQL gives a possibility to replicate the data
+        #
+        db_mysql:
+            image: mysql:8
+            environment:
+                - MYSQL_USER=file_repository
+                - MYSQL_PASSWORD=playground
+                - MYSQL_DATABASE=file_repository
+                - MYSQL_ROOT_PASSWORD=root
+            volumes:
+                - "./data/mysql:/var/lib/mysql"
+            command: mysqld --innodb_file_per_table=1
+
+        #
+        # Test: Our test application we will make a backup for
+        #       Access it via localhost:8100, modify it's files in ./www
+        #
+        app_webserver:
+            image: nginx
+            volumes:
+                - "./www:/usr/share/nginx/html"
+            ports:
+                - "8100:80"
+
+        #
+        # Test: Backup client, normally it should be on a separate machine.
+        #       For testing we have it in same docker network.
+        #
+        backup_client:
+            image: wolnosciowiec/file-repository:bahub
+            volumes:
+                - "./data/backup/cron:/cron:ro"
+                - "./data/backup/bahub.conf.yaml:/bahub.conf.yaml:ro"
+                - "/var/run/docker.sock:/var/run/docker.sock"

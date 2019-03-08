@@ -1,6 +1,25 @@
 CHANGES
 =======
 
+* Increased limit on nginx, so the bigger backups will be uploaded
+* Improved error handling in case the user does not provide any valid source of upload (uploads 0 bytes)
+* Corrected error handling
+* OpenSSL - removed "-pbkdf2" parameter from default command, as this switch is not always supported, updated docs about openssl
+* Resolved a problem with too small column size that cannot handle size in gigabytes - second resolution, because Doctrine didn't execute second query to change second column from migration
+* Resolved a problem with too small column size that cannot handle size in gigabytes
+* Travis will build now the image from scratch to have a recent version
+* Deleted aliases tests - its notp possible to make them working because of the hash generation difference in time
+* Travis debug
+* Travis debug
+* Travis debug
+* Travis debug
+* Travis debug
+* Added prod.log displaying at the end of PHP travis build
+* Attempting to set up travis build
+* Made first tests for the Bahub CLI client
+* Started adding tests
+* Added a command to create a collection, updated docs
+* - Added restore working in all types of backup source - Configuration now accepts also environment variable
 * Added initial support for setuptools
 * Clean up
 * Fixed issue when the guest session was more important than admin technical session

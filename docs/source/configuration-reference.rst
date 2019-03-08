@@ -6,10 +6,7 @@ Application configuration
 
 .. literalinclude:: ../../.env.dist
 
-Docker environment + application configuration reference
---------------------------------------------------------
-
-.. literalinclude:: ../../examples/docker/.env.dist
+..  _permissions_reference:
 
 Permissions list
 ----------------

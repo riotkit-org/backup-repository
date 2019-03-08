@@ -4,6 +4,8 @@ Authorization
 Multiple tokens with different permissions could be assigned to the single collection.
 You may create a token for uploading backups, deleting backups and for managing collection limits separately.
 
+.. _granting_access_to_collection:
+
 Assigning a token to the collection
 -----------------------------------
 

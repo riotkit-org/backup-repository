@@ -1,3 +1,5 @@
+..  _bahub_configuration_reference:
+
 Configuration reference
 =======================
 

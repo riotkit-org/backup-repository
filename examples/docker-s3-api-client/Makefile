@@ -5,7 +5,7 @@ COLOR_RESET   = \033[0m
 COLOR_INFO    = \033[32m
 COLOR_COMMENT = \033[33m
 
-ENV_NAME = file_repository
+ENV_NAME = file_repository_playground
 SUDO = sudo
 COMPOSE = docker-compose
 
@@ -48,3 +48,19 @@ drop_database:
 	make stop
 	rm -rf ./data/mysql/*
 	printf " >> DONE.\n"
+
+## Perform a backup
+perform_backup:
+	set -x; ${SUDO} docker exec -it ${ENV_NAME}_backup_client_1 bahub backup web_server_files
+
+## Restore recent version we have
+restore_last_backup:
+	set -x; ${SUDO} docker exec -it ${ENV_NAME}_backup_client_1 bahub restore web_server_files
+
+## Restore oldest version we have
+restore_last_backup:
+	set -x; ${SUDO} docker exec -it ${ENV_NAME}_backup_client_1 bahub restore web_server_files first
+
+## List all versions we have stored
+restore_last_backup:
+	set -x; ${SUDO} docker exec -it ${ENV_NAME}_backup_client_1 bahub list web_server_files

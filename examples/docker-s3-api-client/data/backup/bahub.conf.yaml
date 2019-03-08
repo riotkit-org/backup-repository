@@ -1,0 +1,19 @@
+accesses:
+    test:
+        url: http://app_storage
+        token: "YOUR-TOKEN-HERE"
+
+encryption:
+    aes_protected:
+        passphrase: "secret"
+        method: "aes-128-cbc"
+
+backups:
+    web_server_files:
+        type: docker_hot_volumes
+        container: "file_repository_playground_app_webserver_1" # docker network name + container name + instance num.
+        access: test
+        encryption: aes_protected
+        collection_id: "YOUR-COLLECTION-ID"
+        paths:
+            - "/usr/share/nginx/html"

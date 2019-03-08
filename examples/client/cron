@@ -1,0 +1,3 @@
+
+# schedule REDIS server backup on every Monday, 02:00 AM
+0 2 * * MON bahub backup some_redis_storage

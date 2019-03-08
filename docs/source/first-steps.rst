@@ -74,7 +74,7 @@ If you think the configuration is finished, start the environment. To stop it - 
 
 Example docker-compose.yml file:
 
-.. literalinclude:: ../../examples/docker/docker-compose.yml
+.. literalinclude:: ../../examples/docker-s3-api-client/docker-compose.yml
    :language: yaml
    :linenos:
 
@@ -84,23 +84,19 @@ Post-installation
 
 At this point you have the application, but you do not have access to it.
 **You will need to generate an administrative access token** to be able to create new tokens, manage backups, upload files to storage.
-To achieve this goal you need to set up the application to be temporarily working in **dev mode** - set *APP_ENV=dev* to do it.
+To achieve this goal you need to execute a simple command.
 
-When you will turn on **dev mode** you can use a special token **"test-token-full-permissions"** to create your unique administrative token.
+Given you use docker you can do eg. **sudo docker exec some-container-name ./bin/console auth:generate-admin-token**,
+for bare metal installation it would be just **./bin/console auth:generate-admin-token** in the project directory.
 
-Apply configuration change:
+So, when you have an administrative token, then you need a token to upload backups. It's not recommended to use administrative token
+on your servers. **Recommended way is to generate a separate token, that is allowed to upload a backup to specified collection**
 
-.. code:: bash
-
-    APP_ENV=dev
-
-
-Now check all available roles in the application:
-
+To do so, check all available roles in the application:
 
 .. code:: bash
 
-    GET /auth/roles?_token=test-token-full-permissions
+    GET /auth/roles?_token=YOUR-ADMIN-TOKEN-HERE
 
 :ref:`Note: If you DO NOT KNOW HOW to perform a request, then please check the postman section <postman>`
 
@@ -134,13 +130,13 @@ You should see something like this:
         }
     }
 
-Pick your roles (eg. all) and generate an administrative token for unlimited management of the application when it is in **APP_ENV=prod** mode.
+To allow only uploading and browsing versions for assigned collections you may choose:
 
 .. code:: bash
 
-    POST /auth/token/generate?_token=test-token-full-permissions
+    POST /auth/token/generate?_token=YOUR-ADMIN-TOKEN-THERE
     {
-        "roles": ["upload.images", "upload.documents", "collections.create_new", "collections.modify_any_collection_regardless_if_token_was_allowed_by_collection"],
+        "roles": ["upload.backup", "collections.upload_to_allowed_collections", "collections.list_versions_for_allowed_collections"],
         "data": {
             "tags": [],
             "allowedMimeTypes": [],
@@ -157,14 +153,12 @@ As the response you should get the token id that you need.
         "expires": null
     }
 
-**Remember the tokenId** and use it as your main token that could not only upload files, but also be able to create new tokens
-to grant other persons to limited set of actions.
+**Remember the tokenId**, now you can create collections and grant access for this token to your collections.
+Generated token will be able to upload to collections you allow it to.
 
-Now **you should switch back the application to the production mode** in `.env` file:
+Check next steps:
 
-.. code:: bash
-
-    APP_ENV=prod
-
+1. :ref:`collection_creation`
+2. :ref:`granting_access_to_collection`
 
 That's all.

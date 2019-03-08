@@ -5,6 +5,8 @@ To start creating backups you need a collection that will handle ONE FILE.
 The file may be a zipped directory, a text file, SQL dump or anything you need.
 
 
+.. _collection_creation:
+
 Collection creation
 --------------------
 

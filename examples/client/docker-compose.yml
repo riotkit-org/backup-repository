@@ -1,0 +1,19 @@
+version: "2"
+services:
+    backup:
+        image: wolnosciowiec/file-repository:bahub
+        volumes:
+            - "./cron:/cron:ro"
+            - "./config.yaml:/bahub.conf.yaml:ro"
+            - "/var/run/docker.sock:/var/run/docker.sock"
+        environment:
+            - BACKUPS_ENCRYPTION_PASSPHRASE=some-very-long-passphrase-good-to-have-there-64-characters-for-example
+            - BACKUPS_TOKEN=111111-2222-3333-4444-55555555555555
+            - BACKUPS_REDIS_COLLECTION_ID=12345678-cccc-bbb-aaa-1232313213123
+            - COMPOSE_PROJECT_NAME=test_client
+
+    redis:
+        image: redis:3-alpine
+        volumes:
+            - ./redis:/data
+        command: "redis-server --appendonly yes"
