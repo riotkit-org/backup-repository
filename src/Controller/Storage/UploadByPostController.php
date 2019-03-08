@@ -9,6 +9,7 @@ use App\Infrastructure\Authentication\Token\TokenTransport;
 use App\Infrastructure\Storage\Form\UploadByPostFormType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class UploadByPostController extends BaseController
 {
@@ -22,7 +23,16 @@ class UploadByPostController extends BaseController
         $this->handler = $handler;
     }
 
-    public function handle(Request $request, TokenTransport $tokenTransport, string $filename = ''): JsonResponse
+    public function handle(Request $request, TokenTransport $tokenTransport, string $filename = ''): Response
+    {
+        return $this->withLongExecutionTimeAllowed(
+            function () use ($request, $tokenTransport, $filename) {
+                return $this->handle($request, $tokenTransport, $filename);
+            }
+        );
+    }
+
+    private function handleInternally(Request $request, TokenTransport $tokenTransport, string $filename = ''): Response
     {
         // REST support
         if ($filename) {

@@ -9,6 +9,7 @@ use App\Infrastructure\Authentication\Token\TokenTransport;
 use App\Infrastructure\Storage\Form\UploadByUrlFormType;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 class UploadByUrlController extends BaseController
 {
@@ -22,7 +23,16 @@ class UploadByUrlController extends BaseController
         $this->handler = $handler;
     }
 
-    public function handle(Request $request, TokenTransport $tokenTransport): JsonResponse
+    public function handle(Request $request, TokenTransport $tokenTransport): Response
+    {
+        return $this->withLongExecutionTimeAllowed(
+            function () use ($request, $tokenTransport) {
+                return $this->handleInternally($request, $tokenTransport);
+            }
+        );
+    }
+
+    private function handleInternally(Request $request, TokenTransport $tokenTransport): Response
     {
         $form = new UploadByUrlForm();
         $infrastructureForm = $this->submitFormFromJsonRequest($request, $form, UploadByUrlFormType::class);

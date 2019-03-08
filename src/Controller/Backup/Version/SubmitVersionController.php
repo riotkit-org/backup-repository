@@ -39,6 +39,23 @@ class SubmitVersionController extends BaseController
      */
     public function handleAction(Request $request, string $collectionId): Response
     {
+        return $this->withLongExecutionTimeAllowed(
+            function () use ($request, $collectionId) {
+                return $this->handle($request, $collectionId);
+            }
+        );
+    }
+
+    /**
+     * @param Request $request
+     * @param string $collectionId
+     *
+     * @return Response
+     *
+     * @throws \Exception
+     */
+    private function handle(Request $request, string $collectionId): Response
+    {
         $form = new BackupSubmitForm();
         $infrastructureForm = $this->createForm(BackupSubmitFormType::class, $form);
         $infrastructureForm->submit([

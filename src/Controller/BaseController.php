@@ -92,6 +92,23 @@ abstract class BaseController extends AbstractController
      * @param callable $code
      *
      * @return Response
+     */
+    protected function withLongExecutionTimeAllowed(callable $code): Response
+    {
+        $previousValue = ini_get('max_execution_time');
+        set_time_limit(7200);
+
+        $return = $code();
+
+        set_time_limit($previousValue);
+
+        return $return;
+    }
+
+    /**
+     * @param callable $code
+     *
+     * @return Response
      *
      * @throws \Exception
      */
