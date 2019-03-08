@@ -29,6 +29,10 @@ version: '2'
                 - DATABASE_URL=mysql://file_repository:playground@db_mysql:3306/file_repository
                 - DATABASE_DRIVER=pdo_mysql
 
+                # SQLite3 example
+                #- DATABASE_URL=sqlite:///%kernel.project_dir%/var/data.db
+                #- DATABASE_DRIVER=pdo_sqlite
+
                 # minio adapter setup
                 - FS_AWSS3V3_CLIENT=s3_client
                 - FS_AWSS3V3_BUCKET=misc
