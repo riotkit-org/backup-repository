@@ -39,5 +39,6 @@ ADD ./filerepository.php.ini /usr/local/etc/php/conf.d/filerepository.php.ini
 ADD prod_entrypoint.d.sh /entrypoint.d/
 
 RUN cd /var/www/html \
+    && cp /var/www/html/nginx.conf /etc/nginx/nginx.conf \
     && chown www-data:www-data /var/www -R \
     && su www-data -s /bin/bash -c "make deploy"
