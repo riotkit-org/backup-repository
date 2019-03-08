@@ -19,8 +19,7 @@ Manual installation
 At first you need to create your own customized `.env` file with application configuration.
 You can create it from a template `.env.dist`.
 
-Make sure the **APP_ENV** is set to **prod** for time when your application is online, for the configuration time please
-set **APP_ENV** to **dev**.
+Make sure the **APP_ENV** is set to **prod**.
 
 .. code:: shell
 
