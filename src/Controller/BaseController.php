@@ -95,8 +95,8 @@ abstract class BaseController extends AbstractController
      */
     protected function withLongExecutionTimeAllowed(callable $code): Response
     {
-        $previousValue = ini_get('max_execution_time');
-        set_time_limit(7200);
+        $previousValue = (int) ini_get('max_execution_time');
+        set_time_limit($this->getLongExecutionTime());
 
         $return = $code();
 
@@ -195,5 +195,16 @@ abstract class BaseController extends AbstractController
         }
 
         return $errors;
+    }
+
+    private function getLongExecutionTime(): int
+    {
+        $configured = getenv('LONG_EXECUTION_TIME');
+
+        if (is_numeric($configured)) {
+            return (int) $configured;
+        }
+
+        return 300;
     }
 }
