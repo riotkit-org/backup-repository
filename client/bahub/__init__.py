@@ -26,7 +26,7 @@ def main():
     #
     parser = argparse.ArgumentParser()
     parser.add_argument('options', metavar='options', type=str, nargs='+',
-                        help='[backup/restore/list] [backup-name]')
+                        help='[backup/restore/list/recover] [backup-name]')
 
     parser.add_argument('--debug', help='Prints debugging messages', default=False, action="store_true")
 
@@ -50,6 +50,7 @@ def main():
         print('  restore my_db_1 latest')
         print('  restore my_db_1 v2')
         print('  list my_db_1')
+        print('  recover my_recovery_plan_name')
         print('')
         sys.exit(1)
 

@@ -15,6 +15,7 @@ class RestoreController(AbstractController):
 
     def _perform_restore(self, definition: BackupDefinition, version: str):
         handler = self._init_handler(definition)
+        self._logger.info('Restoring version ' + version)
 
         try:
             result = handler.perform_restore(version)

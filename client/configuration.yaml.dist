@@ -170,3 +170,23 @@ backups:
         # optional
         #tar_pack_cmd: "tar -czf %stdin% %paths%"
         #tar_unpack_cmd: "tar -xzf %stdin% %target%"
+
+#
+# Recovery plans
+#   Restores multiple backups in order, using single command
+#
+#   Possible values:
+#     policy:
+#       - restore-whats-possible: Ignore things that cannot be restored, restore what is posible
+#       - stop-on-first-error: Restore until first error, then stay as it is
+#
+recoveries:
+    default:
+        policy: restore-whats-possible
+        definitions: all
+
+    some_selected_only:
+        policy: stop-on-first-error
+        definitions:
+            - some_local_dir
+            - local_command_output

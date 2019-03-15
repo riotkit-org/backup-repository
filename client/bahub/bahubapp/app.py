@@ -3,6 +3,7 @@ from .service.definitionfactory import DefinitionFactory
 from .controller.backup import BackupController
 from .controller.restore import RestoreController
 from .controller.list import ListController
+from .controller.recover import RecoverFromDisasterController
 from .mapping.handlers import HandlersMapping
 from .service.client import FileRepositoryClient
 from .exceptions import ApplicationException
@@ -60,6 +61,20 @@ class Bahub:
                 )
 
                 response = controller.do_ls(self._factory.get_definition(param))
+
+                print(
+                    json.dumps(response, indent=4, sort_keys=True)
+                )
+
+            elif action_name == 'recover':
+                controller = RecoverFromDisasterController(
+                    self._factory,
+                    self._logger,
+                    self._handlers,
+                    FileRepositoryClient(_logger=self._logger)
+                )
+
+                response = controller.perform(param)
 
                 print(
                     json.dumps(response, indent=4, sort_keys=True)

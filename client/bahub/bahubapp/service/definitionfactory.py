@@ -1,6 +1,7 @@
 
 
 from ..entity.encryption import Encryption
+from ..entity.recovery import RecoveryPlan
 from ..entity.access import ServerAccess
 from ..entity.definition import BackupDefinition
 from ..mapping.definitions import DefinitionsMapping
@@ -13,10 +14,11 @@ import re
 class DefinitionFactory:
     """ Constructs objects basing on the configuration file """
 
-    _accesses = {}    # type: dict[ServerAccess]
-    _encryption = {}  # type: dict[Encryption]
-    _backups = {}     # type: dict[BackupDefinition]
-    _debug = False    # type: bool
+    _accesses = {}        # type: dict[ServerAccess]
+    _encryption = {}      # type: dict[Encryption]
+    _backups = {}         # type: dict[BackupDefinition]
+    _recovery_plans = {}  # type: dict[RecoveryPlan]
+    _debug = False        # type: bool
 
     def __init__(self, configuration_path: str, debug: bool):
         self._debug = debug
@@ -26,6 +28,9 @@ class DefinitionFactory:
         self._parse_accesses(config['accesses'])
         self._parse_encryption(config['encryption'])
         self._parse_backups(config['backups'])
+
+        # recovery plans are optional
+        self._parse_recovery_plans(config['recoveries'] if 'recoveries' in config else {})
 
     def _read(self, path: str):
         f = open(path, 'rb')
@@ -61,6 +66,13 @@ class DefinitionFactory:
             with DefinitionFactoryErrorCatcher('encryption.' + key, self._debug):
                 self._encryption[key] = Encryption.from_config(values)
 
+    def _parse_recovery_plans(self, config: dict):
+        possible_backup_definitions = list(self._backups.keys())
+
+        for key, values in config.items():
+            with DefinitionFactoryErrorCatcher('recoveries.' + key, self._debug):
+                self._recovery_plans[key] = RecoveryPlan.from_config(values, possible_backup_definitions)
+
     def _parse_backups(self, config: dict):
         for key, values in config.items():
             with DefinitionFactoryErrorCatcher('backups.' + key, self._debug):
@@ -82,6 +94,15 @@ class DefinitionFactory:
             )
 
         return self._backups[name]
+
+    def get_recovery_plan(self, name: str) -> RecoveryPlan:
+
+        if name not in self._recovery_plans:
+            raise DefinitionFactoryException(
+                'Specified recovery plan not found'
+            )
+
+        return self._recovery_plans[name]
 
 
 class DefinitionFactoryErrorCatcher:
