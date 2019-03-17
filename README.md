@@ -1,6 +1,9 @@
 File Repository
 ===============
 
+[![Build Status](https://travis-ci.org/riotkit-org/file-repository.svg?branch=master)](https://travis-ci.org/riotkit-org/file-repository)
+[![Documentation Status](https://readthedocs.org/projects/file-repository/badge/?version=latest)](https://file-repository.docs.riotkit.org/en/latest/?badge=latest)
+
 File Repository is a modern API application dedicated for storing files.
 It is able to use various storage backends including AWS S3, Dropbox, Google Drive and just filesystem.
 Lightweight, requires just PHP7 and at least SQLite3 or MySQL (other databases can be also supported in future due to using ORM).
