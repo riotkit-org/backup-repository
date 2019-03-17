@@ -22,3 +22,6 @@ for file in $(ls ./cases/*.sh | sort); do
         exit 1
     fi
 done
+
+echo " .. ALL TESTS PASSED"
+exit 0

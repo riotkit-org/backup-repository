@@ -10,6 +10,11 @@ if [[ "$@" ]]; then
     echo "BAHUB_ARGS=\"$@\"" >> /.bahub.env
 fi
 
+# test version of Bahub mounted via volume on test environment (eg. on CI)
+if [[ -d /test ]]; then
+    cd /test && make install
+fi
+
 cp /cron /etc/crontabs/root
 supervisord -c /bahub/supervisord.conf
 

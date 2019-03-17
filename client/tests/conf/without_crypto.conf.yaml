@@ -86,3 +86,13 @@ backups:
         access: backup_one
         encryption: none
         collection_id: "${COLLECTION_ID}"
+
+recoveries:
+    default:
+        policy: restore-whats-possible
+        definitions: all
+
+    plan_2:
+        policy: restore-whats-possible
+        definitions:
+            - local_command_output

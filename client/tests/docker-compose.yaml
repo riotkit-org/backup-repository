@@ -24,6 +24,7 @@ services:
         image: wolnosciowiec/file-repository:bahub
         volumes:
             - ./conf:/etc/bahub
+            - ../:/test
             - /var/run/docker.sock:/var/run/docker.sock
         environment:
             - DB_DATABASE=test_www_db

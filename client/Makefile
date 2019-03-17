@@ -8,6 +8,7 @@ COLOR_COMMENT = \033[33m
 PIP = sudo pip3
 PYTHON3_ROOT = sudo python3
 SUDO = sudo
+PY_BIN = python3
 
 ## Help
 help:
@@ -27,7 +28,7 @@ help:
 ## Build the package
 build_package:
 	${PIP} install -r ./requirements.txt || true
-	python3 ./setup.py build
+	${PY_BIN} ./setup.py build
 
 ## Install
 install: build_package

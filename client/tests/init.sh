@@ -49,14 +49,14 @@ prepare_file_repository_instance () {
 }
 
 wait_for_container_to_start () {
-    while ! sudo docker ps |grep "${1}" |grep "(healthy)" > /dev/null; do
-        sleep 1
+    while ! sudo docker-compose exec file-repository curl http://localhost |grep "Hello, welcome" > /dev/null; do
+        sleep 0.1
     done
 }
 
 before_running_all_tests () {
     echo " ====> Preparing File Repository instance"
-    prepare_file_repository_instance 2&>1 > /dev/null
+    prepare_file_repository_instance 2>&1 > /dev/null
 
     echo " ====> Waiting for application to get up"
     wait_for_container_to_start "file-repository"
