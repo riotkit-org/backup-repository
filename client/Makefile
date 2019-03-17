@@ -46,3 +46,7 @@ kill_test_containers:
 ## Run tests
 test:
 	./tests/run.sh
+
+## Run unit tests
+unit_test:
+	${PY_BIN} -m unittest discover -s ./tests/unit/*
