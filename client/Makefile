@@ -26,9 +26,12 @@ help:
 	{ lastLine = $$0 }' $(MAKEFILE_LIST)
 
 ## Build the package
-build_package:
-	${PIP} install -r ./requirements.txt || true
+build_package: install_requirements
 	${PY_BIN} ./setup.py build
+
+## Install requirements
+install_requirements:
+	${PIP} install -r ./requirements.txt || true
 
 ## Install
 install: build_package
