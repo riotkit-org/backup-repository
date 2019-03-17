@@ -32,4 +32,6 @@
 /client/bahub.egg-info
 /client/build
 /client/.idea
+/client/supervisord.log
+/client/supervisord.pid
 *.pyc
