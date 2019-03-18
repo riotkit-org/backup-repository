@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "8251160c-1ea1-4b9a-a610-e462df85a548",
+		"_postman_id": "519030ed-707c-47c3-87c6-e2fc17b498e3",
 		"name": "[Wolnościowiec] File Repository",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
@@ -1398,13 +1398,12 @@
 									"response": []
 								},
 								{
-									"name": "[Validation] Single element limit is bigger than globally defined",
+									"name": "[Validation] Single element limit is bigger than globally defined (BACKUP_ONE_VERSION_MAX_SIZE=4GB)",
 									"event": [
 										{
 											"listen": "test",
 											"script": {
 												"id": "7d7b7e65-0e8a-42da-ad76-e3e6088cd93c",
-												"type": "text/javascript",
 												"exec": [
 													"var jsonData = pm.response.json();",
 													"",
@@ -1416,7 +1415,8 @@
 													"    pm.expect(jsonData.errors.maxOneVersionSize).to.eql('max_one_version_size_too_big');",
 													"});",
 													""
-												]
+												],
+												"type": "text/javascript"
 											}
 										}
 									],
@@ -1425,7 +1425,7 @@
 										"header": [],
 										"body": {
 											"mode": "raw",
-											"raw": "{\n\t\"maxBackupsCount\": 4,\n\t\"maxOneVersionSize\": \"50MB\",\n\t\"maxCollectionSize\": \"10MB\",\n\t\"strategy\": \"alert_when_backup_limit_reached\",\n\t\"description\": null,\n\t\"filename\": \"zsp-net-pl.sql.gz\"\n}\n"
+											"raw": "{\n\t\"maxBackupsCount\": 2,\n\t\"maxOneVersionSize\": \"5GB\",\n\t\"maxCollectionSize\": \"15GB\",\n\t\"strategy\": \"alert_when_backup_limit_reached\",\n\t\"description\": null,\n\t\"filename\": \"zsp-net-pl.sql.gz\"\n}\n"
 										},
 										"url": {
 											"raw": "{{appUrl}}/repository/collection?_token=test-token-full-permissions",

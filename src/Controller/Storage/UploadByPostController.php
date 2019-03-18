@@ -27,7 +27,7 @@ class UploadByPostController extends BaseController
     {
         return $this->withLongExecutionTimeAllowed(
             function () use ($request, $tokenTransport, $filename) {
-                return $this->handle($request, $tokenTransport, $filename);
+                return $this->handleInternally($request, $tokenTransport, $filename);
             }
         );
     }
