@@ -3,7 +3,7 @@ import sys
 import os
 import inspect
 
-sys.path.append(os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe()))) + '/../../')
+sys.path.append(os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe()))) + '/../')
 from bahub.bahubapp.entity.recovery import RecoveryPlan
 from bahub.bahubapp.exceptions import DefinitionFactoryException
 
@@ -38,7 +38,9 @@ class RecoveryPlanTest(unittest.TestCase):
         try:
             RecoveryPlan.from_config({'policy': 'unknown', 'definitions': 'all'}, ['123'])
         except KeyError:
-            pass
+            return True
+
+        self.fail('Failed asserting that not recognized policy will throw an exception')
 
     def test_unknown_backup_definition(self):
         """ Check if all backup definitions in the recovery plan are really existing """
@@ -47,6 +49,8 @@ class RecoveryPlanTest(unittest.TestCase):
             RecoveryPlan.from_config({'policy': 'stop-on-first-error', 'definitions': ['non-existing']}, ['first', '2'])
 
         except DefinitionFactoryException:
-            pass
+            return True
+
+        self.fail('Failed asserting that on unknown backup definition there will be thrown an exception')
 
 

@@ -27,16 +27,23 @@ help:
 
 ## Build the package
 build_package: install_requirements
+	echo " >> Building package"
 	${PY_BIN} ./setup.py build
 
 ## Install requirements
 install_requirements:
-	${PIP} install -r ./requirements.txt || true
+	echo " >> Installing requirements"
+	${SUDO} ${PIP} install -r ./requirements.txt || true
 
 ## Install
 install: build_package
 	${PYTHON3_ROOT} ./setup.py install
-	bahub -h
+	whereis bahub
+	make clean
+
+## Clean up the local build directory
+clean:
+	${SUDO} rm -rf ./build ./bahub.egg-info
 
 ## Run testing containers and fork to the background
 run_test_containers:
@@ -52,4 +59,4 @@ test:
 
 ## Run unit tests
 unit_test:
-	${PY_BIN} -m unittest discover -s ./tests/unit/*
+	${PY_BIN} -m unittest discover -s ./tests/unit

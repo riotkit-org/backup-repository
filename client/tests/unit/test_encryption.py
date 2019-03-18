@@ -3,7 +3,7 @@ import sys
 import os
 import inspect
 
-sys.path.append(os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe()))) + '/../../')
+sys.path.append(os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe()))) + '/../')
 from bahub.bahubapp.entity.encryption import Encryption
 from bahub.bahubapp.exceptions import DefinitionFactoryException
 
@@ -27,9 +27,11 @@ class EncryptionTest(unittest.TestCase):
             Encryption(passphrase='test123', method='aes-12313123')
 
         except DefinitionFactoryException:
-            pass
+            return True
         except Exception as e:
             raise e
+
+        self.fail('Failed asserting that the exception is thrown on unsupported encryption method')
 
     def test_factory_method_and_custom_templates(self):
         enc = Encryption.from_config({

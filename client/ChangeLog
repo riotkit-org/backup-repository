@@ -1,6 +1,21 @@
 CHANGES
 =======
 
+* Added badges
+* Probably fixed the travis build
+* Covered additional entity by unit tests
+* Added first unit tests
+* Implemented additional integration tests for "recovery from disaster" feature
+* Initial support for "recovery from disaster" feature
+* Fixed not launching crontab
+* For security reasons limited Accept-Range requests to take only 1 range at a time
+* Disabled request buffering for upload endpoints, in most cases an external gateway has also the output buffering which doubles the work and slows down application alot
+* Fixed problem with max\_execution\_time being not returned as int
+* Selectively increased max execution time for upload endpoints
+* Updated docs, dev mode is no longer recommended
+* Added SQLite3 example
+* Updated documentation by adding a lot of examples and references, simplified introduction steps
+* Added bahub deploy to PyPI
 * Increased limit on nginx, so the bigger backups will be uploaded
 * Improved error handling in case the user does not provide any valid source of upload (uploads 0 bytes)
 * Corrected error handling
