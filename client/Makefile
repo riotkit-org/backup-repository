@@ -38,7 +38,7 @@ install_requirements:
 ## Install
 install: build_package
 	${PYTHON3_ROOT} ./setup.py install
-	whereis bahub
+	which bahub
 	make clean
 
 ## Clean up the local build directory
