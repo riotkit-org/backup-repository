@@ -27,6 +27,12 @@ Requirements:
 - sha256sum
 - MySQL 5.7+ / SQLite 3 / PostgreSQL (not officially supported but may work)
 
+Testing
+-------
+
+Server is tested by API tests and unit tests.
+Bahub client is tested with integration tests written in bash and docker, and unit tests.
+
 Copyleft
 --------
 
