@@ -32,9 +32,9 @@ matrix:
               - make build@x86_64 build_bahub@x86_64
 
           script:
-              - pip install setuptools
+              - pip3 install setuptools
               - cd client && make install unit_test
-              - cd client && make run_test_containers test
+              - make run_test_containers test
 
           before_deploy:
               - cp -pr ./client/* ./
