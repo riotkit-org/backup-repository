@@ -30,11 +30,12 @@ matrix:
 
           before_script:
               - make build@x86_64 build_bahub@x86_64
-              - sudo ln -s $(which python) $(sudo which python)
+              - sudo rm -f /usr/bin/python /usr/bin/python3
+              - sudo ln -s $(which python) /usr/bin/python
               - sudo ln -s $(which python) /usr/bin/python3
 
           script:
-              - cd client && make install_requirements install unit_test PY_BIN="python"
+              - cd client && make install_requirements install unit_test
               - make run_test_containers test
 
           before_deploy:
