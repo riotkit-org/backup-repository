@@ -36,7 +36,7 @@ matrix:
               - sudo python --version
               - sudo /usr/local/bin/pip --version
               - /usr/local/bin/pip --version
-              - cd client && make install unit_test PIP="sudo /usr/local/bin/pip"
+              - cd client && make install unit_test PIP="sudo /usr/local/bin/pip" PY_BIN="sudo python3"
               - make run_test_containers test
 
           before_deploy:
