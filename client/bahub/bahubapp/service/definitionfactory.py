@@ -7,7 +7,7 @@ from ..entity.definition import BackupDefinition
 from ..mapping.definitions import DefinitionsMapping
 from ..exceptions import DefinitionFactoryException
 import yaml
-from yaml import CLoader as Loader
+from yaml import Loader
 import os
 import re
 
