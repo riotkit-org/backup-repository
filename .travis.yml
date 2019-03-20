@@ -32,11 +32,7 @@ matrix:
               - make build@x86_64 build_bahub@x86_64
 
           script:
-              - python --version
-              - sudo python --version
-              - sudo /usr/local/bin/pip --version
-              - /usr/local/bin/pip --version
-              - cd client && make install unit_test PIP="sudo /usr/local/bin/pip" PY_BIN="sudo python3"
+              - cd client && make install_requirements install unit_test PIP="sudo /usr/local/bin/pip"
               - make run_test_containers test
 
           before_deploy:
