@@ -3,6 +3,7 @@ File Repository
 
 [![Build Status](https://travis-ci.org/riotkit-org/file-repository.svg?branch=master)](https://travis-ci.org/riotkit-org/file-repository)
 [![Documentation Status](https://readthedocs.org/projects/file-repository/badge/?version=latest)](https://file-repository.docs.riotkit.org/en/latest/?badge=latest)
+[![Maintainability](https://api.codeclimate.com/v1/badges/4ed37b276f5379c3dc52/maintainability)](https://codeclimate.com/github/riotkit-org/file-repository/maintainability)
 
 File Repository is a modern API application dedicated for storing files.
 It is able to use various storage backends including AWS S3, Dropbox, Google Drive and just filesystem.
