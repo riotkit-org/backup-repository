@@ -15,6 +15,12 @@ if [[ -d /test ]]; then
     cd /test && make install
 fi
 
+# on developer environment you may not want to override production backups
+if [[ ${DISABLE_SCHEDULED_JOBS} == "1" ]]; then
+    echo "" > /cron
+    echo "" > /etc/crontabs/root
+fi
+
 cp /cron /etc/crontabs/root
 supervisord -c /bahub/supervisord.conf
 
