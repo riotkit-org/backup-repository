@@ -35,7 +35,7 @@ matrix:
               - sudo ln -s $(which python) /usr/bin/python3
 
           script:
-              - cd client && make install_requirements install unit_test
+              - cd client && make install_requirements install unit_test PIP="sudo pip"
               - make run_test_containers test
 
           before_deploy:
