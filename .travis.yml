@@ -34,6 +34,7 @@ matrix:
           script:
               - python --version
               - sudo python --version
+              - whereis pip
               - cd client && make install unit_test PIP="sudo pip3"
               - make run_test_containers test
 
