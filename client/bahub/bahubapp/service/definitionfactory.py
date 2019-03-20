@@ -7,6 +7,7 @@ from ..entity.definition import BackupDefinition
 from ..mapping.definitions import DefinitionsMapping
 from ..exceptions import DefinitionFactoryException
 import yaml
+from yaml import CLoader as Loader
 import os
 import re
 
@@ -34,7 +35,7 @@ class DefinitionFactory:
 
     def _read(self, path: str):
         f = open(path, 'rb')
-        config = yaml.load(self._process_env_variables(f.read().decode('utf-8')))
+        config = yaml.load(self._process_env_variables(f.read().decode('utf-8')), Loader=Loader)
         f.close()
 
         return config
