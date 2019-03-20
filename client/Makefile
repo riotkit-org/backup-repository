@@ -32,7 +32,7 @@ build_package: install_requirements
 ## Install requirements
 install_requirements:
 	echo " >> Installing requirements"
-	${SUDO} ${PIP} install -r ./requirements.txt || true
+	${PIP} install -r ./requirements.txt || true
 
 ## Install
 install: build_package
