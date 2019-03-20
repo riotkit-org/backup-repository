@@ -29,6 +29,9 @@ matrix:
           python: 3.6
 
           before_script:
+              # speed up tests
+              - sudo docker pull wolnosciowiec/file-repository:bahub
+              - sudo docker pull wolnosciowiec/file-repository
               - cd client && make install_requirements PIP="pip"
               - cd .. && make build@x86_64 build_bahub@x86_64
               - sudo rm -f /usr/bin/python /usr/bin/python3
