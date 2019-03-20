@@ -29,8 +29,8 @@ matrix:
           python: 3.6
 
           before_script:
-              - cd client && make install_requirements
-              - make build@x86_64 build_bahub@x86_64
+              - cd client && make install_requirements PIP="pip"
+              - cd .. && make build@x86_64 build_bahub@x86_64
               - sudo rm -f /usr/bin/python /usr/bin/python3
               - sudo ln -s $(which python) /usr/bin/python
               - sudo ln -s $(which python) /usr/bin/python3
