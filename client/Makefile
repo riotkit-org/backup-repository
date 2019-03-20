@@ -6,7 +6,6 @@ COLOR_INFO    = \033[32m
 COLOR_COMMENT = \033[33m
 
 PIP = sudo pip3
-PYTHON3_ROOT = sudo python3
 SUDO = sudo
 PY_BIN = python3
 
@@ -37,7 +36,7 @@ install_requirements:
 
 ## Install
 install: build_package
-	${PYTHON3_ROOT} ./setup.py install
+	${SUDO} ${PY_BIN} ./setup.py install
 	which bahub
 	make clean
 
