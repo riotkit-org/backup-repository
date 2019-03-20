@@ -8,6 +8,7 @@ There are **3 sections**:
 - Access: Describes authorization details, name it eg. server1 and put url and token
 - Encryption: Encryption type and password (if any) to encrypt your files stored on **File Repository**
 - Backups: Describes where is your data, how to access it and under which COLLECTION to send it to **File Repository**
+- Recoveries: Recovery plans. A policy + list of "backups" to restore within a single command
 
 
 Example scenario:
