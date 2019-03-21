@@ -25,7 +25,7 @@ cp /cron /etc/crontabs/root
 supervisord -c /bahub/supervisord.conf
 
 while true; do
-    log_file=$(ls /tmp/bahub-*.log|sort -r|head -1)
+    log_file=$(ls /var/log/bahub/*.log|sort -r|head -1)
 
     if [[ -f ${log_file} ]]; then
         echo " >> Browsing log file ${log_file}"
