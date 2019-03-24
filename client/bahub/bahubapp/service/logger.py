@@ -62,3 +62,29 @@ class LoggerFactory:
         logger.addHandler(log_file_handler)
 
         return logger
+
+
+class PasswordsProtectedFilter(logging.Filter):
+    def __init__(self, patterns):
+        super(PasswordsProtectedFilter, self).__init__()
+        self._patterns = patterns
+
+    def filter(self, record):
+        record.msg = self.redact(record.msg)
+        if isinstance(record.args, dict):
+            for k in record.args.keys():
+                record.args[k] = self.redact(record.args[k])
+        else:
+            record.args = tuple(self.redact(arg) for arg in record.args)
+        return True
+
+    def redact(self, msg):
+        for pattern in self._patterns:
+            replacement = pattern[0]
+            replacement += "*" * (len(pattern) - 2)
+            replacement += pattern[-1:]
+
+            msg = msg.replace(pattern, replacement)
+
+        return msg
+
