@@ -108,6 +108,9 @@ class DefinitionFactory:
     def get_all_sensitive_data(self):
         sensitive_data = []
 
+        for access in self._accesses:
+            sensitive_data.append(self._accesses[access].get_token())
+
         for backup in self._backups:
             if self._backups[backup].get_encryption().get_passphrase():
                 sensitive_data.append(self._backups[backup].get_encryption().get_passphrase())
