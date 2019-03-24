@@ -7,6 +7,7 @@ from .controller.recover import RecoverFromDisasterController
 from .mapping.handlers import HandlersMapping
 from .service.client import FileRepositoryClient
 from .exceptions import ApplicationException
+from .service.logger import PasswordsProtectedFilter
 from logging import Logger
 import sys
 import json
@@ -23,6 +24,7 @@ class Bahub:
         self._options = options
         self._logger = logger
         self._handlers = HandlersMapping()
+        self.init_logger()
 
     def run_controller(self, action_name: str, param: str, debug: bool, params: list):
         self._logger.info('Performing ' + action_name)
@@ -86,3 +88,6 @@ class Bahub:
 
             print(e)
             sys.exit(1)
+
+    def init_logger(self):
+        self._logger.addFilter(PasswordsProtectedFilter(self._factory.get_all_sensitive_data()))

@@ -105,6 +105,17 @@ class DefinitionFactory:
 
         return self._recovery_plans[name]
 
+    def get_all_sensitive_data(self):
+        sensitive_data = []
+
+        for backup in self._backups:
+            if self._backups[backup].get_encryption().get_passphrase():
+                sensitive_data.append(self._backups[backup].get_encryption().get_passphrase())
+
+            sensitive_data.append(self._backups[backup].get_collection_id())
+
+        return sensitive_data
+
 
 class DefinitionFactoryErrorCatcher:
     _key_name = ""
