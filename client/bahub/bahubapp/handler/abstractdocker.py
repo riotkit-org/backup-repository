@@ -109,6 +109,11 @@ class AbstractDocker(BackupHandler):
             with_crypto=False
         )
 
+        code = response.process.wait()
+
+        if int(code) > 0:
+            raise ReadWriteException('Non-zero exit code from command, check if the container name is valid')
+
         if "does-not-exist" in response.stdout.read().decode('utf-8'):
             raise ReadWriteException(
                 'Path "' + path + '" does not exist in container "' + definition.get_container() + '"'
@@ -137,8 +142,8 @@ class AbstractDocker(BackupHandler):
         if container not in output:
             raise ReadWriteException('Container seems to be not running, check docker ps')
 
-        if response.process.returncode != 0:
-            raise ReadWriteException('Command failed with non-zero exit code, output: ' + output)
+        if response.process.returncode > 0:
+            raise ReadWriteException('Command failed with non-zero exit code, probably the container is not running, output: ' + output)
 
     @staticmethod
     def _assert_container_name_present(out: CommandExecutionResult, container_name: str, operation_name: str):
