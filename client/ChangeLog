@@ -1,6 +1,41 @@
 CHANGES
 =======
 
+* [https://github.com/riotkit-org/file-repository/issues/59] Token is now also hidden in logs
+* [https://github.com/riotkit-org/file-repository/issues/59] Added PasswordsProtectedFilter that is cutting of sensitive data from logs
+* [https://github.com/riotkit-org/file-repository/issues/56] Fixed error handling in docker adapters
+* Fixed logs path
+* Updated PHP and JS dependencies
+* Updated docs
+* Travis: Debug
+* Travis: Attempt to speed up the build
+* Travis debug
+* Travis debug
+* Travis debug
+* Travis debug
+* Travis debug
+* Update .travis.yml
+* Update .travis.yml
+* Update .travis.yml
+* Update Makefile
+* Update .travis.yml
+* Update .travis.yml
+* Update .travis.yml
+* Update .travis.yml
+* Added a feature to disable cronjobs on development environment - to not override production backups
+* Switched to SafeLoader for the YAML parsing
+* Added explicite usage of CLoader, so it will no longer show deprecation warning
+* Added explicite usage of CLoader, so it will no longer show deprecation warning
+* Travis debug
+* Update .travis.yml
+* Update .travis.yml
+* Fixes to run the travis build
+* Adjustments to travis build
+* Added info about the testing
+* Fixing travis build for Python unit tests
+* Travis-ci compatibility fix - "whereis" is not accessible, but "which" should be
+* Fixed an accidential typo that was causing infinite loop (until max execution time reached) and corrected api tests, so they test what was expected to test (there was a configuration change in the .env.dist that needed to be included in the test)
+* Covered definition factory
 * Added badges
 * Probably fixed the travis build
 * Covered additional entity by unit tests
