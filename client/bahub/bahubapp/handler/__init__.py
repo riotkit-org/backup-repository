@@ -1,4 +1,3 @@
-
 from ..entity.definition import BackupDefinition
 from ..service.client import FileRepositoryClient
 from ..service.pipefactory import PipeFactory
@@ -14,9 +13,9 @@ from shutil import copyfileobj
 class BackupHandler:
     """ Manages the process of backup and restore, interacts with different sources of backup data using adapters """
 
-    _client = None        # type: FileRepositoryClient
+    _client = None  # type: FileRepositoryClient
     _pipe_factory = None  # type: PipeFactory
-    _logger = None        # type: Logger
+    _logger = None  # type: Logger
     _definition = None
 
     def __init__(self,
@@ -31,13 +30,18 @@ class BackupHandler:
 
     def perform_backup(self):
         self._validate()
+        self._validate_running_command()
 
         response = self._read()
 
         if response.return_code != 0 and response.return_code is not None:
             raise ReadWriteException('Backup source read error, use --debug and retry to investigate')
 
-        return self._client.send(response.stdout, self._get_definition())
+        upload_response = self._client.send(response.stdout, self._get_definition())
+        response.process.wait(15)
+        response.stdout.close()
+
+        return upload_response
 
     def perform_restore(self, version: str):
         response = self._write(
@@ -90,6 +94,19 @@ class BackupHandler:
 
         return CommandExecutionResult(process.stdout, process.stderr, process.returncode, process)
 
+    def _validate_running_command(self):
+        """ Validate if the command really exports the data, does not end up with an error """
+
+        response = self._read()
+        response.stdout.read(1024)
+        response.process.kill()
+        response.process.wait(15)
+
+        if response.process.returncode > 0:
+            raise ReadWriteException(
+                'The process exited with incorrect code, try to verify the command in with --debug switch'
+            )
+
     def _validate(self):
         raise Exception('_validate() not implemented for handler')
 
@@ -110,4 +127,3 @@ class BackupHandler:
     @staticmethod
     def generate_id(size=6, chars=string.ascii_uppercase + string.digits):
         return ''.join(random.choice(chars) for _ in range(size))
-
