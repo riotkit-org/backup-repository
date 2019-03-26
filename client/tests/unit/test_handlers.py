@@ -29,6 +29,12 @@ class HandlersTest(unittest.TestCase):
             'method': 'aes-128-cbc'
         })
 
+        invalid_configured_encryption = Encryption.from_config({
+            'passphrase': 'test-123',
+            'method': 'aes-128-cbc',
+            'encrypt_cmd': 'strike-hey-i-will-not-work'
+        })
+
         return [
             # directory: the directory does not exist
             [
@@ -51,6 +57,19 @@ class HandlersTest(unittest.TestCase):
                     'collection_id': 'does-not-matter-in-this-test',
                     'encryption': encryption,
                     'command': 'cat /some-non-existing-file'
+                }),
+                CommandOutputBackup,
+                'The process exited with incorrect code, try to verify the command in with --debug switch'
+            ],
+
+            # command: the encryption command will break the whole command pipeline
+            [
+                CommandOutputDefinition.from_config({
+                    'access': server_access,
+                    'type': 'command',
+                    'collection_id': 'does-not-matter-in-this-test',
+                    'encryption': invalid_configured_encryption,
+                    'command': 'cat /etc/hosts'
                 }),
                 CommandOutputBackup,
                 'The process exited with incorrect code, try to verify the command in with --debug switch'
