@@ -6,12 +6,14 @@ class PipeFactory:
 
     @staticmethod
     def create_backup_command(command: str, definition: BackupDefinition, with_crypto=True):
-        piped = 'set -eo pipefail && ' + command
+        piped = 'set -o pipefail; ' + command
         enc = definition.get_encryption()
 
         if with_crypto and enc.should_use_crypto():
             # append "-d" to decrypt the encrypted file
             piped += "| " + enc.create_encrypt_command()
+
+        piped += '; exit $?'
 
         return piped
 
