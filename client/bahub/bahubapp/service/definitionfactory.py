@@ -35,9 +35,14 @@ class DefinitionFactory:
 
     def _read(self, path: str):
         f = open(path, 'rb')
-        config = yaml.load(self._process_env_variables(f.read().decode('utf-8')), Loader=Loader)
-        f.close()
 
+        try:
+            config = yaml.load(self._process_env_variables(f.read().decode('utf-8')), Loader=Loader)
+        except Exception as e:
+            f.close()
+            raise e
+
+        f.close()
         return config
 
     @staticmethod
