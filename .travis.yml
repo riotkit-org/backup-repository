@@ -19,10 +19,10 @@ matrix:
           script:
               - make build@x86_64 test_api SUDO=""
               - make coverage
-              - cat ./var/log/*.log
+              #- cat ./var/log/*.log
 
           after_success:
-              - bash <(curl -s https://codecov.io/bash)
+              - bash <(curl -s https://codecov.io/bash) -cF php
 
         #
         # Bahub (API client)
@@ -46,12 +46,15 @@ matrix:
               - sudo ln -s $(which python) /usr/bin/python3
 
           script:
-              - openssl enc -aes-128-cbc -pass pass:test-123 > /tmp/test-openssl
+              - echo "test" | openssl enc -aes-128-cbc -pass pass:test-123 > /tmp/test-openssl
               - cd client && make install unit_test
               - make run_test_containers test
 
           before_deploy:
               - cp -pr ./client/* ./
+
+          after_success:
+              - bash <(curl -s https://codecov.io/bash) -cF python
 
           deploy:
               skip_cleanup: true

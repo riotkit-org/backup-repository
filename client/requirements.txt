@@ -4,3 +4,4 @@ requests>=2.21
 setuptools>=40.4.3
 simplejson>=3.16
 unittest-data-provider
+coverage
