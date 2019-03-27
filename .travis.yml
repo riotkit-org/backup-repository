@@ -28,6 +28,10 @@ matrix:
           services: docker
           python: 3.6
 
+          before_install:
+              - sudo apt-get update
+              - sudo apt-get install -y openssl
+
           before_script:
               # speed up tests
               - sudo docker pull wolnosciowiec/file-repository:bahub
