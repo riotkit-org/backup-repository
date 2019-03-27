@@ -2,6 +2,7 @@ import unittest
 import sys
 import os
 import inspect
+import logging
 from unittest_data_provider import data_provider
 
 sys.path.append(os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe()))) + '/../')
@@ -80,7 +81,7 @@ class HandlersTest(unittest.TestCase):
     def test_handlers_fails_everything_when_any_part_fails(self, definition, handler_type, expected_message):
         handler = handler_type(
             _client=self._get_client_mock(),
-            _logger=Logger('test'),
+            _logger=self._create_logger(),
             _definition=definition,
             _pipe_factory=PipeFactory()
         )
@@ -133,19 +134,30 @@ class HandlersTest(unittest.TestCase):
     def test_handlers_successfully_gzips_data(self, definition, handler_type):
         handler = handler_type(
             _client=self._get_client_mock(),
-            _logger=Logger('test'),
+            _logger=self._create_logger(),
             _definition=definition,
             _pipe_factory=PipeFactory()
         )
 
         handler.perform_backup()
 
-    def _get_client_mock(self):
+    @staticmethod
+    def _get_client_mock():
         def _send(read_stream, definition):
             read_stream.read()
             return read_stream
 
-        client = FileRepositoryClient(Logger('test'))
+        client = FileRepositoryClient(HandlersTest._create_logger())
         client.send = _send
 
         return client
+
+    @staticmethod
+    def _create_logger():
+        logger = logging.getLogger('bahub')
+        logger.setLevel(logging.DEBUG)
+        # stream_handler = logging.StreamHandler(sys.stdout)
+        # logger.addHandler(stream_handler)
+        # stream_handler.stream = sys.stdout
+
+        return logger

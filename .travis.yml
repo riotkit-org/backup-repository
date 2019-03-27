@@ -43,6 +43,7 @@ matrix:
               - sudo ln -s $(which python) /usr/bin/python3
 
           script:
+              - openssl enc -aes-128-cbc -pass pass:test-123 > /tmp/test-openssl
               - cd client && make install unit_test
               - make run_test_containers test
 
