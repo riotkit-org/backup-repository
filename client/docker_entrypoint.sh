@@ -6,6 +6,10 @@ if [[ ! -f /cron ]]; then
     echo " !!! Warning !!!:  No /cron file available, should be a crontab-syntax file"
 fi
 
+# setup dns
+echo "nameserver 1.1.1.1" > /etc/resolv.conf
+echo "nameserver 8.8.8.8" >> /etc/resolv.conf
+
 if [[ "$@" ]]; then
     echo "BAHUB_ARGS=\"$@\"" >> /.bahub.env
 fi
