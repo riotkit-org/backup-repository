@@ -21,6 +21,9 @@ matrix:
               - make coverage
               - cat ./var/log/*.log
 
+          after_success:
+              - bash <(curl -s https://codecov.io/bash)
+
         #
         # Bahub (API client)
         #
