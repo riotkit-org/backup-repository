@@ -59,3 +59,7 @@ test:
 ## Run unit tests
 unit_test:
 	${PY_BIN} -m unittest discover -s ./tests/unit
+
+## Generate code coverage
+coverage:
+	coverage run --source . -m unittest discover -s ./tests/unit
