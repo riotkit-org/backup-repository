@@ -2,13 +2,13 @@
 
 from ..entity.recovery import RecoveryPlan
 from . import AbstractController
-from .restore import RestoreController
+from .backup import BackupController
 
 
-class RecoverFromDisasterController(AbstractController):
+class SnapshotController(AbstractController):
 
     def perform(self, plan_name: str):
-        self._logger.info('Recovery from disaster using "' + plan_name + '" recovery plan')
+        self._logger.info('Performing a snapshot using "' + plan_name + '" plan')
         results = {True: [], False: []}
 
         plan = self._definition_factory.get_recovery_plan(plan_name)
@@ -18,22 +18,20 @@ class RecoverFromDisasterController(AbstractController):
             results[result].append(name)
 
         return {
-            'recovered': results[True],
-            'not_recovered': results[False]
+            'success': results[True],
+            'failure': results[False]
         }
 
     def _perform_recovery(self, definition_name: str, plan: RecoveryPlan) -> bool:
-        controller = RestoreController(
+        controller = BackupController(
             self._definition_factory,
             self._logger,
             self._mapping,
             self._client
         )
 
-        self._logger.info('Performing recovery of "' + definition_name + '"')
-
         try:
-            controller.perform(definition_name, 'latest')
+            controller.perform(definition_name)
             return True
 
         except Exception as e:
