@@ -4,6 +4,7 @@ from .controller.backup import BackupController
 from .controller.restore import RestoreController
 from .controller.list import ListController
 from .controller.recover import RecoverFromDisasterController
+from .controller.snapshot import SnapshotController
 from .mapping.handlers import HandlersMapping
 from .service.client import FileRepositoryClient
 from .exceptions import ApplicationException
@@ -70,6 +71,20 @@ class Bahub:
 
             elif action_name == 'recover':
                 controller = RecoverFromDisasterController(
+                    self._factory,
+                    self._logger,
+                    self._handlers,
+                    FileRepositoryClient(_logger=self._logger)
+                )
+
+                response = controller.perform(param)
+
+                print(
+                    json.dumps(response, indent=4, sort_keys=True)
+                )
+
+            elif action_name == 'snapshot':
+                controller = SnapshotController(
                     self._factory,
                     self._logger,
                     self._handlers,
