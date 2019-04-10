@@ -113,7 +113,7 @@ class HandlersTest(unittest.TestCase):
                     'access': server_access,
                     'collection_id': 'does-not-matter-in-this-test',
                     'encryption': encryption,
-                    'paths': ['/etc']
+                    'paths': ['/etc/modprobe.d']
                 }),
                 LocalFileBackup
             ],
