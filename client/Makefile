@@ -47,6 +47,7 @@ clean:
 ## Run testing containers and fork to the background
 run_test_containers:
 	cd tests && ${SUDO} docker-compose up -d
+	${SUDO} docker ps
 
 ## Stop and remove all containers
 kill_test_containers:

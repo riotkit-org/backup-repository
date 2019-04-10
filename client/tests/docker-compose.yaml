@@ -6,6 +6,9 @@ services:
             - ./files/www:/var/www/html
         ports:
             - "81:80"
+        networks:
+            trbr:
+                ipv4_address: 10.5.0.2
 
     test_database:
         image: mariadb/server
@@ -14,11 +17,17 @@ services:
             - MARIADB_USER=test_www_user
             - MARIADB_ROOT_PASSWORD=root
             - MARIADB_PASSWORD=password
+        networks:
+            trbr:
+                ipv4_address: 10.5.0.3
 
     file-repository:
         image: wolnosciowiec/file-repository
         ports:
             - "80:80"
+        networks:
+            trbr:
+                ipv4_address: 10.5.0.4
 
     bahub:
         image: wolnosciowiec/file-repository:bahub
@@ -27,5 +36,16 @@ services:
             - ../:/test
             - /var/run/docker.sock:/var/run/docker.sock
         environment:
-            - DB_DATABASE=test_www_db
+            - DB_DATABASE=10.5.0.3
             - DB_HOST=test_database
+        networks:
+            trbr:
+                ipv4_address: 10.5.0.5
+
+networks:
+    trbr:
+        driver: bridge
+        ipam:
+            config:
+                - subnet: 10.5.0.0/16
+                  gateway: 10.5.0.1
