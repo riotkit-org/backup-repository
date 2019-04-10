@@ -72,12 +72,12 @@ class BackupHandler:
         """
 
         self._logger.debug('shell(' + command + ')')
-        print('shell(' + command + ')')
 
         process = subprocess.Popen(command,
                                    stdout=subprocess.PIPE,
                                    stderr=subprocess.PIPE,
                                    stdin=subprocess.PIPE if stdin else None,
+                                   executable='/bin/bash',
                                    shell=True)
 
         if stdin:
@@ -99,17 +99,15 @@ class BackupHandler:
         """ Validate if the command really exports the data, does not end up with an error """
 
         response = self._read()
-        stdout = response.stdout.read(1024)
-        stderr = response.stderr.read(1024)
+        response.stdout.read(1024)
+        response.stderr.read(1024)
 
         response.process.kill()
         response.process.wait(15)
 
         if response.process.returncode > 0:
             raise ReadWriteException(
-                'The process exited with incorrect code, try to verify the command in with --debug switch. Stdout: '
-                + str(stdout)
-                + ', stderr: ' + str(stderr)
+                'The process exited with incorrect code, try to verify the command in with --debug switch'
             )
 
     def _validate(self):
