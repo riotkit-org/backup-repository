@@ -73,8 +73,8 @@ backups:
 
     local_command_output:
         type: command_output
-        command: "cat /bin/bash"
-        restore_command: "cat - > /tmp/bash.restored"
+        command: "cat /etc/fstab"
+        restore_command: "cat - > /tmp/fstab.restored"
         access: backup_one
         encryption: none
         collection_id: "${COLLECTION_ID}"
