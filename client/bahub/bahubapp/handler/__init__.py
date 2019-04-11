@@ -100,7 +100,6 @@ class BackupHandler:
 
         response = self._read()
         response.stdout.read(1024)
-        response.stderr.read(1024)
 
         response.process.kill()
         response.process.wait(15)
