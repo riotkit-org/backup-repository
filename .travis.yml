@@ -1,3 +1,19 @@
+.bahub_unit_tests_template: &bahub_unit_tests_template
+    before_install:
+        - sudo apt-get update
+        - sudo apt-get install -y openssl
+    before_script:
+        - cd client && make install_requirements PIP="pip"
+        - sudo rm -f /usr/bin/python /usr/bin/python3
+        - sudo ln -s $(which python) /usr/bin/python
+        - sudo ln -s $(which python) /usr/bin/python3
+    script:
+        - make install unit_test
+    before_deploy:
+        - cp -pr ./client/* ./
+    after_success:
+        - bash <(curl -s https://codecov.io/bash) -cF python
+
 matrix:
     include:
         #
@@ -30,22 +46,9 @@ matrix:
         # Bahub (Backups API client)
         #
         - language: python
-          python: 3.6
           name: Bahub Unit test @ Python 3.6
-          before_install:
-              - sudo apt-get update
-              - sudo apt-get install -y openssl
-          before_script:
-              - cd client && make install_requirements PIP="pip"
-              - sudo rm -f /usr/bin/python /usr/bin/python3
-              - sudo ln -s $(which python) /usr/bin/python
-              - sudo ln -s $(which python) /usr/bin/python3
-          script:
-              - cd client && make install unit_test
-          before_deploy:
-              - cp -pr ./client/* ./
-          after_success:
-              - bash <(curl -s https://codecov.io/bash) -cF python
+          python: 3.6
+          <<: *bahub_unit_tests_template
           deploy:
               skip_cleanup: true
               provider: pypi
@@ -60,31 +63,20 @@ matrix:
                   secure: DFh8nCM9z5gjWyFyW0z7OVQg1FN6SWmCAlCjcN30ylBn1olIMzJXugItW6Wc8v1n1ZnhR0d1yd6MlL3Hzpu+iWHO1aZQADyeZfk3iAwIt6PGR/AkoboSBXPHmw1/a3bimrqbbzO0dVAmi+cgBqYRPQTDt1rz09BMUx2TzXvxSUdLi28L/RIY6sQ/0mYaTx1yLJNEa3FpNuMyL+77bDbH7W8q6W4lRkncCJU3BirSR/V5gpAIjYQ4RCZdZjbySNLvXG2RgFEG2M4b1bp7S6hVHK2hBr4z7RKj4QIXc1u7yTXG2m2UXgLfEAq9E4RIkTANaH0SnyzRIrXvsLnswiCUpfMv25mMioP5Ldtc52CVq6WDjTbAprwTQ6NYd8y6ffahYD8HSyge6gC6j3JiyC7/Kz/weir6Em5zqwUc61l/tgf2LWczhZ9UUPOtE3euZpyc//RfOEjpIt7xDE5i7hqvKnJ6x5h8lowpmdbNh8y7K91cy+3B73HwBdUPpqf1jV6xJZ/zDofR0DBe8VgXxd4FbVaElvoBOVScqIlbz4EAJJt77/KKThpHBeZg72ZUD9MstUSrPV4Lbxbp4vhr+IIQt2jGFrpDDEsizELSzjCsaqBwUCwF8FfxbR6irjuofehrxwu5MqxSItLl5gILvnfcKoQpsl9Sgt0ciuPQw6o1w1Q=
 
         - language: python
-          python: 3.7
-          name: Bahub Unit test @ Python 3.7
-          before_install:
-              - sudo apt-get update
-              - sudo apt-get install -y openssl
-          before_script:
-              - cd client && make install_requirements PIP="pip"
-              - sudo rm -f /usr/bin/python /usr/bin/python3
-              - sudo ln -s $(which python) /usr/bin/python
-              - sudo ln -s $(which python) /usr/bin/python3
-          script:
-              - cd client && make install unit_test
-          before_deploy:
-              - cp -pr ./client/* ./
+          python: 3.8
+          name: Bahub Unit test @ Python 3.8
+          <<: *bahub_unit_tests_template
 
         - language: python
+          name: Bahub functional test
           services: docker
           python: 3.6
-          name: Bahub functional test
           before_install:
               - sudo apt-get update
               - sudo apt-get install -y openssl
           before_script:
               - sudo docker pull wolnosciowiec/file-repository:bahub
               - sudo docker pull wolnosciowiec/file-repository
-              - cd .. && make build@x86_64 build_bahub@x86_64
+              - make build@x86_64 build_bahub@x86_64
           script:
-              - make run_test_containers test
+              - cd client && make run_test_containers test
