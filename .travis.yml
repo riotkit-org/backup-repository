@@ -39,8 +39,6 @@ matrix:
               - '7.3'
           script:
               - make build@x86_64 test_api SUDO=""
-          after_success:
-              - bash <(curl -s https://codecov.io/bash) -cF php
 
         #
         # Bahub (Backups API client)
