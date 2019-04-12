@@ -59,12 +59,16 @@ matrix:
           name: Bahub Unit test @ Python 3.6
           python: 3.6
           <<: *bahub_unit_tests_template
+
+        - language: python
+          name: Bahub PYPI release
+          python: 3.6
           deploy:
               skip_cleanup: true
               provider: pypi
               distributions: sdist bdist_wheel
               on:
-                  tags: true
+                  #tags: true
                   branch:
                       - master
                       - "/v?(\\d+\\.)?(\\d+\\.)?(\\*|\\d+)$/"
