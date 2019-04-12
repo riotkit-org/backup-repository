@@ -34,12 +34,12 @@ assert_some_local_logs() {
 #
 # Test: "command_output" adapter
 #
-pre_local_command_output() { exec_in_bahub_container 'rm -f /tmp/bash.restored 2>/dev/null || true'; }
-before_local_command_output() { exec_in_bahub_container 'echo "something" > /tmp/bash.restored'; }
+pre_local_command_output() { exec_in_bahub_container 'rm -f /tmp/fstab.restored 2>/dev/null || true'; }
+before_local_command_output() { exec_in_bahub_container 'echo "something" > /tmp/fstab.restored'; }
 assert_local_command_output() {
-    echo " >> Assert file has original content (/tmp/bash.restored)"
+    echo " >> Assert file has original content (/tmp/fstab.restored)"
 
-    if exec_in_bahub_container 'cat /tmp/bash.restored' | grep "something" > /dev/null; then
+    if exec_in_bahub_container 'cat /tmp/fstab.restored' | grep "something" > /dev/null; then
         echo " !! File has not been restored: ${content}"
         return 1
     fi
