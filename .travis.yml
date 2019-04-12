@@ -10,7 +10,7 @@
     script:
         - make install unit_test
     before_deploy:
-        - cp -pr ./client/* ./
+        - cp -pr ./* ../
     after_success:
         - bash <(curl -s https://codecov.io/bash) -cF python
 
