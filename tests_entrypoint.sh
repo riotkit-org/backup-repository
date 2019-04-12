@@ -14,5 +14,8 @@ sleep 5
 
 cat /var/www/html/.env
 
+echo " >> Checking application status"
+curl -vv http://localhost
+
 echo " >> Running API tests"
 exec newman run /var/www/html/postman-tests.json --timeout 100000 --insecure -e ./postman.ci-environment.json

@@ -77,6 +77,7 @@ class BackupHandler:
                                    stdout=subprocess.PIPE,
                                    stderr=subprocess.PIPE,
                                    stdin=subprocess.PIPE if stdin else None,
+                                   executable='/bin/bash',
                                    shell=True)
 
         if stdin:
@@ -99,6 +100,7 @@ class BackupHandler:
 
         response = self._read()
         response.stdout.read(1024)
+
         response.process.kill()
         response.process.wait(15)
 

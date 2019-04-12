@@ -1,61 +1,64 @@
+.bahub_unit_tests_template: &bahub_unit_tests_template
+    before_install:
+        - sudo apt-get update
+        - sudo apt-get install -y openssl
+    before_script:
+        - cd client && make install_requirements PIP="pip"
+        - sudo rm -f /usr/bin/python /usr/bin/python3
+        - sudo ln -s $(which python) /usr/bin/python
+        - sudo ln -s $(which python) /usr/bin/python3
+    script:
+        - make install unit_test
+    before_deploy:
+        - cp -pr ./client/* ./
+    after_success:
+        - bash <(curl -s https://codecov.io/bash) -cF python
+
+
 matrix:
+    allow_failures:
+        - php: nightly
+
     include:
         #
         # File Repository (server)
         #
         - language: php
-          services:
-              - docker
-
-          php:
-              #- '7.2'
-              - '7.3'
-              #- nightly
-
+          name: File Repository unit tests @ PHP 7.3
+          php: '7.3'
           before_script:
               - make install SUDO=""
               - mkdir -p ./var && chmod 777 ./var -R
-
           script:
-              - make build@x86_64 test_api SUDO=""
               - make coverage
-              #- cat ./var/log/*.log
-
           after_success:
               - bash <(curl -s https://codecov.io/bash) -cF php
 
+        - language: php
+          name: File Repository unit tests @ PHP nightly (allowed to fail)
+          php: nightly
+          before_script:
+              - make install SUDO=""
+              - mkdir -p ./var && chmod 777 ./var -R
+          script:
+              - make unit_test
+
+        - language: php
+          name: File Repository API tests
+          services:
+              - docker
+          php:
+              - '7.3'
+          script:
+              - make build@x86_64 test_api SUDO=""
+
         #
-        # Bahub (API client)
+        # Bahub (Backups API client)
         #
         - language: python
-          services: docker
+          name: Bahub Unit test @ Python 3.6
           python: 3.6
-
-          before_install:
-              - sudo apt-get update
-              - sudo apt-get install -y openssl
-
-          before_script:
-              # speed up tests
-              - sudo docker pull wolnosciowiec/file-repository:bahub
-              - sudo docker pull wolnosciowiec/file-repository
-              - cd client && make install_requirements PIP="pip"
-              - cd .. && make build@x86_64 build_bahub@x86_64
-              - sudo rm -f /usr/bin/python /usr/bin/python3
-              - sudo ln -s $(which python) /usr/bin/python
-              - sudo ln -s $(which python) /usr/bin/python3
-
-          script:
-              - echo "test" | openssl enc -aes-128-cbc -pass pass:test-123 > /tmp/test-openssl
-              - cd client && make install unit_test
-              - make run_test_containers test
-
-          before_deploy:
-              - cp -pr ./client/* ./
-
-          after_success:
-              - bash <(curl -s https://codecov.io/bash) -cF python
-
+          <<: *bahub_unit_tests_template
           deploy:
               skip_cleanup: true
               provider: pypi
@@ -68,3 +71,17 @@ matrix:
               user: marek_man
               password:
                   secure: DFh8nCM9z5gjWyFyW0z7OVQg1FN6SWmCAlCjcN30ylBn1olIMzJXugItW6Wc8v1n1ZnhR0d1yd6MlL3Hzpu+iWHO1aZQADyeZfk3iAwIt6PGR/AkoboSBXPHmw1/a3bimrqbbzO0dVAmi+cgBqYRPQTDt1rz09BMUx2TzXvxSUdLi28L/RIY6sQ/0mYaTx1yLJNEa3FpNuMyL+77bDbH7W8q6W4lRkncCJU3BirSR/V5gpAIjYQ4RCZdZjbySNLvXG2RgFEG2M4b1bp7S6hVHK2hBr4z7RKj4QIXc1u7yTXG2m2UXgLfEAq9E4RIkTANaH0SnyzRIrXvsLnswiCUpfMv25mMioP5Ldtc52CVq6WDjTbAprwTQ6NYd8y6ffahYD8HSyge6gC6j3JiyC7/Kz/weir6Em5zqwUc61l/tgf2LWczhZ9UUPOtE3euZpyc//RfOEjpIt7xDE5i7hqvKnJ6x5h8lowpmdbNh8y7K91cy+3B73HwBdUPpqf1jV6xJZ/zDofR0DBe8VgXxd4FbVaElvoBOVScqIlbz4EAJJt77/KKThpHBeZg72ZUD9MstUSrPV4Lbxbp4vhr+IIQt2jGFrpDDEsizELSzjCsaqBwUCwF8FfxbR6irjuofehrxwu5MqxSItLl5gILvnfcKoQpsl9Sgt0ciuPQw6o1w1Q=
+
+        - language: python
+          name: Bahub functional test
+          services: docker
+          python: 3.6
+          before_install:
+              - sudo apt-get update
+              - sudo apt-get install -y openssl
+          before_script:
+              - sudo docker pull wolnosciowiec/file-repository:bahub
+              - sudo docker pull wolnosciowiec/file-repository
+              - make build@x86_64 build_bahub@x86_64
+          script:
+              - cd client && make run_test_containers test
