@@ -14,15 +14,18 @@
     after_success:
         - bash <(curl -s https://codecov.io/bash) -cF python
 
+
 matrix:
+    allow_failures:
+        - php: nightly
+
     include:
         #
         # File Repository (server)
         #
         - language: php
-          name: File Repository unit tests
-          php:
-              - '7.3'
+          name: File Repository unit tests @ PHP 7.3
+          php: '7.3'
           before_script:
               - make install SUDO=""
               - mkdir -p ./var && chmod 777 ./var -R
@@ -30,6 +33,15 @@ matrix:
               - make coverage
           after_success:
               - bash <(curl -s https://codecov.io/bash) -cF php
+
+        - language: php
+          name: File Repository unit tests @ PHP nightly (allowed to fail)
+          php: nightly
+          before_script:
+              - make install SUDO=""
+              - mkdir -p ./var && chmod 777 ./var -R
+          script:
+              - make unit_test
 
         - language: php
           name: File Repository API tests
