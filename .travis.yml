@@ -4,13 +4,15 @@
         - sudo apt-get install -y openssl
     before_script:
         - cd client && make install_requirements PIP="pip"
-        - sudo mv /usr/bin/{python,python.backup} /usr/bin/{python3,python3.backup}
+        - sudo mv /usr/bin/{python,python.backup}
+        - sudo mv /usr/bin/{python3,python3.backup}
         - sudo ln -s $(which python) /usr/bin/python
         - sudo ln -s $(which python) /usr/bin/python3
     script:
         - make install unit_test
     before_deploy:
-        - sudo mv /usr/bin/{python.backup,python} /usr/bin/{python3.backup,python3}
+        - sudo mv /usr/bin/{python.backup,python}
+        - sudo mv /usr/bin/{python3.backup,python3}
         - cp -pr ./* ../
     after_success:
         - bash <(curl -s https://codecov.io/bash) -cF python
