@@ -2,6 +2,9 @@
 
 namespace App\Domain\Common\State;
 
+/**
+ * Policy class
+ */
 class OperationScope
 {
     /**
@@ -34,6 +37,10 @@ class OperationScope
 
     public function getAllowedMimeTypesToUpload(): array
     {
+        if (!$this->allowToUpload) {
+            return [];
+        }
+
         return $this->allowedMimes;
     }
 

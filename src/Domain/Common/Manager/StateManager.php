@@ -4,6 +4,11 @@ namespace App\Domain\Common\Manager;
 
 use Psr\Log\LoggerInterface;
 
+/**
+ * Tracks calls and notifies the logger when the step begins and when ends
+ *
+ * @codeCoverageIgnore
+ */
 class StateManager
 {
     /**

@@ -2,6 +2,9 @@
 
 namespace App\Domain\Common\Exception;
 
+/**
+ * @codeCoverageIgnore
+ */
 class ValueObjectException extends \Exception
 {
 }
