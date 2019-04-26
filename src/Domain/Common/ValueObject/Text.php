@@ -9,16 +9,31 @@ class Text implements \JsonSerializable
      */
     protected $value;
 
+    /**
+     * @codeCoverageIgnore
+     *
+     * @param string $value
+     */
     public function __construct(string $value)
     {
         $this->value = $value;
     }
 
+    /**
+     * @codeCoverageIgnore
+     *
+     * @return string
+     */
     public function getValue(): string
     {
         return $this->value;
     }
 
+    /**
+     * @codeCoverageIgnore
+     *
+     * @return mixed|string
+     */
     public function jsonSerialize()
     {
         return $this->value;

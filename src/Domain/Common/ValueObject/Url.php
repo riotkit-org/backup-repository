@@ -19,15 +19,17 @@ class Url extends BaseValueObject implements \JsonSerializable
             $this->value = $baseUrl->getValue() . '/' . $this->value;
         }
 
-        $this->value = $this->normalize($this->value);
+        $this->value = $this->normalize($this->value, true);
 
-        if ($this->value && !filter_var($this->value, FILTER_VALIDATE_URL)) {
+        if ($this->value && !filter_var($this->normalize($this->value, false), FILTER_VALIDATE_URL)) {
             $exceptionType = static::getExceptionType();
             throw new $exceptionType('Invalid URL address');
         }
     }
 
     /**
+     * @codeCoverageIgnore
+     *
      * @param Url $url
      *
      * @return static
@@ -42,6 +44,11 @@ class Url extends BaseValueObject implements \JsonSerializable
         return $this->value;
     }
 
+    /**
+     * @codeCoverageIgnore
+     *
+     * @return string
+     */
     public function jsonSerialize()
     {
         return $this->getValue();
@@ -55,7 +62,8 @@ class Url extends BaseValueObject implements \JsonSerializable
     public function withVar(string $name, string $value): Url
     {
         $new = clone $this;
-        $new->value = str_ireplace('{' . $name . '}', $value, $this->value);
+        $new->value = \str_ireplace('{' . $name . '}', $value, $this->value);
+        $new->value = \preg_replace('/{{\s*' . \preg_quote($name, '/') . '\s*}}/', $value, $new->value);
 
         return $new;
     }
@@ -89,8 +97,16 @@ class Url extends BaseValueObject implements \JsonSerializable
         return strtolower(parse_url($this->getValue(), PHP_URL_SCHEME)) === 'file';
     }
 
-    private function normalize(string $value)
+    private function normalize(string $value, bool $correctTemplateVariables)
     {
-        return (new Normalizer($value))->normalize();
+        $normalized = (new Normalizer($value))->normalize();
+
+        if ($correctTemplateVariables) {
+            $normalized = str_replace('%20', '', $normalized);
+            $normalized = preg_replace('/\%7B\%7B(\w+)\%7D\%7D/', '{{ $1 }}', $normalized);
+            $normalized = preg_replace('/\%7B(\w+)\%7D/', '{{ $1 }}', $normalized);
+        }
+
+        return $normalized;
     }
 }
