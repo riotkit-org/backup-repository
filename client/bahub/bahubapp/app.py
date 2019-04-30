@@ -1,5 +1,5 @@
 
-from .service.definitionfactory import DefinitionFactory
+from .service.configurationfactory import ConfigurationFactory
 from .controller.backup import BackupController
 from .controller.restore import RestoreController
 from .controller.list import ListController
@@ -15,17 +15,17 @@ import json
 
 
 class Bahub:
-    _factory = None   # type: DefinitionFactory
+    _factory = None   # type: ConfigurationFactory
     _options = {}     # type: dict
     _logger = None    # type: Logger
     _handlers = None  # type: HandlersMapping
 
-    def __init__(self, factory: DefinitionFactory, options: dict, logger: Logger):
+    def __init__(self, factory: ConfigurationFactory, options: dict, uncensored: bool, logger: Logger):
         self._factory = factory
         self._options = options
         self._logger = logger
         self._handlers = HandlersMapping()
-        self.init_logger()
+        self.init_logger(uncensored)
 
     def run_controller(self, action_name: str, param: str, debug: bool, params: list):
         self._logger.info('Performing ' + action_name)
@@ -104,5 +104,6 @@ class Bahub:
             print(e)
             sys.exit(1)
 
-    def init_logger(self):
-        self._logger.addFilter(PasswordsProtectedFilter(self._factory.get_all_sensitive_data()))
+    def init_logger(self, uncensored: bool):
+        if not uncensored:
+            self._logger.addFilter(PasswordsProtectedFilter(self._factory.get_all_sensitive_data()))

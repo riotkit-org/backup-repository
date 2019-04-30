@@ -1,4 +1,4 @@
-from ..exceptions import DefinitionFactoryException
+from ..exceptions import ConfigurationFactoryException
 
 
 class RecoveryPlan:
@@ -31,7 +31,7 @@ class RecoveryPlan:
     def _validate_against(self, all_available_services: list):
         for name in self._plan:
             if name not in all_available_services:
-                raise DefinitionFactoryException(
+                raise ConfigurationFactoryException(
                     'Recovery plan refers to undefined backup definition "' + name + '"' +
                     ', possible options: ' + str(all_available_services)
                 )

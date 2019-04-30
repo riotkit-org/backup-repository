@@ -1,5 +1,5 @@
 
-from ..service.definitionfactory import DefinitionFactory
+from ..service.configurationfactory import ConfigurationFactory
 from ..entity.definition import BackupDefinition
 from ..mapping.handlers import HandlersMapping
 from ..handler import BackupHandler
@@ -9,12 +9,12 @@ from logging import Logger
 
 
 class AbstractController:
-    _definition_factory = None  # type: DefinitionFactory
+    _definition_factory = None  # type: ConfigurationFactory
     _logger = None              # type: Logger
     _mapping = None             # type: HandlersMapping
     _client = None              # type: FileRepositoryClient
 
-    def __init__(self, factory: DefinitionFactory, logger: Logger,
+    def __init__(self, factory: ConfigurationFactory, logger: Logger,
                  mapping: HandlersMapping, client: FileRepositoryClient):
         self._definition_factory = factory
         self._logger = logger

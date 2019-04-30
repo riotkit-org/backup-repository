@@ -5,3 +5,4 @@ setuptools>=40.4.3
 simplejson>=3.16
 unittest-data-provider
 coverage
+sentry-sdk==0.7.14

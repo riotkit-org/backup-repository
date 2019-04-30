@@ -88,7 +88,7 @@ class BackupHandler:
             except BrokenPipeError:
                 raise ReadWriteException(
                     'Cannot write to process, broken pipe occurred, probably a tar process died. '
-                    + str(process.stdin.read()) + str(process.stderr.read())
+                    + str(process.stderr.read().decode('utf-8')) + ' ' + str(process.stdout.read().decode('utf-8'))
                 )
 
             process.stdin.close()

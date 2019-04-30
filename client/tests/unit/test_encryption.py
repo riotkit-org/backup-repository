@@ -5,7 +5,7 @@ import inspect
 
 sys.path.append(os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe()))) + '/../')
 from bahub.bahubapp.entity.encryption import Encryption
-from bahub.bahubapp.exceptions import DefinitionFactoryException
+from bahub.bahubapp.exceptions import ConfigurationFactoryException
 
 
 class EncryptionTest(unittest.TestCase):
@@ -26,7 +26,7 @@ class EncryptionTest(unittest.TestCase):
         try:
             Encryption(passphrase='test123', method='aes-12313123')
 
-        except DefinitionFactoryException:
+        except ConfigurationFactoryException:
             return True
         except Exception as e:
             raise e

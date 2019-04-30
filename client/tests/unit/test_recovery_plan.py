@@ -5,7 +5,7 @@ import inspect
 
 sys.path.append(os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe()))) + '/../')
 from bahub.bahubapp.entity.recovery import RecoveryPlan
-from bahub.bahubapp.exceptions import DefinitionFactoryException
+from bahub.bahubapp.exceptions import ConfigurationFactoryException
 
 
 class RecoveryPlanTest(unittest.TestCase):
@@ -48,7 +48,7 @@ class RecoveryPlanTest(unittest.TestCase):
         try:
             RecoveryPlan.from_config({'policy': 'stop-on-first-error', 'definitions': ['non-existing']}, ['first', '2'])
 
-        except DefinitionFactoryException:
+        except ConfigurationFactoryException:
             return True
 
         self.fail('Failed asserting that on unknown backup definition there will be thrown an exception')

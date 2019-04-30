@@ -6,8 +6,8 @@ import inspect
 sys.path.append(os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe()))) + '/../')
 from bahub.bahubapp.entity.definition import CommandOutputDefinition
 from bahub.bahubapp.entity.recovery import RecoveryPlan
-from bahub.bahubapp.exceptions import DefinitionFactoryException
-import bahub.bahubapp.service.definitionfactory
+from bahub.bahubapp.exceptions import ConfigurationFactoryException
+import bahub.bahubapp.service.configurationfactory
 
 
 class DefinitionFactoryTest(unittest.TestCase):
@@ -17,9 +17,9 @@ class DefinitionFactoryTest(unittest.TestCase):
         return os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe()))) + '/../../'
 
     def test_constructs_everything(self):
-        bahub.bahubapp.service.definitionfactory.os.environ['COLLECTION_ID'] = 'i-w-a_a-i-t'
-        bahub.bahubapp.service.definitionfactory.os.environ['ADMIN_TOKEN'] = 'test-token'
-        factory = bahub.bahubapp.service.definitionfactory.DefinitionFactory(
+        bahub.bahubapp.service.configurationfactory.os.environ['COLLECTION_ID'] = 'i-w-a_a-i-t'
+        bahub.bahubapp.service.configurationfactory.os.environ['ADMIN_TOKEN'] = 'test-token'
+        factory = bahub.bahubapp.service.configurationfactory.ConfigurationFactory(
             self.get_app_path() + '/tests/conf/without_crypto.conf.yaml', debug=True)
 
         self.assertEqual(CommandOutputDefinition, type(factory.get_definition('local_command_output')),
@@ -34,14 +34,14 @@ class DefinitionFactoryTest(unittest.TestCase):
     def test_missing_env_variables(self):
         """ COLLECTION_ID and ADMIN_TOKEN should be required by without_crypto.conf.yaml """
 
-        del bahub.bahubapp.service.definitionfactory.os.environ['COLLECTION_ID']
-        del bahub.bahubapp.service.definitionfactory.os.environ['ADMIN_TOKEN']
+        del bahub.bahubapp.service.configurationfactory.os.environ['COLLECTION_ID']
+        del bahub.bahubapp.service.configurationfactory.os.environ['ADMIN_TOKEN']
 
         try:
-            bahub.bahubapp.service.definitionfactory.DefinitionFactory(
+            bahub.bahubapp.service.configurationfactory.ConfigurationFactory(
                 self.get_app_path() + '/tests/conf/without_crypto.conf.yaml', debug=True)
 
-        except DefinitionFactoryException:
+        except ConfigurationFactoryException:
             return False
 
         self.fail('Exception not thrown')

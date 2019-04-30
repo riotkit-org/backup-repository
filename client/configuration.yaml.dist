@@ -190,3 +190,13 @@ recoveries:
         definitions:
             - some_local_dir
             - local_command_output
+
+#
+# Optional: Error handlers, very helpful to track backup errors
+#           Be careful! Your shell commands for backup/restore may fail some time, it's worth to have a notification.
+#           You can set up a free account on sentry.io, install a Sentry instance on your server, or use eg. Mattermost/Slack notifications
+#
+#error_handlers:
+#    remote_sentry:
+#        type: sentry
+#        url: "${SENTRY_IO}"

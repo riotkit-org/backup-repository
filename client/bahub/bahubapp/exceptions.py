@@ -4,7 +4,7 @@ class ApplicationException(Exception):
     pass
 
 
-class DefinitionFactoryException(ApplicationException):
+class ConfigurationFactoryException(ApplicationException):
     pass
 
 
