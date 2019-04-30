@@ -1,4 +1,4 @@
-from ..exceptions import DefinitionFactoryException
+from ..exceptions import ConfigurationFactoryException
 
 
 class Encryption:
@@ -25,7 +25,8 @@ class Encryption:
             self._decrypt_cmd = _decrypt_cmd
 
         if method and method not in self._supported_crypto:
-            raise DefinitionFactoryException('Crypto "' + method + '" is not supported. Please use one of: ' + str(self._supported_crypto))
+            raise ConfigurationFactoryException('Crypto "' + method + '" is not supported. Please use one of: ' +
+                                                str(self._supported_crypto))
 
     @staticmethod
     def from_config(config: dict):

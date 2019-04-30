@@ -9,15 +9,17 @@ if os.path.isdir(t):
     sys.path.append(t)
 
 if __name__ == "__main__":
-    from bahubapp.service.definitionfactory import DefinitionFactory
+    from bahubapp.service.configurationfactory import DefinitionFactory
     from bahubapp.app import Bahub
     from bahubapp.service.logger import LoggerFactory
     from bahubapp.exceptions import ApplicationException
+    from bahubapp.service.errorhandler import ErrorHandlerService
 else:
     from .bahubapp.app import Bahub
-    from .bahubapp.service.definitionfactory import DefinitionFactory
+    from .bahubapp.service.configurationfactory import ConfigurationFactory
     from .bahubapp.service.logger import LoggerFactory
     from .bahubapp.exceptions import ApplicationException
+    from .bahubapp.service.errorhandler import ErrorHandlerService
 
 
 def main():
@@ -29,6 +31,7 @@ def main():
                         help='[backup/restore/list/recover/snapshot] [backup or recovery plan name]')
 
     parser.add_argument('--debug', help='Prints debugging messages', default=False, action="store_true")
+    parser.add_argument('--uncensored', help='Do not remove credentials from logs', default=False, action="store_true")
 
     parser.add_argument('--config',
                         help='Path to the configuration file',
@@ -59,14 +62,20 @@ def main():
         print(' Configuration file "' + str(parsed.config) + '" does not exist')
         sys.exit(1)
 
+    error_handler = None
+
     try:
+        config_factory = ConfigurationFactory(parsed.config, parsed.debug)
+        error_handler = ErrorHandlerService(config_factory.get_error_handlers())
+
         app = Bahub(
-            factory=DefinitionFactory(parsed.config, parsed.debug),
+            factory=config_factory,
             options={
                 'options': parsed.options,
                 'debug': parsed.debug,
                 'config': parsed.config
             },
+            uncensored=parsed.uncensored,
             logger=LoggerFactory.create(parsed.debug, parsed.logs_path)
         )
 
@@ -75,6 +84,9 @@ def main():
     except ApplicationException as e:
         if parsed.debug:
             raise e
+
+        if error_handler:
+            error_handler.record_exception(e)
 
         print(e)
         sys.exit(1)

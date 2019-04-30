@@ -1,6 +1,35 @@
 CHANGES
 =======
 
+* Fixed not working templating in the URL, extended the syntax and covered with tests
+* Increased tests coverage for value objects: PositiveNumber
+* Increasing tests coverage
+* Fixed deploy conditions
+* Update .travis.yml
+
+v2.0.3
+------
+
+* Added deploy credentials
+* Fixes to the build
+* Fixes to the build
+* Changed requirements for the Python version to 3.6 from 3.7, as it is built and works on 3.6
+* Bahub release job
+* Fixed before\_deploy
+* Travis: Added nightly pipeline
+* Travis: Fixed Bahub functional build
+* Travis: Clean up
+* Travis: Removed Python 3.8 tests as Python 3.8 cannot be launched on travis at now
+* Travis: Clean up
+* Travis: Split into multiple jobs
+* Travis: debug
+* Fixed "kill\_test\_containers" task
+* Travis: build stabilization
+* Covered Checksum valueobject with tests
+* Travis: build stabilization
+* Set /bin/bash as default shell for all executed commands (because /bin/sh does not support same options as bash eg. pipefail)
+* Travis: build stabilization
+* Added snapshot functionality
 * Added coverage badge
 * Added coverage for Python part
 * Added codecov.io integration

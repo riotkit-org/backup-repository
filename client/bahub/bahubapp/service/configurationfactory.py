@@ -4,21 +4,23 @@ from ..entity.encryption import Encryption
 from ..entity.recovery import RecoveryPlan
 from ..entity.access import ServerAccess
 from ..entity.definition import BackupDefinition
+from .errorhandler import ErrorHandlerFactory, ErrorHandlerInterface
 from ..mapping.definitions import DefinitionsMapping
-from ..exceptions import DefinitionFactoryException
+from ..exceptions import ConfigurationFactoryException
 import yaml
 from yaml import SafeLoader as Loader
 import os
 import re
 
 
-class DefinitionFactory:
+class ConfigurationFactory:
     """ Constructs objects basing on the configuration file """
 
     _accesses = {}        # type: dict[ServerAccess]
     _encryption = {}      # type: dict[Encryption]
     _backups = {}         # type: dict[BackupDefinition]
     _recovery_plans = {}  # type: dict[RecoveryPlan]
+    _error_handlers = {}  # type: dict[ErrorHandlerInterface]
     _debug = False        # type: bool
 
     def __init__(self, configuration_path: str, debug: bool):
@@ -29,6 +31,7 @@ class DefinitionFactory:
         self._parse_accesses(config['accesses'])
         self._parse_encryption(config['encryption'])
         self._parse_backups(config['backups'])
+        self._parse_monitoring_error_handlers(config.get('error_handlers', {}))
 
         # recovery plans are optional
         self._parse_recovery_plans(config['recoveries'] if 'recoveries' in config else {})
@@ -56,23 +59,28 @@ class DefinitionFactory:
         invalid_vars = set(re.findall('\${([A-Z0-9a-z_]+)}', content))
 
         if len(invalid_vars) > 0:
-            raise DefinitionFactoryException(
+            raise ConfigurationFactoryException(
                 'Following environment variables are not resolved: ' + (', '.join(invalid_vars))
             )
 
         return content
 
     def _parse_accesses(self, config: dict):
+        """ Access tokens """
+
         for key, values in config.items():
             with DefinitionFactoryErrorCatcher('accesses.' + key, self._debug):
                 self._accesses[key] = ServerAccess.from_config(values)
 
     def _parse_encryption(self, config: dict):
+        """ Security/Encryption """
+
         for key, values in config.items():
             with DefinitionFactoryErrorCatcher('encryption.' + key, self._debug):
                 self._encryption[key] = Encryption.from_config(values)
 
     def _parse_recovery_plans(self, config: dict):
+        """ Recovery plans/strategies """
         possible_backup_definitions = list(self._backups.keys())
 
         for key, values in config.items():
@@ -80,6 +88,8 @@ class DefinitionFactory:
                 self._recovery_plans[key] = RecoveryPlan.from_config(values, possible_backup_definitions)
 
     def _parse_backups(self, config: dict):
+        """ Backups """
+
         for key, values in config.items():
             with DefinitionFactoryErrorCatcher('backups.' + key, self._debug):
 
@@ -92,19 +102,31 @@ class DefinitionFactory:
                 factory_method = DefinitionsMapping.get(values['type'])
                 self._backups[key] = factory_method.from_config(values)
 
-    def get_definition(self, name: str) -> BackupDefinition:
+    def _parse_monitoring_error_handlers(self, config: dict):
+        """ Error handlers integration """
 
+        for key, values in config.items():
+            with DefinitionFactoryErrorCatcher('error_handlers.' + key, self._debug):
+
+                if 'type' not in values:
+                    raise ConfigurationFactoryException('Error handler must have a defined type')
+
+                self._error_handlers[key] = ErrorHandlerFactory.create(values['type'], values)
+
+    def get_error_handlers(self):
+        return self._error_handlers
+
+    def get_definition(self, name: str) -> BackupDefinition:
         if name not in self._backups:
-            raise DefinitionFactoryException(
+            raise ConfigurationFactoryException(
                 'No such backup definition, maybe a typo? Please check the configuration file'
             )
 
         return self._backups[name]
 
     def get_recovery_plan(self, name: str) -> RecoveryPlan:
-
         if name not in self._recovery_plans:
-            raise DefinitionFactoryException(
+            raise ConfigurationFactoryException(
                 'Specified recovery plan not found'
             )
 
@@ -141,7 +163,7 @@ class DefinitionFactoryErrorCatcher:
             if self._debug:
                 return
 
-            raise DefinitionFactoryException(
+            raise ConfigurationFactoryException(
                 ' ERROR: There was a problem during parsing the configuration at section "' +
                 self._key_name + '" in key ' + str(exc_val) + ', details: ' + str(exc_type))
 
