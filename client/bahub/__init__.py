@@ -9,17 +9,15 @@ if os.path.isdir(t):
     sys.path.append(t)
 
 if __name__ == "__main__":
-    from bahubapp.service.configurationfactory import DefinitionFactory
+    from bahubapp.service.configurationfactory import ConfigurationFactory
     from bahubapp.app import Bahub
     from bahubapp.service.logger import LoggerFactory
-    from bahubapp.exceptions import ApplicationException
     from bahubapp.service.errorhandler import ErrorHandlerService
     from bahubapp.service.notifier import Notifier
 else:
     from .bahubapp.app import Bahub
     from .bahubapp.service.configurationfactory import ConfigurationFactory
     from .bahubapp.service.logger import LoggerFactory
-    from .bahubapp.exceptions import ApplicationException
     from .bahubapp.service.errorhandler import ErrorHandlerService
     from .bahubapp.service.notifier import Notifier
 
