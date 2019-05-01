@@ -32,6 +32,9 @@ class NotifierInterface:
     def failed_to_restore_backup(self, definition: BackupDefinition, reason) -> None:
         pass
 
+    def exception_occurred(self, exception: BaseException):
+        pass
+
 
 class Notifier:
     _notifiers = []
@@ -84,6 +87,9 @@ class SlackNotifier(NotifierInterface):
 
     def failed_to_restore_backup(self, definition: BackupDefinition, reason) -> None:
         self._send(':x: Failed to restore the backup for ' + str(definition) + ', ' + str(reason))
+
+    def exception_occurred(self, exception: BaseException):
+        self._send(':bangbang: ' + str(exception))
 
     def _send(self, msg: str, retry_num: int = 0):
         try:

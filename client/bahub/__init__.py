@@ -65,11 +65,12 @@ def main():
         sys.exit(1)
 
     error_handler = None
+    notifier = None
 
     try:
         config_factory = ConfigurationFactory(parsed.config, parsed.debug)
-        error_handler = ErrorHandlerService(config_factory.get_error_handlers())
         notifier = Notifier(config_factory.get_notifiers())
+        error_handler = ErrorHandlerService(config_factory.get_error_handlers())
 
         app = Bahub(
             factory=config_factory,
@@ -85,12 +86,15 @@ def main():
 
         app.run_controller(parsed.options[0], parsed.options[1], parsed.debug, parsed.options)
 
-    except ApplicationException as e:
+    except Exception as e:
         if parsed.debug:
             raise e
 
         if error_handler:
             error_handler.record_exception(e)
+
+        if notifier:
+            notifier.exception_occurred(e)
 
         print(e)
         sys.exit(1)
