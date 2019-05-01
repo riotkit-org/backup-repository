@@ -5,6 +5,7 @@ from ..entity.recovery import RecoveryPlan
 from ..entity.access import ServerAccess
 from ..entity.definition import BackupDefinition
 from .errorhandler import ErrorHandlerFactory, ErrorHandlerInterface
+from .notifier import NotifierInterface, NotifierFactory
 from ..mapping.definitions import DefinitionsMapping
 from ..exceptions import ConfigurationFactoryException
 import yaml
@@ -21,6 +22,7 @@ class ConfigurationFactory:
     _backups = {}         # type: dict[BackupDefinition]
     _recovery_plans = {}  # type: dict[RecoveryPlan]
     _error_handlers = {}  # type: dict[ErrorHandlerInterface]
+    _notifiers = {}       # type: dict[NotifierInterface]
     _debug = False        # type: bool
 
     def __init__(self, configuration_path: str, debug: bool):
@@ -32,6 +34,7 @@ class ConfigurationFactory:
         self._parse_encryption(config['encryption'])
         self._parse_backups(config['backups'])
         self._parse_monitoring_error_handlers(config.get('error_handlers', {}))
+        self._parse_notifiers(config.get('notifiers', {}))
 
         # recovery plans are optional
         self._parse_recovery_plans(config['recoveries'] if 'recoveries' in config else {})
@@ -113,8 +116,22 @@ class ConfigurationFactory:
 
                 self._error_handlers[key] = ErrorHandlerFactory.create(values['type'], values)
 
+    def _parse_notifiers(self, config: dict):
+        """ Notifiers """
+
+        for key, values in config.items():
+            with DefinitionFactoryErrorCatcher('notificers..' + key, self._debug):
+
+                if 'type' not in values:
+                    raise ConfigurationFactoryException('Notifier type needs to be specified')
+
+                self._notifiers[key] = NotifierFactory.create(values['type'], values)
+
     def get_error_handlers(self):
         return self._error_handlers
+
+    def get_notifiers(self):
+        return self._notifiers
 
     def get_definition(self, name: str) -> BackupDefinition:
         if name not in self._backups:
