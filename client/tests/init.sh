@@ -33,7 +33,7 @@ exec_in_bahub_container () {
 }
 
 read_logs () {
-    sudo docker-compose exec file-repository /bin/sh -c 'cat ./var/log/prod.log'
+    sudo docker-compose exec file-repository /bin/sh -c 'cat ./var/log/prod.log' || true
 }
 
 function_exists () {
