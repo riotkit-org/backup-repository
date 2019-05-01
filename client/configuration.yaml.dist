@@ -200,3 +200,13 @@ recoveries:
 #    remote_sentry:
 #        type: sentry
 #        url: "${SENTRY_IO}"
+
+
+#
+# Optional: Notifications. Can notify when backup starts, ends, there is an error etc.
+#
+
+#notifiers:
+#    mattermost:
+#        type: slack
+#        url: "https://xxxxx"
