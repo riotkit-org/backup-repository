@@ -64,6 +64,9 @@ class BackupDefinition:
     def get_collection_id(self) -> str:
         return self._collection_id
 
+    def __repr__(self):
+        return 'Definition<collection_id=' + str(self.get_collection_id()) + '>'
+
 
 class DockerVolumesDefinition(BackupDefinition):
     _container = ""
@@ -108,6 +111,10 @@ class DockerVolumesDefinition(BackupDefinition):
             docker_bin=config.get('docker_bin', 'sudo docker'),
             paths=config['paths']
         )
+
+    def __repr__(self):
+        return 'Definition<collection_id=' + str(self.get_collection_id()) + ',docker_container=' + \
+               str(self.get_container()) + '>'
 
 
 class DockerOfflineVolumesDefinition(DockerVolumesDefinition):
@@ -212,6 +219,10 @@ class DockerOutputDefinition(BackupDefinition):
             docker_bin=config.get('docker_bin')
         )
 
+    def __repr__(self):
+        return 'Definition<collection_id=' + str(self.get_collection_id()) + ',docker_container=' + \
+               str(self.get_container()) + '>'
+
 
 class MySQLDefinition(BackupDefinition):
     _host = "localhost"
@@ -298,6 +309,10 @@ class MySQLDefinition(BackupDefinition):
             docker_bin=config.get('docker_bin', 'sudo docker'),
             container=config.get('container', '')
         )
+
+    def __repr__(self):
+        return 'Definition<collection_id=' + str(self.get_collection_id()) + ',docker_container=' + \
+               str(self.get_container()) + ',sql_host=' + str(self._host) + '>'
 
 
 class CommandOutputDefinition(BackupDefinition):

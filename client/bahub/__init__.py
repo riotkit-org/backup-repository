@@ -14,12 +14,14 @@ if __name__ == "__main__":
     from bahubapp.service.logger import LoggerFactory
     from bahubapp.exceptions import ApplicationException
     from bahubapp.service.errorhandler import ErrorHandlerService
+    from bahubapp.service.notifier import Notifier
 else:
     from .bahubapp.app import Bahub
     from .bahubapp.service.configurationfactory import ConfigurationFactory
     from .bahubapp.service.logger import LoggerFactory
     from .bahubapp.exceptions import ApplicationException
     from .bahubapp.service.errorhandler import ErrorHandlerService
+    from .bahubapp.service.notifier import Notifier
 
 
 def main():
@@ -67,6 +69,7 @@ def main():
     try:
         config_factory = ConfigurationFactory(parsed.config, parsed.debug)
         error_handler = ErrorHandlerService(config_factory.get_error_handlers())
+        notifier = Notifier(config_factory.get_notifiers())
 
         app = Bahub(
             factory=config_factory,
@@ -76,7 +79,8 @@ def main():
                 'config': parsed.config
             },
             uncensored=parsed.uncensored,
-            logger=LoggerFactory.create(parsed.debug, parsed.logs_path)
+            logger=LoggerFactory.create(parsed.debug, parsed.logs_path),
+            notifier=notifier
         )
 
         app.run_controller(parsed.options[0], parsed.options[1], parsed.debug, parsed.options)
