@@ -1,6 +1,8 @@
 CHANGES
 =======
 
+* Initial implementation of notifier
+* Added support for error handlers with initial support for sentry.io
 * Fixed not working templating in the URL, extended the syntax and covered with tests
 * Increased tests coverage for value objects: PositiveNumber
 * Increasing tests coverage
