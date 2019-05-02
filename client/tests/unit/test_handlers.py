@@ -45,7 +45,7 @@ class HandlersTest(unittest.TestCase):
                     'collection_id': 'does-not-matter-in-this-test',
                     'encryption': encryption,
                     'paths': ['/etc/something-that-does-not-exist']
-                }),
+                }, 'test'),
                 LocalFileBackup,
                 'Path "/etc/something-that-does-not-exist" does not exist'
             ],
@@ -58,7 +58,7 @@ class HandlersTest(unittest.TestCase):
                     'collection_id': 'does-not-matter-in-this-test',
                     'encryption': encryption,
                     'command': 'cat /some-non-existing-file'
-                }),
+                }, 'test'),
                 CommandOutputBackup,
                 'The process exited with incorrect code, try to verify the command in with --debug switch'
             ],
@@ -71,7 +71,7 @@ class HandlersTest(unittest.TestCase):
                     'collection_id': 'does-not-matter-in-this-test',
                     'encryption': invalid_configured_encryption,
                     'command': 'cat /etc/hosts'
-                }),
+                }, 'test'),
                 CommandOutputBackup,
                 'The process exited with incorrect code, try to verify the command in with --debug switch'
             ]
@@ -114,7 +114,7 @@ class HandlersTest(unittest.TestCase):
                     'collection_id': 'does-not-matter-in-this-test',
                     'encryption': encryption,
                     'paths': ['/etc/modprobe.d']
-                }),
+                }, 'test'),
                 LocalFileBackup
             ],
 
@@ -125,7 +125,7 @@ class HandlersTest(unittest.TestCase):
                     'collection_id': 'does-not-matter-in-this-test',
                     'encryption': encryption,
                     'command': 'cat /etc/hosts'
-                }),
+                }, 'test'),
                 CommandOutputBackup
             ]
         ]

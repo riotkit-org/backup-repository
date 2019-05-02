@@ -103,7 +103,7 @@ class ConfigurationFactory:
                     values['encryption'] = self._encryption[values['encryption']]
 
                 factory_method = DefinitionsMapping.get(values['type'])
-                self._backups[key] = factory_method.from_config(values)
+                self._backups[key] = factory_method.from_config(values, key)
 
     def _parse_monitoring_error_handlers(self, config: dict):
         """ Error handlers integration """
