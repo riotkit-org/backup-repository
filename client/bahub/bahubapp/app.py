@@ -9,6 +9,7 @@ from .mapping.handlers import HandlersMapping
 from .service.client import FileRepositoryClient
 from .exceptions import ApplicationException
 from .service.logger import PasswordsProtectedFilter
+from .service.notifier import NotifierInterface
 from logging import Logger
 import sys
 import json
@@ -20,12 +21,14 @@ class Bahub:
     _logger = None    # type: Logger
     _handlers = None  # type: HandlersMapping
 
-    def __init__(self, factory: ConfigurationFactory, options: dict, uncensored: bool, logger: Logger):
+    def __init__(self, factory: ConfigurationFactory, options: dict, uncensored: bool, logger: Logger,
+                 notifier: NotifierInterface):
         self._factory = factory
         self._options = options
         self._logger = logger
         self._handlers = HandlersMapping()
         self.init_logger(uncensored)
+        self.notifier = notifier
 
     def run_controller(self, action_name: str, param: str, debug: bool, params: list):
         self._logger.info('Performing ' + action_name)
@@ -36,7 +39,8 @@ class Bahub:
                     self._factory,
                     self._logger,
                     self._handlers,
-                    FileRepositoryClient(_logger=self._logger)
+                    FileRepositoryClient(_logger=self._logger),
+                    self.notifier
                 )
 
                 print(controller.perform(param))
@@ -46,7 +50,8 @@ class Bahub:
                     self._factory,
                     self._logger,
                     self._handlers,
-                    FileRepositoryClient(_logger=self._logger)
+                    FileRepositoryClient(_logger=self._logger),
+                    self.notifier
                 )
 
                 print(controller.perform(
@@ -60,7 +65,8 @@ class Bahub:
                     self._factory,
                     self._logger,
                     self._handlers,
-                    FileRepositoryClient(_logger=self._logger)
+                    FileRepositoryClient(_logger=self._logger),
+                    self.notifier
                 )
 
                 response = controller.do_ls(self._factory.get_definition(param))
@@ -74,7 +80,8 @@ class Bahub:
                     self._factory,
                     self._logger,
                     self._handlers,
-                    FileRepositoryClient(_logger=self._logger)
+                    FileRepositoryClient(_logger=self._logger),
+                    self.notifier
                 )
 
                 response = controller.perform(param)
@@ -88,7 +95,8 @@ class Bahub:
                     self._factory,
                     self._logger,
                     self._handlers,
-                    FileRepositoryClient(_logger=self._logger)
+                    FileRepositoryClient(_logger=self._logger),
+                    self.notifier
                 )
 
                 response = controller.perform(param)

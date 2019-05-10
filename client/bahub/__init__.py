@@ -9,17 +9,17 @@ if os.path.isdir(t):
     sys.path.append(t)
 
 if __name__ == "__main__":
-    from bahubapp.service.configurationfactory import DefinitionFactory
+    from bahubapp.service.configurationfactory import ConfigurationFactory
     from bahubapp.app import Bahub
     from bahubapp.service.logger import LoggerFactory
-    from bahubapp.exceptions import ApplicationException
     from bahubapp.service.errorhandler import ErrorHandlerService
+    from bahubapp.service.notifier import Notifier
 else:
     from .bahubapp.app import Bahub
     from .bahubapp.service.configurationfactory import ConfigurationFactory
     from .bahubapp.service.logger import LoggerFactory
-    from .bahubapp.exceptions import ApplicationException
     from .bahubapp.service.errorhandler import ErrorHandlerService
+    from .bahubapp.service.notifier import Notifier
 
 
 def main():
@@ -63,9 +63,11 @@ def main():
         sys.exit(1)
 
     error_handler = None
+    notifier = None
 
     try:
         config_factory = ConfigurationFactory(parsed.config, parsed.debug)
+        notifier = Notifier(config_factory.get_notifiers())
         error_handler = ErrorHandlerService(config_factory.get_error_handlers())
 
         app = Bahub(
@@ -76,17 +78,21 @@ def main():
                 'config': parsed.config
             },
             uncensored=parsed.uncensored,
-            logger=LoggerFactory.create(parsed.debug, parsed.logs_path)
+            logger=LoggerFactory.create(parsed.debug, parsed.logs_path),
+            notifier=notifier
         )
 
         app.run_controller(parsed.options[0], parsed.options[1], parsed.debug, parsed.options)
 
-    except ApplicationException as e:
+    except Exception as e:
         if parsed.debug:
             raise e
 
         if error_handler:
             error_handler.record_exception(e)
+
+        if notifier:
+            notifier.exception_occurred(e)
 
         print(e)
         sys.exit(1)
