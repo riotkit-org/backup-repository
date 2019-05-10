@@ -34,3 +34,17 @@ Legend:
 
 .. literalinclude:: ../../src/Domain/Roles.php
    :language: ruby
+
+Docker container extra parameters
+---------------------------------
+
+Parameters passed to docker container are mostly application configuration parameters, but not only.
+There exists extra parameters that are implemented by the docker container itself, they are listed below:
+
+=============================  ====================================================================================
+-----------------------------  ------------------------------------------------------------------------------------
+ Name and example               Description
+=============================  ====================================================================================
+  WAIT_FOR_HOST=db_mysql:3306   (optional) Waits up to 2 minutes for host to be up when starting a container
+=============================  ====================================================================================
+

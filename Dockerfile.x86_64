@@ -32,7 +32,8 @@ ENV DATABASE_URL=sqlite:///%kernel.project_dir%/var/data.db \
     FS_FTP_TIMEOUT=120 \
     FS_FTP_PERMPRIVATE= \
     FS_FTP_PERMPUBLIC= \
-    FS_FTP_PASSIVE=0
+    FS_FTP_PASSIVE=0 \
+    WAIT_FOR_HOST=
 
 ADD . /var/www/html
 ADD ./filerepository.php.ini /usr/local/etc/php/conf.d/filerepository.php.ini
