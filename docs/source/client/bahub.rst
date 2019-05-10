@@ -13,6 +13,7 @@ as an UNIX daemon on the server without containerization.
 
    configuration-reference
    basic-usage
+   monitoring
 
 Setup
 -----

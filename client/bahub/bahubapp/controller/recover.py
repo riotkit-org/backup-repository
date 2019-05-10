@@ -27,7 +27,8 @@ class RecoverFromDisasterController(AbstractController):
             self._definition_factory,
             self._logger,
             self._mapping,
-            self._client
+            self._client,
+            self._notifier
         )
 
         self._logger.info('Performing recovery of "' + definition_name + '"')

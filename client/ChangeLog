@@ -1,6 +1,12 @@
 CHANGES
 =======
 
+* Added docs to the monitoring features
+* Resolved: \`TypeError: \_\_init\_\_() missing 1 required positional argument: 'notifier'\`
+* Clean up
+* Improved exception handling, added notifier integration to notify about the exceptions also
+* Initial implementation of notifier
+* Added support for error handlers with initial support for sentry.io
 * Fixed not working templating in the URL, extended the syntax and covered with tests
 * Increased tests coverage for value objects: PositiveNumber
 * Increasing tests coverage

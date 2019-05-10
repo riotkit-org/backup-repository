@@ -13,10 +13,13 @@ class BackupController(AbstractController):
 
     def _perform_backup(self, definition: BackupDefinition):
         handler = self._init_handler(definition)
+        self._notifier.starting_backup_creation(definition)
 
         try:
             result = handler.perform_backup()
             handler.close()
+
+            self._notifier.backup_was_uploaded(definition)
 
         except KeyboardInterrupt:
             handler.close()
@@ -24,6 +27,8 @@ class BackupController(AbstractController):
 
         except Exception as e:
             handler.close()
+            self._notifier.failed_to_upload_backup(definition, e)
+
             raise e
 
         return result

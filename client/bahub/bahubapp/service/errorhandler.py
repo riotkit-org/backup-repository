@@ -23,8 +23,9 @@ class ErrorHandlerInterface:
 class ErrorHandlerService:
     _handlers = []  # type: list[ErrorHandlerInterface]
 
-    def __init__(self, handlers: list):
-        self._handlers = handlers
+    def __init__(self, handlers: dict):
+        for k, v in handlers.items():
+            self._handlers.append(v)
 
     def record_exception(self, exception: BaseException):
         for handler in self._handlers:
