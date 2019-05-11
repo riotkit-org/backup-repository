@@ -24,6 +24,11 @@
         <whitelist>
             <directory suffix=".php">./bundles/</directory>
             <directory suffix=".php">./src/</directory>
+
+            <exclude>
+                <directory suffix=".php">./src/Controller</directory>
+                <directory suffix=".php">./src/Migrations</directory>
+            </exclude>
         </whitelist>
     </filter>
 
