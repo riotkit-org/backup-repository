@@ -163,28 +163,33 @@ class ViewFileHandler
     private function sendHttpHeaders(StoredFile $file, string $eTagSuffix, bool $allowLastModifiedHeader, string $acceptRange, int $contentLength): void
     {
         if ($acceptRange) {
-            header('Accept-Ranges: bytes');
-            header('Content-Range: ' . $acceptRange);
+            $this->header('Accept-Ranges: bytes');
+            $this->header('Content-Range: ' . $acceptRange);
         }
 
         if ($contentLength) {
-            header('Content-Length: ' . $contentLength);
+            $this->header('Content-Length: ' . $contentLength);
         }
 
         //
         // caching
         //
         if ($allowLastModifiedHeader) {
-            header('Last-Modified:  ' . $file->getDateAdded()->format('D, d M Y H:i:s') . ' GMT');
+            $this->header('Last-Modified:  ' . $file->getDateAdded()->format('D, d M Y H:i:s') . ' GMT');
         }
 
-        header('ETag: ' . $file->getContentHash() . $eTagSuffix);
-        header('Cache-Control: public, max-age=25200');
+        $this->header('ETag: ' . $file->getContentHash() . $eTagSuffix);
+        $this->header('Cache-Control: public, max-age=25200');
 
         //
         // others
         //
-        header('Content-Type: ' . $file->getMimeType());
-        header('Content-Disposition: attachment; filename="' . $file->getFilename()->getValue() . '"');
+        $this->header('Content-Type: ' . $file->getMimeType());
+        $this->header('Content-Disposition: attachment; filename="' . $file->getFilename()->getValue() . '"');
+    }
+
+    protected function header(string $content): void
+    {
+        header($content);
     }
 }
