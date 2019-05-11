@@ -111,7 +111,7 @@ class ViewFileHandler
      */
     private function createStreamHandler(FileRetrievedFromStorage $file, ViewFileForm $form): array
     {
-        $out = fopen('php://output', 'wb');
+        $out = $this->fopen('php://output', 'wb');
         $res = $file->getStream()->attachTo();
 
         $allowLastModifiedHeader = true;
@@ -191,5 +191,10 @@ class ViewFileHandler
     protected function header(string $content): void
     {
         header($content);
+    }
+
+    protected function fopen(string $filename, string $mode)
+    {
+        return fopen($filename, $mode);
     }
 }
