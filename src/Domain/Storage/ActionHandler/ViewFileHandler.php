@@ -2,10 +2,13 @@
 
 namespace App\Domain\Storage\ActionHandler;
 
+use App\Domain\Common\Http;
 use App\Domain\Storage\Aggregate\BytesRangeAggregate;
+use App\Domain\Storage\Aggregate\FileRetrievedFromStorage;
 use App\Domain\Storage\Context\CachingContext;
 use App\Domain\Storage\Entity\StoredFile;
 use App\Domain\Storage\Exception\AuthenticationException;
+use App\Domain\Storage\Exception\ContentRangeInvalidException;
 use App\Domain\Storage\Exception\StorageException;
 use App\Domain\Storage\Form\ViewFileForm;
 use App\Domain\Storage\Manager\FilesystemManager;
@@ -15,6 +18,15 @@ use App\Domain\Storage\Security\ReadSecurityContext;
 use App\Domain\Storage\Service\AlternativeFilenameResolver;
 use App\Domain\Storage\ValueObject\Filename;
 
+/**
+ * Response handler that serves file content.
+ * Framework agnostic, acts like a controller
+ *
+ * Responsibilities:
+ *   - Unpacking form arguments and passing to services
+ *   - Handle errors and convert them to responses
+ *   - Prepare HTTP headers for file serving, video streaming and caching
+ */
 class ViewFileHandler
 {
     /**
@@ -86,30 +98,47 @@ class ViewFileHandler
             });
         }
 
-        return new FileDownloadResponse('OK', 200, function () use ($file, $form) {
-            $out = fopen('php://output', 'wb');
-            $res = $file->getStream()->attachTo();
+        [$code, $streamHandler] = $this->createStreamHandler($file, $form);
 
-            $allowLastModifiedHeader = true;
-            $etagSuffix = '';
-            $contentLength = $this->fs->getFileSize($file->getStoredFile()->getFilename());
-            $acceptRange = 'bytes';
+        return new FileDownloadResponse('OK', $code, $streamHandler);
+    }
 
-            //
-            // Bytes range support (for streaming bigger files eg. video files)
-            //
-            $bytesRange = new BytesRangeAggregate($form->bytesRange, $contentLength);
+    /**
+     * @param FileRetrievedFromStorage $file
+     * @param ViewFileForm $form
+     *
+     * @return array
+     */
+    private function createStreamHandler(FileRetrievedFromStorage $file, ViewFileForm $form): array
+    {
+        $out = fopen('php://output', 'wb');
+        $res = $file->getStream()->attachTo();
 
-            $maxLength = null;
-            $offset = null;
+        $allowLastModifiedHeader = true;
+        $fileSize = $this->fs->getFileSize($file->getStoredFile()->getFilename());
 
-            if ($bytesRange->shouldServePartialContent()) {
-                $maxLength = $bytesRange->getTo()->getValue() - $bytesRange->getFrom()->getValue();
-                $offset    = $bytesRange->getFrom()->getValue();
-                $etagSuffix = $bytesRange->toHash();
-                $acceptRange = $bytesRange->toBytesResponseString();
-            }
+        //
+        // Bytes range support (for streaming bigger files eg. video files)
+        //
+        try {
+            $bytesRange = new BytesRangeAggregate($form->bytesRange, $fileSize);
 
+            $maxLength   = $bytesRange->getTotalLength()->getValue();
+            $offset      = $bytesRange->getFrom()->getValue();
+            $etagSuffix  = $bytesRange->toHash();
+            $acceptRange = $bytesRange->toBytesResponseString();
+            $contentLength = $bytesRange->getRangeContentLength()->getValue();
+
+        } catch (ContentRangeInvalidException $rangeInvalidException) {
+            return [Http::HTTP_INVALID_STREAM_RANGE, static function () use ($out, $res) {
+                fclose($out);
+                fclose($res);
+            }];
+        }
+
+        $callback = function () use (
+            $res, $out, $maxLength, $offset, $etagSuffix, $allowLastModifiedHeader, $file, $acceptRange, $contentLength
+        ) {
             $this->sendHttpHeaders(
                 $file->getStoredFile(),
                 $etagSuffix,
@@ -118,10 +147,12 @@ class ViewFileHandler
                 $contentLength
             );
 
-            $maxLength && $offset ? stream_copy_to_stream($res, $out, $maxLength, $offset) : stream_copy_to_stream($res, $out);
+            stream_copy_to_stream($res, $out, $maxLength, $offset);
             fclose($out);
             fclose($res);
-        });
+        };
+
+        return [$bytesRange->shouldServePartialContent() ? Http::HTTP_STREAM_PARTIAL_CONTENT : Http::HTTP_OK, $callback];
     }
 
     private function preProcessForm(ViewFileForm $form): void
@@ -133,6 +164,7 @@ class ViewFileHandler
     {
         if ($acceptRange) {
             header('Accept-Ranges: bytes');
+            header('Content-Range: ' . $acceptRange);
         }
 
         if ($contentLength) {

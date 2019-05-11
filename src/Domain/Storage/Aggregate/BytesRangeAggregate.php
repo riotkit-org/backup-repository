@@ -21,12 +21,12 @@ class BytesRangeAggregate
     /**
      * @var Filesize
      */
-    private $length;
+    private $totalLength;
 
     /**
      * @var PositiveNumberOrZero
      */
-    private $contentLength;
+    private $rangeContentLength;
 
     /**
      * @var PositiveNumberOrZero
@@ -41,12 +41,17 @@ class BytesRangeAggregate
      */
     public function __construct(string $headerValue, int $fileSize)
     {
-        [$from, $to, $length, $contentLength] = $this->parse($headerValue, $fileSize);
+        [$from, $to, $totalLength, $rangeLength] = $this->parse($headerValue, $fileSize);
 
+        // http range header
         $this->from          = new PositiveNumberOrZero($from);
         $this->to            = new PositiveNumberOrZero($to);
-        $this->length        = new Filesize($length);
-        $this->contentLength = new PositiveNumberOrZero($contentLength);
+        $this->totalLength   = new Filesize($totalLength);
+
+        // content length
+        $this->rangeContentLength = new PositiveNumberOrZero($rangeLength);
+
+        // meta
         $this->fileSize      = new PositiveNumberOrZero($fileSize);
     }
 
@@ -60,14 +65,14 @@ class BytesRangeAggregate
         return $this->to;
     }
 
-    public function getLength(): Filesize
+    public function getTotalLength(): Filesize
     {
-        return $this->length;
+        return $this->totalLength;
     }
 
-    public function getContentLength(): PositiveNumberOrZero
+    public function getRangeContentLength(): PositiveNumberOrZero
     {
-        return $this->contentLength;
+        return $this->rangeContentLength;
     }
 
     /**
@@ -80,49 +85,42 @@ class BytesRangeAggregate
      */
     private function parse(string $headerValue, int $fileSize): array
     {
-        $length     = $fileSize + 1;
-        $beginning  = 0;
-        $ending     = $fileSize;
-
-        if (!$headerValue) {
-            return [
-                $beginning,
-                $ending,
-                $length,
-                $ending - $beginning
-            ];
+        if (\strpos($headerValue, ',') !== false) {
+            throw new ContentRangeInvalidException(0, $fileSize, $fileSize);
         }
 
-        [, $range] = explode('=', $headerValue, 2);
+        $actual = explode('=', $headerValue)[1] ?? '';
+        $range  = explode('-', $actual);
 
-        if (\strpos($range, ',') !== false) {
-            throw new ContentRangeInvalidException($beginning, $ending, $length);
+        $start = (int) $range[0] > 0 ? (int) $range[0] : 0;
+        $end   = (int) ($range[1] ?? 0) > 0 ? (int) $range[1] : $fileSize;
+
+        if ($end > $fileSize) {
+            throw new ContentRangeInvalidException(0, $fileSize, $fileSize);
         }
 
-        [$start, $end] = explode('-', $range);
-        $start = (int) $start;
-        $end   = (int) $end;
-
-        if ($start < $end && $start > 0 && $start < $fileSize) {
-            $beginning = $start;
-        }
-
-        if ($end <= $fileSize && $end > 0 && $end >= $start) {
-            $ending = $end;
+        if ($end < $start) {
+            throw new ContentRangeInvalidException(0, $fileSize, $fileSize);
         }
 
         return [
-            $beginning,
-            $ending,
-            $length,
-            $ending - $beginning
+            // start
+            $start,
+
+            // end
+            $end,
+
+            // total length of the video
+            $fileSize,
+
+            // length of the range
+            $end - $start
         ];
     }
 
     public function shouldServePartialContent(): bool
     {
-        return $this->getFrom()->isHigherThanInteger(0)
-            && !$this->getTo()->isSameAs($this->fileSize);
+        return $this->rangeContentLength->isLessThan($this->totalLength);
     }
 
     public function toHash(): string
@@ -131,7 +129,7 @@ class BytesRangeAggregate
             'md5',
             $this->getFrom()->getValue() . '_' .
             $this->getTo()->getValue() . '_' .
-            $this->getLength()->getValue()
+            $this->getRangeContentLength()->getValue()
         );
     }
 
@@ -139,6 +137,6 @@ class BytesRangeAggregate
     {
         return 'bytes ' . $this->getFrom()->getValue() . '-' .
             $this->getTo()->getValue() . '/' .
-            $this->getLength()->getValue();
+            ($this->fileSize->getValue() + 1);
     }
 }

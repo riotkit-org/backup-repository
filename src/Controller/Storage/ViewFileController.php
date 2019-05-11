@@ -3,6 +3,7 @@
 namespace App\Controller\Storage;
 
 use App\Controller\BaseController;
+use App\Domain\Common\Http;
 use App\Domain\Storage\ActionHandler\ViewFileHandler;
 use App\Domain\Storage\Context\CachingContext;
 use App\Domain\Storage\Factory\Context\SecurityContextFactory;
@@ -59,8 +60,8 @@ class ViewFileController extends BaseController
                     $this->createCachingContext($request)
                 );
 
-                if ($response->getCode() === Response::HTTP_OK) {
-                    return new StreamedResponse($response->getResponseCallback());
+                if ($response->getCode() <= Http::HTTP_MAX_OK_CODE) {
+                    return new StreamedResponse($response->getResponseCallback(), $response->getCode());
                 }
 
                 return new JsonResponse($response, $response->getCode());

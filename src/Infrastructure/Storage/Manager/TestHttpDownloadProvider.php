@@ -31,6 +31,6 @@ class TestHttpDownloadProvider implements HttpDownloadProvider
 
     private function prepareLocalUrl(string $url): string
     {
-        return './' . substr($url, \strlen('file://'));
+        return './' . substr($url, \strlen('file://') - 1);
     }
 }
