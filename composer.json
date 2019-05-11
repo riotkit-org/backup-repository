@@ -33,6 +33,7 @@
         "twistor/flysystem-stream-wrapper": "^1.0"
     },
     "require-dev": {
+        "mockery/mockery": "^1.2",
         "symfony/dotenv": "*",
         "symfony/test-pack": "^1.0",
         "symfony/web-server-bundle": "*"
