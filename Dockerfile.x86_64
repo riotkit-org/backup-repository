@@ -33,7 +33,10 @@ ENV DATABASE_URL=sqlite:///%kernel.project_dir%/var/data.db \
     FS_FTP_PERMPRIVATE= \
     FS_FTP_PERMPUBLIC= \
     FS_FTP_PASSIVE=0 \
-    WAIT_FOR_HOST=
+    WAIT_FOR_HOST= \
+    TOKEN_EXPIRATION_TIME=+30 minutes \
+    TEMP_DIRECTORY=/tmp \
+    ENC_TOKEN_PHRASE=test123
 
 ADD . /var/www/html
 ADD ./filerepository.php.ini /usr/local/etc/php/conf.d/filerepository.php.ini
