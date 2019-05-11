@@ -65,6 +65,11 @@ class BytesRangeAggregate
         return $this->to;
     }
 
+    /**
+     * @codeCoverageIgnore
+     *
+     * @return Filesize
+     */
     public function getTotalLength(): Filesize
     {
         return $this->totalLength;
@@ -91,6 +96,10 @@ class BytesRangeAggregate
 
         $actual = explode('=', $headerValue)[1] ?? '';
         $range  = explode('-', $actual);
+
+        if ($headerValue && (!$actual || \count($range) === 0)) {
+            throw new ContentRangeInvalidException(0, $fileSize, $fileSize);
+        }
 
         $start = (int) $range[0] > 0 ? (int) $range[0] : 0;
         $end   = (int) ($range[1] ?? 0) > 0 ? (int) $range[1] : $fileSize;
