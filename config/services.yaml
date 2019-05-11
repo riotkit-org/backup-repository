@@ -33,16 +33,16 @@ services:
         class: App\Domain\Authentication\ActionHandler\TokenGenerationHandler
         arguments:
             $manager: '@App\Domain\Authentication\Manager\TokenManager'
-            $expirationTime: '+30 minutes' # @todo: Move to a env variable
+            $expirationTime: '%env(TOKEN_EXPIRATION_TIME)%'
 
     App\Domain\Storage\Factory\PathFactory:
         class: App\Domain\Storage\Factory\PathFactory
         arguments:
-            $basePath: /tmp/ # @todo use env variable
+            $basePath: '%env(TEMP_DIRECTORY)%'
 
     App\Infrastructure\Authentication\Service\AESDecryptionService:
         arguments:
-            $secret: 'test123' # @todo use env variable
+            $secret: '%env(ENC_TOKEN_PHRASE)%'
 
     App\Infrastructure\Authentication\Event\Subscriber\TokenSubscriber:
         class: App\Infrastructure\Authentication\Event\Subscriber\TokenSubscriber
@@ -54,7 +54,7 @@ services:
     App\Domain\Storage\Repository\StagingAreaRepository:
         class: App\Domain\Storage\Repository\StagingAreaRepository
         arguments:
-            $tempPath: '/tmp'
+            $tempPath: '%env(TEMP_DIRECTORY)%'
 
     App\Infrastructure\Storage\Manager\DownloadViaGuzzleProvider:
         class: App\Infrastructure\Storage\Manager\DownloadViaGuzzleProvider
