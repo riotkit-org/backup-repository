@@ -45,7 +45,7 @@ build_docs:
 
 ## Run a developer web server (do not use on production)
 run_dev:
-	./bin/console server:start
+	${SUDO} docker run --rm --name file-repository-dev -v $$(pwd):/var/www/html -p 8000:80 wolnosciowiec/file-repository
 
 ## Browse documentation in web browser
 browse_docs:
