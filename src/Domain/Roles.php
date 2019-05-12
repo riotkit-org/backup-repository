@@ -18,6 +18,9 @@ final class Roles
     /** Allows to upload images */
     public const ROLE_UPLOAD_IMAGES            = 'upload.images';
 
+    /** Allows to upload video files */
+    public const ROLE_UPLOAD_VIDEOS            = 'upload.videos';
+
     /** Allows to upload documents */
     public const ROLE_UPLOAD_DOCS              = 'upload.documents';
 

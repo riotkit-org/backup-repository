@@ -32,7 +32,8 @@ class SecurityContextFactory
             $token->hasRole(Roles::ROLE_UPLOAD)
                 || $token->hasRole(Roles::ROLE_UPLOAD_DOCS)
                 || $token->hasRole(Roles::ROLE_UPLOAD_IMAGES)
-                || $token->hasRole(Roles::ROLE_UPLOAD_BACKUP),
+                || $token->hasRole(Roles::ROLE_UPLOAD_BACKUP)
+                || $token->hasRole(Roles::ROLE_UPLOAD_VIDEOS),
             $token->hasRole(Roles::ROLE_ALLOW_OVERWRITE_FILES),
             $token->getMaxAllowedFileSize(),
             $token->hasRole(Roles::ROLE_UPLOAD_ENFORCE_TOKEN_TAGS),
