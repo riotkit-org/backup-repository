@@ -83,9 +83,9 @@ class UploadSecurityContext
         return !$this->allowedTags || \in_array($tag, $this->allowedTags, true);
     }
 
-    public function isActionAllowed(UploadForm $form, UploadSecurityContext $securityContext): SecurityCheckResult
+    public function isActionAllowed(UploadForm $form): SecurityCheckResult
     {
-        if ($form->password && !$securityContext->canSetPassword()) {
+        if ($form->password && !$this->canSetPassword()) {
             return new SecurityCheckResult(false, SecurityCheckResult::INVALID_PASSWORD);
         }
 

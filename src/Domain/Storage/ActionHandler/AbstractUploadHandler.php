@@ -71,7 +71,7 @@ abstract class AbstractUploadHandler
         $context = $this->securityFactory->createUploadContextFromToken($token);
 
         $this->applyRestrictionsOfTheTokenAndContext($form, $context);
-        $actionPermissionsCheck = $context->isActionAllowed($form, $context);
+        $actionPermissionsCheck = $context->isActionAllowed($form);
 
         if (!$actionPermissionsCheck->isOk()) {
             return $this->finalize(
