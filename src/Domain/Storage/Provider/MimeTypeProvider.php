@@ -12,6 +12,12 @@ class MimeTypeProvider
             'image/gif', 'image/webp', 'image/pipeg',
         ],
 
+        Roles::ROLE_UPLOAD_VIDEOS => [
+            'video/mp4', 'video/x-flv', 'video/MP2T',
+            'video/3gpp', 'video/quicktime', 'video/x-msvideo', 'video/x-ms-wmv',
+            'video/webm', 'video/ogg', 'application/ogg', 'video/mpeg'
+        ],
+
         Roles::ROLE_UPLOAD_DOCS => [
             'application/vnd.ms-works', 'application/pdf',
             'application/msword', 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',

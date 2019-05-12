@@ -70,10 +70,13 @@ abstract class AbstractUploadHandler
     {
         $context = $this->securityFactory->createUploadContextFromToken($token);
 
-        $this->applyRestrictions($form, $context);
+        $this->applyRestrictionsOfTheTokenAndContext($form, $context);
+        $actionPermissionsCheck = $context->isActionAllowed($form, $context);
 
-        if (!$context->isActionAllowed($form, $context)) {
-            return $this->finalize(FileUploadedResponse::createWithNoAccessError());
+        if (!$actionPermissionsCheck->isOk()) {
+            return $this->finalize(
+                FileUploadedResponse::createWithNoAccessError($actionPermissionsCheck->getReason())
+            );
         }
 
         try {
@@ -136,7 +139,7 @@ abstract class AbstractUploadHandler
         return $response;
     }
 
-    private function applyRestrictions(UploadForm $form, UploadSecurityContext $securityContext): void
+    private function applyRestrictionsOfTheTokenAndContext(UploadForm $form, UploadSecurityContext $securityContext): void
     {
         $tagsToEnforce = $securityContext->getTagsThatShouldBeEnforced();
 

@@ -83,19 +83,23 @@ class UploadSecurityContext
         return !$this->allowedTags || \in_array($tag, $this->allowedTags, true);
     }
 
-    public function isActionAllowed(UploadForm $form, UploadSecurityContext $securityContext): bool
+    public function isActionAllowed(UploadForm $form, UploadSecurityContext $securityContext): SecurityCheckResult
     {
         if ($form->password && !$securityContext->canSetPassword()) {
-            return false;
+            return new SecurityCheckResult(false, SecurityCheckResult::INVALID_PASSWORD);
         }
 
         foreach ($form->tags as $tag) {
             if (!$this->isTagAllowed($tag)) {
-                return false;
+                return new SecurityCheckResult(false, SecurityCheckResult::TAG_NOT_ALLOWED);
             }
         }
 
-        return $this->isAllowedToUpload;
+        if (!$this->isAllowedToUpload) {
+            return new SecurityCheckResult(false, SecurityCheckResult::NOT_ALLOWED_TO_UPLOAD);
+        }
+
+        return new SecurityCheckResult(true);
     }
 
     public function isFileSizeOk(Filesize $fSize): bool

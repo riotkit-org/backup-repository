@@ -134,12 +134,14 @@ class FileUploadedResponse implements \JsonSerializable
     }
 
     /**
+     * @param string $detail
+     *
      * @return FileUploadedResponse
      */
-    public static function createWithNoAccessError(): FileUploadedResponse
+    public static function createWithNoAccessError(string $detail = ''): FileUploadedResponse
     {
         $new = new static();
-        $new->status    = 'No enough permissions on the token to perform the operation';
+        $new->status    = 'No enough permissions on the token to perform the operation. ' . $detail;
         $new->errorCode = 403;
         $new->exitCode  = 403;
         $new->url       = null;
