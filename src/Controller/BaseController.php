@@ -166,7 +166,9 @@ abstract class BaseController extends AbstractController
 
     protected function createBaseUrl(Request $request): BaseUrl
     {
-        return new BaseUrl($request->isSecure(), $request->getHttpHost());
+        $fixedDomain = $_ENV['APP_DOMAIN'] ?? '';
+
+        return new BaseUrl($request->isSecure(), $fixedDomain ?: $request->getHttpHost());
     }
 
     private function collectErrorsForForm(FormInterface $form, string $inputName, array $errors = []): array
