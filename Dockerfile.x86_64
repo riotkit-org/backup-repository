@@ -36,7 +36,8 @@ ENV DATABASE_URL=sqlite:///%kernel.project_dir%/var/data.db \
     WAIT_FOR_HOST= \
     TOKEN_EXPIRATION_TIME=+30 minutes \
     TEMP_DIRECTORY=/tmp \
-    ENC_TOKEN_PHRASE=test123
+    ENC_TOKEN_PHRASE=test123 \
+    APP_DOMAIN=
 
 ADD . /var/www/html
 ADD ./filerepository.php.ini /usr/local/etc/php/conf.d/filerepository.php.ini
