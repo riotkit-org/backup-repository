@@ -27,7 +27,8 @@ class SnapshotController(AbstractController):
             self._definition_factory,
             self._logger,
             self._mapping,
-            self._client
+            self._client,
+            self._notifier
         )
 
         try:
