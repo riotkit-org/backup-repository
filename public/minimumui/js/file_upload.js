@@ -1,9 +1,16 @@
 
 class FileUpload extends BaseUpload {
-    constructor (tokenId) {
+    constructor (tokenId, formOpts, tags, tagsAreEnforced, maxFileSize, labelUploadFiles, labelUploadLimit) {
         super();
 
-        this.serverUrl = '/repository/file/upload?_token=' + tokenId;
+        this.serverUrl        = '/repository/file/upload?_token=' + tokenId;
+        this.formOpts         = formOpts;
+        this.maxFileSize      = maxFileSize;
+        this.tags             = tags;
+        this.tagsAreEnforced  = tagsAreEnforced;
+        this.labelUploadFiles = labelUploadFiles;
+        this.labelUploadLimit = labelUploadLimit;
+
         this.initializeFilepond();
     }
 
@@ -37,6 +44,46 @@ class FileUpload extends BaseUpload {
         });
     }
 
+    getFormOpts() {
+        if (this.formOpts) {
+            return '&' + this.formOpts
+        }
+
+        return '';
+    }
+
+    static shouldFileBePublic() {
+        return document.getElementById('is_public').checked;
+    }
+
+    static getPassword() {
+        let password = document.getElementById('password');
+
+        if (!password) {
+            return '';
+        }
+
+        return password.value;
+    }
+
+    getLabel() {
+        let msg = this.labelUploadFiles;
+
+        if (this.maxFileSize) {
+            msg += this.labelUploadLimit.replace('%size%', this.maxFileSize);
+        }
+
+        return msg;
+    }
+
+    getTags() {
+        if (this.tagsAreEnforced) {
+            return this.tags;
+        }
+
+        return document.getElementById('tags_selector').value.split(',');
+    }
+
     initializeFilepond() {
         let self = this;
 
@@ -57,6 +104,7 @@ class FileUpload extends BaseUpload {
         FilePond.setOptions({
             allowMultiple: false,
             allowReplace: false,
+            labelIdle: self.getLabel(),
             server: {
                 process: {
                     url: this.serverUrl,
@@ -85,6 +133,23 @@ class FileUpload extends BaseUpload {
         this.pond.addEventListener('FilePond:addfile', e => {
             let server = e.detail.pond.server.get();
             server.process.url = self.serverUrl + '&fileName=' + e.detail.file.filename;
+
+            // support decoded from opts passed via query string to the form
+            server.process.url += self.getFormOpts();
+
+            // tags from the token
+            let tags = self.getTags();
+            for (let tag in tags) {
+                server.process.url += '&tags[]=' + tags[tag];
+            }
+
+            // public/private
+            server.process.url += '&public=' + FileUpload.shouldFileBePublic();
+
+            // password
+            if (FileUpload.getPassword()) {
+                server.process.url += '&password=' + FileUpload.getPassword();
+            }
 
             e.detail.pond.server.set(server);
         });

@@ -11,9 +11,11 @@
 
         <!-- libraries -->
         {% block js_libraries %}{% endblock %}
+        <script type="text/javascript" src="/minimumui/js/general.js"></script>
 
         {% block css_libraries %}
         {% endblock %}
+        <link rel="stylesheet" href="/minimumui/css/style.css">
     </head>
 {% endblock %}
 
@@ -85,8 +87,16 @@
         </div>
     </div>
 </div>
-</body>
 {% endblock %}
+
+{% block language_bar %}
+<select class="language-picker" id="locale_picker" onchange="localeWasChanged();">
+    <option value="en" {% if locale == "en" %}selected{% endif %}>English</option>
+    <option value="pl" {% if locale == "pl" %}selected{% endif %}>Polski</option>
+</select>
+{% endblock %}
+
+</body>
 
 <!-- application -->
 <script src="/minimumui/js/base_upload.js"></script>

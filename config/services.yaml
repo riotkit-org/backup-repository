@@ -7,6 +7,7 @@ parameters:
     env(BACKUP_MAX_VERSIONS): 5
     env(BACKUP_ONE_VERSION_MAX_SIZE): "25MB"
     env(BACKUP_COLLECTION_MAX_SIZE): "125MB"
+    locale: 'en'
 
 services:
     # default configuration for services in *this* file
