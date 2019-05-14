@@ -1,0 +1,18 @@
+file_upload_title: "Files upload"
+label_settings: "Settings"
+label_upload: "Upload"
+notice: "Notice"
+notice_settings_may_not_apply_to_already_uploaded: "Files already uploaded will not be updated with changed options"
+following_tags_are_enforced: "Following tags are enforced to be applied:"
+please_select_tags: "Please select tags:"
+tags_help: "Each marked file with a tag will be easier to find"
+password_label: "Each uploaded file can be protected optionally with a password:"
+password_help: "Will enforce users to enter a password to download the file, and will hide file name in listings/search."
+password_not_allowed_to_be_set: "Password protection for uploaded files is disabled for your access token."
+mimes_allowed_label: "You are allowed to upload only files of those types:"
+any_mime_allowed_label: "You can upload any file type."
+visibility_label: "Make the file publicly accessible in the search/listings for any access token?"
+visibility_help: "If the file needs to be discovered by any external application (eg. uploading a video to video website, uploading avatar in a forum), then it should not be private"
+label_upload_files: 'Drag & Drop multiple files, or <span class="filepond--label-action" tabindex="0">browse from your disk</span>'
+label_upload_limit: '<br>(up to %size%)'
+label_upload_image: "Upload and crop a image"

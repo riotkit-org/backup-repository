@@ -12,7 +12,8 @@ class WatchVideoController extends BaseController
     {
         return $this->render('minimumui/WatchVideo.html.twig', [
             'fileUrl' => $this->getFileDownloadUrl($fileId, $request),
-            'title'   => $fileId
+            'title'   => $fileId,
+            'locale'  => $request->getLocale()
         ]);
     }
 

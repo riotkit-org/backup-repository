@@ -19,7 +19,8 @@ class UploadImageController extends BaseController
             'backUrl'           => $backUrl,
             'aspectRatio'       => $request->get('ratio') ? abs((float) $request->get('ratio', 16/9)) : null,
             'passwordIsAllowed' => !$token->hasRole(Roles::ROLE_UPLOAD_ENFORCE_NO_PASSWORD),
-            'tags'              => $token->hasRole(Roles::ROLE_UPLOAD_ENFORCE_TOKEN_TAGS) ? [] : $token->getTags()
+            'tags'              => $token->hasRole(Roles::ROLE_UPLOAD_ENFORCE_TOKEN_TAGS) ? [] : $token->getTags(),
+            'locale'            => $request->getLocale()
         ]);
     }
 }
