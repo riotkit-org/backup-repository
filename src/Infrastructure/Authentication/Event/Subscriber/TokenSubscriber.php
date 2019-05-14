@@ -112,7 +112,8 @@ class TokenSubscriber implements EventSubscriberInterface
 
     private function isProfilerRoute(Request $request): bool
     {
-        return \strpos($request->getPathInfo(), '/_profiler/') === 0;
+        return \strpos($request->getPathInfo(), '/_profiler/') === 0
+            || \strpos($request->getPathInfo(), '/_wdt') === 0;
     }
 
     /**
