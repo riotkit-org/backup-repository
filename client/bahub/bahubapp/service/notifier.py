@@ -109,7 +109,7 @@ class SlackNotifier(NotifierInterface):
                 sleep(1)
                 return
 
-            raise e
+            print('During sending a notification an unrecoverable error occurred:', e)
 
 
 class NotifierFactory:
