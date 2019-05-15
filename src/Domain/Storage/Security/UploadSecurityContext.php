@@ -123,6 +123,11 @@ class UploadSecurityContext
             return false;
         }
 
+        // do not allow a regular user to overwrite each anonymously uploaded file that does not have a password
+        if (!$this->isAdministrator && $file->checkPasswordMatchesWith('')) {
+            return false;
+        }
+
         // password from form must match the old file password to confirm that the authorized person can replace the file
         return $file->checkPasswordMatchesWith($form->password);
     }
