@@ -29,6 +29,7 @@ Main functionality:
    domain/minimumui/index
    client/bahub.rst
    shell-access
+   riotkit-guide
 
 From authors
 ============
