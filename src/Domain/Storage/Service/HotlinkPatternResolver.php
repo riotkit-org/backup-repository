@@ -23,7 +23,7 @@ class HotlinkPatternResolver
 
     public function __construct(string $pattern, string $algorithm, LoggerInterface $logger)
     {
-        $this->pattern   = $pattern;
+        $this->pattern   = trim($pattern, "\n '\"");
         $this->algorithm = $algorithm;
         $this->logger    = $logger;
     }
