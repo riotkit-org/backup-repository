@@ -50,8 +50,15 @@ class HotlinkPatternResolver
         }
 
         foreach ($this->sortByLongestKey($server) as $varName => $value) {
+            if (is_array($value)) {
+                $value = \json_encode($value);
+            }
+
             $toCompare = str_replace('$server_' . $this->escapeVariableName($varName), $value, $toCompare);
         }
+
+        // fallback
+        $toCompare = str_replace('$http_x_remote_addr', $_SERVER['REMOTE_ADDR'] ?? '', $toCompare);
 
         $hashed = \hash($this->algorithm, $toCompare);
         $this->logger->info('[PatternResolver] Will compare requested "' . $accessToken . '" with raw="' . $toCompare . '", hashed="' . $hashed . '"');
