@@ -1,6 +1,6 @@
 FROM wolnosciowiec/file-repository
 
-ADD tests_entrypoint.sh /
+ADD .infrastructure/tests_entrypoint.sh /
 
 RUN npm install -g newman \
     && mkdir -p /var/tests \
