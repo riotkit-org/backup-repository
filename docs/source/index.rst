@@ -22,6 +22,7 @@ Main functionality:
 
    first-steps
    configuration-reference
+   docker
    postman
    domain/authentication/index
    domain/storage/index
