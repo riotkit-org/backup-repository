@@ -6,7 +6,7 @@ RUN rm -rf /var/lib/apt/lists/* \
     && docker-php-ext-install bcmath zip \
     && curl -sL https://deb.nodesource.com/setup_8.x | bash - \
     && apt-get install -y nodejs \
-    && apt-get clean \
+    && apt-get clean
 
 ENV DATABASE_URL=sqlite:///%kernel.project_dir%/var/data.db \
     FS_ADAPTER=local \
@@ -34,16 +34,20 @@ ENV DATABASE_URL=sqlite:///%kernel.project_dir%/var/data.db \
     FS_FTP_PERMPUBLIC= \
     FS_FTP_PASSIVE=0 \
     WAIT_FOR_HOST= \
-    TOKEN_EXPIRATION_TIME=+30 minutes \
+    TOKEN_EXPIRATION_TIME="+30 minutes" \
     TEMP_DIRECTORY=/tmp \
     ENC_TOKEN_PHRASE=test123 \
     APP_DOMAIN=
 
 ADD . /var/www/html
-ADD ./filerepository.php.ini /usr/local/etc/php/conf.d/filerepository.php.ini
-ADD prod_entrypoint.d.sh /entrypoint.d/
+ADD .infrastructure/php/filerepository.php.ini /usr/local/etc/php/conf.d/filerepository.php.ini
+ADD .infrastructure/prod_entrypoint.d.sh /entrypoint.d/
 
 RUN cd /var/www/html \
-    && cp /var/www/html/nginx.conf /etc/nginx/nginx.conf \
+    && mkdir -p /etc/nginx/features/http.d/ /etc/nginx/features/server.d /etc/nginx/features/fastcgi.d mkdir -p /etc/nginx/features/available.d \
+    \
+    && cp /var/www/html/.infrastructure/nginx/feature.d/* /etc/nginx/features/available.d \
+    && cp /var/www/html/.infrastructure/nginx/nginx.conf /etc/nginx/nginx.conf \
+    \
     && chown www-data:www-data /var/www -R \
     && su www-data -s /bin/bash -c "make deploy"
