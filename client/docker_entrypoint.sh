@@ -29,13 +29,12 @@ cp /cron /etc/crontabs/root
 supervisord -c /bahub/supervisord.conf
 
 while true; do
-    log_file=$(ls /var/log/bahub/*.log|sort -r|head -1)
+    log_file=$(ls /var/log/bahub/*.log|sort -r|head -1 2>/dev/null)
 
     if [[ -f ${log_file} ]]; then
         echo " >> Browsing log file ${log_file}"
         tail -f ${log_file}
     fi
 
-    echo " .. Previous log file was deleted or just 'tail' crashed, finding new log file..."
     sleep 5
 done
