@@ -22,4 +22,5 @@ In short words the **File Storage** is a specialized group of functionality that
    downloading
    aliases
    hotlink_protection
+   listing
 
