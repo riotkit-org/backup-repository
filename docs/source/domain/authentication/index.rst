@@ -12,6 +12,10 @@ An access token is identified by long UUIDv4, and has assigned information about
 - Token expiration date
 
 
+To authorize in the API you need to provide the token in one of those methods:
+- Using a query parameter "_token" eg. /some/url?_token=123
+- Using a HTTP header "X-Auth-Token"
+
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
