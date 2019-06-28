@@ -74,6 +74,26 @@ services:
             $maxOneBackupVersionSize: '%env(BACKUP_ONE_VERSION_MAX_SIZE)%'
             $maxWholeCollectionSize: '%env(BACKUP_COLLECTION_MAX_SIZE)%'
 
+    ro_fs:
+        class: App\Infrastructure\Storage\Manager\FlysystemFilesystemManager
+        arguments:
+            $fs: '@oneup_flysystem.readonly_filesystem'
+            $stateManager: '@App\Domain\Common\Manager\StateManager'
+
+    rw_fs:
+        class: App\Infrastructure\Storage\Manager\FlysystemFilesystemManager
+        arguments:
+            $fs: '@oneup_flysystem.readwrite_filesystem'
+            $stateManager: '@App\Domain\Common\Manager\StateManager'
+
+    App\Domain\Storage\Manager\FilesystemManager:
+        alias: App\Domain\Storage\Manager\SeparatedReadWriteFilesystemManager
+
+    App\Domain\Storage\Manager\SeparatedReadWriteFilesystemManager:
+        arguments:
+            $readFS: '@ro_fs'
+            $writeFS: '@rw_fs'
+
     s3_client:
         class: Aws\S3\S3Client
         arguments:

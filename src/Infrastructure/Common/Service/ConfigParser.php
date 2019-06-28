@@ -14,13 +14,13 @@ class ConfigParser
         $this->mapping = $mapping;
     }
 
-    public function mapToEnvironmentVariables(): array
+    public function mapToEnvironmentVariables(string $suffix): array
     {
         $vars = [];
 
         foreach ($this->mapping as $adapterName => $options) {
             foreach ($options as $option => $defaultValue) {
-                $vars[] = 'FS_' . \strtoupper($adapterName) . '_' . \strtoupper($option);
+                $vars[] = $suffix . \strtoupper($adapterName) . '_' . \strtoupper($option);
             }
         }
 
@@ -39,23 +39,11 @@ class ConfigParser
 
     public function buildAdapters(): array
     {
-        $adapters = [
-            'default_adapter' => [
-                // this will be populated from environment variables by the foreach later
-            ]
-        ];
+        $adapters = ['default_adapter' => $this->buildAdapter('FS_')];
 
-        $adapterName = strtolower((string) $this->getValue('FS_ADAPTER'));
-
-        if (!\array_key_exists($adapterName, $this->getMapping())) {
-            throw new \InvalidArgumentException(
-                'FS_ADAPTER have invalid value, possible values: ' .
-                \implode(', ', $this->getPossibleAdapters()) . ".\n\nPossible environment variables: \n" .
-                \implode(", \n", $this->mapToEnvironmentVariables()) . "\n"
-            );
+        if ($this->getValue('FS_RO_ADAPTER')) {
+            $adapters['ro_adapter'] = $this->buildAdapter('FS_RO_');
         }
-
-        $adapters['default_adapter'][$adapterName] = $this->buildOptions('FS_' . \strtoupper($adapterName), $this->mapping[$adapterName]);
 
         // advanced usage: allow to unpack a JSON
         if ($this->getValue('FS_JSON')) {
@@ -65,14 +53,29 @@ class ConfigParser
         return $adapters;
     }
 
+    protected function buildAdapter(string $suffix): array
+    {
+        $adapterName = strtolower((string) $this->getValue($suffix. 'ADAPTER'));
+
+        if (!\array_key_exists($adapterName, $this->getMapping())) {
+            throw new \InvalidArgumentException(
+                $suffix . 'ADAPTER have invalid value, possible values: ' .
+                \implode(', ', $this->getPossibleAdapters()) . ".\n\nPossible environment variables: \n" .
+                \implode(", \n", $this->mapToEnvironmentVariables($suffix)) . "\n"
+            );
+        }
+
+        return [
+            $adapterName => $this->buildOptions($suffix . \strtoupper($adapterName), $this->mapping[$adapterName])
+        ];
+    }
+
     protected function buildOptions(string $envPath, array $optionsDefinitions): array
     {
         $optionsFilledUp = [];
 
         foreach ($optionsDefinitions as $option => $details) {
             $envName = $envPath . '_' . \strtoupper($option);
-
-            $this->log($envName);
 
             if (\count($details) === 1 && \is_array($details[0])) {
                 $optionsFilledUp[$option] = $this->buildOptions($envName, $details[0]);
@@ -102,10 +105,5 @@ class ConfigParser
     protected function getValue(string $envName)
     {
         return getenv($envName);
-    }
-
-    private function log(string $envName): void
-    {
-        print(' >> Checking ' . $envName . " environment variable\n");
     }
 }

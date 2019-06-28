@@ -39,13 +39,22 @@ $configParser = new \App\Infrastructure\Common\Service\ConfigParser([
     ]
 ]);
 
+$adapters = $configParser->buildAdapters();
+$filesystems = [
+    'readwrite' => [
+        'adapter' => 'default_adapter',
+        'alias'   => Filesystem::class
+    ],
+
+    // we want to always have READ-ONLY filesystem, even if it may be the same as READ-WRITE filesystem
+    // just for later simplification of the code. We assume the RO filesystem is always present
+    'readonly' => [
+        'adapter' => isset($adapters['ro_adapter']) ? 'ro_adapter' : 'default_adapter',
+        'alias'   => Filesystem::class
+    ]
+];
 
 $container->loadFromExtension('oneup_flysystem', [
-    'adapters' => $configParser->buildAdapters(),
-    'filesystems' => [
-        'default_filesystem' => [
-            'adapter' => 'default_adapter',
-            'alias'   => Filesystem::class
-        ]
-    ]
+    'adapters' => $adapters,
+    'filesystems' => $filesystems
 ]);
