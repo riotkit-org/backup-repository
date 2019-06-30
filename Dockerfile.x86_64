@@ -51,3 +51,5 @@ RUN cd /var/www/html \
     \
     && chown www-data:www-data /var/www -R \
     && su www-data -s /bin/bash -c "make deploy"
+
+HEALTHCHECK --interval=30s --timeout=3s CMD curl --fail http://localhost || exit 1
