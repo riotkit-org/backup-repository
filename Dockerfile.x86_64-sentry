@@ -7,3 +7,5 @@ RUN cd /var/www/html && su www-data -s /bin/bash -c "composer require sentry/sen
     && echo '    dsn: "%env(SENTRY_DSN)%"' >> ./config/packages/prod/sentry.yaml \
     && echo "10a11\n >     Sentry\SentryBundle\SentryBundle::class => ['all' => true]," > /tmp/sentry.patch \
     && patch ./config/bundles.php /tmp/sentry.patch
+
+HEALTHCHECK --interval=30s --timeout=3s CMD curl --fail http://localhost || exit 1
