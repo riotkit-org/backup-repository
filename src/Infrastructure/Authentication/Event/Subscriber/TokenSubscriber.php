@@ -133,15 +133,15 @@ class TokenSubscriber implements EventSubscriberInterface
     private function getTokenStringFromRequest(Request $request): string
     {
         if ($request->query->has('_token')) {
-            return $request->query->get('_token');
+            return (string) $request->query->get('_token');
         }
 
         if ($request->headers->get('token')) {
-            return $request->query->get('token');
+            return (string) $request->headers->get('token');
         }
 
         if ($request->headers->get('x-auth-token')) {
-            return $request->query->get('x-auth-token');
+            return (string) $request->headers->get('x-auth-token');
         }
 
         return '';
