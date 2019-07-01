@@ -34,6 +34,7 @@
         "twistor/flysystem-stream-wrapper": "^1.0"
     },
     "require-dev": {
+        "codeception/codeception": "^3.0",
         "mockery/mockery": "^1.2",
         "symfony/dotenv": "*",
         "symfony/test-pack": "^1.0",

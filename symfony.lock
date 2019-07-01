@@ -2,8 +2,26 @@
     "aws/aws-sdk-php": {
         "version": "3.87.2"
     },
+    "behat/gherkin": {
+        "version": "v4.6.0"
+    },
     "blocktrail/cryptojs-aes-php": {
         "version": "v0.1.0"
+    },
+    "codeception/codeception": {
+        "version": "2.3",
+        "recipe": {
+            "repo": "github.com/symfony/recipes-contrib",
+            "branch": "master",
+            "version": "2.3",
+            "ref": "d2a29c0abee586aff913fd45fae1f59b669f4cbe"
+        }
+    },
+    "codeception/phpunit-wrapper": {
+        "version": "8.0.4"
+    },
+    "codeception/stub": {
+        "version": "2.1.0"
     },
     "coraxster/flysystem-aws-s3-v3-minio": {
         "version": "1.0.16"
@@ -104,6 +122,33 @@
     "hamcrest/hamcrest-php": {
         "version": "v2.0.0"
     },
+    "hoa/consistency": {
+        "version": "1.17.05.02"
+    },
+    "hoa/console": {
+        "version": "3.17.05.02"
+    },
+    "hoa/event": {
+        "version": "1.17.01.13"
+    },
+    "hoa/exception": {
+        "version": "1.17.01.16"
+    },
+    "hoa/file": {
+        "version": "1.17.07.11"
+    },
+    "hoa/iterator": {
+        "version": "2.17.01.10"
+    },
+    "hoa/protocol": {
+        "version": "1.17.01.14"
+    },
+    "hoa/stream": {
+        "version": "1.17.02.21"
+    },
+    "hoa/ustring": {
+        "version": "4.17.01.16"
+    },
     "jdorn/sql-formatter": {
         "version": "v1.2.17"
     },
@@ -122,6 +167,9 @@
     "mtdowling/jmespath.php": {
         "version": "2.4.0"
     },
+    "myclabs/deep-copy": {
+        "version": "1.9.1"
+    },
     "ocramius/package-versions": {
         "version": "1.3.0"
     },
@@ -136,6 +184,54 @@
             "version": "3.0",
             "ref": "0eb87bba411c227da027fe5f7c1dc7954b02f242"
         }
+    },
+    "phar-io/manifest": {
+        "version": "1.0.3"
+    },
+    "phar-io/version": {
+        "version": "2.0.1"
+    },
+    "phpdocumentor/reflection-common": {
+        "version": "1.0.1"
+    },
+    "phpdocumentor/reflection-docblock": {
+        "version": "4.3.1"
+    },
+    "phpdocumentor/type-resolver": {
+        "version": "0.4.0"
+    },
+    "phpspec/prophecy": {
+        "version": "1.8.1"
+    },
+    "phpunit/php-code-coverage": {
+        "version": "7.0.5"
+    },
+    "phpunit/php-file-iterator": {
+        "version": "2.0.2"
+    },
+    "phpunit/php-text-template": {
+        "version": "1.2.1"
+    },
+    "phpunit/php-timer": {
+        "version": "2.1.2"
+    },
+    "phpunit/php-token-stream": {
+        "version": "3.0.1"
+    },
+    "phpunit/phpunit": {
+        "version": "4.7",
+        "recipe": {
+            "repo": "github.com/symfony/recipes",
+            "branch": "master",
+            "version": "4.7",
+            "ref": "f6f9ee3a511e9d9ad6a53d92fbaa1a709ed8c1ca"
+        },
+        "files": [
+            ".env.test",
+            "phpunit.xml.dist",
+            "config/bootstrap.php",
+            "tests/.gitignore"
+        ]
     },
     "psr/cache": {
         "version": "1.0.1"
@@ -157,6 +253,42 @@
     },
     "ramsey/uuid": {
         "version": "3.8.0"
+    },
+    "sebastian/code-unit-reverse-lookup": {
+        "version": "1.0.1"
+    },
+    "sebastian/comparator": {
+        "version": "3.0.2"
+    },
+    "sebastian/diff": {
+        "version": "3.0.2"
+    },
+    "sebastian/environment": {
+        "version": "4.2.2"
+    },
+    "sebastian/exporter": {
+        "version": "3.1.0"
+    },
+    "sebastian/global-state": {
+        "version": "3.0.0"
+    },
+    "sebastian/object-enumerator": {
+        "version": "3.0.3"
+    },
+    "sebastian/object-reflector": {
+        "version": "1.1.1"
+    },
+    "sebastian/recursion-context": {
+        "version": "3.0.0"
+    },
+    "sebastian/resource-operations": {
+        "version": "2.0.1"
+    },
+    "sebastian/type": {
+        "version": "1.1.2"
+    },
+    "sebastian/version": {
+        "version": "2.0.1"
     },
     "sensio/framework-extra-bundle": {
         "version": "5.2",
@@ -396,6 +528,9 @@
     "symfony/yaml": {
         "version": "v4.1.4"
     },
+    "theseer/tokenizer": {
+        "version": "1.1.3"
+    },
     "twig/twig": {
         "version": "v2.5.0"
     },
@@ -404,6 +539,9 @@
     },
     "twistor/stream-util": {
         "version": "v1.0.1"
+    },
+    "webmozart/assert": {
+        "version": "1.4.0"
     },
     "zendframework/zend-code": {
         "version": "3.3.1"
