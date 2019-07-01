@@ -35,3 +35,8 @@
 /client/supervisord.log
 /client/supervisord.pid
 *.pyc
+
+###> phpunit/phpunit ###
+/phpunit.xml
+.phpunit.result.cache
+###< phpunit/phpunit ###

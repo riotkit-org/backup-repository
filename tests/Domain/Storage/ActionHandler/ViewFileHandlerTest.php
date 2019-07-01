@@ -102,9 +102,9 @@ class ViewFileHandlerTest extends TestCase
 
         $this->assertSame(304, $response->getCode());
 
-        $this->assertContains('Accept-Ranges: bytes', $headers);
-        $this->assertContains('Content-Length: 161', $headers);
-        $this->assertContains('Content-Disposition: attachment; filename="bakunin.ogv"', $headers);
+        $this->assertStringContainsString('Accept-Ranges: bytes', $headers);
+        $this->assertStringContainsString('Content-Length: 161', $headers);
+        $this->assertStringContainsString('Content-Disposition: attachment; filename="bakunin.ogv"', $headers);
     }
 
     private function createExampleForm(): ViewFileForm

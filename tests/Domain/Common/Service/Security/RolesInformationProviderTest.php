@@ -16,8 +16,8 @@ class RolesInformationProviderTest extends TestCase
         $result = $provider->findAllRolesWithTheirDescription();
 
         foreach ($result as $roleName => $roleDescription) {
-            $this->assertInternalType('string', $roleName);
-            $this->assertInternalType('string', $roleDescription);
+            $this->assertIsString('string', $roleName);
+            $this->assertIsString('string', $roleDescription);
             $this->assertRegExp('/([a-z\.0-9_]+)/', $roleName);
         }
 
