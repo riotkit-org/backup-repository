@@ -3,6 +3,7 @@
 namespace App\Domain\Storage\ActionHandler;
 
 use App\Domain\Authentication\Entity\Token;
+use App\Domain\Common\Exception\ValueObjectException;
 use App\Domain\Common\ValueObject\BaseUrl;
 use App\Domain\Storage\Entity\StoredFile;
 use App\Domain\Storage\Exception\DuplicatedContentException;
@@ -118,6 +119,13 @@ abstract class AbstractUploadHandler
                 $exception->getReason(),
                 $exception->getCode(),
                 $exception->getContext()
+            ));
+
+        } catch (ValueObjectException $exception) {
+            return $this->finalize(FileUploadedResponse::createWithValidationError(
+                $exception->getMessage(),
+                $exception->getCode(),
+                []
             ));
 
         } catch (FileRetrievalError $exception) {
