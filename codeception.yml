@@ -1,6 +1,6 @@
 modules:
     enabled:
-        - REST:
+        - Helper\ApiTester:
               url: http://localhost:8000
               depends: PhpBrowser
 

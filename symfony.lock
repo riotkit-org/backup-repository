@@ -104,6 +104,9 @@
     "facebook/webdriver": {
         "version": "1.6.0"
     },
+    "flow/jsonpath": {
+        "version": "0.4.0"
+    },
     "gabrielelana/byte-units": {
         "version": "0.5.0"
     },
