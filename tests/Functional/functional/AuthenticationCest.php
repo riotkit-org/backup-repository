@@ -5,7 +5,6 @@ namespace Tests\Functional;
 require_once __DIR__ . '/../Urls.php';
 
 use FunctionalTester;
-use http\Url;
 use Tests\Urls;
 
 class AuthenticationCest

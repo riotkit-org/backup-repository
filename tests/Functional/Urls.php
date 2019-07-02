@@ -11,4 +11,5 @@ class Urls
     public const ROLES_LISTING = '/auth/roles';
 
     public const URL_REPOSITORY_FILE_UPLOAD = '/repository/file/upload';
+    public const URL_REPOSITORY_UPLOAD_BY_URL = '/repository/image/add-by-url';
 }

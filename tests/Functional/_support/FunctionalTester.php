@@ -48,7 +48,7 @@ class FunctionalTester extends \Codeception\Actor
         );
     }
 
-    public function createToken(array $data): void
+    public function createToken(array $data): string
     {
         $this->postJson(Urls::URL_TOKEN_GENERATE,
             \array_merge(
@@ -59,6 +59,8 @@ class FunctionalTester extends \Codeception\Actor
                 $data
             )
         );
+
+        return $this->grabDataFromResponseByJsonPath('.tokenId')[0] ?? '';
     }
 
     public function deleteToken(string $tokenId): void
@@ -69,5 +71,22 @@ class FunctionalTester extends \Codeception\Actor
                 ['token' => $tokenId]
             )
         );
+    }
+
+    public function uploadByUrl(string $url, array $overrideParams = []): void
+    {
+        $templateParams = [
+            'fileUrl' => $url,
+            'tags'    => [],
+            'public'  => true
+        ];
+
+        $params = \array_merge(
+            $templateParams,
+            ['fileUrl' => $url],
+            $overrideParams
+        );
+
+        $this->sendPOST(Urls::URL_REPOSITORY_UPLOAD_BY_URL, $params);
     }
 }
