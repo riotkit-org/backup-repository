@@ -7,6 +7,7 @@ use App\Domain\Storage\ActionHandler\UploadFileByPostHandler;
 use App\Domain\Storage\Form\UploadByPostForm;
 use App\Infrastructure\Authentication\Token\TokenTransport;
 use App\Infrastructure\Storage\Form\UploadByPostFormType;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -34,6 +35,8 @@ class UploadByPostController extends BaseController
 
     private function handleInternally(Request $request, TokenTransport $tokenTransport, string $filename = ''): Response
     {
+        $filename = $this->applyFilenameFromMultipartIfParamEmpty($filename, $request);
+
         // REST support
         if ($filename) {
             $request->query->set('fileName', $filename);
@@ -56,5 +59,23 @@ class UploadByPostController extends BaseController
             $appResponse,
             $appResponse->getExitCode()
         );
+    }
+
+    private function applyFilenameFromMultipartIfParamEmpty(string $filename, Request $request)
+    {
+        if ($filename) {
+            return $filename;
+        }
+
+        if ($request->files->count() > 0) {
+            /**
+             * @var UploadedFile[] $indexedNumerically
+             */
+            $indexedNumerically = \array_values($request->files->all());
+
+            return $indexedNumerically[0]->getClientOriginalName();
+        }
+
+        return '';
     }
 }

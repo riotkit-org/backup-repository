@@ -102,8 +102,12 @@ class FileUpload extends BaseUpload {
         );
 
         FilePond.setOptions({
-            allowMultiple: false,
+            allowMultiple: true,
             allowReplace: false,
+            allowRevert: false,
+            maxParallelUploads: 1,
+            itemInsertInterval: 1000,
+            allowPaste: false,
             labelIdle: self.getLabel(),
             server: {
                 process: {
@@ -130,9 +134,9 @@ class FileUpload extends BaseUpload {
         /**
          * Set filename in the request basing on the uploaded file information
          */
-        this.pond.addEventListener('FilePond:addfile', e => {
+        this.pond.addEventListener('FilePond:addfilestart', e => {
             let server = e.detail.pond.server.get();
-            server.process.url = self.serverUrl + '&fileName=' + e.detail.file.filename;
+            server.process.url = self.serverUrl;
 
             // support decoded from opts passed via query string to the form
             server.process.url += self.getFormOpts();
