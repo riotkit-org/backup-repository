@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Domain\Authentication\Entity\Token;
 use App\Domain\Authentication\Exception\ValidationException;
 use App\Domain\Common\Exception\AuthenticationException;
+use App\Domain\Common\Exception\RequestException;
 use App\Domain\Common\ValueObject\BaseUrl;
 use App\Domain\Storage\Exception\StorageException;
 use App\Infrastructure\Authentication\Token\TokenTransport;
@@ -32,7 +33,7 @@ abstract class BaseController extends AbstractController
         $arrayForm = \json_decode($request->getContent(), true);
 
         if (!\is_array($arrayForm)) {
-            throw new \InvalidArgumentException('Missing content');
+            throw new RequestException('Missing content');
         }
 
         $infrastructureForm = $this->createForm($formType, $formObject);
@@ -85,6 +86,18 @@ abstract class BaseController extends AbstractController
                 'http_code'  => 404
             ],
             JsonResponse::HTTP_NOT_FOUND
+        );
+    }
+
+    public function createRequestExceptionResponse(RequestException $requestException): JsonResponse
+    {
+        return new JsonResponse(
+            [
+                'status' => $requestException->getMessage(),
+                'error_code' => 400,
+                'http_code'  => 400
+            ],
+            JsonResponse::HTTP_BAD_REQUEST
         );
     }
 

@@ -3,6 +3,7 @@
 namespace App\Controller\Storage;
 
 use App\Controller\BaseController;
+use App\Domain\Common\Exception\RequestException;
 use App\Domain\Storage\ActionHandler\UploadFileByUrlHandler;
 use App\Domain\Storage\Form\UploadByUrlForm;
 use App\Infrastructure\Authentication\Token\TokenTransport;
@@ -35,7 +36,13 @@ class UploadByUrlController extends BaseController
     private function handleInternally(Request $request, TokenTransport $tokenTransport): Response
     {
         $form = new UploadByUrlForm();
-        $infrastructureForm = $this->submitFormFromJsonRequest($request, $form, UploadByUrlFormType::class);
+
+        try {
+            $infrastructureForm = $this->submitFormFromJsonRequest($request, $form, UploadByUrlFormType::class);
+
+        } catch (RequestException $requestException) {
+            return $this->createRequestExceptionResponse($requestException);
+        }
 
         if (!$infrastructureForm->isValid()) {
             return $this->createValidationErrorResponse($infrastructureForm);
