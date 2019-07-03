@@ -118,4 +118,9 @@ class FunctionalTester extends \Codeception\Actor
             $params
         );
     }
+
+    public function listFiles(array $params = []): void
+    {
+        $this->sendGET(Urls::URL_REPOSITORY_LISTING, $params);
+    }
 }

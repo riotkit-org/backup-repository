@@ -14,4 +14,6 @@ class Urls
     public const URL_REPOSITORY_UPLOAD_RAW  = '/repository/file/upload';
     public const URL_REPOSITORY_UPLOAD_BY_URL = '/repository/image/add-by-url';
     public const URL_REPOSITORY_DELETE_FILE   = '/repository/file/{{ fileName }}';
+
+    public const URL_REPOSITORY_LISTING = '/repository';
 }
