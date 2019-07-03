@@ -32,6 +32,19 @@ class FunctionalTester extends \Codeception\Actor
         $this->haveHttpHeader('token', $token);
     }
 
+    public function haveRoles(array $roles, array $params = []): void
+    {
+        $this->amAdmin();
+        $this->amToken(
+            $this->createToken(
+                array_merge(
+                    ['roles' => $roles],
+                    $params
+                )
+            )
+        );
+    }
+
     public function postJson(string $url, $params = null, $files = []): void
     {
         $this->haveHttpHeader('Content-Type', 'application/json');
@@ -88,5 +101,21 @@ class FunctionalTester extends \Codeception\Actor
         );
 
         $this->sendPOST(Urls::URL_REPOSITORY_UPLOAD_BY_URL, $params);
+    }
+
+    public function uploadByPayload(string $payload, array $params = []): void
+    {
+        $this->sendPOST(Urls::URL_REPOSITORY_UPLOAD_RAW . '?' . http_build_query($params), $payload);
+    }
+
+    public function deleteFile(string $fileName, array $params = []): void
+    {
+        $this->sendDELETE(
+            $this->fill(
+                Urls::URL_REPOSITORY_DELETE_FILE,
+                ['fileName' => $fileName]
+            ),
+            $params
+        );
     }
 }

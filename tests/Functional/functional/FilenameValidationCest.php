@@ -9,7 +9,7 @@ use Tests\Urls;
 
 class FilenameValidationCest
 {
-    public function verifyValidationErrorWillBeReturned(FunctionalTester $I)
+    public function verifyValidationErrorWillBeReturned(FunctionalTester $I): void
     {
         $I->amAdmin();
         $I->sendPOST(Urls::URL_REPOSITORY_FILE_UPLOAD . '?fileName=;\\\\@invalidfilename@@@', 'test');
@@ -17,7 +17,7 @@ class FilenameValidationCest
         $I->canSeeResponseContains('File name is not valid');
     }
 
-    public function verifyValidFileNamePassedValidation(FunctionalTester $I)
+    public function verifyValidFileNamePassedValidation(FunctionalTester $I): void
     {
         $I->amAdmin();
         $I->sendPOST(Urls::URL_REPOSITORY_FILE_UPLOAD . '?fileName=1235Cdwqe3_anarchista_z_przypadku.mp4', null, [
