@@ -10,7 +10,7 @@ RUN rm -rf /var/lib/apt/lists/* \
 
 ENV DATABASE_URL=sqlite:///%kernel.project_dir%/var/data.db \
     FS_ADAPTER=local \
-    FS_LOCAL_DIRECTORY=%kernel.root_dir%/var/uploads \
+    FS_LOCAL_DIRECTORY=%kernel.root_dir%/../var/uploads \
     FS_LOCAL_LAZY=1 \
     FS_LOCAL_WRITEFLAGS= \
     FS_LOCAL_LINKHANDLING= \
