@@ -84,7 +84,7 @@ class EditHandler
     {
         if (!$securityContext->canModifyCollection($form)) {
             throw new AuthenticationException(
-                'Current token does not allow to create this collection',
+                'Current token does not allow to modify this collection',
                 AuthenticationException::CODES['not_authenticated']
             );
         }
