@@ -2,8 +2,6 @@
 
 namespace Tests\Functional;
 
-require_once __DIR__ . '/../Urls.php';
-
 use FunctionalTester;
 
 class RegistryCest

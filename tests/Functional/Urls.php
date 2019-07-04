@@ -18,4 +18,6 @@ class Urls
     public const URL_REPOSITORY_LISTING = '/repository';
 
     public const URL_COLLECTION_CREATE = '/repository/collection';
+    public const URL_COLLECTION_UPDATE = '/repository/collection';
+    public const URL_COLLECTION_DELETE = '/repository/collection/{{ id }}';
 }

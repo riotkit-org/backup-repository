@@ -1,0 +1,69 @@
+<?php declare(strict_types=1);
+
+namespace Tests\Functional;
+
+use FunctionalTester;
+
+class BackupCollectionCRUDCest
+{
+    public function testCreateEditDelete(FunctionalTester $I): void
+    {
+        $I->haveRoles([
+            'collections.create_new',
+            'collections.manage_tokens_in_allowed_collections',
+            'collections.delete_allowed_collections',
+            'collections.modify_details_of_allowed_collections'
+        ], [
+            'data' => [
+                'tags'               => ['user_uploads.u123', 'user_uploads'],
+                'allowedMimeTypes'   => ['image/jpeg', 'image/png', 'image/gif'],
+                'maxAllowedFileSize' => 145790
+            ]
+        ]);
+
+        // step 1: Create a collection
+        $id = $I->createCollection([
+            'maxBackupsCount'   => 4,
+            'maxOneVersionSize' => '5KB',
+            'maxCollectionSize' => '1024KB',
+            'strategy'          => 'delete_oldest_when_adding_new',
+            'filename'          => 'solfed.org.uk_database.tar.gz'
+        ]);
+        $I->canSeeResponseCodeIsSuccessful();
+
+        // step 2: Update the collection
+        $I->updateCollection($id, [
+            'maxBackupsCount'   => 5,
+            'maxOneVersionSize' => '5KB',
+            'maxCollectionSize' => '1024KB',
+            'strategy'          => 'delete_oldest_when_adding_new',
+            'filename'          => 'solfed.org.uk_database.tar.gz'
+        ]);
+        $I->canSeeResponseCodeIsSuccessful();
+
+        // step 3: Check validation, if it works for editing, not only for creating
+        $I->updateCollection($id, [
+            'maxBackupsCount'   => 99999,
+            'maxOneVersionSize' => '5KB',
+            'maxCollectionSize' => '1024KB',
+            'strategy'          => 'delete_oldest_when_adding_new',
+            'filename'          => 'solfed.org.uk_database.tar.gz'
+        ]);
+        $I->canSeeResponseCodeIs(400);
+
+        // step 4: Delete the collection
+        $I->deleteCollection($id);
+        $I->canSeeResponseCodeIsSuccessful();
+
+        // step 5: Try to edit deleted collection without success
+        $I->updateCollection($id, [
+            'maxBackupsCount'   => 2,
+            'maxOneVersionSize' => '5KB',
+            'maxCollectionSize' => '1024KB',
+            'strategy'          => 'delete_oldest_when_adding_new',
+            'filename'          => 'solfed.org.uk_database.tar.gz'
+        ]);
+        $I->canSeeResponseCodeIs(400);
+        $I->canSeeResponseContains('collection_no_longer_exists');
+    }
+}
