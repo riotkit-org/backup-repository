@@ -2,6 +2,8 @@
 
 use Tests\Urls;
 
+require_once __DIR__ . '/../Urls.php';
+
 
 /**
  * Inherited Methods
@@ -49,6 +51,12 @@ class FunctionalTester extends \Codeception\Actor
     {
         $this->haveHttpHeader('Content-Type', 'application/json');
         $this->sendPOST($url, $params, $files);
+    }
+
+    public function putJson(string $url, $params = null, $files = []): void
+    {
+        $this->haveHttpHeader('Content-Type', 'application/json');
+        $this->sendPUT($url, $params, $files);
     }
 
     public function lookupToken(string $tokenId): void
@@ -124,8 +132,27 @@ class FunctionalTester extends \Codeception\Actor
         $this->sendGET(Urls::URL_REPOSITORY_LISTING, $params);
     }
 
-    public function createCollection(array $params): void
+    public function createCollection(array $params): string
     {
         $this->postJson(Urls::URL_COLLECTION_CREATE, $params);
+
+        return $this->grabDataFromResponseByJsonPath('collection.id')[0] ?? '';
+    }
+
+    public function updateCollection(string $id, array $params): void
+    {
+        $params['collection'] = $id;
+
+        $this->putJson(Urls::URL_COLLECTION_UPDATE, $params);
+    }
+
+    public function deleteCollection(string $id): void
+    {
+        $this->sendDELETE(
+            $this->fill(
+                Urls::URL_COLLECTION_DELETE,
+                ['id' => $id]
+            )
+        );
     }
 }
