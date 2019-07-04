@@ -123,4 +123,9 @@ class FunctionalTester extends \Codeception\Actor
     {
         $this->sendGET(Urls::URL_REPOSITORY_LISTING, $params);
     }
+
+    public function createCollection(array $params): void
+    {
+        $this->postJson(Urls::URL_COLLECTION_CREATE, $params);
+    }
 }

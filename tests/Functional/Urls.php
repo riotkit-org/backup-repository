@@ -16,4 +16,6 @@ class Urls
     public const URL_REPOSITORY_DELETE_FILE   = '/repository/file/{{ fileName }}';
 
     public const URL_REPOSITORY_LISTING = '/repository';
+
+    public const URL_COLLECTION_CREATE = '/repository/collection';
 }
