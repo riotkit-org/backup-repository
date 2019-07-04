@@ -53,6 +53,7 @@ matrix:
           php:
               - '7.3'
           script:
+              - composer install
               - make build@x86_64 test_api SUDO=""
 
         #
