@@ -66,4 +66,35 @@ class BackupCollectionCRUDCest
         $I->canSeeResponseCodeIs(400);
         $I->canSeeResponseContains('collection_no_longer_exists');
     }
+
+    public function testFetchCollectionMetaData(FunctionalTester $I): void
+    {
+        $I->haveRoles(['collections.create_new'],
+            [
+                'data' => [
+                    'tags'               => ['user_uploads.u123', 'user_uploads'],
+                    'allowedMimeTypes'   => ['image/jpeg', 'image/png', 'image/gif'],
+                    'maxAllowedFileSize' => 145790
+            ]
+        ]);
+
+        $id = $I->createCollection([
+            'maxBackupsCount'   => 4,
+            'maxOneVersionSize' => '5KB',
+            'maxCollectionSize' => '1024KB',
+            'strategy'          => 'delete_oldest_when_adding_new',
+            'filename'          => 'solfed.org.uk_database.tar.gz'
+        ]);
+
+        $I->fetchCollection($id);
+        $I->canSeeResponseContains('"filename":"solfed.org.uk_database.tar.gz"');
+    }
+
+    public function testFetchNonExistingCollectionEndsWithNotFound(FunctionalTester $I): void
+    {
+        $I->amAdmin();
+        $I->fetchCollection('some-non-existing');
+        $I->canSeeResponseCodeIs(400);
+        $I->canSeeResponseContains('collection_no_longer_exists');
+    }
 }

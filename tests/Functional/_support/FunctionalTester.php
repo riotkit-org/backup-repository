@@ -155,4 +155,38 @@ class FunctionalTester extends \Codeception\Actor
             )
         );
     }
+
+    public function fetchCollection(string $id): void
+    {
+        $this->sendGET(
+            $this->fill(
+                Urls::URL_COLLECTION_FETCH,
+                ['id' => $id]
+            )
+        );
+    }
+
+    public function grantTokenAccessToCollection(string $collectionId, string $tokenId): void
+    {
+        $this->postJson(
+            $this->fill(
+                Urls::URL_COLLECTION_GRANT_TOKEN,
+                ['collectionId' => $collectionId]
+            ),
+            ['token' => $tokenId]
+        );
+    }
+
+    public function revokeAccessToCollection(string $collectionId, string $tokenId): void
+    {
+        $this->sendDELETE(
+            $this->fill(
+                Urls::URL_COLLECTION_REVOKE_TOKEN,
+                [
+                    'collectionId' => $collectionId,
+                    'tokenId' => $tokenId
+                ]
+            )
+        );
+    }
 }

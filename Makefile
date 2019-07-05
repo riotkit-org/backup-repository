@@ -98,12 +98,8 @@ _set_env:
 	fi
 
 ## Run API tests in a docker container
-test_api:
-	#mkdir -p ./var/log
-	#${SUDO} docker build . -f ./Dockerfile.x86_64_postman -t wolnosciowiec/file-repository:v2-postman
-	#${SUDO} docker run wolnosciowiec/file-repository:v2-postman
-	make run_dev &
-	./vendor/bin/codecept run -d
+test_api: build@x86_64
+	sudo docker run -e API_TESTS=true -e APP_ENV=test --rm wolnosciowiec/file-repository
 
 
 ## Generate code coverage from unit testing

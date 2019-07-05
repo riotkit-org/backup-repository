@@ -20,4 +20,8 @@ class Urls
     public const URL_COLLECTION_CREATE = '/repository/collection';
     public const URL_COLLECTION_UPDATE = '/repository/collection';
     public const URL_COLLECTION_DELETE = '/repository/collection/{{ id }}';
+    public const URL_COLLECTION_FETCH  = '/repository/collection/{{ id }}';
+
+    public const URL_COLLECTION_GRANT_TOKEN = '/repository/collection/{{ collectionId }}/token';
+    public const URL_COLLECTION_REVOKE_TOKEN = '/repository/collection/{{ collectionId }}/token/{{ tokenId }}';
 }

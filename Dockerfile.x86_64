@@ -37,11 +37,13 @@ ENV DATABASE_URL=sqlite:///%kernel.project_dir%/var/data.db \
     TOKEN_EXPIRATION_TIME="+30 minutes" \
     TEMP_DIRECTORY=/tmp \
     ENC_TOKEN_PHRASE=test123 \
-    APP_DOMAIN=
+    APP_DOMAIN= \
+    API_TESTS=false
 
 ADD . /var/www/html
 ADD .infrastructure/php/filerepository.php.ini /usr/local/etc/php/conf.d/filerepository.php.ini
 ADD .infrastructure/prod_entrypoint.d.sh /entrypoint.d/
+ADD .infrastructure/overridden_entrypoint.sh /
 
 RUN cd /var/www/html \
     && mkdir -p /etc/nginx/features/http.d/ /etc/nginx/features/server.d /etc/nginx/features/fastcgi.d mkdir -p /etc/nginx/features/available.d \
@@ -50,6 +52,9 @@ RUN cd /var/www/html \
     && cp /var/www/html/.infrastructure/nginx/nginx.conf /etc/nginx/nginx.conf \
     \
     && chown www-data:www-data /var/www -R \
-    && su www-data -s /bin/bash -c "make deploy"
+    && su www-data -s /bin/bash -c "make deploy" \
+    && chmod +x /overridden_entrypoint.sh
+
+ENTRYPOINT ["/overridden_entrypoint.sh"]
 
 HEALTHCHECK --interval=30s --timeout=3s CMD curl --fail http://localhost || exit 1
