@@ -22,6 +22,9 @@ class Urls
     public const URL_COLLECTION_DELETE = '/repository/collection/{{ id }}';
     public const URL_COLLECTION_FETCH  = '/repository/collection/{{ id }}';
     public const URL_COLLECTION_LISTING = '/repository/collection';
+    public const URL_COLLECTION_UPLOAD = '/repository/collection/{{ collectionId }}/backup';
+    public const URL_COLLECTION_LIST_VERSIONS = '/repository/collection/{{ collectionId }}/version';
+    public const URL_COLLECTION_DOWNLOAD_VERSION = '/repository/collection/{{ collectionId }}/version/{{ version }}';
 
     public const URL_COLLECTION_GRANT_TOKEN = '/repository/collection/{{ collectionId }}/token';
     public const URL_COLLECTION_REVOKE_TOKEN = '/repository/collection/{{ collectionId }}/token/{{ tokenId }}';

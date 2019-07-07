@@ -147,6 +147,37 @@ class FunctionalTester extends \Codeception\Actor
         $this->putJson(Urls::URL_COLLECTION_UPDATE, $params);
     }
 
+    public function uploadToCollection(string $id, string $contents): void
+    {
+        $this->sendPOST(
+            $this->fill(
+                Urls::URL_COLLECTION_UPLOAD,
+                ['collectionId' => $id]
+            ),
+            $contents
+        );
+    }
+
+    public function browseCollectionVersions(string $id): void
+    {
+        $this->sendGET(
+            $this->fill(
+                Urls::URL_COLLECTION_LIST_VERSIONS,
+                ['collectionId' => $id]
+            )
+        );
+    }
+
+    public function downloadCollectionVersion(string $id, string $version): void
+    {
+        $this->sendGET(
+            $this->fill(
+                Urls::URL_COLLECTION_DOWNLOAD_VERSION,
+                ['collectionId' => $id, 'version' => $version]
+            )
+        );
+    }
+
     public function deleteCollection(string $id): void
     {
         $this->sendDELETE(
