@@ -51,7 +51,7 @@ class FileUploader
 
     public function rollback(?StorageUploadResponse $response): void
     {
-        if (!$response) {
+        if (!$response || !$response->isSuccess()) {
             return;
         }
 
