@@ -6,7 +6,7 @@ use FunctionalTester;
 
 class BackupCollectionListingCest
 {
-    public function testFindsByWildcard(FunctionalTester $I): void
+    public function testSearch(FunctionalTester $I): void
     {
         $I->amAdmin();
 
@@ -45,5 +45,19 @@ class BackupCollectionListingCest
             'searchQuery' => '*uploads directory*'
         ]);
         $I->expectToSeeCollectionsAmountOf(1);
+
+        // step 3: List all files
+        $I->searchCollectionsFor([
+            'page'  => 1,
+            'limit' => 3
+        ]);
+        $I->expectToSeeCollectionsAmountOf(2);
+
+        // step 4: Check next page, which is empty
+        $I->searchCollectionsFor([
+            'page'  => 2,
+            'limit' => 3
+        ]);
+        $I->expectToSeeCollectionsAmountOf(0);
     }
 }
