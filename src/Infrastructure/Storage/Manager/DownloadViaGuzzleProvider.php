@@ -38,8 +38,11 @@ class DownloadViaGuzzleProvider implements HttpDownloadProvider
             if (stripos($msg, 'Could not resolve host') !== false
                 || stripos($msg, 'cURL error 6') !== false
                 || stripos($msg, 'Resolving timed out') !== false
-                || stripos($msg, 'cURL error 28') !== false) {
-                throw new FileRetrievalError('URL is not resolvable, the domain is not valid',
+                || stripos($msg, 'cURL error 28') !== false
+                || stripos($msg, 'Connection refused') !== false
+                || stripos($msg, 'Failed to connect to') !== false
+                || stripos($msg, 'cURL error 7' !== false)) {
+                throw new FileRetrievalError('URL is not accessible, probably the domain is not valid',
                     FileRetrievalError::URL_SERVER_NOT_REACHABLE);
             }
 
