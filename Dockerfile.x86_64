@@ -39,7 +39,14 @@ ENV DATABASE_URL=sqlite:///%kernel.project_dir%/var/data.db \
     ENC_TOKEN_PHRASE=test123 \
     APP_DOMAIN= \
     API_TESTS=false \
-    HTTP_TIMEOUT=30
+    HTTP_TIMEOUT=30 \
+    BACKUP_ONE_VERSION_MAX_SIZE=4GB \
+    BACKUP_COLLECTION_MAX_SIZE=15GB \
+    ANTI_HOTLINK_PROTECTION_ENABLED=true \
+    ANTI_HOTLINK_RESTRICT_REGULAR_URLS=false \
+    ANTI_HOTLINK_URL=/stream/{accessToken}/{expirationTime}/{fileId} \
+    ANTI_HOTLINK_CRYPTO=md5 \
+    ANTI_HOTLINK_SECRET_METHOD="\$http_x_expiration_time\$filename\$http_remote_addr MY-AWESOME-SUFFIX"
 
 ADD . /var/www/html
 ADD .infrastructure/php/filerepository.php.ini /usr/local/etc/php/conf.d/filerepository.php.ini
