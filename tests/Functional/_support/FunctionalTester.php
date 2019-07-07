@@ -23,6 +23,7 @@ require_once __DIR__ . '/../Urls.php';
 class FunctionalTester extends \Codeception\Actor
 {
     use _generated\FunctionalTesterActions;
+    use \Codeception\Util\Shared\Asserts;
 
     public function amAdmin(): void
     {
@@ -164,6 +165,18 @@ class FunctionalTester extends \Codeception\Actor
                 ['id' => $id]
             )
         );
+    }
+
+    public function searchCollectionsFor(array $params): void
+    {
+        $this->sendGET(Urls::URL_COLLECTION_LISTING, $params);
+    }
+
+    public function expectToSeeCollectionsAmountOf(int $expectedAmount): void
+    {
+        $elements = $this->grabDataFromResponseByJsonPath('.elements')[0] ?? [];
+
+        $this->assertEquals($expectedAmount, \count($elements));
     }
 
     public function grantTokenAccessToCollection(string $collectionId, string $tokenId): void
