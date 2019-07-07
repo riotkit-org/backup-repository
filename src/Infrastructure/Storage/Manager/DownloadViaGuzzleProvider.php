@@ -17,9 +17,14 @@ class DownloadViaGuzzleProvider implements HttpDownloadProvider
      */
     private $client;
 
-    public function __construct(StateManager $state)
+    public function __construct(StateManager $state, int $httpTimeout)
     {
-        $this->client = $state->generateProxy(new Client(), 'http');
+        $options = [
+            'timeout'         => $httpTimeout,
+            'allow_redirects' => true
+        ];
+
+        $this->client = $state->generateProxy(new Client($options), 'http');
     }
 
     public function getStreamFromUrl(Url $url): Stream

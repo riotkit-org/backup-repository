@@ -61,6 +61,7 @@ services:
         class: App\Infrastructure\Storage\Manager\DownloadViaGuzzleProvider
         arguments:
             $state: '@App\Domain\Common\Manager\StateManager'
+            $httpTimeout: '%env(HTTP_TIMEOUT)%'
 
     App\Infrastructure\Storage\Manager\TestHttpDownloadProvider:
         class: App\Infrastructure\Storage\Manager\TestHttpDownloadProvider

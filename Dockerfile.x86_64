@@ -38,7 +38,8 @@ ENV DATABASE_URL=sqlite:///%kernel.project_dir%/var/data.db \
     TEMP_DIRECTORY=/tmp \
     ENC_TOKEN_PHRASE=test123 \
     APP_DOMAIN= \
-    API_TESTS=false
+    API_TESTS=false \
+    HTTP_TIMEOUT=30
 
 ADD . /var/www/html
 ADD .infrastructure/php/filerepository.php.ini /usr/local/etc/php/conf.d/filerepository.php.ini
