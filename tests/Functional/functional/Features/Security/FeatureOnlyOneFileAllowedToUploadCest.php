@@ -19,7 +19,6 @@ class FeatureOnlyOneFileAllowedToUploadCest
             that had been subject to fair wear and tear.',
             ['fileName' => 'SolFed_article_1.txt']
         );
-        $I->storeIdAs('filename', 'FILE_NAME');
         $I->canSeeResponseCodeIsSuccessful();
 
         // try to upload second file
