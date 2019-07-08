@@ -21,7 +21,7 @@ class GetSizeCommand implements CommandHandler
         $this->fs = $fs;
     }
 
-    public function handle($input)
+    public function handle($input, string $path)
     {
         $filename = $input[0] ?? null;
 

@@ -11,6 +11,7 @@ use App\Domain\Storage\Form\UploadByUrlForm;
 use App\Domain\Storage\Manager\StorageManager;
 use App\Domain\Storage\Provider\UserUploadProvider;
 use App\Domain\Storage\Repository\StagingAreaRepository;
+use App\Domain\Storage\Service\Notifier;
 use App\Domain\Storage\ValueObject\Filename;
 use App\Domain\Storage\ValueObject\Stream;
 
@@ -30,7 +31,8 @@ class UploadFileByPostHandler extends AbstractUploadHandler
         PublicUrlFactory $publicUrlFactory,
         UserUploadProvider $uploadProvider,
         SecurityContextFactory $securityContextFactory,
-        StagingAreaRepository $stagingAreaRepository
+        StagingAreaRepository $stagingAreaRepository,
+        Notifier $notifier
     ) {
         $this->uploadProvider = $uploadProvider;
 
@@ -39,7 +41,8 @@ class UploadFileByPostHandler extends AbstractUploadHandler
             $namingFactory,
             $publicUrlFactory,
             $securityContextFactory,
-            $stagingAreaRepository
+            $stagingAreaRepository,
+            $notifier
         );
     }
 

@@ -30,7 +30,7 @@ install_and_execute_tests() {
     cd /var/www/html
     composer install --dev
 
-    exec ./vendor/bin/codecept run functional
+    exec ./vendor/bin/codecept run functional --steps
 }
 
 entrypoint() {

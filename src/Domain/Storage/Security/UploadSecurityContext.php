@@ -49,6 +49,11 @@ class UploadSecurityContext
      */
     private $isAdministrator;
 
+    /**
+     * @var bool
+     */
+    private $canUploadOnlyOnce;
+
     public function __construct(
         array $allowedMimes,
         array $allowedTags,
@@ -57,7 +62,8 @@ class UploadSecurityContext
         int $maxAllowedFileSize,
         bool $enforceTokenTags,
         bool $enforceNoPassword,
-        bool $isAdministrator
+        bool $isAdministrator,
+        bool $canUploadOnlyOnce
     ) {
         $this->allowedMimes = $allowedMimes;
         $this->allowedTags = $allowedTags;
@@ -67,6 +73,7 @@ class UploadSecurityContext
         $this->enforceTokenTags   = $enforceTokenTags;
         $this->enforceNoPassword  = $enforceNoPassword;
         $this->isAdministrator    = $isAdministrator;
+        $this->canUploadOnlyOnce  = $canUploadOnlyOnce;
     }
 
     public function isMimeAllowed(Mime $mime): bool
@@ -149,5 +156,13 @@ class UploadSecurityContext
     public function getMaximumFileSize(): int
     {
         return $this->maxAllowedFileSize;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isRestrictedToUploadOnlyOnce(): bool
+    {
+        return $this->canUploadOnlyOnce;
     }
 }

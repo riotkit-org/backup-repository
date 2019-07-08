@@ -9,6 +9,7 @@ use App\Domain\Storage\Form\UploadByUrlForm;
 use App\Domain\Storage\Provider\HttpDownloadProvider;
 use App\Domain\Storage\Manager\StorageManager;
 use App\Domain\Storage\Repository\StagingAreaRepository;
+use App\Domain\Storage\Service\Notifier;
 use App\Domain\Storage\ValueObject\Filename;
 use App\Domain\Storage\ValueObject\Stream;
 use App\Domain\Storage\ValueObject\Url;
@@ -24,12 +25,13 @@ class UploadFileByUrlHandler extends AbstractUploadHandler
     private $provider;
 
     public function __construct(
-        StorageManager $storageManager,
-        FileNameFactory $namingFactory,
-        PublicUrlFactory $publicUrlFactory,
-        HttpDownloadProvider $provider,
+        StorageManager         $storageManager,
+        FileNameFactory        $namingFactory,
+        PublicUrlFactory       $publicUrlFactory,
+        HttpDownloadProvider   $provider,
         SecurityContextFactory $securityFactory,
-        StagingAreaRepository $stagingAreaRepository
+        StagingAreaRepository  $stagingAreaRepository,
+        Notifier               $notifier
     ) {
         $this->provider = $provider;
 
@@ -38,7 +40,8 @@ class UploadFileByUrlHandler extends AbstractUploadHandler
             $namingFactory,
             $publicUrlFactory,
             $securityFactory,
-            $stagingAreaRepository
+            $stagingAreaRepository,
+            $notifier
         );
     }
 

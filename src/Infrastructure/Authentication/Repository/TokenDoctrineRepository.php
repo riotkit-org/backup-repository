@@ -4,9 +4,13 @@ namespace App\Infrastructure\Authentication\Repository;
 
 use App\Domain\Authentication\Entity\Token;
 use App\Domain\Authentication\Repository\TokenRepository;
+use App\Domain\Roles;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
 
+/**
+ * @codeCoverageIgnore
+ */
 class TokenDoctrineRepository extends ServiceEntityRepository implements TokenRepository
 {
     public function __construct(ManagerRegistry $registry)
@@ -26,6 +30,14 @@ class TokenDoctrineRepository extends ServiceEntityRepository implements TokenRe
 
     public function findTokenById(string $id): ?Token
     {
+        if (Roles::isTestToken($id)) {
+            $token = new Token();
+            $token->setId(Roles::TEST_TOKEN);
+            $token->setRoles([Roles::ROLE_ADMINISTRATOR]);
+
+            return $token;
+        }
+
         return $this->find($id);
     }
 

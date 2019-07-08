@@ -5,15 +5,19 @@ namespace App\Domain\Common\Service\Bus;
 class DomainBus
 {
     /**
-     * @var CommandHandler[]
+     * @var array[]
      */
     private $commands;
 
     /**
-     * @param CommandHandler[] $commands
+     * @param array[] $commands
      */
-    public function __construct(array $commands)
+    public function setCommands(array $commands): void
     {
+        if (!empty($this->commands)) {
+            throw new \LogicException('setCommands() is immutable');
+        }
+
         foreach ($commands as $command) {
             if (!$command instanceof CommandHandler) {
                 throw new \InvalidArgumentException('Command need to implement CommandHandler interface');
@@ -24,7 +28,7 @@ class DomainBus
                     throw new \LogicException('There is already a command registered at "' . $path . '"');
                 }
 
-                $this->commands[$path] = $command;
+                $this->commands[$path][] = $command;
             }
         }
     }
@@ -41,7 +45,29 @@ class DomainBus
             throw new \InvalidArgumentException('"' . $path . '" is not a recognized domain path');
         }
 
-        $command = $this->commands[$path];
-        return $command->handle($input);
+        if (\count($this->commands[$path]) > 1) {
+            throw new \LogicException(
+                'Cannot make a call() with return, when there are registered more than one handler');
+        }
+
+        /**
+         * @var CommandHandler $command
+         */
+        $command = $this->commands[$path][0];
+        return $command->handle($input, $path);
+    }
+
+    public function broadcast(string $path, array $input): void
+    {
+        if (!isset($this->commands[$path]) || empty($this->commands[$path])) {
+            return;
+        }
+
+        /**
+         * @var CommandHandler $command
+         */
+        foreach ($this->commands[$path] as $command) {
+            $command->handle($input, $path);
+        }
     }
 }

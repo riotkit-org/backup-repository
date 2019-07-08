@@ -20,7 +20,7 @@ class UploadCommand implements CommandHandler
         $this->handler = $handler;
     }
 
-    public function handle($input)
+    public function handle($input, string $path)
     {
         $form = new UploadByPostForm();
         $form->password      = $input['form']['password'];

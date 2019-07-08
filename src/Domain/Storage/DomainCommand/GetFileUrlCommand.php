@@ -20,7 +20,7 @@ class GetFileUrlCommand implements CommandHandler
         $this->factory = $factory;
     }
 
-    public function handle($input)
+    public function handle($input, string $path)
     {
         $filename = $input[0] ?? null;
         $baseUrl  = $input[1] ?? null;

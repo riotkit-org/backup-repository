@@ -179,11 +179,24 @@ class FileUploadedResponse implements \JsonSerializable
        ];
     }
 
+    public function isOk(): bool
+    {
+        return $this->exitCode <= 299;
+    }
+
     /**
      * @return int
      */
     public function getExitCode(): int
     {
         return $this->exitCode;
+    }
+
+    /**
+     * @return string
+     */
+    public function getFilename(): ?string
+    {
+        return $this->filename;
     }
 }

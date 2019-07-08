@@ -38,7 +38,8 @@ class SecurityContextFactory
             $token->getMaxAllowedFileSize(),
             $token->hasRole(Roles::ROLE_UPLOAD_ENFORCE_TOKEN_TAGS),
             $token->hasRole(Roles::ROLE_UPLOAD_ENFORCE_NO_PASSWORD),
-            $token->hasRole(Roles::ROLE_ADMINISTRATOR)
+            $token->hasRole(Roles::ROLE_ADMINISTRATOR),
+            $token->hasRole(Roles::ROLE_UPLOAD_ONLY_ONCE_SUCCESSFUL)
         );
     }
 

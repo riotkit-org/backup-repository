@@ -16,8 +16,8 @@ class BackupCollectionListingCest
             'maxOneVersionSize' => '5KB',
             'maxCollectionSize' => '1024KB',
             'strategy'          => 'delete_oldest_when_adding_new',
-            'description'       => 'Solidarity Federation database',
-            'filename'          => 'solfed.org.uk_database.tar.gz'
+            'description'       => 'Confederação Operária Brasileira database',
+            'filename'          => 'cob_database.tar.gz'
         ]);
         $I->canSeeResponseCodeIsSuccessful();
 
@@ -26,8 +26,8 @@ class BackupCollectionListingCest
             'maxOneVersionSize' => '5KB',
             'maxCollectionSize' => '1024KB',
             'strategy'          => 'delete_oldest_when_adding_new',
-            'description'       => 'Solidarity Federation uploads directory',
-            'filename'          => 'solfed.org.uk_upload_files.tar.gz'
+            'description'       => 'Confederação Operária Brasileira uploads directory',
+            'filename'          => 'cob_upload_files.tar.gz'
         ]);
         $I->canSeeResponseCodeIsSuccessful();
 
@@ -35,7 +35,7 @@ class BackupCollectionListingCest
         $I->searchCollectionsFor([
             'createdTo' => '2050-05-05',
             'createdFrom' => (new \DateTime())->modify('-5 days')->format('Y-m-d'),
-            'searchQuery' => 'Solidarity Federation*'
+            'searchQuery' => 'Confederação Operária Brasileira*'
         ]);
         $I->expectToSeeCollectionsAmountOf(2);
 
@@ -46,17 +46,10 @@ class BackupCollectionListingCest
         ]);
         $I->expectToSeeCollectionsAmountOf(1);
 
-        // step 3: List all files
-        $I->searchCollectionsFor([
-            'page'  => 1,
-            'limit' => 3
-        ]);
-        $I->expectToSeeCollectionsAmountOf(2);
-
-        // step 4: Check next page, which is empty
+        // step 3: Check next page, even without filters, should be empty if only 2-3 files are stored
         $I->searchCollectionsFor([
             'page'  => 2,
-            'limit' => 3
+            'limit' => 50
         ]);
         $I->expectToSeeCollectionsAmountOf(0);
     }

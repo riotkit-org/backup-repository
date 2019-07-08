@@ -17,8 +17,6 @@ class TokenSubscriber implements EventSubscriberInterface
 {
     public const EVENT_PRIORITY = 0;
 
-    private const TEST_TOKEN = 'test-token-full-permissions';
-
     /**
      * @var IncomingTokenFactory
      */
@@ -65,7 +63,7 @@ class TokenSubscriber implements EventSubscriberInterface
         $tokenString = $this->getTokenStringFromRequest($event->getRequest());
 
         // Development token
-        if ($this->isDev && ($tokenString === self::TEST_TOKEN || $this->isProfilerRoute($event->getRequest()))) {
+        if ($this->isDev && ($tokenString === Roles::TEST_TOKEN || $this->isProfilerRoute($event->getRequest()))) {
             $this->handleTestToken();
             return;
         }
@@ -122,11 +120,11 @@ class TokenSubscriber implements EventSubscriberInterface
     private function handleTestToken(): void
     {
         $token = new Token();
-        $token->setId(self::TEST_TOKEN);
+        $token->setId(Roles::TEST_TOKEN);
         $token->setRoles([Roles::ROLE_ADMINISTRATOR]);
 
         $this->tokenStorage->setToken(
-            new TokenTransport(self::TEST_TOKEN, $token)
+            new TokenTransport(Roles::TEST_TOKEN, $token)
         );
     }
 

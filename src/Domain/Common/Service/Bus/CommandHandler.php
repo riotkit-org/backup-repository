@@ -9,7 +9,7 @@ interface CommandHandler
      *
      * @return mixed
      */
-    public function handle($input);
+    public function handle($input, string $path);
 
     /**
      * @return array

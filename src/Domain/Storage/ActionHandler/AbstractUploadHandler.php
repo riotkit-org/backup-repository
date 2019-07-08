@@ -19,6 +19,7 @@ use App\Domain\Storage\Manager\StorageManager;
 use App\Domain\Storage\Repository\StagingAreaRepository;
 use App\Domain\Storage\Response\FileUploadedResponse;
 use App\Domain\Storage\Security\UploadSecurityContext;
+use App\Domain\Storage\Service\Notifier;
 use App\Domain\Storage\ValueObject\Filename;
 use App\Domain\Storage\ValueObject\Stream;
 use App\Domain\Storage\ValueObject\Url;
@@ -53,18 +54,25 @@ abstract class AbstractUploadHandler
      */
     private $staging;
 
+    /**
+     * @var Notifier
+     */
+    private $notifier;
+
     public function __construct(
-        StorageManager $storageManager,
-        FileNameFactory $namingFactory,
-        PublicUrlFactory $publicUrlFactory,
+        StorageManager         $storageManager,
+        FileNameFactory        $namingFactory,
+        PublicUrlFactory       $publicUrlFactory,
         SecurityContextFactory $securityContextFactory,
-        StagingAreaRepository $staging
+        StagingAreaRepository  $staging,
+        Notifier               $notifier
     ) {
         $this->storageManager   = $storageManager;
         $this->nameFactory      = $namingFactory;
         $this->publicUrlFactory = $publicUrlFactory;
         $this->securityFactory  = $securityContextFactory;
         $this->staging          = $staging;
+        $this->notifier         = $notifier;
     }
 
     public function handle(UploadForm $form, BaseUrl $baseUrl, Token $token): FileUploadedResponse
@@ -76,7 +84,8 @@ abstract class AbstractUploadHandler
 
         if (!$actionPermissionsCheck->isOk()) {
             return $this->finalize(
-                FileUploadedResponse::createWithNoAccessError($actionPermissionsCheck->getReason())
+                FileUploadedResponse::createWithNoAccessError($actionPermissionsCheck->getReason()),
+                $token
             );
         }
 
@@ -91,7 +100,8 @@ abstract class AbstractUploadHandler
                     $uploadedFile->getId(),
                     $uploadedFile->getFilename(),
                     $this->getRequestedFilename($form)
-                )
+                ),
+                $token
             );
 
         } catch (DuplicatedContentException $exception) {
@@ -101,7 +111,8 @@ abstract class AbstractUploadHandler
                     $exception->getAlreadyExistingFile()->getId(),
                     $exception->getAlreadyExistingFile()->getFilename(),
                     $this->getRequestedFilename($form)
-                )
+                ),
+                $token
             );
 
         } catch (FileUploadedTwiceException $exception) {
@@ -111,38 +122,52 @@ abstract class AbstractUploadHandler
                     $exception->getAlreadyExistingFile()->getId(),
                     $exception->getAlreadyExistingFile()->getFilename(),
                     $this->getRequestedFilename($form)
-                )
+                ),
+                $token
             );
 
         } catch (ValidationException $exception) {
-            return $this->finalize(FileUploadedResponse::createWithValidationError(
-                $exception->getReason(),
-                $exception->getCode(),
-                $exception->getContext()
-            ));
+            return $this->finalize(
+                FileUploadedResponse::createWithValidationError(
+                    $exception->getReason(),
+                    $exception->getCode(),
+                    $exception->getContext()
+                ),
+                $token
+            );
 
         } catch (ValueObjectException $exception) {
-            return $this->finalize(FileUploadedResponse::createWithValidationError(
-                $exception->getMessage(),
-                $exception->getCode(),
-                []
-            ));
+            return $this->finalize(
+                FileUploadedResponse::createWithValidationError(
+                    $exception->getMessage(),
+                    $exception->getCode(),
+                    []
+                ),
+                $token
+            );
 
         } catch (FileRetrievalError $exception) {
-            return $this->finalize(FileUploadedResponse::createWithValidationError(
-                $exception->getMessage(),
-                $exception->getCode(),
-                []
-            ));
+            return $this->finalize(
+                FileUploadedResponse::createWithValidationError(
+                    $exception->getMessage(),
+                    $exception->getCode(),
+                    []
+                ),
+                $token
+            );
 
         } catch (StorageException $exception) {
-            return $this->finalize(FileUploadedResponse::createWithServerError($exception->getCode()));
+            return $this->finalize(FileUploadedResponse::createWithServerError($exception->getCode()), $token);
         }
     }
 
-    private function finalize(FileUploadedResponse $response): FileUploadedResponse
+    private function finalize(FileUploadedResponse $response, Token $token): FileUploadedResponse
     {
         $this->staging->deleteAllTemporaryFiles();
+
+        if ($response->isOk()) {
+            $this->notifier->notifyFileWasUploadedSuccessfully($token->getId(), $response->getFilename());
+        }
 
         return $response;
     }

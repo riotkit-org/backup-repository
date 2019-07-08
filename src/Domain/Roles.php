@@ -9,6 +9,8 @@ namespace App\Domain;
  */
 final class Roles
 {
+    public const TEST_TOKEN = 'test-token-full-permissions';
+
     //
     //
     // upload/creation
@@ -35,6 +37,8 @@ final class Roles
 
     /** Enforce token tags. In result every uploaded file will have tags specified in token regardless if they were sent in request */
     public const ROLE_UPLOAD_ENFORCE_TOKEN_TAGS = 'upload.enforce_tags_selected_in_token';
+
+    public const ROLE_UPLOAD_ONLY_ONCE_SUCCESSFUL = 'upload.only_once_successful';
 
     //
     //
@@ -168,11 +172,17 @@ final class Roles
 
     public const RESTRICTIONS_LIST = [
         self::ROLE_UPLOAD_ENFORCE_NO_PASSWORD,
-        self::ROLE_UPLOAD_ENFORCE_TOKEN_TAGS
+        self::ROLE_UPLOAD_ENFORCE_TOKEN_TAGS,
+        self::ROLE_UPLOAD_ONLY_ONCE_SUCCESSFUL
     ];
 
     public static function getRolesList(): array
     {
         return \array_merge(self::GRANTS_LIST, self::RESTRICTIONS_LIST);
+    }
+
+    public static function isTestToken(?string $tokenId): bool
+    {
+        return $tokenId === static::TEST_TOKEN;
     }
 }

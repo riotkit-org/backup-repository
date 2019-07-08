@@ -41,9 +41,10 @@ class DomainBusPass implements CompilerPassInterface
             array_keys($onlyCommandsThatImplementsInterface)
         );
 
-        $container->setDefinition(
-            DomainBus::class,
-            new Definition(DomainBus::class, [$commandDefinitions])
-        );
+        $definition = new Definition(DomainBus::class);
+        $definition->addMethodCall('setCommands', [$commandDefinitions]);
+
+        $container->setDefinition(DomainBus::class, $definition);
+
     }
 }
