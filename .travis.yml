@@ -44,7 +44,7 @@ matrix:
               - make install SUDO=""
               - mkdir -p ./var && chmod 777 ./var -R
           script:
-              - make unit_test
+              - make coverage
 
         - language: php
           name: File Repository API tests
