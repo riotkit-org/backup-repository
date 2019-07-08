@@ -41,6 +41,10 @@ def main():
                         help='Logs path',
                         default=os.path.expanduser('/tmp'))
 
+    parser.add_argument('--logs-file',
+                        help='Log to a single file, instead of creating files by date',
+                        default='')
+
     parser.description = 'Bahub - backup automation client for File Repository API'
 
     parsed = parser.parse_args()
@@ -78,7 +82,7 @@ def main():
                 'config': parsed.config
             },
             uncensored=parsed.uncensored,
-            logger=LoggerFactory.create(parsed.debug, parsed.logs_path),
+            logger=LoggerFactory.create(parsed.debug, parsed.logs_path, parsed.logs_file),
             notifier=notifier
         )
 

@@ -67,6 +67,7 @@ build@x86_64-sentry:
 ## Build a docker container
 build_bahub@x86_64:
 	${SUDO} docker build . -f ./Dockerfile_bahub.x86_64 -t wolnosciowiec/file-repository:bahub
+	${SUDO} docker tag wolnosciowiec/file-repository:bahub quay.io/riotkit/bahub
 
 ## Run x86_64 image
 run@x86_64:

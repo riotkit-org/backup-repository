@@ -37,11 +37,11 @@ class ColoredFormatter(logging.Formatter):
 class LoggerFactory:
 
     @staticmethod
-    def create(is_debug: bool, path: str) -> logging.Logger:
+    def create(is_debug: bool, path: str, single_log_file: str) -> logging.Logger:
         """ Creates a logger instance with proper handlers configured """
 
         logger = logging.getLogger('bahub')
-        logger.setLevel(logging.WARNING)
+        logger.setLevel(logging.INFO)
         formatter = ColoredFormatter("[%(asctime)s][%(name)s][%(levelname)s]: %(message)s")
 
         logging_handler = logging.StreamHandler(sys.stdout)
@@ -49,14 +49,20 @@ class LoggerFactory:
         logging_handler.setFormatter(formatter)
 
         log_file_name = 'bahub-{date:%Y-%m-%d}.log'.format(date=datetime.datetime.now())
-        log_file_handler = logging.FileHandler(path + '/' + log_file_name, 'w+')
+
+        if single_log_file:
+            log_file_name = single_log_file
+
+        log_file_handler = logging.FileHandler(path + '/' + log_file_name, 'a+')
         log_file_handler.setFormatter(formatter)
-        log_file_handler.setLevel(logging.DEBUG)
+        log_file_handler.setLevel(logging.INFO)
 
         if is_debug:
             logger.setLevel(logging.DEBUG)
             logging_handler.setLevel(logging.DEBUG)
             log_file_handler.setLevel(logging.DEBUG)
+        else:
+            logging_handler.setLevel(logging.ERROR)
 
         logger.addHandler(logging_handler)
         logger.addHandler(log_file_handler)

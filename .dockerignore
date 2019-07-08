@@ -4,6 +4,7 @@
 /var/data.db
 /Dockerfile.x86_64_postman
 /Dockerfile.x86_64
+/Dockerfile.x86_64-sentry
 /README.md
 /.env
 /.web-server-pid
