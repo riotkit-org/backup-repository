@@ -26,7 +26,8 @@ class UploadSecurityContextTest extends TestCase
                     5000,  // max file size
                     true,  // enforce token tags
                     false, // enforce no-password
-                    false  // is administrator
+                    false,  // is administrator
+                    false
                 ),
                 'booleanExpects' => [
                     'canSetPassword'   => true
@@ -91,6 +92,7 @@ class UploadSecurityContextTest extends TestCase
             true,  // can overwrite
             5000,
             true,
+            false,
             false,
             false
         );
@@ -172,6 +174,7 @@ class UploadSecurityContextTest extends TestCase
             $allowedTo,  // can overwrite
             5000,
             true,
+            false,
             false,
             false
         );
