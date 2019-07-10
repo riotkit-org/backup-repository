@@ -4,14 +4,14 @@ namespace App\Infrastructure\Backup\Repository;
 
 use App\Domain\Backup\Entity\Authentication\Token;
 use App\Domain\Backup\Repository\TokenRepository;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use App\Domain\Common\Repository\BaseRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
 
-class TokenDoctrineRepository extends ServiceEntityRepository implements TokenRepository
+class TokenDoctrineRepository extends BaseRepository implements TokenRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    public function __construct(ManagerRegistry $registry, bool $readOnly)
     {
-        parent::__construct($registry, Token::class);
+        parent::__construct($registry, Token::class, $readOnly);
     }
 
     /**

@@ -2,21 +2,21 @@
 
 namespace App\Infrastructure\Storage\Repository;
 
+use App\Domain\Common\Repository\BaseRepository;
 use App\Domain\Storage\Entity\StoredFile;
 use App\Domain\Storage\Parameters\Repository\FindByParameters;
 use App\Domain\Storage\Repository\FileRepository;
 use App\Domain\Storage\ValueObject\Checksum;
 use App\Domain\Storage\ValueObject\Filename;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
 use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\QueryBuilder;
 
-class FileDoctrineRepository extends ServiceEntityRepository implements FileRepository
+class FileDoctrineRepository extends BaseRepository implements FileRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    public function __construct(ManagerRegistry $registry, bool $readOnly)
     {
-        parent::__construct($registry, StoredFile::class);
+        parent::__construct($registry, StoredFile::class, $readOnly);
     }
 
     /**

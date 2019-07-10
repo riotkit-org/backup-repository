@@ -46,7 +46,8 @@ ENV DATABASE_URL=sqlite:///%kernel.project_dir%/var/data.db \
     ANTI_HOTLINK_RESTRICT_REGULAR_URLS=false \
     ANTI_HOTLINK_URL=/stream/{accessToken}/{expirationTime}/{fileId} \
     ANTI_HOTLINK_CRYPTO=md5 \
-    ANTI_HOTLINK_SECRET_METHOD="\$http_x_expiration_time\$filename\$http_remote_addr MY-AWESOME-SUFFIX"
+    ANTI_HOTLINK_SECRET_METHOD="\$http_x_expiration_time\$filename\$http_remote_addr MY-AWESOME-SUFFIX" \
+    READ_ONLY=false
 
 ADD . /var/www/html
 ADD .infrastructure/php/filerepository.php.ini /usr/local/etc/php/conf.d/filerepository.php.ini

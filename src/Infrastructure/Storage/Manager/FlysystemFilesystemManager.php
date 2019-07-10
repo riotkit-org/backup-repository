@@ -2,6 +2,7 @@
 
 namespace App\Infrastructure\Storage\Manager;
 
+use App\Domain\Common\Exception\ReadOnlyException;
 use App\Domain\Common\Manager\StateManager;
 use App\Domain\Storage\Exception\StorageException;
 use App\Domain\Storage\Manager\FilesystemManager;
@@ -18,8 +19,14 @@ class FlysystemFilesystemManager implements FilesystemManager
      */
     private $fs;
 
-    public function __construct(Filesystem $fs, StateManager $stateManager)
+    /**
+     * @var bool
+     */
+    private $ro;
+
+    public function __construct(Filesystem $fs, StateManager $stateManager, bool $isAppReadOnly)
     {
+        $this->ro = $isAppReadOnly;
         $this->fs = $stateManager->generateProxy($fs, 'fs');
     }
 
@@ -58,11 +65,15 @@ class FlysystemFilesystemManager implements FilesystemManager
 
     public function write(Filename $filename, Stream $stream): bool
     {
+        $this->assertCanWrite();
+
         return $this->fs->putStream($filename->getValue(), $stream->attachTo());
     }
 
     public function mkdir(Path $path): void
     {
+        $this->assertCanWrite();
+
         $this->fs->createDir($path->getValue());
     }
 
@@ -82,9 +93,19 @@ class FlysystemFilesystemManager implements FilesystemManager
      * @param Filename $filename
      *
      * @throws FileNotFoundException
+     * @throws ReadOnlyException
      */
     public function delete(Filename $filename): void
     {
+        $this->assertCanWrite();
+
         $this->fs->delete($filename->getValue());
+    }
+
+    private function assertCanWrite(): void
+    {
+        if ($this->ro) {
+            throw new ReadOnlyException('Filesystem is read-only');
+        }
     }
 }

@@ -2,16 +2,16 @@
 
 namespace App\Infrastructure\Storage\Repository;
 
+use App\Domain\Common\Repository\BaseRepository;
 use App\Domain\Storage\Entity\Tag;
 use App\Domain\Storage\Repository\TagRepository;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
 
-class TagsDoctrineRepository extends ServiceEntityRepository implements TagRepository
+class TagsDoctrineRepository extends BaseRepository implements TagRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    public function __construct(ManagerRegistry $registry, bool $readOnly)
     {
-        parent::__construct($registry, Tag::class);
+        parent::__construct($registry, Tag::class, $readOnly);
     }
 
     /**

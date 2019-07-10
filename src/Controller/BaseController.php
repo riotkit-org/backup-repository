@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Domain\Authentication\Entity\Token;
 use App\Domain\Authentication\Exception\ValidationException;
 use App\Domain\Common\Exception\AuthenticationException;
+use App\Domain\Common\Exception\ReadOnlyException;
 use App\Domain\Common\Exception\RequestException;
 use App\Domain\Common\ValueObject\BaseUrl;
 use App\Domain\Storage\Exception\StorageException;
@@ -89,6 +90,18 @@ abstract class BaseController extends AbstractController
         );
     }
 
+    public function createAPIReadOnlyResponse(): JsonResponse
+    {
+        return new JsonResponse(
+            [
+                'status'     => 'The API is read-only. Possibly due to primary-replica configuration.',
+                'error_code' => 5000001,
+                'http_code'  => 500
+            ],
+            JsonResponse::HTTP_INTERNAL_SERVER_ERROR
+        );
+    }
+
     public function createRequestExceptionResponse(RequestException $requestException): JsonResponse
     {
         return new JsonResponse(
@@ -149,6 +162,9 @@ abstract class BaseController extends AbstractController
             }
 
             throw $storageException;
+
+        } catch (ReadOnlyException $exception) {
+            return $this->createAPIReadOnlyResponse();
         }
     }
 

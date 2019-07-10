@@ -8,6 +8,7 @@ parameters:
     env(BACKUP_ONE_VERSION_MAX_SIZE): "25MB"
     env(BACKUP_COLLECTION_MAX_SIZE): "125MB"
     locale: 'en'
+    env(READ_ONLY): false
 
 services:
     # default configuration for services in *this* file
@@ -75,17 +76,55 @@ services:
             $maxOneBackupVersionSize: '%env(BACKUP_ONE_VERSION_MAX_SIZE)%'
             $maxWholeCollectionSize: '%env(BACKUP_COLLECTION_MAX_SIZE)%'
 
+    App\Infrastructure\Backup\Repository\CollectionDoctrineRepository:
+        arguments:
+            $registry: '@Doctrine\Common\Persistence\ManagerRegistry'
+            $readOnly: '%env(bool:READ_ONLY)%'
+
+    App\Infrastructure\Storage\Repository\FileDoctrineRepository:
+        arguments:
+            $registry: '@Doctrine\Common\Persistence\ManagerRegistry'
+            $readOnly: '%env(bool:READ_ONLY)%'
+
+    App\Infrastructure\Backup\Repository\StorageDoctrineRepository:
+        arguments:
+            $registry: '@Doctrine\Common\Persistence\ManagerRegistry'
+            $readOnly: '%env(bool:READ_ONLY)%'
+
+    App\Infrastructure\Storage\Repository\TagsDoctrineRepository:
+        arguments:
+            $registry: '@Doctrine\Common\Persistence\ManagerRegistry'
+            $readOnly: '%env(bool:READ_ONLY)%'
+
+    App\Infrastructure\Authentication\Repository\TokenDoctrineRepository:
+        arguments:
+            $registry: '@Doctrine\Common\Persistence\ManagerRegistry'
+            $readOnly: '%env(bool:READ_ONLY)%'
+
+    App\Infrastructure\Backup\Repository\TokenDoctrineRepository:
+        arguments:
+            $registry: '@Doctrine\Common\Persistence\ManagerRegistry'
+            $readOnly: '%env(bool:READ_ONLY)%'
+
+    App\Infrastructure\Backup\Repository\VersionDoctrineRepository:
+        arguments:
+            $registry: '@Doctrine\Common\Persistence\ManagerRegistry'
+            $fs: '@App\Domain\Backup\Service\Filesystem'
+            $readOnly: '%env(bool:READ_ONLY)%'
+
     ro_fs:
         class: App\Infrastructure\Storage\Manager\FlysystemFilesystemManager
         arguments:
             $fs: '@oneup_flysystem.readonly_filesystem'
             $stateManager: '@App\Domain\Common\Manager\StateManager'
+            $isAppReadOnly: '%env(bool:READ_ONLY)%'
 
     rw_fs:
         class: App\Infrastructure\Storage\Manager\FlysystemFilesystemManager
         arguments:
             $fs: '@oneup_flysystem.readwrite_filesystem'
             $stateManager: '@App\Domain\Common\Manager\StateManager'
+            $isAppReadOnly: '%env(bool:READ_ONLY)%'
 
     App\Domain\Storage\Manager\FilesystemManager:
         alias: App\Domain\Storage\Manager\SeparatedReadWriteFilesystemManager

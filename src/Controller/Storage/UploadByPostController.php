@@ -49,15 +49,19 @@ class UploadByPostController extends BaseController
             return $this->createValidationErrorResponse($infrastructureForm);
         }
 
-        $appResponse = $this->handler->handle(
-            $form,
-            $this->createBaseUrl($request),
-            $tokenTransport->getToken()
-        );
+        return $this->wrap(
+            function () use ($form, $tokenTransport, $request) {
+                $appResponse = $this->handler->handle(
+                    $form,
+                    $this->createBaseUrl($request),
+                    $tokenTransport->getToken()
+                );
 
-        return new JsonResponse(
-            $appResponse,
-            $appResponse->getExitCode()
+                return new JsonResponse(
+                    $appResponse,
+                    $appResponse->getExitCode()
+                );
+            }
         );
     }
 

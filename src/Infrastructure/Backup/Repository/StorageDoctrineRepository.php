@@ -4,14 +4,14 @@ namespace App\Infrastructure\Backup\Repository;
 
 use App\Domain\Backup\Entity\StoredFile;
 use App\Domain\Backup\Repository\StorageRepository;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use App\Domain\Common\Repository\BaseRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
 
-class StorageDoctrineRepository extends ServiceEntityRepository implements StorageRepository
+class StorageDoctrineRepository extends BaseRepository implements StorageRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    public function __construct(ManagerRegistry $registry, bool $readOnly)
     {
-        parent::__construct($registry, StoredFile::class);
+        parent::__construct($registry, StoredFile::class, $readOnly);
     }
 
     public function findById($id): ?StoredFile

@@ -5,15 +5,15 @@ namespace App\Infrastructure\Backup\Repository;
 use App\Domain\Backup\Entity\BackupCollection;
 use App\Domain\Backup\Parameters\Repository\ListingParameters;
 use App\Domain\Backup\Repository\CollectionRepository;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use App\Domain\Common\Repository\BaseRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
 use Doctrine\ORM\QueryBuilder;
 
-class CollectionDoctrineRepository extends ServiceEntityRepository implements CollectionRepository
+class CollectionDoctrineRepository extends BaseRepository implements CollectionRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    public function __construct(ManagerRegistry $registry, bool $readOnly)
     {
-        parent::__construct($registry, BackupCollection::class);
+        parent::__construct($registry, BackupCollection::class, $readOnly);
     }
 
     /**

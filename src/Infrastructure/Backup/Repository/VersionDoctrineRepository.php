@@ -7,12 +7,12 @@ use App\Domain\Backup\Entity\BackupCollection;
 use App\Domain\Backup\Entity\StoredVersion;
 use App\Domain\Backup\Repository\VersionRepository;
 use App\Domain\Backup\Service\Filesystem;
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use App\Domain\Common\Repository\BaseRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;
 
-class VersionDoctrineRepository extends ServiceEntityRepository implements VersionRepository
+class VersionDoctrineRepository extends BaseRepository implements VersionRepository
 {
     /**
      * @var Filesystem
@@ -24,11 +24,11 @@ class VersionDoctrineRepository extends ServiceEntityRepository implements Versi
      */
     private $collectionVersionsCache = [];
 
-    public function __construct(ManagerRegistry $registry, Filesystem $fs)
+    public function __construct(ManagerRegistry $registry, Filesystem $fs, bool $readOnly)
     {
         $this->fs = $fs;
 
-        parent::__construct($registry, StoredVersion::class);
+        parent::__construct($registry, StoredVersion::class, $readOnly);
     }
 
     /**
