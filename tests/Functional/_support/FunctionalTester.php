@@ -35,17 +35,20 @@ class FunctionalTester extends \Codeception\Actor
         $this->haveHttpHeader('token', $token);
     }
 
-    public function haveRoles(array $roles, array $params = []): void
+    public function haveRoles(array $roles, array $params = []): string
     {
         $this->amAdmin();
-        $this->amToken(
-            $this->createToken(
-                array_merge(
-                    ['roles' => $roles],
-                    $params
-                )
+
+        $token = $this->createToken(
+            array_merge(
+                ['roles' => $roles],
+                $params
             )
         );
+
+        $this->amToken($token);
+
+        return $token;
     }
 
     public function postJson(string $url, $params = null, $files = []): void

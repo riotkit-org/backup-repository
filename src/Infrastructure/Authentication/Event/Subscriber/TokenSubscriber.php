@@ -55,6 +55,8 @@ class TokenSubscriber implements EventSubscriberInterface
      */
     public function handleIncomingToken(GetResponseEvent $event): void
     {
+        $request = $event->getRequest();
+
         // workaround: sometimes the event is fired twice by the Symfony, second time it has nulled attributes
         if ($event->getRequest()->attributes->get('_route') === null) {
             return;
@@ -91,6 +93,16 @@ class TokenSubscriber implements EventSubscriberInterface
                 )
             );
 
+            return;
+        }
+
+        $userAgent = $request->headers->get('User-Agent');
+        $ip = $request->getClientIp();
+
+        if ($token instanceof Token && !$token->isValid($userAgent, $ip)) {
+            $this->tokenStorage->setToken(
+                new TokenTransport('anonymous', new Token())
+            );
             return;
         }
 

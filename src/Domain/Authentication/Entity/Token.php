@@ -163,4 +163,42 @@ class Token
     {
         return isset($this->data['maxAllowedFileSize']) && \is_int($this->data['maxAllowedFileSize']) ? $this->data['maxAllowedFileSize'] : 0;
     }
+
+    public function isValid(string $userAgent, string $ipAddress): bool
+    {
+        if (!$this->isNotExpired(new \DateTimeImmutable())) {
+            return false;
+        }
+
+        return $this->canBeUsedByIpAddress($ipAddress)
+            && $this->canBeUsedWithUserAgent($userAgent);
+    }
+
+    public function getAllowedUserAgents(): array
+    {
+        return $this->data['allowedUserAgents'] ?? [];
+    }
+
+    public function getAllowedIpAddresses(): array
+    {
+        return $this->data['allowedIpAddresses'] ?? [];
+    }
+
+    private function canBeUsedByIpAddress(string $address): bool
+    {
+        if (!$this->getAllowedIpAddresses()) {
+            return true;
+        }
+
+        return \in_array($address, $this->getAllowedIpAddresses(), true);
+    }
+
+    private function canBeUsedWithUserAgent(string $userAgent): bool
+    {
+        if (!$this->getAllowedUserAgents()) {
+            return true;
+        }
+
+        return \in_array($userAgent, $this->getAllowedUserAgents(), true);
+    }
 }

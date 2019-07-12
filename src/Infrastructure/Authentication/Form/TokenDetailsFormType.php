@@ -22,7 +22,15 @@ class TokenDetailsFormType extends AbstractType
                 'allow_add'    => true,
                 'allow_delete' => true
             ])
-            ->add('maxAllowedFileSize', IntegerType::class);
+            ->add('maxAllowedFileSize', IntegerType::class)
+            ->add('allowedIpAddresses', CollectionType::class, [
+                'allow_add'    => true,
+                'allow_delete' => true
+            ])
+            ->add('allowedUserAgents', CollectionType::class, [
+                'allow_add'    => true,
+                'allow_delete' => true
+            ]);
     }
 
     public function configureOptions(OptionsResolver $resolver)

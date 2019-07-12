@@ -19,12 +19,24 @@ class TokenDetailsForm
      */
     public $maxAllowedFileSize = 0;
 
+    /**
+     * @var string[]
+     */
+    public $allowedIpAddresses = [];
+
+    /**
+     * @var string[]
+     */
+    public $allowedUserAgents = [];
+
     public function toArray(): array
     {
         return [
             'tags'               => $this->tags,
             'allowedMimeTypes'   => $this->allowedMimeTypes,
-            'maxAllowedFileSize' => $this->maxAllowedFileSize
+            'maxAllowedFileSize' => $this->maxAllowedFileSize,
+            'allowedIpAddresses' => $this->allowedIpAddresses,
+            'allowedUserAgents'  => $this->allowedUserAgents
         ];
     }
 }
