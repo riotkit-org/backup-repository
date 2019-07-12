@@ -6,9 +6,11 @@ File Repository is an API application, so there is no user account identified by
 An access token is identified by long UUIDv4, and has assigned information about the access, such as:
 
 - List of actions that are allowed (eg. file uploads could be allowed, but browsing the list of files not)
-- Allowed tags that could be used when uploading
-- Allowed file types (mime types) when uploading
-- Maximum allowed file size
+- Allowed tags that could be used when uploading (optional)
+- Allowed file types (mime types) when uploading (optional)
+- List of allowed IP addresses that could use this token (optional)
+- List of allowed User-Agent strings (optional)
+- Maximum allowed file size (optional)
 - Token expiration date
 
 
