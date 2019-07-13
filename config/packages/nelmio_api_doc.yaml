@@ -1,0 +1,9 @@
+nelmio_api_doc:
+    documentation:
+        info:
+            title: File Repository
+            description: Scalable Storage API, maintained by anarchist organization
+            version: 1.0.0
+    areas:
+        path_patterns:
+            - ^/

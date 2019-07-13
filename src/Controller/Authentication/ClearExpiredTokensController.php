@@ -4,10 +4,10 @@ namespace App\Controller\Authentication;
 
 use App\Controller\BaseController;
 use App\Domain\Authentication\ActionHandler\ClearExpiredTokensHandler;
-use App\Domain\Authentication\Exception\AuthenticationException;
 use App\Domain\Authentication\Factory\Context\SecurityContextFactory;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
+use Swagger\Annotations as SWG;
 
 class ClearExpiredTokensController extends BaseController
 {
@@ -28,6 +28,24 @@ class ClearExpiredTokensController extends BaseController
     }
 
     /**
+     * @SWG\Response(
+     *     response="200",
+     *     description="Status message and a log",
+     *     @SWG\Schema(
+     *          type="object",
+     *          @SWG\Property(property="message", type="string", example="Task done, log available."),
+     *          @SWG\Property(
+     *              property="log",
+     *              type="array",
+     *              @SWG\Items(
+     *                  type="object",
+     *                  @SWG\Property(property="id", type="string"),
+     *                  @SWG\Property(property="date", type="string")
+     *              )
+     *          )
+     *     )
+     * )
+     *
      * @return Response
      */
     public function clearAction(): Response

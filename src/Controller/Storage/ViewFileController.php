@@ -14,6 +14,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+use Swagger\Annotations as SWG;
 
 class ViewFileController extends BaseController
 {
@@ -34,6 +35,11 @@ class ViewFileController extends BaseController
     }
 
     /**
+     * @SWG\Response(
+     *     response="200",
+     *     description="Returns file contents"
+     * )
+     *
      * @param Request $request
      * @param string $filename
      *
