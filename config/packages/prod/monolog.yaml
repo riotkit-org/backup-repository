@@ -2,15 +2,17 @@ monolog:
     handlers:
         main:
             type: fingers_crossed
-            action_level: error
+            level: error
             handler: nested
+            channels: ["!event", "!php"]
             excluded_404s:
                 # regex: exclude all 404 errors from the logs
                 - ^/
         nested:
             type: stream
             path: "%kernel.logs_dir%/%kernel.environment%.log"
-            level: debug
+            level: error
+            channels: ["!event", "!php", "!request.INFO"]
         console:
             type: console
             process_psr_3_messages: false
