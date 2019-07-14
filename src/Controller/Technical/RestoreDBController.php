@@ -10,7 +10,7 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 /**
  * Lists all public routes
  */
-class RestoreDBController extends AbstractController
+class  RestoreDBController extends AbstractController
 {
     public function restoreAction(ContainerInterface $container): JsonResponse
     {

@@ -4,6 +4,6 @@
 # Instruction: gitver update version.yaml
 #
 
-dev_version: 2.1.0-SNAPSHOT.54+576d837
-build_id: 576d837ce19392e513e22662c4e008ca38a9d330'
-version: 2.1.0-SNAPSHOT.54
+dev_version: 2.1.0-SNAPSHOT.59+909f0b3
+build_id: 909f0b316eeae52a3ab99ffbbb34bcace2b528e5'
+version: 2.1.0-SNAPSHOT.59
