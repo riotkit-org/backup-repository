@@ -1,0 +1,10 @@
+# version.yaml
+
+#
+# DO NOT CHANGE, AUTOMATICALLY UPDATED!
+# Instruction: gitver update version.yaml
+#
+
+dev_version: ${CURRENT_VERSION}
+build_id: ${FULL_BUILD_ID}'
+version: ${MAJOR}.${MINOR}.${PATCH}${META_PR_PREFIX}${META_PR}${COMMIT_COUNT_PREFIX}${COMMIT_COUNT_STR}
