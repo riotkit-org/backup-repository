@@ -102,6 +102,10 @@ class FlysystemFilesystemManager implements FilesystemManager
         $this->fs->delete($filename->getValue());
     }
 
+    public function test(): void
+    {
+    }
+
     private function assertCanWrite(): void
     {
         if ($this->ro) {

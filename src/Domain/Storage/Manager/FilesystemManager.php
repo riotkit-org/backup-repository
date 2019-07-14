@@ -66,4 +66,6 @@ interface FilesystemManager
      * @param Filename $filename
      */
     public function delete(Filename $filename): void;
+
+    public function test(): void;
 }

@@ -5,10 +5,11 @@
 # https://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
     env(BACKUP_MAX_VERSIONS): 5
-    env(BACKUP_ONE_VERSION_MAX_SIZE): "25MB"
-    env(BACKUP_COLLECTION_MAX_SIZE): "125MB"
+    env(BACKUP_ONE_VERSION_MAX_SIZE): '25MB'
+    env(BACKUP_COLLECTION_MAX_SIZE): '125MB'
     locale: 'en'
     env(READ_ONLY): false
+    env(HEALTH_CHECK_CODE): ''
 
 services:
     # default configuration for services in *this* file
@@ -31,8 +32,13 @@ services:
         resource: '../src/Controller'
         tags: ['controller.service_arguments']
 
+    App\Controller\Technical\HealthController:
+        arguments:
+            $fs: '@App\Domain\Storage\Manager\FilesystemManager'
+            $ORMConnectionCheck: '@App\Infrastructure\Common\Service\ORMConnectionCheck'
+            $secretCode: '%env(HEALTH_CHECK_CODE)%'
+
     App\Domain\Authentication\ActionHandler\TokenGenerationHandler:
-        class: App\Domain\Authentication\ActionHandler\TokenGenerationHandler
         arguments:
             $manager: '@App\Domain\Authentication\Manager\TokenManager'
             $expirationTime: '%env(TOKEN_EXPIRATION_TIME)%'

@@ -11,7 +11,6 @@ use App\Domain\Common\ValueObject\BaseUrl;
 use App\Domain\Storage\Exception\StorageException;
 use App\Infrastructure\Authentication\Token\TokenTransport;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;

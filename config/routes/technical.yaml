@@ -11,3 +11,17 @@ technical.hello:
     methods: ['GET']
     defaults:
         _secured: false
+
+technical.version:
+    path: /version
+    controller: 'App\Controller\Technical\HelloController::showVersionAction'
+    methods: ['GET']
+    defaults:
+        _secured: true
+
+technical.healthcheck:
+    path: /health
+    controller: 'App\Controller\Technical\HealthController::healthAction'
+    methods: ['GET']
+    defaults:
+        _secured: false
