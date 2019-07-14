@@ -22,6 +22,12 @@ help:
 	} \
 	{ lastLine = $$0 }' $(MAKEFILE_LIST)
 
+## Setup development environment
+develop:
+	echo " >> Setting up GIT hooks for development"
+	mkdir -p .git/hooks
+	cp .gitver/post-commit .git/hooks
+
 ## Install the application
 install:
 	mkdir -p ./var/uploads

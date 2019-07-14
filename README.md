@@ -50,6 +50,19 @@ Testing
 Server is tested by API tests and unit tests.
 Bahub client is tested with integration tests written in bash and docker, and unit tests.
 
+Starting the development
+------------------------
+
+```
+git clone git@github.com:riotkit-org/file-repository.git
+cd file-repository
+
+make develop
+make run_dev
+
+xdg-open http://localhost:8000
+```
+
 Versioning
 ----------
 
