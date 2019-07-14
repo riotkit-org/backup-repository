@@ -106,3 +106,42 @@ test_api: build@x86_64
 ## Generate code coverage from unit testing
 coverage:
 	./bin/phpunit --coverage-text
+
+## Start working on next known release
+version_set_next:
+	echo -n " >> Please enter next version number ex. [v1.2]: "; \
+	read VERSION; \
+	gitver next $${VERSION}
+
+## Create a stable release and push into the GIT as a tag with generated version.yaml file
+release:
+	echo " <==============================================="
+	echo " <=== Notice: You are going to release a version"
+	echo " <===         Please do it with caution"
+	echo " <===         If something would go wrong, then"
+	echo " <===         you can clone the repository again"
+	echo " <===         to make sure you not destroyed"
+	echo " <===         anything :-)"
+	echo " <==============================================="
+	echo ""
+
+	gitver info
+	echo " >> ?! You probably want to release the version defined as NEXT (but with 'v' ex. v2.1.0)"
+
+	set -e; \
+	echo -n " >> Please enter a release version ex. [v1.0.1]: "; \
+	read VERSION; set -x; \
+	git tag -a $${VERSION} -m "Release $${VERSION}"; \
+	gitver update version.yaml; \
+	git add version.yaml; \
+	git add .gitver; \
+	git commit -m "Release $${VERSION}"; \
+	git tag -d $${VERSION}; \
+	git tag -a $${VERSION} -m "Release $${VERSION}"; \
+	set +x; \
+	echo -n " >> You are going to PUBLISH the GIT TAG $${VERSION}, please confirm [yes/no]: "; \
+	read confirm; \
+	if [[ $${confirm} == "yes" ]] || [[ $${confirm} == "y" ]]; then \
+		set -x; git push origin $${VERSION}; \
+	fi
+

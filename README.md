@@ -50,6 +50,14 @@ Testing
 Server is tested by API tests and unit tests.
 Bahub client is tested with integration tests written in bash and docker, and unit tests.
 
+Versioning
+----------
+
+The application is using GITVER tool to keep strict versioning.
+
+- A release should be made with a `make release`
+- When starting working on a next known release number then use `make version_set_next`
+
 Copyleft
 --------
 
