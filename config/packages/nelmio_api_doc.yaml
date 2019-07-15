@@ -4,6 +4,14 @@ nelmio_api_doc:
             title: File Repository
             description: Scalable Storage API, maintained by anarchist organization
             version: 1.0.0
+
+        securityDefinitions:
+            Token:
+                type: apiKey
+                description: 'Value: {token}. ex. "test-token-full-permissions" for APP_ENV=dev and APP_ENV=test'
+                name: Token
+                in: header
+
     areas:
         path_patterns:
             - ^/(?!\{_locale\})
