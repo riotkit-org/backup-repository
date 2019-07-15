@@ -2,14 +2,16 @@
 
 namespace App\Controller\Technical;
 
+use App\Controller\BaseController;
 use App\Domain\Common\Service\Versioning;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Swagger\Annotations as SWG;
 
 /**
  * Lists all public routes
  */
-class HelloController extends AbstractController
+class HelloController extends BaseController
 {
     /**
      * @var Versioning
@@ -29,8 +31,30 @@ class HelloController extends AbstractController
         );
     }
 
+    /**
+     * @SWG\Response(
+     *     response="400",
+     *     description="When not authorized with any token"
+     * )
+     *
+     * @SWG\Response(
+     *     response="200",
+     *     description="String response code with version, in JSON format",
+     *     @SWG\Schema(
+     *          type="string",
+     *          example="v2.1.0"
+     *     )
+     * )
+     *
+     * @return JsonResponse
+     * @throws \Exception
+     */
     public function showVersionAction(): JsonResponse
     {
+        if ($this->getLoggedUserToken()->isAnonymous()) {
+            throw new AccessDeniedHttpException();
+        }
+
         return new JsonResponse($this->versioning->getVersion());
     }
 }

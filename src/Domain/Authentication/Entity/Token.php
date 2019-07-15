@@ -174,6 +174,11 @@ class Token
             && $this->canBeUsedWithUserAgent($userAgent);
     }
 
+    public function isAnonymous(): bool
+    {
+        return $this->id === null;
+    }
+
     public function getAllowedUserAgents(): array
     {
         return $this->data['allowedUserAgents'] ?? [];
