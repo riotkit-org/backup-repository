@@ -48,10 +48,12 @@ ENV DATABASE_URL=sqlite:///%kernel.project_dir%/var/data.db \
     ANTI_HOTLINK_CRYPTO=md5 \
     ANTI_HOTLINK_SECRET_METHOD="\$http_x_expiration_time\$filename\$http_remote_addr MY-AWESOME-SUFFIX" \
     READ_ONLY=false \
-    HEALTH_CHECK_CODE=
+    HEALTH_CHECK_CODE= \
+    PHP_MEMORY_LIMIT=256M \
+    PHP_UPLOAD_MAX_FILESIZE=15G \
+    PHP_POST_MAX_SIZE=15G
 
 ADD . /var/www/html
-ADD .infrastructure/php/filerepository.php.ini /usr/local/etc/php/conf.d/filerepository.php.ini
 ADD .infrastructure/prod_entrypoint.d.sh /entrypoint.d/
 ADD .infrastructure/overridden_entrypoint.sh /
 
