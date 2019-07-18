@@ -30,7 +30,7 @@
         "symfony/orm-pack": "^1.0",
         "symfony/security": "*",
         "symfony/security-bundle": "*",
-        "symfony/translation": "4.2.*",
+        "symfony/translation": "4.3.*",
         "symfony/twig-bundle": "4.2.*",
         "symfony/validator": "*",
         "symfony/yaml": "*",
