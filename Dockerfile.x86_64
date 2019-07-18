@@ -26,7 +26,7 @@ RUN rm -rf /var/lib/apt/lists/* \
     && apt-get update \
     && apt-get install -y curl bash gnupg2 libzip-dev netcat \
     && docker-php-ext-install bcmath zip \
-    && apt-get remove -y libzip-dev g++ g++-8 gcc gcc-84 cpp-8 cpp \
+    && apt-get remove -y libzip-dev g++ g++-8 gcc gcc-8 cpp-8 cpp \
     && apt-get autoremove -y \
     && apt-get clean \
     && (docker-php-source delete || true)
