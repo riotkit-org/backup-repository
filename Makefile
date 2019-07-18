@@ -28,12 +28,11 @@ develop:
 	mkdir -p .git/hooks
 	cp .gitver/post-commit .git/hooks
 
-## Install the application
+## Install the backend application
 install:
 	mkdir -p ./var/uploads
 	composer install
 	make migrate
-	make install_frontend
 
 ## Install MinimumUi dependencies
 install_frontend:
