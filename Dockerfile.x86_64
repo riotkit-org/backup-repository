@@ -15,7 +15,7 @@ RUN rm -rf /var/lib/apt/lists/* \
     && su www-data -s /bin/bash -c "make install_frontend" \
     \
     && cd /var/www/html \
-    && rm -rf .infrastructure docs examples var/cache/* var/log/* var/data.db tests client
+    && rm -rf docs examples var/cache/* var/log/* var/data.db tests client
 
 #
 ## Destination container
