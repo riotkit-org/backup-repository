@@ -79,7 +79,7 @@ $routes->add('storage.antihotlink_get_file',
     new Route(
         $antiHotlinkRoute,
         [
-            '_controller' => App\Controller\Storage\AntiHotlinkViewFileController::class . 'handleAntiHotlinkUrl',
+            '_controller' => App\Controller\Storage\AntiHotlinkViewFileController::class . '::handleAntiHotlinkUrl',
             '_secured' => false
         ],
         [],
