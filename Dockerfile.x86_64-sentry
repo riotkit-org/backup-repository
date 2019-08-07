@@ -1,9 +1,0 @@
-FROM quay.io/riotkit/file-repository:master
-
-ENV SENTRY_DSN=""
-
-RUN cd /var/www/html && su www-data -s /bin/bash -c "composer require sentry/sentry-symfony" \
-    && echo "sentry:" > ./config/packages/prod/sentry.yaml \
-    && echo '    dsn: "%env(SENTRY_DSN)%"' >> ./config/packages/prod/sentry.yaml \
-    && echo "10a11\n >     Sentry\SentryBundle\SentryBundle::class => ['all' => true]," > /tmp/sentry.patch \
-    && patch ./config/bundles.php /tmp/sentry.patch

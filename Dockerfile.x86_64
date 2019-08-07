@@ -78,6 +78,7 @@ ENV DATABASE_URL=sqlite:///%kernel.project_dir%/var/data.db \
 
 COPY --from=builder /var/www/html /var/www/html
 ADD .infrastructure/prod_entrypoint.d.sh /entrypoint.d/
+ADD .infrastructure/sentry_entrypoint.d.sh /entrypoint.d/
 ADD .infrastructure/overridden_entrypoint.sh /
 ADD .infrastructure/healthcheck.sh /
 

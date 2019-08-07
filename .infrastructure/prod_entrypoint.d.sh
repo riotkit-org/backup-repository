@@ -27,7 +27,7 @@ if [[ ${WAIT_FOR_HOST} != "" ]]; then
     done
 fi
 
-echo " >> Preparing features"
+echo " >> Preparing NGINX features"
 if [[ ${FEATURES} != "" ]]; then
     IFS=',' read -r -a split_features <<< "${FEATURES}"
 

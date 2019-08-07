@@ -67,10 +67,6 @@ build@x86_64:
 	${SUDO} docker tag wolnosciowiec/file-repository quay.io/riotkit/file-repository:master
 	${SUDO} docker tag wolnosciowiec/file-repository quay.io/riotkit/file-repository:latest
 
-## Build x86_64 image
-build@x86_64-sentry:
-	${SUDO} docker build . -f ./Dockerfile.x86_64-sentry -t wolnosciowiec/file-repository:sentry
-
 ## Build a docker container
 build_bahub@x86_64:
 	${SUDO} docker build . -f ./Dockerfile_bahub.x86_64 -t wolnosciowiec/file-repository:bahub
