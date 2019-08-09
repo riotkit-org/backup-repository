@@ -2,7 +2,7 @@ FROM docker:latest
 
 ENV DISABLE_SCHEDULED_JOBS=0
 
-RUN apk --update add python3 make bash sudo openssl-dev git openssl supervisor rsyslog xz bzip2 pigz pixz
+RUN apk --update add python3 make bash sudo openssl-dev git openssl supervisor rsyslog xz bzip2 pigz
 
 ADD client /bahub
 ADD .git /bahub/.git
