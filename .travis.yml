@@ -78,6 +78,7 @@ matrix:
               skip_cleanup: true
               provider: pypi
               distributions: sdist bdist_wheel
+              skip_existing: true
               on:
                   all_branches: true
                   condition: $TRAVIS_TAG =~ ^v[0-9\.a-z\-]+ || $TRAVIS_BRANCH == "master"
