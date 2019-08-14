@@ -23,7 +23,7 @@ Make sure the **APP_ENV** is set to **prod**.
 
 .. code:: shell
 
-    cp .env .env.dist
+    cp .env.dist .env
     edit .env
 
 To install the application - download dependencies, install database schema use the make task **install**.
@@ -55,7 +55,7 @@ Here are instructions how to start with it:
 .. code:: bash
 
     # go to the environment directory and copy template file
-    cd ./examples/docker
+    cd ./examples/docker-s3-api-client
     cp .env.dist .env
 
     # adjust application settings
