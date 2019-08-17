@@ -78,6 +78,7 @@ ENV DATABASE_URL=sqlite:///%kernel.project_dir%/var/data.db \
     PHP_POST_MAX_SIZE=15G
 
 COPY --from=builder /var/www/html /var/www/html
+ADD .infrastructure/entrypoint/entrypoint.d/prod_entrypoint.d.sh /entrypoint.d/
 ADD .infrastructure/entrypoint/entrypoint.d/sentry_entrypoint.d.sh /entrypoint.d/
 ADD .infrastructure/entrypoint/entrypoint.sh /overridden_entrypoint.sh
 ADD .infrastructure/healthcheck.sh /

@@ -21,7 +21,7 @@ develop: ## Setup development environment
 install: ## Install the backend application
 	[[ -f .env ]] || cp .env.dist .env
 	mkdir -p ./var/uploads
-	if [[ $$(cat .env | grep "APP_ENV=prod") ]]; then \
+	if [[ $$(./.infrastructure/helpers/get-env.sh APP_ENV) == "prod" ]]; then \
 		composer install --no-dev; \
 	else \
 		composer install; \

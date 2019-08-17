@@ -59,7 +59,7 @@ class ConfigParser
 
         if (!\array_key_exists($adapterName, $this->getMapping())) {
             throw new \InvalidArgumentException(
-                $suffix . 'ADAPTER have invalid value, possible values: ' .
+                $suffix . 'ADAPTER has invalid value, possible values: ' .
                 \implode(', ', $this->getPossibleAdapters()) . ".\n\nPossible environment variables: \n" .
                 \implode(", \n", $this->mapToEnvironmentVariables($suffix)) . "\n"
             );
