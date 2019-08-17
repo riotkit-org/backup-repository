@@ -15,17 +15,17 @@ bahub () {
 #
 create_collection () {
     sudo docker-compose exec file-repository \
-        ./bin/console backup:create-collection -d "${1}" -f "${2}" -b "${3}" -o "${4}" -c "${5}" | perl -pe 's/[^\w.-]+//g'
+        /bin/bash -c "cd /var/www/html && ./bin/console backup:create-collection -d '${1}' -f '${2}' -b '${3}' -o '${4}' -c '${5}'" | perl -pe 's/[^\w.-]+//g'
 }
 
 generate_admin_token () {
     sudo docker-compose exec file-repository \
-        ./bin/console --env=prod auth:generate-admin-token | perl -pe 's/[^\w.-]+//g'
+        /bin/bash -c "cd /var/www/html && ./bin/console --env=prod auth:generate-admin-token" | perl -pe 's/[^\w.-]+//g'
 }
 
 console () {
     sudo docker-compose exec file-repository \
-        ./bin/console --env=prod "$@" | perl -pe 's/[^\w.-]+//g'
+        /bin/bash -c "./bin/console --env=prod $@"
 }
 
 exec_in_bahub_container () {

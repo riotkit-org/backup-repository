@@ -96,6 +96,7 @@ RUN cd /var/www/html \
     && su www-data -s /bin/bash -c "composer install --no-dev" \
     && chmod +x /overridden_entrypoint.sh
 
+WORKDIR "/var/www/html"
 ENTRYPOINT ["/overridden_entrypoint.sh"]
 
 HEALTHCHECK --interval=30s --timeout=3s CMD /healthcheck.sh || exit 1
