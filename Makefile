@@ -1,6 +1,8 @@
 .SILENT:
 .PHONY: help
 
+SHELL=/bin/bash
+
 ## Colors
 COLOR_RESET   = \033[0m
 COLOR_INFO    = \033[32m
@@ -17,8 +19,9 @@ develop: ## Setup development environment
 	cp .gitver/post-commit .git/hooks
 
 install: ## Install the backend application
+	[[ -f .env ]] || cp .env.dist .env
 	mkdir -p ./var/uploads
-	composer install
+	composer install --no-dev
 	make migrate
 
 install_frontend: ## Install MinimumUi dependencies
@@ -38,7 +41,7 @@ run_dev: ## Run a developer web server (do not use on production)
 browse_docs: ## Browse documentation in web browser
 	xdg-open ./docs/build/html/index.html
 
-deploy: install ## Deploy the application
+deploy: install install_frontend ## Deploy the application
 
 build@x86_64: ## Build x86_64 image
 	${SUDO} docker build . -f ./Dockerfile.x86_64 -t wolnosciowiec/file-repository

@@ -1,5 +1,11 @@
 #!/bin/bash
 
+# overriden_entrypoint.sh extends entrypoint.sh
+
+#
+# This file adds functionality, then calls parent entrypoint.sh
+#
+
 boot_app_in_background() {
     /entrypoint.sh &
 }
@@ -26,6 +32,10 @@ set_application_in_test_mode() {
     sed -i -e 's/APP_ENV=prod/APP_ENV=test/g' /var/www/html/.env
 }
 
+#
+# There are no separate containers for PROD and TEST
+# This means if we want to execute the tests we need to install dependencies there.
+#
 install_and_execute_tests() {
     cd /var/www/html
     composer install --dev

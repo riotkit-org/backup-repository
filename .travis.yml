@@ -16,9 +16,9 @@
         - cp -pr ./* ../
     after_success:
         - bash <(curl -s https://codecov.io/bash) -cF python
-        - bash ./.infrastructure/notify.sh "${SLACK_URL}" " [OK] Bahub unit tests passed."
+        - bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [OK] Bahub unit tests passed."
     after_failure:
-        - bash ./.infrastructure/notify.sh "${SLACK_URL}" " [FAILURE] Bahub unit tests are failing."
+        - bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [FAILURE] Bahub unit tests are failing."
 
 
 matrix:
@@ -39,7 +39,7 @@ matrix:
               - make coverage
           after_success:
               - bash <(curl -s https://codecov.io/bash) -cF php
-              - bash ./.infrastructure/notify.sh "${SLACK_URL}" " [OK] File repository unit tests passed."
+              - bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [OK] File repository unit tests passed."
 
         - language: php
           name: File Repository unit tests @ PHP nightly (allowed to fail)
@@ -50,9 +50,9 @@ matrix:
           script:
               - make coverage
           after_success:
-              - bash ./.infrastructure/notify.sh "${SLACK_URL}" " [OK] File repository unit tests at PHP Nightly passed."
+              - bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [OK] File repository unit tests at PHP Nightly passed."
           after_failure:
-              - bash ./.infrastructure/notify.sh "${SLACK_URL}" " [FAILURE] File repository unit tests at PHP Nightly are failing."
+              - bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [FAILURE] File repository unit tests at PHP Nightly are failing."
 
         - language: php
           name: File Repository API tests
@@ -63,9 +63,9 @@ matrix:
           script:
               - make build@x86_64 test_api SUDO=""
           after_success:
-              - bash ./.infrastructure/notify.sh "${SLACK_URL}" " [OK] File repository API tests passed."
+              - bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [OK] File repository API tests passed."
           after_failure:
-              - bash ./.infrastructure/notify.sh "${SLACK_URL}" " [FAILURE] File repository API test are failing."
+              - bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [FAILURE] File repository API test are failing."
 
       #
         # Bahub (Backups API client)
@@ -100,6 +100,6 @@ matrix:
           script:
               - cd client && make run_test_containers test
           after_success:
-              - bash ./.infrastructure/notify.sh "${SLACK_URL}" " [OK] Bahub functional tests are passing."
+              - bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [OK] Bahub functional tests are passing."
           after_failure:
-              - bash ./.infrastructure/notify.sh "${SLACK_URL}" " [FAILURE] Bahub fuctional tests are not passing.."
+              - bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [FAILURE] Bahub fuctional tests are not passing.."
