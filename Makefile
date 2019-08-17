@@ -21,7 +21,11 @@ develop: ## Setup development environment
 install: ## Install the backend application
 	[[ -f .env ]] || cp .env.dist .env
 	mkdir -p ./var/uploads
-	composer install --no-dev
+	if [[ $$(cat .env | grep "APP_ENV=prod") ]]; then \
+		composer install --no-dev; \
+	else \
+		composer install; \
+	fi
 	make migrate
 
 install_frontend: ## Install MinimumUi dependencies

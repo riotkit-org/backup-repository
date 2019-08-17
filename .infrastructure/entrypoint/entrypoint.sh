@@ -5,13 +5,12 @@
 #
 # This file adds functionality, then calls parent entrypoint.sh
 #
-
 boot_app_in_background() {
     /entrypoint.sh &
 }
 
 wait_for_app_to_get_up() {
-    max_to_timeout=300
+    max_to_timeout=60
 
     while ! curl -s http://localhost | grep "Hello"; do
         sleep 1
@@ -34,27 +33,29 @@ set_application_in_test_mode() {
 
 #
 # There are no separate containers for PROD and TEST
-# This means if we want to execute the tests we need to install dependencies there.
 #
-install_and_execute_tests() {
+execute_tests() {
     cd /var/www/html
-    composer install --dev
-
     SYMFONY_DEPRECATIONS_HELPER=disabled=1 ./vendor/bin/codecept run functional --steps
 }
 
-entrypoint() {
-    if [[ ${API_TESTS} == "true" ]]; then
-        set -ex;
-        setup_nginx_to_listen_on_development_port
-        boot_app_in_background
-        wait_for_app_to_get_up
-        install_and_execute_tests
-        exit $?
-    fi
-
-    exec /entrypoint.sh
+# This means if we want to execute the tests we need to install dependencies there.
+install_dev_environment() {
+    echo " >> Updating the application before starting..."
+    su www-data -s /bin/bash -c "cd /var/www/html/ && make install"
 }
 
-entrypoint
-exit $?
+
+if [[ ${API_TESTS} == "true" ]]; then
+    set -ex;
+    setup_nginx_to_listen_on_development_port
+    set_application_in_test_mode
+    install_dev_environment
+    boot_app_in_background
+    wait_for_app_to_get_up
+    execute_tests
+    exit $?
+fi
+
+
+exec /entrypoint.sh

@@ -78,17 +78,19 @@ ENV DATABASE_URL=sqlite:///%kernel.project_dir%/var/data.db \
     PHP_POST_MAX_SIZE=15G
 
 COPY --from=builder /var/www/html /var/www/html
-ADD .infrastructure/entrypoint/entrypoint.d/prod_entrypoint.d.sh /entrypoint.d/
 ADD .infrastructure/entrypoint/entrypoint.d/sentry_entrypoint.d.sh /entrypoint.d/
 ADD .infrastructure/entrypoint/entrypoint.sh /overridden_entrypoint.sh
 ADD .infrastructure/healthcheck.sh /
 
 RUN cd /var/www/html \
-    && mkdir -p /etc/nginx/features/http.d/ /etc/nginx/features/server.d /etc/nginx/features/fastcgi.d mkdir -p /etc/nginx/features/available.d \
+    && cp .env.dist .env \
     \
+    # NGINX configuration
+    && mkdir -p /etc/nginx/features/http.d/ /etc/nginx/features/server.d /etc/nginx/features/fastcgi.d mkdir -p /etc/nginx/features/available.d \
     && cp /var/www/html/.infrastructure/nginx/feature.d/* /etc/nginx/features/available.d \
     && cp /var/www/html/.infrastructure/nginx/nginx.conf /etc/nginx/nginx.conf \
     \
+    # Application permissions and general scripts setup
     && chown www-data:www-data /var/www -R \
     && su www-data -s /bin/bash -c "composer install --no-dev" \
     && chmod +x /overridden_entrypoint.sh
