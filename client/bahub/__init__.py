@@ -1,12 +1,12 @@
+#!/usr/bin/env python3
 
 import sys
 import os
 import argparse
+import inspect
 
-t = sys.argv[0].replace(os.path.basename(sys.argv[0]), "") + "/"
-
-if os.path.isdir(t):
-    sys.path.append(t)
+path = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+sys.path.insert(0, path)
 
 if __name__ == "__main__":
     from bahubapp.service.configurationfactory import ConfigurationFactory
@@ -14,12 +14,6 @@ if __name__ == "__main__":
     from bahubapp.service.logger import LoggerFactory
     from bahubapp.service.errorhandler import ErrorHandlerService
     from bahubapp.service.notifier import Notifier
-else:
-    from .bahubapp.app import Bahub
-    from .bahubapp.service.configurationfactory import ConfigurationFactory
-    from .bahubapp.service.logger import LoggerFactory
-    from .bahubapp.service.errorhandler import ErrorHandlerService
-    from .bahubapp.service.notifier import Notifier
 
 
 def main():
