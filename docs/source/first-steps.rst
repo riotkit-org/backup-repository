@@ -1,17 +1,19 @@
 First steps
 ===========
 
-To start using the application you need to install PHP 7 with extensions listed in `composer.json` file (see entries ext-{name}),
-composer, and a database engine - SQLite3 or MySQL server.
+To start using the application you need to install PHP 7.3 with extensions listed in `composer.json` file (see entries ext-{name}),
+composer.
 
 You can also use a ready-to-use docker container instead of using host installation of PHP, **if you have a possibility always use a docker container**.
 
 Summary of application requirements:
 
-- PHP7.2 or newer
-- SQLite3 or MySQL database
+- PHP 7.3 or newer
+- SQLite3, MySQL 5.7+ or PostgreSQL 10+
 - Composer (PHP package manager, see packagist.org)
 - make (GNU Make)
+
+Notice: For PostgreSQL configuration please check the configuration reference at :ref:`postgresql_support` page
 
 Manual installation
 ===================
@@ -19,7 +21,9 @@ Manual installation
 At first you need to create your own customized `.env` file with application configuration.
 You can create it from a template `.env.dist`.
 
-Make sure the **APP_ENV** is set to **prod**.
+Make sure the **APP_ENV** is set to **prod**, and that the database settings are correct.
+On default settings the application should be connecting to a SQLite3 database placed in local file, but this is
+not optimal for production usage.
 
 .. code:: shell
 
@@ -45,9 +49,9 @@ Installation with docker
 
 You have at least three choices:
 
-- Use `wolnosciowiec/file-repository` container by your own (advanced)
+- Use `quay.io/riotkit/file-repository` container by your own (advanced)
 - Use a prepared docker-compose environment placed in `examples/docker` directory
-- Create your own environment based on docker-compose
+- Create your own environment basing on provided example docker-compose
 
 Proposed way to choose is the prepared docker-compose environment that is placed in `examples/docker` directory.
 Here are instructions how to start with it:

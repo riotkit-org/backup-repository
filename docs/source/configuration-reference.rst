@@ -49,41 +49,37 @@ There exists extra parameters that are implemented by the docker container itsel
  Name and example               Description
 =============================  =====================================================================================
   WAIT_FOR_HOST=db_mysql:3306   (optional) Waits up to 2 minutes for host to be up when starting a container
-  FEATURES=gateway-real-ip      (optional) Feature toggle, see section "NGINX features"
   SENTRY_DSN=url-here           (optional) Enables integration with sentry.io, so all failures will be logged there
 =============================  =====================================================================================
 
 
-NGINX features
---------------
+.. _postgresql_support:
 
-The NGINX configuration can be easily extend with toggleable features.
+PostgreSQL support
+------------------
 
-Example:
+Due to lack of Unix sockets support in Doctrine Dbal library we created a custom PostgreSQL adapter.
 
-1. Place a feature here in "feature.d"
-2. As a first line add a comment header `#@feature: /etc/nginx/features/fastcgi.d`
-3. Enable the feature with environment variable eg. `FEATURES=gateway-real-ip,some-other-feature`
+**UNIX Socket example:**
 
+.. code:: bash
 
-There are multiple sections in NGINX configuration file where you can attach a feature.
+    DATABASE_URL=
+    POSTGRES_DB_PDO_ROLE=... (in most cases same as username)
+    POSTGRES_DB_PDO_DSN="pgsql:host=/var/run/postgresql;user=...;dbname=...;password=...;"
+    DATABASE_CHARSET=UTF8
+    DATABASE_COLLATE=pl_PL.UTF8
+    DATABASE_DRIVER=pdo_pgsql
+    DATABASE_VERSION=10.10
 
-==================================  ====================================================================================
-----------------------------------  ------------------------------------------------------------------------------------
- Path                                Description
-==================================  ====================================================================================
- /etc/nginx/features/http.d/         Inside of a http { } block
- /etc/nginx/features/server.d/       Inside of a server { } block, but outside of a location { }
- /etc/nginx/features/fastcgi.d/      Inside of a location { } block, where the fastcgi is configured
-==================================  ====================================================================================
+**IPv4 example:**
 
+.. code:: bash
 
-Built-in NGINX features
------------------------
-
-==================================  ====================================================================================
-----------------------------------  ------------------------------------------------------------------------------------
- Feature                                Description
-==================================  ====================================================================================
- gateway-real-ip                     Populate REMOTE_ADDR and X-Real-Ip with values from parent NGINX (gateway/front)
-==================================  ====================================================================================
+    DATABASE_URL=
+    POSTGRES_DB_PDO_ROLE=... (in most cases same as username)
+    POSTGRES_DB_PDO_DSN="pgsql:host=my_db_host;user=...;dbname=...;password=...;"
+    DATABASE_CHARSET=UTF8
+    DATABASE_COLLATE=pl_PL.UTF8
+    DATABASE_DRIVER=pdo_pgsql
+    DATABASE_VERSION=10.10

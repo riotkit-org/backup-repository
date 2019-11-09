@@ -11,10 +11,11 @@ Lightweight, requires just PHP7 and at least SQLite3 or MySQL (other databases c
 Main functionality:
 
 - Strict access control, you can **generate a token** that will have access to specific actions on specific items
-- Store files where you need; on **AWS S3, Minio.io, Dropbox, Google Drive, FTP, SFTP, and others...**
+- Store files where you need; on **AWS S3, Minio.io, FTP, local storage and others...**
 - **Deduplication for non-grouped files**. There will be no duplicated files stored on your disk
 - **Backups management**, you can define a collection of file versions that can **rotate on adding a new version**
-- Pure API, you can choose any frontend, use it internally in your application, or create your own frontend
+- API + lightweight frontend
+- Ready to integrate upload forms for your applications. Only generate token and redirect a user to an url
 
 .. toctree::
    :maxdepth: 2
@@ -44,7 +45,7 @@ Project was started as a part of RiotKit initiative, for the needs of grassroot 
 
 Technical description:
 
-Project was created in *Domain Driven* like design in PHP7, with Symfony 4 framework.
+Project was created in *Domain Driven* like design in PHP 7, with Symfony 4 framework.
 There are API tests written in *Postman* and unit tests written in *PhpUnit*.
 Feel free to submit pull requests, report issues, or join our team.
 The project is licensed with a MIT license.

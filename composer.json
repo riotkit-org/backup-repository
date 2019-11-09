@@ -10,6 +10,7 @@
         "ext-iconv": "*",
         "ext-json": "*",
         "ext-openssl": "*",
+        "ext-pdo": "*",
         "aws/aws-sdk-php": "^3.87",
         "blocktrail/cryptojs-aes-php": "^0.1.0",
         "coraxster/flysystem-aws-s3-v3-minio": "^1.0",

@@ -16,10 +16,11 @@ See the documentation there: https://file-repository.readthedocs.io/en/latest/in
 Main functionality:
 
 - Strict access control, you can **generate a token** that will have access to specific actions on specific items
-- Store files where you need; on **AWS S3, Minio.io, Dropbox, Google Drive, FTP, SFTP, and others...**
+- Store files where you need; on **AWS S3, Minio.io, FTP, local storage and others...**
 - **Deduplication for non-grouped files**. There will be no duplicated files stored on your disk
 - **Backups management**, you can define a collection of file versions that can **rotate on adding a new version**
-- Pure API, you can choose any frontend, use it internally in your application, or create your own frontend
+- API + lightweight frontend
+- Ready to integrate upload forms for your applications. Only generate token and redirect a user to an url
 
 Requirements:
 - PHP 7.2+ with bcmath, openssl, iconv, ctype, fileinfo

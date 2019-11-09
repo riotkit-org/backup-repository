@@ -4,6 +4,8 @@
  * Doctrine auto-mapping
  */
 
+use App\Infrastructure\Common\Service\PostgreSQLDoctrineDriver;
+
 if (!\function_exists('getDirSubDirs')) {
     function getDirSubDirs($dir, &$results = array())
     {
@@ -115,22 +117,49 @@ if (!function_exists('generateDoctrineMappings')) {
 # This allows you to run cache:warmup even if your
 # environment variables are not available yet.
 # You should not need to change this value.
+$databaseDriver = $_SERVER['DATABASE_DRIVER'] ?? 'pdo_mysql';
+$defaultsForSupportedDrivers = [
+    'pdo_mysql' => [
+        'env(DATABASE_VERSION)' => '5.8',
+        'env(DATABASE_CHARSET)' => 'utf8mb4',
+        'env(DATABASE_COLLATE)' => 'utf8mb4_unicode_ci'
+    ],
+    'pdo_pgsql' => [
+        'env(DATABASE_VERSION)' => '10.10',
+        'env(DATABASE_CHARSET)' => 'UTF-8',
+        'env(DATABASE_COLLATE)' => 'pl_PL.UTF-8'
+    ]
+];
+
+$driverDefaults = $defaultsForSupportedDrivers[$databaseDriver] ?? [];
+
 $container->setParameter('env(DATABASE_URL)', '');
 $container->setParameter('env(DATABASE_DRIVER)', 'pdo_mysql');
-$container->setParameter('env(DATABASE_VERSION)', '5.7');
+$container->setParameter('env(DATABASE_VERSION)', $driverDefaults['env(DATABASE_VERSION)']);
+$container->setParameter('env(DATABASE_CHARSET)', $driverDefaults['env(DATABASE_CHARSET)']);
+$container->setParameter('env(DATABASE_COLLATE)', $driverDefaults['env(DATABASE_COLLATE)']);
+
+$dbalConfiguration = [
+    'driver'         => '%env(resolve:DATABASE_DRIVER)%',
+    'server_version' => '%env(resolve:DATABASE_VERSION)%',
+    'charset'        => '%env(DATABASE_CHARSET)%',
+    'default_table_options' => [
+        'charset' => '%env(DATABASE_CHARSET)%',
+        'collate' => '%env(DATABASE_COLLATE)%'
+    ],
+    'url' => '%env(resolve:DATABASE_URL)%'
+];
+
+if ($databaseDriver === 'pdo_pgsql') {
+    $dbalConfiguration['driver_class'] = PostgreSQLDoctrineDriver::class;
+
+    if (empty($_SERVER['POSTGRES_DB_PDO_DSN']) || empty($_SERVER['POSTGRES_DB_PDO_ROLE'])) {
+        throw new \Exception('POSTGRES_DB_PDO_DSN and POSTGRES_DB_PDO_ROLE are required, in case when DATABASE_DRIVER=pdo_pgsql');
+    }
+}
 
 $container->loadFromExtension('doctrine', [
-    'dbal' => [
-        'driver'         => '%env(resolve:DATABASE_DRIVER)%',
-        'server_version' => '%env(resolve:DATABASE_VERSION)%',
-        'charset'        => 'utf8mb4',
-        'default_table_options' => [
-            'charset' => 'utf8mb4',
-            'collate' => 'utf8mb4_unicode_ci'
-        ],
-        'url' => '%env(resolve:DATABASE_URL)%'
-    ],
-
+    'dbal' => $dbalConfiguration,
     'orm' => [
         'auto_generate_proxy_classes' => '%kernel.debug%',
         'naming_strategy'             => 'doctrine.orm.naming_strategy.underscore',
