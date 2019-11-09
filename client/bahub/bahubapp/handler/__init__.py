@@ -30,9 +30,9 @@ class BackupHandler:
 
     def perform_backup(self):
         self._validate()
-        self._validate_running_command()
+        self._prevalidate_if_the_command_not_dies_early()
 
-        response = self._read()
+        response = self._read_import_stream()
 
         if response.return_code != 0 and response.return_code is not None:
             raise ReadWriteException('Backup source read error, use --debug and retry to investigate')
@@ -86,6 +86,8 @@ class BackupHandler:
             try:
                 copyfileobj(stdin, process.stdin)
             except BrokenPipeError:
+                process.kill()
+
                 raise ReadWriteException(
                     'Cannot write to process, broken pipe occurred, probably a tar process died. '
                     + str(process.stderr.read().decode('utf-8')) + ' ' + str(process.stdout.read().decode('utf-8'))
@@ -95,10 +97,10 @@ class BackupHandler:
 
         return CommandExecutionResult(process.stdout, process.stderr, process.returncode, process)
 
-    def _validate_running_command(self):
+    def _prevalidate_if_the_command_not_dies_early(self):
         """ Validate if the command really exports the data, does not end up with an error """
 
-        response = self._read()
+        response = self._read_import_stream()
         response.stdout.read(1024)
 
         response.process.kill()
@@ -112,9 +114,9 @@ class BackupHandler:
     def _validate(self):
         raise Exception('_validate() not implemented for handler')
 
-    def _read(self) -> CommandExecutionResult:
+    def _read_import_stream(self) -> CommandExecutionResult:
         """ TAR output or file stream buffered from ANY source for example """
-        raise Exception('_read() not implemented for handler')
+        raise Exception('_read_import_stream() not implemented for handler')
 
     def _write(self, stream) -> CommandExecutionResult:
         """ A file stream or tar output be written into the storage. May be OpenSSL encoded, depends on definition """

@@ -15,7 +15,7 @@ class LocalFileBackup(BackupHandler):
             if not os.path.exists(path):
                 raise Exception('Path "' + path + '" does not exist')
 
-    def _read(self) -> CommandExecutionResult:
+    def _read_import_stream(self) -> CommandExecutionResult:
         """ Read from local directory and return as a TAR-OPENSSL stream """
 
         tar_cmd = self._get_definition().get_pack_cmd(self._get_definition().get_paths())

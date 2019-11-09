@@ -12,7 +12,7 @@ class MySQLBackup(AbstractDocker):
     def _validate(self):
         pass
 
-    def _read(self):
+    def _read_import_stream(self):
         """
         Use MySQL dump command to extract data from database
         """

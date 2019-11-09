@@ -30,7 +30,7 @@ class DockerVolumeHotBackup(AbstractDocker):
                 definition
             )
 
-    def _read(self) -> CommandExecutionResult:
+    def _read_import_stream(self) -> CommandExecutionResult:
         definition = self._get_definition()
 
         return self.backup_directories(
@@ -72,7 +72,7 @@ class DockerVolumeBackup(AbstractDocker):
         # check if container exists (may be stopped)?
         pass
 
-    def _read(self):
+    def _read_import_stream(self):
         definition = self._get_definition()
         self._stop_origin_and_start_temporary_containers()
 

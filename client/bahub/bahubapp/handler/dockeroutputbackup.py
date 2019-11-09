@@ -16,7 +16,7 @@ class DockerCommandOutputBackup(AbstractDocker):
             self._get_definition().get_container()
         )
 
-    def _read(self):
+    def _read_import_stream(self):
         definition = self._get_definition()
 
         return self._execute_in_container(

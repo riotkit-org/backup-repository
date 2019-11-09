@@ -13,7 +13,7 @@ class CommandOutputBackup(BackupHandler):
     def _validate(self):
         pass
 
-    def _read(self) -> CommandExecutionResult:
+    def _read_import_stream(self) -> CommandExecutionResult:
         return self._execute_command(
             self._pipe_factory.create_backup_command(
                 self._get_definition().get_command(),

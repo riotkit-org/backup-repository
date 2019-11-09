@@ -14,3 +14,7 @@ class CommandExecutionResult:
         self.stderr = stderr
         self.return_code = returncode
         self.process = process
+
+    def __del__(self):
+        self.process.kill()
+
