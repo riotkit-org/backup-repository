@@ -1,5 +1,8 @@
 version: "2"
 services:
+    #
+    # Our container that is running all the time, can run scheduled backups and manually triggered backups
+    #
     backup:
         image: wolnosciowiec/file-repository:bahub
         volumes:
@@ -12,6 +15,9 @@ services:
             - BACKUPS_REDIS_COLLECTION_ID=12345678-cccc-bbb-aaa-1232313213123
             - COMPOSE_PROJECT_NAME=test_client
 
+    #
+    # Test container for backup & restore
+    #
     redis:
         image: redis:3-alpine
         volumes:

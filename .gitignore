@@ -1,16 +1,7 @@
-###> symfony/framework-bundle ###
-/.env
-/public/bundles/
-/var/
-/vendor/
-###< symfony/framework-bundle ###
-
-###> symfony/web-server-bundle ###
-/.web-server-pid
-###< symfony/web-server-bundle ###
-
 # filesystem configuration
 /config/packages/oneup_flysystem.yaml
+/server/.idea
+/bahub-client/.idea
 
 /.idea
 /supervisord.log
@@ -29,11 +20,11 @@
 ###< symfony/phpunit-bridge ###
 
 # bahub
-/client/bahub.egg-info
-/client/build
-/client/.idea
-/client/supervisord.log
-/client/supervisord.pid
+/bahub-client/bahub.egg-info
+/bahub-client/build
+/bahub-client/.idea
+/bahub-client/supervisord.log
+/bahub-client/supervisord.pid
 *.pyc
 
 ###> phpunit/phpunit ###

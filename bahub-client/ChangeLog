@@ -1,6 +1,139 @@
 CHANGES
 =======
 
+* Tests: Refactor usages of internal methods
+* CI: Corrected tests on Travis. Those tests were not working due to bug in docker-compose (compose was adding suffixes to container names which caused bash scripts not working)
+* CI: Clean up containers between test cases
+* - Bahub: Fixed incorrect imports - Clean up: Removed gitver, we didnt use it at all
+* File Repository: Corrected error
+* Client - Bahub: Mainly naming refactor
+* PostgreSQL support, clean up in "nginx features", updated documentation
+* Refactor imports
+* Bump docker image on \`master\` branch
+* Simplifications to the NGINX configuration
+* Simplified the build, the bcmath was moved to base container
+* Added dependency for the MySQL check util from RiotKit's CI Utils
+* Corrected Bahub integration tests
+* Fixes to env support
+* Fixed deployment, improved Docker image size
+* Added --no-dev to composer at Dockerfile to reduce image size
+* Fixed travis build - migrations does not need to be executed in unit tests, they are executed in API tests
+* Clean up and fixes to the Docker container
+* Improved configuration reference
+* Added missing variable \`BACKUP\_MAX\_VERSIONS\` that was not shown in the documentation and .env.dist file
+* Docs: Corrected paths in "first steps"
+* CI: Refactored Makefile, downgraded PHPUnit for compatibility with Codeception
+* CI: Added "skip\_existing: true" to deploy to PIP
+* CI: Corrected notifications
+* Added build notifications, switched base images in Dockerfile
+* Client: Removed pixz as it is not supported by used Alpine
+* Client: Added pigz and pixz for parallel archive creation
+* Server: Updated dependencies, integrated Sentry.io to the application - deleted special Docker container
+* Server: Bump version to rebuild from newest docker's php-app base image. Fixed health check endpoint on sentry
+* Server: Hotfix - anti hotlink controller does not work because of invalid configuration
+* Server: For for
+* Server: Fixed missing ".infrastructure" directory on docker build
+* Server: Fixed a typo
+* Server: Clean up of the docker container
+* Server: Improved size of the docker image, added more accurate health check to the docker image, removed npm from target container
+* Server: Resolved problem with composer dependencies
+* Server: Adjusted configuration settings to the recent version of base docker container, set memory\_limit to 256 megabytes
+* Server: Added info about the authorization to the docs
+* Server: Excluded Minimum.UI endpoints from API docs
+* Server: Added access control for "/version" endpoint, added api docs
+* Server: "/version" endpoint
+* Server: Added endpoint "/version"
+* Server + Bahub: Added post-commit hook
+* Server + Bahub: Automated releasing
+* Server: Clean up - deleted postman tests
+* Server: Introducing strict versioning with GITVER
+* Server: Went back to Symfony 4.2 from 4.3 due to incompatibilites of few bundles, added initial support for API documentation in NelmioApiDocBundle
+* Server: Switched base image to image hosted on quay.io
+* Server: Adjusted error logging
+* Server: Updated docs, added fixes
+* Server: Added a feature to optionally allow to restrict usage of token for given User-Agent headers and/or IP addresses. This is a gateway to fully assigned tokens for anonymous users using the application
+* Server: Added support for replication READ-ONLY mode, it's now an environment variable "READ\_ONLY". Accepts true/false values
+* Server: Disabled Symfony deprecation helper in API tests, so they will now be green. We do not care about deprecations in Codeception API testing framework, we care about deprecations in our code only
+* Server: Resolved problems with not up-to-date unit tests
+* Server: Resolved problem with PhpUnit version
+* Server: Upgraded dependencies to try to resolve the issue on Travis with PHP 7.3 build
+* Server: Corrected tests running all together
+* Bahub: Corrected logging, now the Docker container is logging to a single file and showing normally the logs
+* Server: Added feature - new role "upload.only\_once\_successful" that allows to restrict token to MAXIMUM ONE SUCCESSFUL UPLOAD
+* Server: Moved more variables to Dockerfile, so now also the tests on travis should start working
+* Server: Covered with API tests the alerting strategy in collection upload
+* Server: Resolved a typing problem in backups collection uploading, when a weird failure happens
+* Server: Covered collection strategy "delete\_oldest\_when\_adding\_new"
+* Server: Versioning functionality is now more generic, and should not be only considered as "backup" but generally as a versioning storage (including backup usage)
+* Server: Added additional test case for collections listing test
+* Server: cURL exceptions - added one more case to handle
+* Server: Added API tests coverage for listing and searching collections
+* Server: Added new setting "HTTP\_TIMEOUT" to set timeout on HTTP download, when uploading by URL
+* Server: Handling of cURL errors when downloading a remote URL. Now the error is now shown as 500, but as a 400 with details
+* Server: Attempt to connect to travis ci + increased coverage
+* Server: Travis - fix to try to run codeception api tests
+* Server: Clean up in tests
+* Server: Covered collections adding, editing, deleting
+* Server: Covered collections adding, editing, deleting
+* Server: Bugfix - added missing role about editing allowed collections
+* Server: Increased coverage
+* Server: Added coverage for registry listing, added possibility to backup & restore the database during tests
+* Server: Postman support will be completely deleted
+* Server: Fixed a high-risk security issue, the local adapter was storing files inside src directory. Symfony cache was indexing this directory while bootstraping (ex. on container restart in production mode, in dev and test modes on each request)
+* Server: Covered file registry upload and delete with API tests in codeception
+* Server: Increased API tests coverage
+* Server: Proper response instead of 500 in case, when fileUrl does not exist in upload-by-url
+* Server: Covered authentication module with Codeception API tests
+* Server: Fixed multiple files upload at once. All files were getting the same file name. On frontend not sending filename as query string parameter, but in multipart files. On backend added support to take the filename (if not specified in query string) from multipart - for compatibility with various uploaders
+* Server: Added initial codeception setup
+* Server: Now the "token" and "x-auth-token" headers are properly handled
+* Server: Added proper error handling for value objects
+* Server: Corrected health checks
+* Server: Split filesystem adapters into READ and WRITE for better handling of clusters and performant infrastructures
+* Docs: Added listing to index
+* Added docs for listing
+* Docs: Added info how to provision the token
+* Create LICENSE
+* The Bahub container now does not generate spam
+* Added docker/releases/versioning section
+* Added info about quay images
+* Made a clean up of infrastructural files and added feature toggle to the NGINX, so new features can be toggled on/off
+* AntiHotlink feature: Resolved a notice about array to string conversion ($\_SERVER['argv'] or $\_SERVER['argc'] was an array)
+* AntiHotlink feature: The value is now unescaped, it makes life so much easier when a unnecessary quotes are applied (eg. in docker container configuration)
+
+v2.0.6
+------
+
+* Added link to the general guide
+* Increased coverage by covering the UploadSecurityContext
+* Security: Files without a password cannot be overwritten if not an administrator
+* Fixed type error in snapshot command
+* Not raising an exception in the notifier, just printing it into the stdout - notification error cannot cancel a backup from creation
+* Added APP\_DOMAIN variable in case when "Host" header could be incorrect because of eg. complex and invalid networking configuration
+* Fixed developer toolbar displaying
+* Minimum.ui: Polish/Polski translation
+* Minimum.ui: Added tags, visibility, password fields
+* Simplification
+* Added VIDEO uploading role, the security validation error is now more verbose
+* Upgraded libraries to newest versions
+
+v2.0.5
+------
+
+* Covered ViewFileHandler partially
+* Exported values marked as todo in the container to the .env variables
+* Preparation for unit testing
+* Fixed magic properties, we use only explicit properties
+* Improving performance of the IoC container by excluding non-service classes
+* Excluded Controllers and Migrations from coverage
+* Added mockery for testing complex classes like Handlers
+* Covered aggregate with tests
+* Fixed HTTP Bytes range support. So now the application serves partial content on-demand when streaming media files, eg. video files
+* The \`make run\_dev\` now runs an official docker image rather than the Symfony's built-in webserver. The reason was that the Symfony's built-in webserver does not support range requests and streaming so good as the NGINX does
+* Added missing netcat package, required by recent feature of waiting for database to start
+* Added waiting for host to be up (eg. database) on server start
+* Adjusted unit tests to changes on purpose
+* Added definition name to the notifications and error messages
 * Added docs to the monitoring features
 * Resolved: \`TypeError: \_\_init\_\_() missing 1 required positional argument: 'notifier'\`
 * Clean up
@@ -10,6 +143,10 @@ CHANGES
 * Fixed not working templating in the URL, extended the syntax and covered with tests
 * Increased tests coverage for value objects: PositiveNumber
 * Increasing tests coverage
+
+v2.0.4
+------
+
 * Fixed deploy conditions
 * Update .travis.yml
 
@@ -233,8 +370,8 @@ v2.0.3
 * Clean up
 * Added .idea to the .gitignore
 
-v1.1
-----
+v1.1.0
+------
 
 * [https://github.com/Wolnosciowiec/image-repository/issues/1][https://github.com/Wolnosciowiec/image-repository/issues/3] Implemented tags support
 * Security fix: Escaping upload/download paths

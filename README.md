@@ -13,7 +13,7 @@ Lightweight, requires just PHP7 and at least SQLite3 or MySQL (other databases c
 
 #### For installation, guides and more information please check he documentation: https://file-repository.readthedocs.io/en/latest/index.html
 
-Main functionality:
+**Main functionality:**
 
 - Strict access control, you can **generate a token** that will have access to specific actions on specific items
 - Store files where you need; on **AWS S3, Minio.io, FTP, local storage and others...**
@@ -22,7 +22,7 @@ Main functionality:
 - API + lightweight frontend
 - Ready to integrate upload forms for your applications. Only generate token and redirect a user to an url
 
-Requirements:
+**Requirements for the server:**
 - PHP 7.2+ with bcmath, openssl, iconv, ctype, fileinfo
 - Composer (PHP package manager)
 - sphinx-glpi-theme (for documentation)
@@ -31,6 +31,10 @@ Requirements:
 - sha256sum
 - MySQL 5.7+ / SQLite 3 / PostgreSQL (not officially supported but may work)
 
+**Requirements for the backup client "Bahub":**
+- Python 3.5+
+- For a list of required pip packages check: [requirements.txt](bahub-client/requirements.txt)
+
 Copyleft
 --------
 
@@ -38,5 +42,5 @@ Created by **RiotKit Collective** as part of Wolnościowiec initiative.
 Project initially created for three purposes: 
 
 - To store static files uploaded for users (libertarian/anarchist portal)
-- To store and serve video files (video archive)
+- To store and serve training video files (video archive)
 - To store backups and version them. Limit the disk space and permissions to create a shared space for multiple organizations fighting for human-rights, tenants-rights, working-class rights and animals-rights.

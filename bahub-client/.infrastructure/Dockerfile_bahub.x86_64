@@ -4,14 +4,14 @@ ENV DISABLE_SCHEDULED_JOBS=0
 
 RUN apk --update add python3 make bash sudo openssl-dev git openssl supervisor rsyslog xz bzip2 pigz
 
-ADD client /bahub
+ADD bahub-client /bahub
 ADD .git /bahub/.git
 
 RUN cd /bahub \
     && make install \
-    && chmod +x /bahub/docker_entrypoint.sh \
+    && chmod +x /bahub/.infrastructure/docker_entrypoint.sh \
     && mv /usr/bin/bahub /usr/bin/bahub-origin \
-    && cp /bahub/docker_bahub.sh /usr/bin/bahub \
+    && cp /bahub/.infrastructure/docker_bahub.sh /usr/bin/bahub \
     && chmod +x /usr/bin/bahub
 
 #VOLUME "/bahub.conf.yaml"

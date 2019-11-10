@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 $bundles = [
     Symfony\Bundle\FrameworkBundle\FrameworkBundle::class => ['all' => true],
@@ -14,7 +14,7 @@ $bundles = [
 ];
 
 $nonProdBundles = [
-    Symfony\Bundle\WebServerBundle\WebServerBundle::class => ['dev' => true],
+    Symfony\Bundle\WebServerBundle\WebServerBundle::class => ['dev' => true, 'test' => true],
     Symfony\Bundle\WebProfilerBundle\WebProfilerBundle::class => ['dev' => true, 'test' => true],
     Symfony\Bundle\DebugBundle\DebugBundle::class => ['dev' => true, 'test' => true],
 ];

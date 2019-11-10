@@ -9,8 +9,6 @@
 /.env
 /.web-server-pid
 /.gitignore
-/client/build
-/client/bahub.egg-info
 /.idea
 /supervisord.log
 /supervisord.pid

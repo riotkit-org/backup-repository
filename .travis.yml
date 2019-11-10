@@ -3,7 +3,8 @@
         - sudo apt-get update
         - sudo apt-get install -y openssl
     before_script:
-        - cd client && make install_requirements PIP="pip"
+        - cd bahub-client
+        - make install_requirements PIP="pip"
         - sudo mv /usr/bin/{python,python.backup}
         - sudo mv /usr/bin/{python3,python3.backup}
         - sudo ln -s $(which python) /usr/bin/python
@@ -21,86 +22,88 @@
         - bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [FAILURE] Bahub unit tests are failing."
 
 
+jobs:
+  include:
+    - stage: File Repository unit tests @ PHP 7.3
+      language: php
+      php: '7.3'
+      before_script:
+          - composer install
+          - mkdir -p ./var && chmod 777 ./var -R
+      script:
+          - make coverage
+      after_success:
+          - bash <(curl -s https://codecov.io/bash) -cF php
+          - bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [OK] File repository unit tests passed."
+      after_failure: bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [FAILURE] File repository unit tests are failing."
 
-matrix:
-    allow_failures:
-        - php: nightly
+    - stage: File Repository unit tests @ PHP nightly (allowed to fail)
+      language: php
+      php: nightly
+      before_script:
+          - cd server
+          - composer install
+          - mkdir -p ./var && chmod 777 ./var -R
+      script: make coverage
+      after_success: bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [OK] File repository unit tests at PHP Nightly passed."
+      after_failure: bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [FAILURE] File repository unit tests at PHP Nightly are failing."
 
-    include:
-        #
-        # File Repository (server)
-        #
-        - language: php
-          name: File Repository unit tests @ PHP 7.3
-          php: '7.3'
-          before_script:
-              - composer install
-              - mkdir -p ./var && chmod 777 ./var -R
-          script:
-              - make coverage
-          after_success:
-              - bash <(curl -s https://codecov.io/bash) -cF php
-              - bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [OK] File repository unit tests passed."
-          after_failure:
-              - bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [FAILURE] File repository unit tests are failing."
+    - stage: File Repository API tests
+      language: php
+      services:
+          - docker
+      php:
+          - '7.3'
+      before_script: cd server
+      script: make build@x86_64 test_api SUDO=""
+      after_success: bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [OK] File repository API tests passed."
+      after_failure: bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [FAILURE] File repository API test are failing."
 
-        - language: php
-          name: File Repository unit tests @ PHP nightly (allowed to fail)
-          php: nightly
-          before_script:
-              - composer install
-              - mkdir -p ./var && chmod 777 ./var -R
-          script:
-              - make coverage
-          after_success:
-              - bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [OK] File repository unit tests at PHP Nightly passed."
-          after_failure:
-              - bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [FAILURE] File repository unit tests at PHP Nightly are failing."
+    #
+    # Bahub (Backups API client)
+    #
+    - stage: Bahub Unit test @ Python 3.6
+      language: python
+      python: 3.6
+      <<: *bahub_unit_tests_template
 
-        - language: php
-          name: File Repository API tests
-          services:
-              - docker
-          php:
-              - '7.3'
-          script:
-              - make build@x86_64 test_api SUDO=""
-          after_success:
-              - bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [OK] File repository API tests passed."
-          after_failure:
-              - bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [FAILURE] File repository API test are failing."
+    - stage: Bahub functional test
+      language: python
+      services: docker
+      python: 3.6
+      before_install:
+          - sudo apt-get update
+          - sudo apt-get install -y openssl
+      before_script:
+          # change docker-compose to a version that contains this fix: https://github.com/docker/compose/pull/6377/files
+          - sudo curl -L "https://github.com/docker/compose/releases/download/1.24.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/bin/docker-compose
+          - make build@x86_64 build_bahub@x86_64
+      script: cd bahub-client && make test
+      after_success: bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [OK] Bahub functional tests are passing."
+      after_failure: bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [FAILURE] Bahub fuctional tests are not passing.."
 
-        #
-        # Bahub (Backups API client)
-        #
-        - language: python
-          name: Bahub Unit test @ Python 3.6
-          python: 3.6
-          <<: *bahub_unit_tests_template
-          deploy:
-              skip_cleanup: true
-              provider: pypi
-              distributions: sdist bdist_wheel
-              skip_existing: true
-              on:
-                  all_branches: true
-                  condition: $TRAVIS_TAG =~ ^v[0-9\.a-z\-]+ || $TRAVIS_BRANCH == "master"
-              user: marek_man
-              password:
-                  secure: XUgQcpOxE2HCcmD8uJ8yzBsxnIdH8SNA91fEC54fzVvD5KupxFtuLs5OAL9Mj0xiXjfoTAS5za4RaPCSQPu/GVvmAtMnA1+tjdk1NxenmtlZOR54PmaQ3gY4QTyb0UUH08QcG5MZA0EDBlhyOcxpf5jp30oUT/h3zSHCM/hJ6lsoDtwn7foBUtLDxlOVIwdA7rO5pWPhg2YKJDlPkg6Bo2TpNMtKh4kjSN3somD1GRDdBEnqPKlSFi5Xiu3RhFwoUohGPMZhocrwA9aaLonx+XmZ+KOqiJX+kJg2c1hreYHUlqVCydHIDrnA8iQKEs+alI71ERGUuTkXZQYDfUJ1s7Ycnpj0Xg8iBa4bGSpvjNJYYfulXjFUH9XdIk2OMYzsKbuv+AS0aIQHjQXqk4u5szqZKhmpTYyRHdMObODjTBB1Vgdz3N437ex+biApsm7fM7QKN7iFD6RNqGPa2ksrF80/lxnvCkVTU1MGOqxsdsBEO1hoCl8OxqtNoTzLoJDwq7zJpMIrBbjnsum86QpGZh85JO8kzDeSvK08lRz3fqwbQjw6WhJbqeev6l+YvUWFKq8E+ElVVuj7xelKSjW0DBYdxVKKhlF7C2CaJnikvd2Y8nnMVtSQrlOPCh0KZm4tj+AoaOKNYa/EdefwS2coJZPstqq8l1AvN3L6fAuxj9s=
+    - stage: "Server: Publish docker image"
+      language: python
+      python: 3.6
+      script: cd server && make push TAG=${TRAVIS_TAG}
 
-        - language: python
-          name: Bahub functional test
-          services: docker
-          python: 3.6
-          before_install:
-              - sudo apt-get update
-              - sudo apt-get install -y openssl
-          before_script:
-              - make build@x86_64 build_bahub@x86_64
-          script:
-              - cd client && make test
-          after_success:
-              - bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [OK] Bahub functional tests are passing."
-          after_failure:
-              - bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [FAILURE] Bahub fuctional tests are not passing.."
+    - stage: "Bahub Client: Publish docker image"
+      language: python
+      python: 3.6
+      script: cd bahub-client && make push TAG=${TRAVIS_TAG}
+
+    - stage: "Bahub Client: Deploy to PyPI"
+      language: python
+      python: 3.6
+      script: cd bahub-client
+      deploy:
+          skip_cleanup: true
+          provider: pypi
+          distributions: sdist bdist_wheel
+          skip_existing: true
+          on:
+              all_branches: true
+              condition: $TRAVIS_TAG =~ ^v[0-9\.a-z\-]+ || $TRAVIS_BRANCH == "master"
+          user: marek_man
+          password:
+              secure: XUgQcpOxE2HCcmD8uJ8yzBsxnIdH8SNA91fEC54fzVvD5KupxFtuLs5OAL9Mj0xiXjfoTAS5za4RaPCSQPu/GVvmAtMnA1+tjdk1NxenmtlZOR54PmaQ3gY4QTyb0UUH08QcG5MZA0EDBlhyOcxpf5jp30oUT/h3zSHCM/hJ6lsoDtwn7foBUtLDxlOVIwdA7rO5pWPhg2YKJDlPkg6Bo2TpNMtKh4kjSN3somD1GRDdBEnqPKlSFi5Xiu3RhFwoUohGPMZhocrwA9aaLonx+XmZ+KOqiJX+kJg2c1hreYHUlqVCydHIDrnA8iQKEs+alI71ERGUuTkXZQYDfUJ1s7Ycnpj0Xg8iBa4bGSpvjNJYYfulXjFUH9XdIk2OMYzsKbuv+AS0aIQHjQXqk4u5szqZKhmpTYyRHdMObODjTBB1Vgdz3N437ex+biApsm7fM7QKN7iFD6RNqGPa2ksrF80/lxnvCkVTU1MGOqxsdsBEO1hoCl8OxqtNoTzLoJDwq7zJpMIrBbjnsum86QpGZh85JO8kzDeSvK08lRz3fqwbQjw6WhJbqeev6l+YvUWFKq8E+ElVVuj7xelKSjW0DBYdxVKKhlF7C2CaJnikvd2Y8nnMVtSQrlOPCh0KZm4tj+AoaOKNYa/EdefwS2coJZPstqq8l1AvN3L6fAuxj9s=

@@ -25,6 +25,7 @@
         "sentry/sentry-symfony": "^3.1",
         "symfony/asset": "4.3.*",
         "symfony/console": "*",
+        "symfony/debug-pack": "^1.0",
         "symfony/dotenv": "4.3.*",
         "symfony/flex": "^1.1",
         "symfony/form": "*",
@@ -40,7 +41,6 @@
         "twistor/flysystem-stream-wrapper": "^1.0"
     },
     "require-dev": {
-        "symfony/debug-pack": "^1.0",
         "codeception/codeception": "^3.0",
         "flow/jsonpath": "^0.4.0",
         "mockery/mockery": "^1.2",
