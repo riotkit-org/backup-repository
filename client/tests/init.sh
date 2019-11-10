@@ -49,6 +49,7 @@ prepare_file_repository_instance () {
 }
 
 prepare_environment() {
+    sudo docker-compose rm -s -v -f
     sudo docker-compose up -d --force-recreate
 }
 
