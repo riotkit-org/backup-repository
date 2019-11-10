@@ -19,7 +19,7 @@ bahub --config /etc/bahub/without_crypto.conf.yaml --debug backup local_command_
 echo " >> Executing recovery"
 bahub --config /etc/bahub/without_crypto.conf.yaml --debug recover plan_2
 
-if sudo docker exec tests_bahub_1 cat /tmp/fstab.restored|grep "/"; then
+if sudo docker exec bahub cat /tmp/fstab.restored|grep "/"; then
     echo " >> Expected to recover a file [ OK ]"
     exit 0
 fi

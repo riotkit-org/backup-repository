@@ -14,7 +14,7 @@ backups:
 
     docker_hot_volumes_example:
         type: docker_hot_volumes
-        container: "tests_test_www_1"
+        container: "test_www"
         access: backup_one
         encryption: none
         collection_id: "${COLLECTION_ID}"
@@ -24,7 +24,7 @@ backups:
 
     www_docker_offline:
         type: docker_volumes
-        container: "tests_test_www_1"
+        container: "test_www"
         access: backup_one
         encryption: none
         collection_id: "${COLLECTION_ID}"
@@ -41,7 +41,7 @@ backups:
 
     mysql_native_single_database:
         type: mysql
-        host: "tests_test_database_1"
+        host: "test_database"
         port: 3306
         user: root
         password: root
@@ -57,7 +57,7 @@ backups:
         user: root
         password: root
         database: "performance_schema"
-        container: "tests_test_database_1"     # this one is required to use a docker container
+        container: "test_database"     # this one is required to use a docker container
         access: backup_one
         encryption: none
         collection_id: "${COLLECTION_ID}"

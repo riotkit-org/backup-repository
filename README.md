@@ -11,7 +11,7 @@ File Repository is a modern API application dedicated for storing files.
 It is able to use various storage backends including AWS S3, Dropbox, Google Drive and just filesystem.
 Lightweight, requires just PHP7 and at least SQLite3 or MySQL (other databases can be also supported in future due to using ORM).
 
-See the documentation there: https://file-repository.readthedocs.io/en/latest/index.html
+#### For installation, guides and more information please check he documentation: https://file-repository.readthedocs.io/en/latest/index.html
 
 Main functionality:
 
@@ -30,39 +30,6 @@ Requirements:
 - file
 - sha256sum
 - MySQL 5.7+ / SQLite 3 / PostgreSQL (not officially supported but may work)
-
-Docker
-------
-
-```
-# server
-docker pull quay.io/riotkit/file-repository
-
-# server + sentry.io integration
-docker pull quay.io/riotkit/file-repository-sentry
-
-# backups shell client, it's main target is to work as an backup automation on production servers
-docker pull quay.io/riotkit/bahub
-```
-
-Testing
--------
-
-Server is tested by API tests and unit tests.
-Bahub client is tested with integration tests written in bash and docker, and unit tests.
-
-Starting the development
-------------------------
-
-```
-git clone git@github.com:riotkit-org/file-repository.git
-cd file-repository
-
-make develop
-make run_dev
-
-xdg-open http://localhost:8000
-```
 
 Copyleft
 --------
