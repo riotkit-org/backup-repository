@@ -135,9 +135,9 @@ $driverDefaults = $defaultsForSupportedDrivers[$databaseDriver] ?? [];
 
 $container->setParameter('env(DATABASE_URL)', '');
 $container->setParameter('env(DATABASE_DRIVER)', 'pdo_mysql');
-$container->setParameter('env(DATABASE_VERSION)', $driverDefaults['env(DATABASE_VERSION)']);
-$container->setParameter('env(DATABASE_CHARSET)', $driverDefaults['env(DATABASE_CHARSET)']);
-$container->setParameter('env(DATABASE_COLLATE)', $driverDefaults['env(DATABASE_COLLATE)']);
+$container->setParameter('env(DATABASE_VERSION)', $driverDefaults['env(DATABASE_VERSION)'] ?? '');
+$container->setParameter('env(DATABASE_CHARSET)', $driverDefaults['env(DATABASE_CHARSET)'] ?? '');
+$container->setParameter('env(DATABASE_COLLATE)', $driverDefaults['env(DATABASE_COLLATE)'] ?? '');
 
 $dbalConfiguration = [
     'driver'         => '%env(resolve:DATABASE_DRIVER)%',
