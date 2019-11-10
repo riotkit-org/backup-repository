@@ -87,12 +87,12 @@ jobs:
     - stage: "Server: Publish docker image"
       language: python
       python: 3.6
-      script: cd server && make push TAG=${TRAVIS_TAG:-latest}
+      script: cd server && make push_container TAG=${TRAVIS_TAG:-latest}
 
     - stage: "Bahub Client: Publish docker image"
       language: python
       python: 3.6
-      script: cd bahub-client && make push TAG=${TRAVIS_TAG:-latest}
+      script: cd bahub-client && make push_container TAG=${TRAVIS_TAG:-latest}
 
     - stage: "Bahub Client: Deploy to PyPI"
       language: python

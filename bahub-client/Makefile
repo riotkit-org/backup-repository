@@ -24,6 +24,10 @@ build_container: ## Build a docker container (parameters: TAG)
 	${SUDO} docker build .. -f ./.infrastructure/Dockerfile_bahub.x86_64 -t quay.io/riotkit/bahub:${TAG}
 	${SUDO} docker tag quay.io/riotkit/bahub:${TAG} quay.io/riotkit/bahub:latest-build
 
+push_container: ## Push docker container
+	${SUDO} docker push quay.io/riotkit/bahub:${TAG}
+	${SUDO} docker push quay.io/riotkit/bahub:latest-build
+
 clean: ## Clean up the local build directory
 	${SUDO} rm -rf ./build ./bahub.egg-info
 

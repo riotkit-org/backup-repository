@@ -38,6 +38,10 @@ build_container: ## Build docker image (params: TAG)
 	${SUDO} docker build .. -f ./.infrastructure/Dockerfile.x86_64 -t quay.io/riotkit/file-repository:${TAG}
 	${SUDO} docker tag quay.io/riotkit/file-repository:${TAG} quay.io/riotkit/file-repository:latest-build
 
+push_container: ## Push docker container
+	${SUDO} docker push quay.io/riotkit/file-repository:${TAG}
+	${SUDO} docker push quay.io/riotkit/file-repository:latest-build
+
 run_container: ## Run docker image (params: TAG)
 	${SUDO} docker run --rm --name file-repository -p 80:80 quay.io/riotkit/file-repository:${TAG}
 
