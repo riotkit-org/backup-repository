@@ -48,6 +48,10 @@ prepare_file_repository_instance () {
     sudo docker-compose up -d --force-recreate file-repository
 }
 
+prepare_environment() {
+    sudo docker-compose up -d --force-recreate
+}
+
 wait_for_container_to_start () {
     while ! sudo docker-compose exec file-repository curl http://localhost |grep "Hello, welcome" > /dev/null; do
         sleep 0.1
@@ -55,8 +59,8 @@ wait_for_container_to_start () {
 }
 
 before_running_all_tests () {
-    echo " ====> Preparing File Repository instance"
-    prepare_file_repository_instance 2>&1 > /dev/null
+    echo " ====> Preparing the environment"
+    prepare_environment 2>&1 > /dev/null
 
     echo " ====> Waiting for application to get up"
     wait_for_container_to_start "file-repository"

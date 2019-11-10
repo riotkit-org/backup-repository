@@ -41,4 +41,3 @@
 .phpunit.result.cache
 ###< phpunit/phpunit ###
 
-#/.gitver/.next_store

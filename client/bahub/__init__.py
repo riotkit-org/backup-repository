@@ -8,12 +8,11 @@ import inspect
 path = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 sys.path.insert(0, path)
 
-if __name__ == "__main__":
-    from bahubapp.service.configurationfactory import ConfigurationFactory
-    from bahubapp.app import Bahub
-    from bahubapp.service.logger import LoggerFactory
-    from bahubapp.service.errorhandler import ErrorHandlerService
-    from bahubapp.service.notifier import Notifier
+from bahubapp.service.configurationfactory import ConfigurationFactory
+from bahubapp.app import Bahub
+from bahubapp.service.logger import LoggerFactory
+from bahubapp.service.errorhandler import ErrorHandlerService
+from bahubapp.service.notifier import Notifier
 
 
 def main():

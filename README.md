@@ -64,14 +64,6 @@ make run_dev
 xdg-open http://localhost:8000
 ```
 
-Versioning
-----------
-
-The application is using GITVER tool to keep strict versioning.
-
-- A release should be made with a `make release`
-- When starting working on a next known release number then use `make version_set_next`
-
 Copyleft
 --------
 

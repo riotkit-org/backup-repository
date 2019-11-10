@@ -1,3 +1,0 @@
-#!/bin/bash
-
-gitver update version.yaml
