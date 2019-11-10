@@ -2,8 +2,7 @@
 
 bahub () {
     ARGS=$@
-    sudo docker-compose exec \
-        bahub /bin/sh -c "ADMIN_TOKEN=${ADMIN_TOKEN} COLLECTION_ID=${COLLECTION_ID} bahub-origin ${ARGS}"
+    exec_in_bahub_container "ADMIN_TOKEN=${ADMIN_TOKEN} COLLECTION_ID=${COLLECTION_ID} bahub-origin ${ARGS}"
 }
 
 #
@@ -14,13 +13,11 @@ bahub () {
 # $5 => total collection max size
 #
 create_collection () {
-    sudo docker-compose exec file-repository \
-        /bin/bash -c "cd /var/www/html && ./bin/console backup:create-collection -d '${1}' -f '${2}' -b '${3}' -o '${4}' -c '${5}'" | perl -pe 's/[^\w.-]+//g'
+    console "backup:create-collection -d '${1}' -f '${2}' -b '${3}' -o '${4}' -c '${5}'" | perl -pe 's/[^\w.-]+//g'
 }
 
 generate_admin_token () {
-    sudo docker-compose exec file-repository \
-        /bin/bash -c "cd /var/www/html && ./bin/console --env=prod auth:generate-admin-token" | perl -pe 's/[^\w.-]+//g'
+    console "auth:generate-admin-token" | perl -pe 's/[^\w.-]+//g'
 }
 
 console () {
