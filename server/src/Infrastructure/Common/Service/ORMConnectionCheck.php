@@ -18,6 +18,6 @@ class ORMConnectionCheck
 
     public function test(): bool
     {
-        return $this->connection->fetchColumn('SELECT 256;') === '256';
+        return (string) $this->connection->fetchColumn('SELECT 256;') === '256';
     }
 }
