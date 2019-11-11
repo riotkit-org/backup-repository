@@ -66,8 +66,14 @@ _set_env:
 		echo '${NAME}=${VALUE}' >> .env;\
 	fi
 
-test_api: build_container ## Run API tests in a docker container
-	sudo docker run -e API_TESTS=true -e APP_ENV=test --rm quay.io/riotkit/file-repository:latest-build
+test_api: build_container run_files_test_container ## Run API tests in a docker container
+	${SUDO} docker run -e API_TESTS=true -e APP_ENV=test --rm quay.io/riotkit/file-repository:latest-build
 
 coverage: ## Generate code coverage from unit testing
 	./bin/phpunit --coverage-text
+
+run_files_test_container: delete_files_test_container ## Run a webserver container that will act as a datasource in tests
+	${SUDO} docker run --rm -d --name fr_test_webserver -v $$(pwd)/../examples:/usr/share/nginx/html -p 33901:80 nginx:1
+
+delete_files_test_container: ## Delete the testing container that serves static files
+	${SUDO} docker rm -f fr_test_webserver >/dev/null 2>&1 || true

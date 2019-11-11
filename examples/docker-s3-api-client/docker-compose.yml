@@ -77,7 +77,7 @@ version: '2'
         #       Access it via localhost:8100, modify it's files in ./www
         #
         app_webserver:
-            image: nginx
+            image: nginx:1
             volumes:
                 - "./www:/usr/share/nginx/html"
             ports:

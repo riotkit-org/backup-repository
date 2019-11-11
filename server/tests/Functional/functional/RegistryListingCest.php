@@ -6,7 +6,7 @@ use FunctionalTester;
 
 class RegistryListingCest
 {
-    private const SAMPLE_FILE = 'https://sample-videos.com/img/Sample-jpg-image-50kb.jpg';
+    private const SAMPLE_FILE = 'http://localhost:33901/files/image.jpg';
 
     private function populateWithSomeData(FunctionalTester $I): void
     {
