@@ -66,7 +66,7 @@ _set_env:
 		echo '${NAME}=${VALUE}' >> .env;\
 	fi
 
-test_api: build@x86_64 ## Run API tests in a docker container
+test_api: build_container ## Run API tests in a docker container
 	sudo docker run -e API_TESTS=true -e APP_ENV=test --rm quay.io/riotkit/file-repository:latest-build
 
 coverage: ## Generate code coverage from unit testing
