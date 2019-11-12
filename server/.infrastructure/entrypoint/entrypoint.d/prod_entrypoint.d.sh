@@ -12,6 +12,12 @@ wait_for_db_to_get_up() {
     fi
 }
 
+correct_permissions() {
+    echo " >> Correcting permissions"
+    chown www-data:www-data /var/www/html
+    chown www-data:www-data /var/www/html/public
+    chown www-data:www-data -R /var/www/html/var
+}
 
 install() {
     echo " >> Updating the application before starting..."
@@ -19,4 +25,5 @@ install() {
 }
 
 wait_for_db_to_get_up
+correct_permissions
 install
