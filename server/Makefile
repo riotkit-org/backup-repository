@@ -67,4 +67,4 @@ coverage: ## Generate code coverage from unit testing
 	./bin/phpunit --coverage-text
 
 test_api: build_container ## Run API tests in a docker container (params: CODECEPT_ARGS, VARIANT)
-	cd env && make up test_api CODECEPT_ARGS=${CODECEPT_ARGS} VARIANT=${VARIANT}
+	cd env && make up test_api CODECEPT_ARGS="${CODECEPT_ARGS}" VARIANT="${VARIANT}"
