@@ -26,6 +26,7 @@ down: ## Delete the development environment
 	${SUDO} ${COMPOSE_ARGS} rm -f -s -v
 
 wait_for_app: ## Wait for application to be ready
+	${SUDO} ${COMPOSE_ARGS} ps
 	echo " >> Waiting for the application to start..."
 	counter=300; \
 	while ! ${SUDO} ${COMPOSE_ARGS} exec filerepository /healthcheck.sh > /dev/null; do \
