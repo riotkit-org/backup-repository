@@ -1,0 +1,12 @@
+/server/var/cache
+/server/var/log
+/server/var/uploads
+/server/var/data.db
+/server/.infrastructure/Dockerfile.x86_64
+/server/README.md
+/server/.env
+/server/.web-server-pid
+/.gitignore
+/.idea
+/server/supervisord.log
+/server/supervisord.pid
