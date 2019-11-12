@@ -28,7 +28,7 @@ down: ## Delete the development environment
 wait_for_app: ## Wait for application to be ready
 	${SUDO} ${COMPOSE_ARGS} ps
 	echo " >> Waiting for the application to start..."
-	counter=300; \
+	counter=60; \
 	while ! ${SUDO} ${COMPOSE_ARGS} exec filerepository /healthcheck.sh > /dev/null; do \
 		counter=$$((counter-1)); \
 		if [[ "$${counter}" == "0" ]]; then \
