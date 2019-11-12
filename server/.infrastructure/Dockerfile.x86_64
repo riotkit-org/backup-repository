@@ -80,10 +80,13 @@ COPY server /var/www/html
 COPY --from=builder /var/www/html/public /var/www/html/
 ADD server/.infrastructure/entrypoint/entrypoint.d/prod_entrypoint.d.sh /entrypoint.d/
 ADD server/.infrastructure/entrypoint/entrypoint.d/sentry_entrypoint.d.sh /entrypoint.d/
-ADD server/.infrastructure/entrypoint/entrypoint.sh /overridden_entrypoint.sh
 ADD server/.infrastructure/healthcheck.sh /
 
 RUN cd /var/www/html \
+    && rm -rf var/cache/* \
+    && rm -rf var/log/* \
+    && rm -rf var/uploads/* \
+    && rm -f var/*.db \
     && cp .env.dist .env \
     \
     # NGINX configuration
@@ -91,10 +94,8 @@ RUN cd /var/www/html \
     \
     # Application permissions and general scripts setup
     && chown www-data:www-data /var/www -R \
-    && su www-data -s /bin/bash -c "composer install --no-dev" \
-    && chmod +x /overridden_entrypoint.sh
+    && su www-data -s /bin/bash -c "composer install --no-dev"
 
 WORKDIR "/var/www/html"
-ENTRYPOINT ["/overridden_entrypoint.sh"]
 
 HEALTHCHECK --interval=30s --timeout=3s CMD /healthcheck.sh || exit 1

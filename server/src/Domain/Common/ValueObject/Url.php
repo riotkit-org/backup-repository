@@ -20,10 +20,11 @@ class Url extends BaseValueObject implements \JsonSerializable
         }
 
         $this->value = $this->normalize($this->value, true);
+        $normalized = $this->normalize($this->value, false);
 
-        if ($this->value && !filter_var($this->normalize($this->value, false), FILTER_VALIDATE_URL)) {
+        if ($this->value && !filter_var($normalized, FILTER_VALIDATE_URL)) {
             $exceptionType = static::getExceptionType();
-            throw new $exceptionType('Invalid URL address');
+            throw new $exceptionType('Invalid URL address: ' . $normalized);
         }
     }
 

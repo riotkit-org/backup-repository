@@ -26,11 +26,8 @@ install_frontend: ## Install MinimumUi dependencies
 migrate: ## Upgrade database to the recent version of the structure
 	./bin/console doctrine:migrations:migrate --no-interaction -vv
 
-build_docs: ## Build documentation
-	cd ./docs && make html
-
-run_dev: ## Run a developer web server (do not use on production) (params: TAG)
-	${SUDO} docker run --rm --name file-repository-dev -v $$(pwd):/var/www/html -p 8000:80 quay.io/riotkit/file-repository:${TAG}
+run_dev: ## Run a developer web server (do not use on production)
+	cd env && make up
 
 deploy: install install_frontend ## Deploy the application
 
@@ -66,14 +63,8 @@ _set_env:
 		echo '${NAME}=${VALUE}' >> .env;\
 	fi
 
-test_api: build_container run_files_test_container ## Run API tests in a docker container
-	${SUDO} docker run -e API_TESTS=true -e APP_ENV=test --rm quay.io/riotkit/file-repository:latest-build
-
 coverage: ## Generate code coverage from unit testing
 	./bin/phpunit --coverage-text
 
-run_files_test_container: delete_files_test_container ## Run a webserver container that will act as a datasource in tests
-	${SUDO} docker run --rm -d --name fr_test_webserver -v $$(pwd)/../examples:/usr/share/nginx/html -p 33901:80 nginx:1
-
-delete_files_test_container: ## Delete the testing container that serves static files
-	${SUDO} docker rm -f fr_test_webserver >/dev/null 2>&1 || true
+test_api: build_container ## Run API tests in a docker container (params: CODECEPT_ARGS, VARIANT)
+	cd env && make up test_api CODECEPT_ARGS=${CODECEPT_ARGS} VARIANT=${VARIANT}

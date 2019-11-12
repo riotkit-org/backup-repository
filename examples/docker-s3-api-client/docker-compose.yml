@@ -24,7 +24,7 @@ version: '2'
         # File Repository API application
         #
         app_storage:
-            image: wolnosciowiec/file-repository:latest
+            image: quay.io/riotkit/file-repository:dev
             environment:
                 - DATABASE_URL=mysql://file_repository:playground@db_mysql:3306/file_repository
                 - DATABASE_DRIVER=pdo_mysql
@@ -88,7 +88,7 @@ version: '2'
         #       For testing we have it in same docker network.
         #
         backup_client:
-            image: wolnosciowiec/file-repository:bahub
+            image: quay.io/riotkit/bahub:dev
             volumes:
                 - "./data/backup/cron:/cron:ro"
                 - "./data/backup/bahub.conf.yaml:/bahub.conf.yaml:ro"

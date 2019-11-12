@@ -58,7 +58,10 @@ There exists extra parameters that are implemented by the docker container itsel
 PostgreSQL support
 ------------------
 
-Due to lack of Unix sockets support in Doctrine Dbal library we created a custom PostgreSQL adapter.
+1. Required extensions:
+- uuid-ossp (*CREATE EXTENSION "uuid-ossp";*)
+
+2. Due to lack of Unix sockets support in Doctrine Dbal library we created a custom PostgreSQL adapter.
 
 **UNIX Socket example:**
 

@@ -47,16 +47,27 @@ jobs:
           - mkdir -p ./var && chmod 777 ./var -R
       script: make coverage || true
 
-    - stage: File Repository API tests
+    - stage: File Repository API tests (local storage)
       language: php
       services:
           - docker
       php:
           - '7.3'
       before_script: cd server
-      script: make test_api SUDO="" TAG=${TRAVIS_TAG:-dev}
-      after_success: bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [OK] File repository API tests passed."
-      after_failure: bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [FAILURE] File repository API test are failing."
+      script: make test_api SUDO="" TAG=${TRAVIS_TAG:-dev} VARIANT=""
+      after_success: bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [OK] File repository API tests on local storage passed."
+      after_failure: bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [FAILURE] File repository API tests on local storage are failing."
+
+    - stage: File Repository API tests (local S3 - Min.io + PostgreSQL)
+      language: php
+      services:
+          - docker
+      php:
+          - '7.3'
+      before_script: cd server
+      script: make test_api SUDO="" TAG=${TRAVIS_TAG:-dev} VARIANT="s3 postgres"
+      after_success: bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [OK] File repository API tests on Min.io passed."
+      after_failure: bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [FAILURE] File repository API tests on Min.io are failing."
 
     #
     # Bahub (Backups API client)

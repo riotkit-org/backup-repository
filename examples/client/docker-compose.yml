@@ -4,7 +4,7 @@ services:
     # Our container that is running all the time, can run scheduled backups and manually triggered backups
     #
     backup:
-        image: wolnosciowiec/file-repository:bahub
+        image: quay.io/riotkit/bahub:dev
         volumes:
             - "./cron:/cron:ro"
             - "./config.yaml:/bahub.conf.yaml:ro"

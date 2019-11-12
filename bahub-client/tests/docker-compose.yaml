@@ -30,6 +30,7 @@ services:
             - "80:80"
         environment:
             APP_ENV: test
+            HEALTH_CHECK_CODE: tests_env
         networks:
             trbr:
                 ipv4_address: 10.5.0.4

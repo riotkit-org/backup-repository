@@ -46,12 +46,16 @@ prepare_file_repository_instance () {
 }
 
 prepare_environment() {
-    sudo docker-compose rm -s -v -f
+    delete_environment
     sudo docker-compose up -d --force-recreate
 }
 
+delete_environment() {
+    sudo docker-compose rm -s -v -f
+}
+
 wait_for_container_to_start () {
-    while ! sudo docker-compose exec file-repository curl http://localhost |grep "Hello, welcome" > /dev/null; do
+    while ! sudo docker-compose exec file-repository curl -s -f http://localhost/health?code=tests_env > /dev/null; do
         sleep 0.1
     done
 }
@@ -62,4 +66,8 @@ before_running_all_tests () {
 
     echo " ====> Waiting for application to get up"
     wait_for_container_to_start "file-repository"
+}
+
+after_all_tests_passed() {
+    sudo docker-compose rm -s -v -f
 }

@@ -23,5 +23,7 @@ for file in $(ls ./cases/*.sh | sort); do
     fi
 done
 
+after_all_tests_passed
+
 echo " .. ALL TESTS PASSED"
 exit 0

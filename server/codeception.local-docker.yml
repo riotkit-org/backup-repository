@@ -1,0 +1,16 @@
+modules:
+    enabled:
+        - Helper\ApiTester:
+              url: http://localhost:80
+              depends: PhpBrowser
+
+paths:
+    tests: tests/Functional
+    output: tests/Functional/_output
+    data: tests/Functional_data
+    support: tests/Functional/_support
+    envs: tests/Functional/_envs
+actor_suffix: Tester
+extensions:
+    enabled:
+        - Codeception\Extension\RunFailed

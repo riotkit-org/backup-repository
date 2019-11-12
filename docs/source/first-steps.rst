@@ -27,6 +27,7 @@ not optimal for production usage.
 
 .. code:: shell
 
+    cd server
     cp .env.dist .env
     edit .env
 
@@ -47,39 +48,35 @@ All right! The application should be ready to go. To check the application you c
 Installation with docker
 ========================
 
-You have at least three choices:
+There are at least three choices:
 
 - Use `quay.io/riotkit/file-repository` container by your own (advanced)
-- Use a prepared docker-compose environment placed in `examples/docker` directory
+- Generate a docker-compose.yaml using `make print VARIANT="s3 postgres persistent"` in `server/env` directory
 - Create your own environment basing on provided example docker-compose
 
-Proposed way to choose is the prepared docker-compose environment that is placed in `examples/docker` directory.
-Here are instructions how to start with it:
+Proposed way to choose is the prepared docker-compose environment that is placed in `server/env` directory.
+
+**Starting the example environment:**
 
 .. code:: bash
 
-    # go to the environment directory and copy template file
-    cd ./examples/docker-s3-api-client
-    cp .env.dist .env
-
-    # adjust application settings
-    edit .env
+    cd ./server/env
+    make up VARIANT="s3 postgres persistent"
 
 
-Now adjust the environment variables to your need - you might want to see the configuration reference.
-If you think the configuration is finished, start the environment. To stop it - type CTRL+C.
+**Generating a docker-compose example file:**
 
 .. code:: bash
 
-    # start the environment
-    make start
+    cd ./server/env
+    make print VARIANT="s3 postgres persistent"
 
 
-Example docker-compose.yml file:
+**Production tips:**
 
-.. literalinclude:: ../../examples/docker-s3-api-client/docker-compose.yml
-   :language: yaml
-   :linenos:
+- Use external database, do backups
+- Do not use SQLite3 for production. Use PostgreSQL or MySQL instead.
+- Mount data as volumes. Use bind-mounts to have files placed on host filesystem (volumes can be deleted, bind-mounted files stays anyway)
 
 
 Post-installation

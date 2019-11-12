@@ -1,0 +1,31 @@
+version: "3.5"
+
+#
+# This file extends docker-compose.yaml by adding additional services and environment variables to existing services
+#
+
+volumes:
+    postgresql_run:
+
+services:
+    filerepository:
+        volumes:
+            - postgresql_run:/var/run/postgresql
+        environment:
+            DATABASE_URL: "pgsql://riotkit:against_fascism@postgresql:/rojava"
+            POSTGRES_DB_PDO_ROLE: "riotkit"
+            POSTGRES_DB_PDO_DSN: "pgsql:host=/var/run/postgresql;user=riotkit;dbname=rojava;password=against_fascism;"
+            DATABASE_CHARSET: "UTF8"
+            DATABASE_COLLATE: "pl_PL.UTF8"
+            DATABASE_DRIVER: "pdo_pgsql"
+            DATABASE_VERSION: "10.10"
+
+    postgresql:
+        image: postgres:10.10-alpine
+        volumes:
+            - postgresql_run:/var/run/postgresql
+            - ./postgres/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+        environment:
+            POSTGRES_USER: "riotkit"
+            POSTGRES_DB: "rojava"
+            POSTGRES_PASSWORD: "against_fascism"
