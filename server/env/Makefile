@@ -33,10 +33,12 @@ wait_for_app: ## Wait for application to be ready
 		counter=$$((counter-1)); \
 		if [[ "$${counter}" == "0" ]]; then \
 			echo " >> Application didn't get up"; \
+			${SUDO} ${COMPOSE_ARGS} logs; \
 			exit 1; \
 		fi; \
 		sleep 1; \
-	done
+	done; \
+	sleep 5
 
 _build_variant_list: ## (Params: VARIANT)
 	VARIANT_ARGS=""; \

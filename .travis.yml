@@ -58,7 +58,7 @@ jobs:
       after_success: bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [OK] File repository API tests on local storage passed."
       after_failure: bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [FAILURE] File repository API tests on local storage are failing."
 
-    - stage: File Repository API tests (local S3 - Min.io + PostgreSQL)
+    - stage: File Repository API tests (Min.io + PostgreSQL)
       language: php
       services:
           - docker
