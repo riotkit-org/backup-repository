@@ -14,6 +14,8 @@ wait_for_db_to_get_up() {
 
 correct_permissions() {
     echo " >> Correcting permissions"
+    mkdir -p /var/www/html/var
+
     chown www-data:www-data /var/www/html
     chown www-data:www-data /var/www/html/public
     chown www-data:www-data -R /var/www/html/var
