@@ -94,7 +94,8 @@ RUN cd /var/www/html \
     \
     # Application permissions and general scripts setup
     && chown www-data:www-data /var/www -R \
-    && su www-data -s /bin/bash -c "composer install --no-dev"
+    && su www-data -s /bin/bash -c "composer install --no-dev" \
+    && chown www-data:www-data /var/www -R
 
 WORKDIR "/var/www/html"
 
