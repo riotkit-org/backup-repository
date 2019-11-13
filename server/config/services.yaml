@@ -140,6 +140,9 @@ services:
             $readFS: '@ro_fs'
             $writeFS: '@rw_fs'
 
+    App\Infrastructure\Common\Test\Database\RestoreDBInterface:
+        alias: App\Infrastructure\Common\Test\Database\StateManager
+
     s3_client:
         class: Aws\S3\S3Client
         arguments:

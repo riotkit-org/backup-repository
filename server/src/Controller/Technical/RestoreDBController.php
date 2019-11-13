@@ -2,6 +2,7 @@
 
 namespace App\Controller\Technical;
 
+use App\Infrastructure\Common\Test\Database\RestoreDBInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -10,36 +11,33 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 /**
  * Lists all public routes
  */
-class  RestoreDBController extends AbstractController
+class RestoreDBController extends AbstractController
 {
+    /**
+     * @var RestoreDBInterface
+     */
+    private $dbStateManager;
+
+    public function __construct(RestoreDBInterface $dbStateManager)
+    {
+        $this->dbStateManager = $dbStateManager;
+    }
+
     public function restoreAction(ContainerInterface $container): JsonResponse
     {
         $this->assertInDebugMode($container);
 
-        if (strpos(($_SERVER['DATABASE_URL'] ?? ''), 'sqlite://') === false) {
-            return new JsonResponse('Currently only SQLite3 database is supported in tests', 500);
-        }
-
-        $path = $this->getDbPath();
-
-        if (\is_file($path . '.bak')) {
-            copy($path . '.bak', $path);
+        if ($this->dbStateManager->restore()) {
             return new JsonResponse('OK, restored');
         }
 
-        return new JsonResponse('OK, but no copy found');
+        return new JsonResponse('OK, but nothing restored');
     }
 
     public function backupAction(ContainerInterface $container): JsonResponse
     {
         $this->assertInDebugMode($container);
-
-        if (strpos(($_SERVER['DATABASE_URL'] ?? ''), 'sqlite://') === false) {
-            return new JsonResponse('Currently only SQLite3 database is supported in tests', 500);
-        }
-
-        $path = $this->getDbPath();
-        copy($path, $path . '.bak');
+        $this->dbStateManager->backup();
 
         return new JsonResponse('OK, backup made.');
     }
@@ -49,13 +47,5 @@ class  RestoreDBController extends AbstractController
         if (!$container->getParameter('kernel.debug')) {
             throw new AccessDeniedHttpException();
         }
-    }
-
-    private function getDbPath(): string
-    {
-        $path = \trim(\explode('sqlite://', ($_SERVER['DATABASE_URL'] ?? ''))[1], '/');
-        $path = \str_replace('%kernel.project_dir%', '../', $path);
-
-        return \trim($path, '/');
     }
 }
