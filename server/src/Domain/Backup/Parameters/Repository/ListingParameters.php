@@ -45,7 +45,7 @@ class ListingParameters
         $self->searchQuery      = $input['searchQuery'] ?? [];
         $self->tags             = $input['tags'] ?? [];
         $self->allowedTokens    = $input['allowedTokens'] ?? 20;
-        $self->createdFrom      = $input['createdFrom'] ?? 1;
+        $self->createdFrom      = $input['createdFrom'] ?? '';
         $self->createdTo        = $input['createdTo'] ?? '';
         $self->page             = $input['page'] ?? 1;
         $self->limit            = $input['limit'] ?? 20;
