@@ -39,7 +39,7 @@ Lightweight, requires just PHP7 and at least SQLite3 or MySQL (other databases c
 Copyleft
 --------
 
-Created by **RiotKit Collective** as part of Wolnościowiec initiative.
+Created by **RiotKit Collective**.
 Project initially created for three purposes: 
 
 - To store static files uploaded for users (libertarian/anarchist portal)
