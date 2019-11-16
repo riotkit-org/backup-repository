@@ -27,7 +27,7 @@ migrate: ## Upgrade database to the recent version of the structure
 	./bin/console doctrine:migrations:migrate --no-interaction -vv
 
 run_dev: ## Run a developer web server (do not use on production)
-	cd env && make up
+	cd env && make up VARIANT="test"
 
 deploy: install install_frontend ## Deploy the application
 
@@ -67,4 +67,4 @@ coverage: ## Generate code coverage from unit testing
 	./bin/phpunit --coverage-text
 
 test_api: build_container ## Run API tests in a docker container (params: CODECEPT_ARGS, VARIANT)
-	cd env && make up test_api CODECEPT_ARGS="${CODECEPT_ARGS}" VARIANT="${VARIANT}"
+	cd env && make up test_api CODECEPT_ARGS="${CODECEPT_ARGS}" VARIANT="test ${VARIANT}"

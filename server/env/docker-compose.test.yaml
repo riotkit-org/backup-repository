@@ -1,0 +1,28 @@
+version: "3.5"
+
+#
+# This file extends docker-compose.yaml by adding additional services and environment variables to existing services
+#
+
+volumes:
+    postgres_data:
+    filerepository_data:
+
+services:
+    filerepository:
+        volumes:
+            - "../:/var/www/html"
+        environment:
+            APP_ENV: "test"
+            HEALTH_CHECK_CODE: "test"
+
+    #
+    # Serves static files used in tests
+    #
+    test-webserver:
+        image: nginx:1
+        expose:
+            - "80"
+        volumes:
+            - "../../examples:/usr/share/nginx/html"
+`

@@ -1,24 +1,5 @@
 version: "3.5"
 
 services:
-    #
-    # Instance that has mounted all files as a bind-mount.
-    # Each change in local files is synchronized (for development)
-    #
     filerepository:
         image: quay.io/riotkit/file-repository:dev
-        volumes:
-            - "../:/var/www/html"
-        environment:
-            APP_ENV: "test"
-            HEALTH_CHECK_CODE: "test"
-
-    #
-    # Serves static files used in tests
-    #
-    test-webserver:
-        image: nginx:1
-        expose:
-          - "80"
-        volumes:
-          - "../../examples:/usr/share/nginx/html"
