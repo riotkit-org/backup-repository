@@ -58,10 +58,12 @@ There exists extra parameters that are implemented by the docker container itsel
 PostgreSQL support
 ------------------
 
-1. Required extensions:
-- uuid-ossp (*CREATE EXTENSION "uuid-ossp";*)
 
-2. Due to lack of Unix sockets support in Doctrine Dbal library we created a custom PostgreSQL adapter.
+1. **Required extensions to enable in PostgreSQL:**
+
+* uuid-ossp (*CREATE EXTENSION "uuid-ossp";*)
+
+2. **Due to lack of Unix sockets support in Doctrine Dbal library we created a custom PostgreSQL adapter.**
 
 **UNIX Socket example:**
 
@@ -88,8 +90,9 @@ PostgreSQL support
     DATABASE_VERSION=10.10
 
 
-3. _"SQLSTATE[21000]: Cardinality violation: 7 ERROR: more than one row returned by a subquery used as an expression"_
+3. **"SQLSTATE[21000]: Cardinality violation: 7 ERROR: more than one row returned by a subquery used as an expression"**
 
-[This is a bug in the Doctrine DBAL driver that we use.](https://github.com/doctrine/dbal/issues/950). To work around it, please create
+This is an unresolved issue_ in the Doctrine DBAL driver that we use. To work around it, please create
 a separate database, user and use default schema "public" for the application.
 
+.. _issue: https://github.com/doctrine/dbal/issues/950

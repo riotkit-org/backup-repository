@@ -1,6 +1,6 @@
 project = 'File Repository'
-copyright = '2019, RiotKit Team'
-author = 'Wesolowski'
+copyright = '2019, RiotKit Collective'
+author = 'RiotKit Collective'
 
 version = ''
 release = '2'
