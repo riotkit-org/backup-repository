@@ -62,7 +62,7 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "App\\Tests\\": "tests/"
+            "Tests\\": "tests/"
         },
         "files": ["vendor/mockery/mockery/library/helpers.php"]
     },

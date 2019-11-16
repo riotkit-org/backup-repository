@@ -152,7 +152,8 @@ abstract class BaseController extends AbstractController
                     'http_code' => 400,
                     'exit_code' => 400,
                     'fields' => $exception->getFields()
-                ]
+                ],
+                JsonResponse::HTTP_BAD_REQUEST
             );
 
         } catch (StorageException $storageException) {

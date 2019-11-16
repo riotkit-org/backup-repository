@@ -54,7 +54,7 @@ jobs:
       php:
           - '7.3'
       before_script: cd server
-      script: make test_api SUDO="" TAG=${TRAVIS_TAG:-dev} VARIANT=""
+      script: make test_api@ci SUDO="" TAG=${TRAVIS_TAG:-dev} VARIANT=""
       after_success: bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [OK] File repository API tests on local storage passed."
       after_failure: bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [FAILURE] File repository API tests on local storage are failing."
 
@@ -65,7 +65,7 @@ jobs:
       php:
           - '7.3'
       before_script: cd server
-      script: make test_api SUDO="" TAG=${TRAVIS_TAG:-dev} VARIANT="s3 postgres"
+      script: make test_api@ci SUDO="" TAG=${TRAVIS_TAG:-dev} VARIANT="s3 postgres"
       after_success: bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [OK] File repository API tests on Min.io passed."
       after_failure: bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [FAILURE] File repository API tests on Min.io are failing."
 

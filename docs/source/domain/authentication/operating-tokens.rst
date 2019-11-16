@@ -15,6 +15,7 @@ data.maxAllowedFileSize    Number of bytes of maximum file size (OPTIONAL)
 data.allowedUserAgents     List of allowed User-Agent header values (ex. to restrict token to single browser) (OPTIONAL)
 data.allowedIpAddresses    List of allowed IP addresses (ex. to restrict one-time-token to single person/session) (OPTIONAL)
 expires                    Expiration date, or "auto", "automatic", "never". Empty value means same as "auto"
+id                         Custom UUIDv4 (requires: *security.create_predictable_token_ids* role or to be an admin)
 ========================  ===================================================================================================
 
 .. code:: json

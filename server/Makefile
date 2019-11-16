@@ -68,3 +68,6 @@ coverage: ## Generate code coverage from unit testing
 
 test_api: build_container ## Run API tests in a docker container (params: CODECEPT_ARGS, VARIANT)
 	cd env && make up test_api CODECEPT_ARGS="${CODECEPT_ARGS}" VARIANT="test ${VARIANT}"
+
+test_api@ci: build_container ## Run API tests in a docker container (params: CODECEPT_ARGS, VARIANT)
+	cd env && make up test_api@ci CODECEPT_ARGS="${CODECEPT_ARGS}" VARIANT="test ${VARIANT}"

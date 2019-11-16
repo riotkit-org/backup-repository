@@ -32,18 +32,25 @@ class AuthenticationManagementContext
      */
     private $canRevokeTokens;
 
+    /**
+     * @var bool
+     */
+    private $canCreateTokensWithPredictableIds;
+
     public function __construct(
         bool $canLookup,
         bool $canGenerate,
         bool $canUseTechnicalEndpoints,
         bool $isAdministrator,
-        bool $canRevokeTokens
+        bool $canRevokeTokens,
+        bool $canCreateTokensWithPredictableIds
     ) {
         $this->canLookup                = $canLookup;
         $this->canGenerateTokens        = $canGenerate;
         $this->canUseTechnicalEndpoints = $canUseTechnicalEndpoints;
         $this->isAdministrator          = $isAdministrator;
         $this->canRevokeTokens          = $canRevokeTokens;
+        $this->canCreateTokensWithPredictableIds = $canCreateTokensWithPredictableIds;
     }
 
     public function canLookupAnyToken(): bool
@@ -85,5 +92,14 @@ class AuthenticationManagementContext
         }
 
         return $this->canRevokeTokens;
+    }
+
+    public function canCreateTokensWithPredictableIdentifiers(): bool
+    {
+        if ($this->isAdministrator) {
+            return true;
+        }
+
+        return $this->canCreateTokensWithPredictableIds;
     }
 }

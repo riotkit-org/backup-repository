@@ -18,6 +18,9 @@ class GenerateAdminTokenCommand extends Command
         $this->setName(static::NAME)
             ->setDescription('Generate administrative token')
             ->addOption('expires', null, InputOption::VALUE_REQUIRED)
+            ->addOption('id', 'i', InputOption::VALUE_OPTIONAL)
+            ->addOption('ignore-error-if-token-exists', null, InputOption::VALUE_NONE,
+                'Exit with success if token already exists. Does not check strictly permissions and other attributes, just the id.')
             ->setHelp('With admin token you have unlimited access to the application');
     }
 
@@ -33,13 +36,17 @@ class GenerateAdminTokenCommand extends Command
     {
         $command = $this->getApplication()->find(GenerateTokenCommand::NAME);
 
-        return $command->run(
-            new ArrayInput([
-                'command' => GenerateTokenCommand::NAME,
-                '--roles'   => Roles::ROLE_ADMINISTRATOR,
-                '--expires' => $input->getOption('expires') ?? '+10 years'
-            ]),
-            $output
-        );
+        $opts = [
+            'command'   => GenerateTokenCommand::NAME,
+            '--roles'   => Roles::ROLE_ADMINISTRATOR,
+            '--expires' => $input->getOption('expires') ?? '+10 years',
+            '--id'      => $input->getOption('id') ?? ''
+        ];
+
+        if ($input->getOption('ignore-error-if-token-exists')) {
+            $opts['--ignore-error-if-token-exists'] = true;
+        }
+
+        return $command->run(new ArrayInput($opts), $output);
     }
 }

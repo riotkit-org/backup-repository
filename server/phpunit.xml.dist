@@ -12,6 +12,10 @@
         <env name="KERNEL_CLASS" value="App\Kernel" />
         <env name="APP_ENV" value="test" />
         <env name="APP_DEBUG" value="1" />
+        <env name="FS_ADAPTER" value="local" />
+
+        <server name="DATABASE_URL" value="sqlite:///./var/data.db" />
+        <server name="DATABASE_DRIVER" value="pdo_sqlite" />
     </php>
 
     <testsuites>

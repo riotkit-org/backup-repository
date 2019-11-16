@@ -21,6 +21,15 @@ correct_permissions() {
     chown www-data:www-data -R /var/www/html/var /var/www/html/tests/Functional/
 }
 
+setup_admin_user() {
+    echo " >> Preparing admin user if configured via SECURITY_ADMIN_TOKEN environment variable"
+
+    if [[ "${SECURITY_ADMIN_TOKEN}" ]]; then
+        echo " >> Setting up default admin token provided with SECURITY_ADMIN_TOKEN environment variable"
+        su www-data -s /bin/bash -c "cd /var/www/html/ && ./bin/console auth:generate-admin-token --ignore-error-if-token-exists --id=${SECURITY_ADMIN_TOKEN} " > /dev/null
+    fi
+}
+
 install() {
     echo " >> Updating the application before starting..."
     su www-data -s /bin/bash -c "cd /var/www/html/ && make install"
@@ -29,3 +38,4 @@ install() {
 wait_for_db_to_get_up
 correct_permissions
 install
+setup_admin_user

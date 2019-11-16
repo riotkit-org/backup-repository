@@ -21,6 +21,13 @@ class AuthForm
      */
     public $expires;
 
+    /**
+     * Custom token id (requires additional permissions to use)
+     *
+     * @var string|null
+     */
+    public $id;
+
     public static function getAvailableRoles(): array
     {
         return Roles::getRolesList();

@@ -50,6 +50,7 @@ There exists extra parameters that are implemented by the docker container itsel
 =============================  =====================================================================================
   WAIT_FOR_HOST=db_mysql:3306   (optional) Waits up to 2 minutes for host to be up when starting a container
   SENTRY_DSN=url-here           (optional) Enables integration with sentry.io, so all failures will be logged there
+  SECURITY_ADMIN_TOKEN=...      (optional) Create admin auth token of given UUIDv4 on container startup
 =============================  =====================================================================================
 
 

@@ -15,12 +15,17 @@ class SecurityContextFactory
             $token->hasRole(Roles::ROLE_GENERATE_TOKENS),
             $token->hasRole(Roles::ROLE_USE_TECHNICAL_ENDPOINTS),
             $token->hasRole(Roles::ROLE_ADMINISTRATOR),
-            $token->hasRole(Roles::ROLE_REVOKE_TOKENS)
+            $token->hasRole(Roles::ROLE_REVOKE_TOKENS),
+            $token->hasRole(Roles::ROLE_CREATE_PREDICTABLE_TOKEN_IDS)
         );
     }
 
     public function createShellContext(): AuthenticationManagementContext
     {
-        return new AuthenticationManagementContext(true, true, true, true, true);
+        return new AuthenticationManagementContext(
+            true, true,
+            true, true,
+            true, true
+        );
     }
 }

@@ -47,22 +47,25 @@ final class Roles
     //
 
     /** User can check information about ANY token */
-    public const ROLE_LOOKUP_TOKENS           = 'security.authentication_lookup';
+    public const ROLE_LOOKUP_TOKENS                = 'security.authentication_lookup';
 
     /** User can overwrite files */
-    public const ROLE_ALLOW_OVERWRITE_FILES   = 'security.overwrite';
+    public const ROLE_ALLOW_OVERWRITE_FILES        = 'security.overwrite';
 
     /** User can generate tokens with ANY roles */
-    public const ROLE_GENERATE_TOKENS         = 'security.generate_tokens';
+    public const ROLE_GENERATE_TOKENS              = 'security.generate_tokens';
 
     /** User can use technical endpoints to manage the application */
-    public const ROLE_USE_TECHNICAL_ENDPOINTS = 'security.use_technical_endpoints';
+    public const ROLE_USE_TECHNICAL_ENDPOINTS      = 'security.use_technical_endpoints';
 
     /** User can expire other token, so it will be not valid anymore */
-    public const ROLE_REVOKE_TOKENS           = 'security.revoke_tokens';
+    public const ROLE_REVOKE_TOKENS                = 'security.revoke_tokens';
 
     /** Special: Marking - tokens with this marking will not be able to be revoked by non-administrators */
-    public const ROLE_ADMINISTRATOR           = 'security.administrator';
+    public const ROLE_ADMINISTRATOR                = 'security.administrator';
+
+    /** Allow to specify token id when creating a token */
+    public const ROLE_CREATE_PREDICTABLE_TOKEN_IDS = 'security.create_predictable_token_ids';
 
     //
     //

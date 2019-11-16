@@ -1,5 +1,15 @@
 version: "3.5"
 
+#
+# File Repository compose deployment
+# This is a main file, other files docker-compose.*.yaml are joined if you choose a different variant
+#
+# Example: make up VARIANT="s3 persistent"
+#   Will load: docker-compose.yaml + docker-compose.s3.yaml + docker-compose.persistent.yaml
+#
+
 services:
     filerepository:
-        image: quay.io/riotkit/file-repository:dev
+        image: quay.io/riotkit/file-repository:${FILE_REPOSITORY_VERSION}
+        environment:
+            SECURITY_ADMIN_TOKEN: "${SECURITY_ADMIN_TOKEN}"

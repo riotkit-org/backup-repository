@@ -19,7 +19,8 @@ class AuthFormType extends AbstractType
                 'allow_delete' => true
             ])
             ->add('expires', TextType::class)
-            ->add('data',    TokenDetailsFormType::class);
+            ->add('data',    TokenDetailsFormType::class)
+            ->add('id', TextType::class);
     }
 
     public function configureOptions(OptionsResolver $resolver)

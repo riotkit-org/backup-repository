@@ -29,6 +29,21 @@ class ValidationException extends \Exception
         return $new;
     }
 
+    public function hasOnlyError(string $errorStr): bool
+    {
+        $errors = [];
+
+        foreach ($this->byFields as $field) {
+            foreach ($field as $message) {
+                $errors[] = $message;
+            }
+        }
+
+        $uniqueErrors = array_values(array_unique($errors));
+
+        return $uniqueErrors === [0 => $errorStr];
+    }
+
     /**
      * @return array
      */

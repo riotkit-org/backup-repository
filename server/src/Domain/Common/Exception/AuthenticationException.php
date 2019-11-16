@@ -11,6 +11,7 @@ class AuthenticationException extends \Exception
         'not_authenticated'                  => 403,
         'no_read_access_or_invalid_password' => 401,
         'auth_cannot_delete_file'            => 4031,
-        'token_invalid'                      => 40000001
+        'token_invalid'                      => 40000001,
+        'no_permissions_for_predictable_ids' => 40000002
     ];
 }

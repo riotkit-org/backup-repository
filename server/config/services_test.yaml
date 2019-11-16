@@ -1,0 +1,18 @@
+services:
+    App\Infrastructure\Common\Test\Database\StateManager:
+        public: true
+        autowire: true
+
+    App\Command\Authentication\GenerateAdminTokenCommand:
+        public: true
+        autowire: true
+
+    App\Domain\Authentication\ActionHandler\TokenGenerationHandler:
+        public: true
+        autowire: true
+        arguments:
+            $expirationTime: "+2 hours"
+
+    App\Domain\Authentication\Factory\Context\SecurityContextFactory:
+        public: true
+        autowire: true

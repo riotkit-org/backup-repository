@@ -148,4 +148,116 @@ class AuthenticationCest
         $I->deleteToken($I->getPreviouslyStoredIdOf('BASIC_TOKEN'));
         $I->canSeeResponseCodeIs(200);
     }
+
+    /**
+     * Feature: Possibility to set "id" of a token manually
+     * Case: Successful case
+     *
+     * @param FunctionalTester $I
+     */
+    public function testGenerateTokenWithCustomIdSpecifiedInRequest(FunctionalTester $I): void
+    {
+        $I->amAdmin();
+        $I->createToken([
+            'roles' => [
+                'upload.images'
+            ],
+            'data' => [],
+            'id'   => '1c2c84f2-d488-4ea0-9c88-d25aab139ac4'
+        ]);
+        $I->canSeeResponseCodeIs(202);
+    }
+
+    /**
+     * Feature: Possibility to set "id" of a token manually
+     * Case: Trying to create same token at least twice
+     *
+     * @param FunctionalTester $I
+     */
+    public function testCannotCreateTokenWithSameIdTwice(FunctionalTester $I): void
+    {
+        $I->amAdmin();
+
+        $I->createToken([
+            'roles' => [
+                'upload.images'
+            ],
+            'data' => [],
+            'id'   => '1c2c84f2-d488-4ea0-9c88-d25aab139ac4'
+        ]);
+
+        $I->createToken([
+            'roles' => [
+                'upload.images'
+            ],
+            'data' => [],
+            'id'   => '1c2c84f2-d488-4ea0-9c88-d25aab139ac4'
+        ]);
+
+        $I->canSeeResponseContains('id_already_exists_please_select_other_one');
+        $I->canSeeResponseCodeIs(400);
+    }
+
+    /**
+     * Feature: Possibility to set "id" of a token manually
+     * Case: Trying to enter non-uuid string
+     *
+     * @param FunctionalTester $I
+     */
+    public function testCannotCreateCustomTokenIfNotInUuidFormat(FunctionalTester $I): void
+    {
+        $I->amAdmin();
+
+        $I->createToken([
+            'roles' => [
+                'upload.images'
+            ],
+            'data' => [],
+            'id'   => 'international-workers-association'
+        ]);
+
+        $I->canSeeResponseContains('id_expects_to_be_uuidv4_format');
+        $I->canSeeResponseCodeIs(400);
+    }
+
+    /**
+     * Feature: Possibility to set "id" of a token manually
+     * Case: Cannot set "id" field, when does not have a proper role
+     *
+     * @param FunctionalTester $I
+     */
+    public function testNoRightsToUseIdFieldWhenGeneratingTokenWithoutSufficientPermissions(FunctionalTester $I): void
+    {
+        // create a limited token at first
+        $I->amAdmin();
+        $I->createToken([
+            'roles' => [
+                'security.generate_tokens',
+            ],
+            'data' => []
+        ]);
+        $I->storeIdAs('.tokenId', 'LIMITED_TOKEN_NO_PREDICTABLE_IDS');
+
+        // then use such token to test "access denied"
+        $I->amToken($I->getPreviouslyStoredIdOf('LIMITED_TOKEN_NO_PREDICTABLE_IDS'));
+        $I->createToken([
+            'roles' => [
+                'upload.images'
+            ],
+            'data' => [],
+            'id'   => 'international-workers-association'
+        ]);
+        $I->canSeeResponseCodeIs(403);
+
+        // then check that has permissions to create tokens at all, but without specifying "id"
+        $I->amToken($I->getPreviouslyStoredIdOf('LIMITED_TOKEN_NO_PREDICTABLE_IDS'));
+        $I->createToken([
+            'roles' => [
+                'upload.images'
+            ],
+            'data' => []
+            // case: no "id" there
+        ]);
+        $I->canSeeResponseCodeIs(202);
+    }
 }

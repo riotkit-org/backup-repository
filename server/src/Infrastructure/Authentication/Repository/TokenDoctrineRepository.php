@@ -3,10 +3,12 @@
 namespace App\Infrastructure\Authentication\Repository;
 
 use App\Domain\Authentication\Entity\Token;
+use App\Domain\Authentication\Exception\TokenAlreadyExistsException;
 use App\Domain\Authentication\Repository\TokenRepository;
 use App\Domain\Common\Repository\BaseRepository;
 use App\Domain\Roles;
 use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 
 /**
  * @codeCoverageIgnore
@@ -25,7 +27,11 @@ class TokenDoctrineRepository extends BaseRepository implements TokenRepository
 
     public function flush(Token $token = null): void
     {
-        $this->_em->flush($token);
+        try {
+            $this->_em->flush($token);
+        } catch (UniqueConstraintViolationException $exception) {
+            throw new TokenAlreadyExistsException('Token of selected id already exists');
+        }
     }
 
     public function findTokenById(string $id): ?Token

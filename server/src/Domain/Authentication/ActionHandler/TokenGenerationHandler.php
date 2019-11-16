@@ -3,6 +3,8 @@
 namespace App\Domain\Authentication\ActionHandler;
 
 use App\Domain\Authentication\Exception\AuthenticationException;
+use App\Domain\Authentication\Exception\InvalidTokenIdException;
+use App\Domain\Authentication\Exception\TokenAlreadyExistsException;
 use App\Domain\Authentication\Exception\ValidationException;
 use App\Domain\Authentication\Form\AuthForm;
 use App\Domain\Authentication\Manager\TokenManager;
@@ -40,15 +42,31 @@ class TokenGenerationHandler
      */
     public function handle(AuthForm $form, AuthenticationManagementContext $context): array
     {
-        $this->assertHasRights($context);
+        $this->assertHasRights($context, $form);
 
-        $token = $this->tokenManager->generateNewToken(
-            $form->roles,
-            $this->generateExpirationDate($form->expires),
-            $form->data->toArray()
-        );
+        try {
+            $token = $this->tokenManager->generateNewToken(
+                $form->roles,
+                $this->generateExpirationDate($form->expires),
+                $form->data->toArray(),
+                $form->id
+            );
+        }
 
-        $this->tokenManager->flushAll();
+        catch (InvalidTokenIdException $exception) {
+            throw ValidationException::createFromFieldsList([
+                'id' => ['id_expects_to_be_uuidv4_format']
+            ]);
+        }
+
+        try {
+            $this->tokenManager->flushAll();
+
+        } catch (TokenAlreadyExistsException $exception) {
+            throw ValidationException::createFromFieldsList([
+                'id' => ['id_already_exists_please_select_other_one']
+            ]);
+        }
 
         return [
             'tokenId' => $token->getId(),
@@ -87,12 +105,19 @@ class TokenGenerationHandler
      *
      * @throws AuthenticationException
      */
-    private function assertHasRights(AuthenticationManagementContext $context): void
+    private function assertHasRights(AuthenticationManagementContext $context, AuthForm $form): void
     {
         if (!$context->canGenerateNewToken()) {
             throw new AuthenticationException(
                 'Current token does not allow to generate tokens',
                 AuthenticationException::CODES['not_authenticated']
+            );
+        }
+
+        if ($form->id && !$context->canCreateTokensWithPredictableIdentifiers()) {
+            throw new AuthenticationException(
+                'Current token does not allow setting predictable identifiers for tokens',
+                AuthenticationException::CODES['no_permissions_for_predictable_ids']
             );
         }
     }

@@ -42,7 +42,10 @@ class GenerateTokenCommand extends Command
             ->addOption('tags', null, InputOption::VALUE_REQUIRED)
             ->addOption('mimes', null, InputOption::VALUE_REQUIRED)
             ->addOption('max-file-size', null, InputOption::VALUE_REQUIRED)
+            ->addOption('id', 'i', InputOption::VALUE_OPTIONAL)
             ->addOption('expires', null, InputOption::VALUE_REQUIRED, 'Example: 2020-05-01 or +10 years')
+            ->addOption('ignore-error-if-token-exists', null, InputOption::VALUE_NONE,
+                'Exit with success if token already exists. Does not check strictly permissions and other attributes, just the id.')
             ->setHelp('Allows to generate a token you can use later to authenticate in application for a specific thing');
     }
 
@@ -63,8 +66,8 @@ class GenerateTokenCommand extends Command
         $form->data->maxAllowedFileSize = (int) $input->getOption('max-file-size');
         $form->expires                  = $input->getOption('expires');
         $form->roles                    = $this->getMultipleValueOption($input, 'roles');
+        $form->id                       = $input->getOption('id');
 
-        $this->debug('========================', $output);
         $this->debug('Form:', $output);
 
         foreach ($form->data->tags as $tag) {
@@ -85,16 +88,25 @@ class GenerateTokenCommand extends Command
                 $this->authFactory->createShellContext()
             );
         } catch (ValidationException $validationException) {
-            $this->debug('========================', $output);
-            $this->debug('Validation error:', $output);
+            if ($input->getOption('ignore-error-if-token-exists')
+                && $validationException->hasOnlyError('id_already_exists_please_select_other_one')) {
+
+                $output->writeln($form->id);
+                return 0;
+            }
+
+            $this->debug("", $output);
+            $output->writeln('Validation error:');
 
             foreach ($validationException->getFields() as $field => $errors) {
-                $this->debug(' Field "' . $field . '":', $output);
+                $output->writeln(' Field "' . $field . '":');
 
                 foreach ($errors as $error) {
-                    $this->debug(' - ' . $error, $output);
+                    $output->writeln(' - ' . $error);
                 }
             }
+
+            return 1;
         }
 
         $this->debug("\nResponse:", $output);
@@ -102,7 +114,7 @@ class GenerateTokenCommand extends Command
         $this->debug(json_encode($response, JSON_PRETTY_PRINT), $output);
 
         if (!$output->isVerbose()) {
-            $output->writeln($response['tokenId']);
+            $output->writeln($response['tokenId'] ?? '');
         }
     }
 

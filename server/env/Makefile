@@ -8,8 +8,11 @@ COMPOSE_ARGS=docker-compose -p fr_tests -f docker-compose.yaml
 help:
 	@grep -E '^[a-zA-Z\-\_0-9\.@]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
-test_api: wait_for_app ## Run API tests in a docker container (params: CODECEPT_ARGS)
+test_api@ci: wait_for_app ## Run API tests in a docker container (params: CODECEPT_ARGS)
 	${SUDO} ${COMPOSE_ARGS} exec --user www-data filerepository composer install
+	make test_api CODECEPT_ARGS="${CODECEPT_ARGS}"
+
+test_api: ## Run API tests in a docker container (params: CODECEPT_ARGS)
 	${SUDO} ${COMPOSE_ARGS} exec --user www-data filerepository ./vendor/bin/codecept -c codeception.local-docker.yml run ${CODECEPT_ARGS}
 
 up: ## Bring up the development environment (params: VARIANT)
