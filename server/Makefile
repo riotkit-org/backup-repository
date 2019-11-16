@@ -64,7 +64,7 @@ _set_env:
 	fi
 
 coverage: ## Generate code coverage from unit testing
-	./bin/phpunit --coverage-text
+	SYMFONY_DEPRECATIONS_HELPER=disabled=1 ./bin/phpunit --coverage-text
 
 test_api: build_container ## Run API tests in a docker container (params: CODECEPT_ARGS, VARIANT)
 	cd env && make up test_api CODECEPT_ARGS="${CODECEPT_ARGS}" VARIANT="test ${VARIANT}"
