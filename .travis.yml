@@ -30,7 +30,7 @@ jobs:
       before_script:
           - cd server
           - composer install
-          - touch ./var/data.db
+          - make migrate
           - mkdir -p ./var && chmod 777 ./var -R
       script:
           - make coverage
@@ -45,7 +45,7 @@ jobs:
       before_script:
           - cd server
           - composer update || true
-          - touch ./var/data.db
+          - make migrate
           - mkdir -p ./var && chmod 777 ./var -R
       script: make coverage || true
 
