@@ -30,5 +30,5 @@ Application configuration
 
 **Notice:** Below example uses environment variables eg. ${DB_HOST}, you may want to replace them with values like localhost or others
 
-.. literalinclude:: ../../../client/configuration.yaml.dist
+.. literalinclude:: ../../../bahub-client/configuration.yaml.dist
    :language: yaml

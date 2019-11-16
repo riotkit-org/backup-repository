@@ -7,7 +7,7 @@ Application configuration
 When setting up application without a docker a .env file needs to be created in the root directory of the application.
 The .env.dist is a template with example, reference values. If you use a docker image, then you may use those variables as environment variables for the container.
 
-.. literalinclude:: ../../.env.dist
+.. literalinclude:: ../../server/.env.dist
 
 ..  _permissions_reference:
 
@@ -35,7 +35,7 @@ Legend:
     - **upload.images** is the role name
 
 
-.. literalinclude:: ../../src/Domain/Roles.php
+.. literalinclude:: ../../server/src/Domain/Roles.php
    :language: ruby
 
 Docker container extra parameters
@@ -86,3 +86,10 @@ PostgreSQL support
     DATABASE_COLLATE=pl_PL.UTF8
     DATABASE_DRIVER=pdo_pgsql
     DATABASE_VERSION=10.10
+
+
+3. _"SQLSTATE[21000]: Cardinality violation: 7 ERROR: more than one row returned by a subquery used as an expression"_
+
+[This is a bug in the Doctrine DBAL driver that we use.](https://github.com/doctrine/dbal/issues/950). To work around it, please create
+a separate database, user and use default schema "public" for the application.
+
