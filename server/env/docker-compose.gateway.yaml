@@ -1,0 +1,12 @@
+version: "3.5"
+
+#
+# This file extends docker-compose.yaml by adding additional services and environment variables to existing services
+#
+
+services:
+    filerepository:
+        ports:
+            - "80:80"
+        environment:
+            NGINX_REQUEST_BUFFERING: "on"   # see https://github.com/riotkit-org/docker-php-app#configuration-reference

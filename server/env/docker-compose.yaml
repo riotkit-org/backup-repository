@@ -13,3 +13,4 @@ services:
         image: quay.io/riotkit/file-repository:${FILE_REPOSITORY_VERSION}
         environment:
             SECURITY_ADMIN_TOKEN: "${SECURITY_ADMIN_TOKEN}"
+            HEALTH_CHECK_CODE: "${HEALTH_CHECK_CODE}"

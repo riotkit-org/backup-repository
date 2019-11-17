@@ -4,15 +4,11 @@ version: "3.5"
 # This file extends docker-compose.yaml by adding additional services and environment variables to existing services
 #
 
-volumes:
-    postgres_data:
-    filerepository_data:
-
 services:
     filerepository:
         volumes:
-            - filerepository_data:/var/www/html/var
+            - /srv/www-filerepository:/var/www/html/var
 
     postgresql:
         volumes:
-            - postgres_data:/var/lib/postgresql
+            - /var/lib/postgresql-filerepository:/var/lib/postgresql

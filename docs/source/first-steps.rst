@@ -35,13 +35,13 @@ To install the application - download dependencies, install database schema use 
 
 .. code:: bash
 
-    make install
+    make install install_frontend
 
-All right! The application should be ready to go. To check the application you can launch a **development web server**.
+All right! The application should be ready to go. You can check the health check endpoint.
 
 .. code:: bash
 
-    make run_dev
+    curl http://localhost:8000/health?code=test
 
 
 
@@ -50,9 +50,9 @@ Installation with docker
 
 There are at least three choices:
 
-- Use `quay.io/riotkit/file-repository` container by your own (advanced)
-- Generate a docker-compose.yaml using `make print VARIANT="s3 postgres persistent"` in `server/env` directory
-- Create your own environment basing on provided example docker-compose
+- Use `quay.io/riotkit/file-repository` container by your own (advanced) and follow the configuration reference
+- Generate a docker-compose.yaml using `make print VARIANT="gateway s3 postgres persistent"` in `server/env` directory, and create your own environment basing on it
+- Copy the `server/env` environment from this repository and adjust to your needs
 
 Proposed way to choose is the prepared docker-compose environment that is placed in `server/env` directory.
 
@@ -61,7 +61,7 @@ Proposed way to choose is the prepared docker-compose environment that is placed
 .. code:: bash
 
     cd ./server/env
-    make up VARIANT="s3 postgres persistent"
+    make up VARIANT="gateway s3 postgres persistent"
 
 
 **Generating a docker-compose example file:**
@@ -69,25 +69,50 @@ Proposed way to choose is the prepared docker-compose environment that is placed
 .. code:: bash
 
     cd ./server/env
-    make print VARIANT="s3 postgres persistent"
+    make print VARIANT="gateway s3 postgres persistent"
 
 
 **Production tips:**
 
-- Use external database, do backups
-- Do not use SQLite3 for production. Use PostgreSQL or MySQL instead.
+- Use external non-containerized database, do backups. If you want to use containers then use replication
+- Do not use SQLite3 for production. Use PostgreSQL or MySQL instead
 - Mount data as volumes. Use bind-mounts to have files placed on host filesystem (volumes can be deleted, bind-mounted files stays anyway)
+- Application behind a gateway (proxy_pass) should have *NGINX_REQUEST_BUFFERING=off* to avoid double-buffering (slows down performance)
+- Use *SECURITY_ADMIN_TOKEN* environment variable to setup an administrative token to be able to log-in into the application
 
+Development environment setup
+=============================
+
+For development purposes use the "test" configuration, which mounts the application into the docker container, in effect
+the all changes are present in the application.
+
+You can also run the application with PostgreSQL and/or with S3 as a storage.
+
+.. code:: bash
+
+    cd server/env
+    make up VARIANT="test"
+
+    # with PostgreSQL as a database
+    make up VARIANT="test postgres"
+
+    # bind application on port 80
+    make up VARIANT="test postgres gateway"
+
+    # keep all of the changes between environment restarts
+    make up VARIANT="test persistent postgres gateway"
+
+
+Please check out the detailed instruction in the **./server/env/README.md** file.
 
 Post-installation
 =================
 
-At this point you have the application, but you do not have access to it.
-**You will need to generate an administrative access token** to be able to create new tokens, manage backups, upload files to storage.
+At this point you have the application, but you do not have access to it - except if you use docker container and specify the *SECURITY_ADMIN_TOKEN*, then docker container would create an admin token for you.
+**You will need to generate an administrative access token if you dont have one** to be able to create new tokens, manage backups, upload files to storage.
 To achieve this goal you need to execute a simple command.
 
-Given you use docker you can do eg. **sudo docker exec some-container-name ./bin/console auth:generate-admin-token**,
-for bare metal installation it would be just **./bin/console auth:generate-admin-token** in the project directory.
+You need to execute **./bin/console auth:generate-admin-token** in the project directory.
 
 So, when you have an administrative token, then you need a token to upload backups. It's not recommended to use administrative token
 on your servers. **Recommended way is to generate a separate token, that is allowed to upload a backup to specified collection**

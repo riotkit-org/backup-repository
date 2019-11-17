@@ -15,7 +15,10 @@ test_api@ci: wait_for_app ## Run API tests in a docker container (params: CODECE
 test_api: ## Run API tests in a docker container (params: CODECEPT_ARGS)
 	${SUDO} ${COMPOSE_ARGS} exec --user www-data filerepository ./vendor/bin/codecept -c codeception.local-docker.yml run ${CODECEPT_ARGS}
 
-up: ## Bring up the development environment (params: VARIANT)
+test_unit: ## Run unit tests in a docker container (params PHPUNIT_ARGS)
+	${SUDO} ${COMPOSE_ARGS} exec --user www-data filerepository ./bin/phpunit ${PHPUNIT_ARGS}
+
+up: ## Bring up the development environment (params: VARIANT). Example: up VARIANT="s3 postgres"
 	VARIANT_ARGS=""; \
 	if [[ "${VARIANT}" != "" ]]; then \
 		VARIANT_ARGS=" -f docker-compose.${VARIANT}.yaml"; \

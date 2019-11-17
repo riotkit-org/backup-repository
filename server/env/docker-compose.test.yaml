@@ -15,7 +15,6 @@ services:
             - "./tests_output:/var/www/html/tests/Functional/_output"
         environment:
             APP_ENV: "test"
-            HEALTH_CHECK_CODE: "test"
         ports:
             - "8000:80"
 

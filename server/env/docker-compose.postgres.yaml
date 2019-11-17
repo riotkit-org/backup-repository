@@ -12,9 +12,9 @@ services:
         volumes:
             - postgresql_run:/var/run/postgresql
         environment:
-            DATABASE_URL: "pgsql://riotkit:against_fascism@postgresql:/rojava"
+            DATABASE_URL: "pgsql://riotkit:rojava@postgresql:/rojava"
             POSTGRES_DB_PDO_ROLE: "riotkit"
-            POSTGRES_DB_PDO_DSN: "pgsql:host=/var/run/postgresql;user=riotkit;dbname=rojava;password=against_fascism;"
+            POSTGRES_DB_PDO_DSN: "pgsql:host=/var/run/postgresql;user=riotkit;dbname=rojava;password=rojava;"
             DATABASE_CHARSET: "UTF8"
             DATABASE_COLLATE: "pl_PL.UTF8"
             DATABASE_DRIVER: "pdo_pgsql"
@@ -28,4 +28,4 @@ services:
         environment:
             POSTGRES_USER: "riotkit"
             POSTGRES_DB: "rojava"
-            POSTGRES_PASSWORD: "against_fascism"
+            POSTGRES_PASSWORD: "rojava"
