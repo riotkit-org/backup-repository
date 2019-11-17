@@ -6,6 +6,7 @@ services:
     App\Command\Authentication\GenerateAdminTokenCommand:
         public: true
         autowire: true
+        autoconfigure: true
 
     App\Domain\Authentication\ActionHandler\TokenGenerationHandler:
         public: true
