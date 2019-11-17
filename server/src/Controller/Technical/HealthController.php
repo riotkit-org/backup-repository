@@ -96,8 +96,8 @@ class HealthController extends AbstractController
             throw new AccessDeniedHttpException();
         }
 
-        $storageIsOk = true;
-        $dbIsOk      = true;
+        $storageIsOk = false;
+        $dbIsOk      = false;
         $messages = ['database' => [], 'storage' => []];
 
         try {
@@ -109,9 +109,9 @@ class HealthController extends AbstractController
 
         try {
             $this->fs->test();
+            $storageIsOk = true;
 
         } catch (StorageException $exception) {
-            $storageIsOk = false;
             $messages['storage'][] = $exception->getMessage();
 
             if ($exception->getPrevious()) {

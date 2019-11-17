@@ -9,6 +9,9 @@ use App\Domain\Storage\Manager\FilesystemManager;
 use App\Domain\Storage\ValueObject\Filename;
 use App\Domain\Storage\ValueObject\Path;
 use App\Domain\Storage\ValueObject\Stream;
+use Aws\S3\Exception\S3Exception;
+use GuzzleHttp\Exception\ConnectException;
+use League\Flysystem\Exception as FlysystemException;
 use League\Flysystem\FileNotFoundException;
 use League\Flysystem\Filesystem;
 
@@ -32,12 +35,16 @@ class FlysystemFilesystemManager implements FilesystemManager
 
     public function fileExist(Filename $name): bool
     {
-        return $this->fs->has($name->getValue());
+        return $this->wrap(function () use ($name) {
+            return $this->fs->has($name->getValue());
+        });
     }
 
     public function directoryExists(Filename $name): bool
     {
-        return $this->fileExist($name);
+        return $this->wrap(function () use ($name) {
+            return $this->fileExist($name);
+        });
     }
 
     public function read(Filename $name): Stream
@@ -67,14 +74,18 @@ class FlysystemFilesystemManager implements FilesystemManager
     {
         $this->assertCanWrite();
 
-        return $this->fs->putStream($filename->getValue(), $stream->attachTo());
+        return $this->wrap(function () use ($filename, $stream) {
+            return $this->fs->putStream($filename->getValue(), $stream->attachTo());
+        });
     }
 
     public function mkdir(Path $path): void
     {
         $this->assertCanWrite();
 
-        $this->fs->createDir($path->getValue());
+        $this->wrap(function () use ($path) {
+            $this->fs->createDir($path->getValue());
+        });
     }
 
     /**
@@ -86,7 +97,9 @@ class FlysystemFilesystemManager implements FilesystemManager
      */
     public function getFileSize(Filename $filename): ?int
     {
-        return $this->fs->getSize($filename->getValue());
+        return $this->wrap(function () use ($filename) {
+            return $this->fs->getSize($filename->getValue());
+        });
     }
 
     /**
@@ -99,7 +112,9 @@ class FlysystemFilesystemManager implements FilesystemManager
     {
         $this->assertCanWrite();
 
-        $this->fs->delete($filename->getValue());
+        $this->wrap(function () use ($filename) {
+            $this->fs->delete($filename->getValue());
+        });
     }
 
     public function test(): void
@@ -110,6 +125,25 @@ class FlysystemFilesystemManager implements FilesystemManager
     {
         if ($this->ro) {
             throw new ReadOnlyException('Filesystem is read-only');
+        }
+    }
+
+    /**
+     * @param callable $callback
+     *
+     * @return mixed
+     */
+    private function wrap(callable $callback)
+    {
+        try {
+            return $callback();
+
+        } catch (S3Exception | ConnectException | FlysystemException $exception) {
+            throw new StorageException(
+                'Storage reported an error: ' . $exception->getMessage(),
+                StorageException::codes['storage_unavailable'],
+                $exception
+            );
         }
     }
 }
