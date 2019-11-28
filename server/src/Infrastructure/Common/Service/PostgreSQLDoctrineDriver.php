@@ -30,7 +30,7 @@ class PostgreSQLDoctrineDriver extends Driver
             $pdo = new PDOConnection(
                 $dsn,
                 $_SERVER['POSTGRES_DB_PDO_ROLE'] ?? '',
-                null,
+                $password,
                 $driverOptions
             );
 
