@@ -14,7 +14,8 @@
         <env name="APP_DEBUG" value="1" />
         <env name="FS_ADAPTER" value="local" />
 
-        <server name="DATABASE_HOST" value="./var/data.db" />
+        <server name="DATABASE_HOST" value="" />
+        <server name="DATABASE_PATH" value="./var/data.db" />
         <server name="DATABASE_USER" value="" />
         <server name="DATABASE_PORT" value="" />
         <server name="DATABASE_NAME" value="" />

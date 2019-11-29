@@ -31,9 +31,7 @@ jobs:
           - cd server
           - composer install
           - make migrate
-          - mkdir -p ./var
-          - touch ./var/data.db
-          - chmod 777 ./var -R
+          - mkdir -p ./var && chmod 777 ./var -R
       script:
           - make coverage
       after_success:
@@ -48,9 +46,7 @@ jobs:
           - cd server
           - composer update || true
           - make migrate || true
-          - mkdir -p ./var
-          - touch ./var/data.db
-          - chmod 777 ./var -R
+          - mkdir -p ./var && chmod 777 ./var -R
       script: make coverage || true
 
     - stage: File Repository API tests (local storage)

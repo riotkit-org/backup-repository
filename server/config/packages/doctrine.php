@@ -122,12 +122,14 @@ $defaultsForSupportedDrivers = [
     'pdo_mysql' => [
         'env(DATABASE_VERSION)' => '5.8',
         'env(DATABASE_CHARSET)' => 'utf8mb4',
-        'env(DATABASE_COLLATE)' => 'utf8mb4_unicode_ci'
+        'env(DATABASE_COLLATE)' => 'utf8mb4_unicode_ci',
+        'env(DATABASE_PORT)'    => '3306'
     ],
     'pdo_pgsql' => [
         'env(DATABASE_VERSION)' => '10.10',
         'env(DATABASE_CHARSET)' => 'UTF-8',
-        'env(DATABASE_COLLATE)' => 'pl_PL.UTF-8'
+        'env(DATABASE_COLLATE)' => 'pl_PL.UTF-8',
+        'env(DATABASE_PORT)'    => '3306'
     ]
 ];
 
@@ -138,6 +140,10 @@ $container->setParameter('env(DATABASE_DRIVER)', 'pdo_mysql');
 $container->setParameter('env(DATABASE_VERSION)', $driverDefaults['env(DATABASE_VERSION)'] ?? '');
 $container->setParameter('env(DATABASE_CHARSET)', $driverDefaults['env(DATABASE_CHARSET)'] ?? '');
 $container->setParameter('env(DATABASE_COLLATE)', $driverDefaults['env(DATABASE_COLLATE)'] ?? '');
+$container->setParameter('env(DATABASE_PORT)',    $driverDefaults['env(DATABASE_PORT)'] ?? '');
+
+// sqlite3
+$container->setParameter('env(DATABASE_PATH)', './var/data.db');
 
 $dbalConfiguration = [
     'driver'         => '%env(resolve:DATABASE_DRIVER)%',
@@ -152,16 +158,9 @@ $dbalConfiguration = [
     'host'     => '%env(resolve:DATABASE_HOST)%',
     'password' => '%env(resolve:DATABASE_PASSWORD)%',
     'user'     => '%env(resolve:DATABASE_USER)%',
-    'port'     => '%env(resolve:DATABASE_PORT)%'
+    'port'     => '%env(resolve:DATABASE_PORT)%',
+    'path'     => '%env(resolve:DATABASE_PATH)%'
 ];
-
-//if ($databaseDriver === 'pdo_pgsql') {
-//    $dbalConfiguration['driver_class'] = PostgreSQLDoctrineDriver::class;
-//
-//    if (empty($_SERVER['POSTGRES_DB_PDO_DSN']) || empty($_SERVER['POSTGRES_DB_PDO_ROLE'])) {
-//        throw new \Exception('POSTGRES_DB_PDO_DSN and POSTGRES_DB_PDO_ROLE are required, in case when DATABASE_DRIVER=pdo_pgsql');
-//    }
-//}
 
 $container->loadFromExtension('doctrine', [
     'dbal' => $dbalConfiguration,
