@@ -4,6 +4,7 @@ namespace App\Infrastructure\Common\Test\Database;
 
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver\AbstractPostgreSQLDriver;
+use Doctrine\DBAL\Driver\AbstractSQLiteDriver;
 
 class StateManager implements RestoreDBInterface
 {
@@ -38,7 +39,7 @@ class StateManager implements RestoreDBInterface
             return $this->adapter;
         }
 
-        if (strpos(($_SERVER['DATABASE_URL'] ?? ''), 'sqlite://') !== false) {
+        if ($this->connection->getDriver() instanceof AbstractSQLiteDriver) {
             return $this->adapter = new SQLiteRestoreDB();
         }
 
