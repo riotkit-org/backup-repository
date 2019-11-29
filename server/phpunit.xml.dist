@@ -16,6 +16,7 @@
 
         <server name="DATABASE_HOST" value="" />
         <server name="DATABASE_PATH" value="./var/data.db" />
+        <server name="DATABASE_URL" value="sqlite3://./var/data.db" />
         <server name="DATABASE_USER" value="" />
         <server name="DATABASE_PORT" value="" />
         <server name="DATABASE_NAME" value="" />
