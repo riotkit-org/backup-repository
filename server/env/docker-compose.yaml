@@ -20,3 +20,4 @@ services:
             DATABASE_PASSWORD: ""
             DATABASE_USER: ""
             DATABASE_DRIVER: "pdo_sqlite"
+            DATABASE_PORT: ""

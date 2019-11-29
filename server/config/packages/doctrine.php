@@ -151,7 +151,8 @@ $dbalConfiguration = [
     'dbname'   => '%env(resolve:DATABASE_NAME)%',
     'host'     => '%env(resolve:DATABASE_HOST)%',
     'password' => '%env(resolve:DATABASE_PASSWORD)%',
-    'user'     => '%env(resolve:DATABASE_USER)%'
+    'user'     => '%env(resolve:DATABASE_USER)%',
+    'port'     => '%env(resolve:DATABASE_PORT)%'
 ];
 
 //if ($databaseDriver === 'pdo_pgsql') {

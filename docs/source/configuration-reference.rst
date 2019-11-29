@@ -64,30 +64,34 @@ PostgreSQL support
 
 * uuid-ossp (*CREATE EXTENSION "uuid-ossp";*)
 
-2. **Due to lack of Unix sockets support in Doctrine Dbal library we created a custom PostgreSQL adapter.**
+2. **Configuration example:**
 
 **UNIX Socket example:**
 
 .. code:: bash
 
-    DATABASE_URL=
-    POSTGRES_DB_PDO_ROLE=... (in most cases same as username)
-    POSTGRES_DB_PDO_DSN="pgsql:host=/var/run/postgresql;user=...;dbname=...;password=...;"
+    DATABASE_HOST: "/var/run/postgresql"
+    DATABASE_NAME: "rojava"
+    DATABASE_PASSWORD: "rojava"
+    DATABASE_USER: "riotkit"
+    DATABASE_DRIVER=pdo_pgsql
+
     DATABASE_CHARSET=UTF8
     DATABASE_COLLATE=pl_PL.UTF8
-    DATABASE_DRIVER=pdo_pgsql
     DATABASE_VERSION=10.10
 
 **IPv4 example:**
 
 .. code:: bash
 
-    DATABASE_URL=
-    POSTGRES_DB_PDO_ROLE=... (in most cases same as username)
-    POSTGRES_DB_PDO_DSN="pgsql:host=my_db_host;user=...;dbname=...;password=...;"
+    DATABASE_HOST: "192.168.2.161"
+    DATABASE_NAME: "rojava"
+    DATABASE_PASSWORD: "rojava"
+    DATABASE_USER: "riotkit"
+    DATABASE_DRIVER=pdo_pgsql
+
     DATABASE_CHARSET=UTF8
     DATABASE_COLLATE=pl_PL.UTF8
-    DATABASE_DRIVER=pdo_pgsql
     DATABASE_VERSION=10.10
 
 

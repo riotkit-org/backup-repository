@@ -21,6 +21,7 @@ services:
             DATABASE_NAME: "rojava"
             DATABASE_PASSWORD: "rojava"
             DATABASE_USER: "riotkit"
+            DATABASE_PORT: "5432"
 
     postgresql:
         image: postgres:10.10-alpine
