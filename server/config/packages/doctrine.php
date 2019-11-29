@@ -147,7 +147,9 @@ $dbalConfiguration = [
         'charset' => '%env(DATABASE_CHARSET)%',
         'collate' => '%env(DATABASE_COLLATE)%'
     ],
-    'url' => '%env(resolve:DATABASE_URL)%'
+    'url'      => '%env(resolve:DATABASE_URL)%',
+    'password' => '%env(resolve:DATABASE_PASSWORD)%',
+    'user'     => '%env(resolve:DATABASE_USER)%'
 ];
 
 if ($databaseDriver === 'pdo_pgsql') {
