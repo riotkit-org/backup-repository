@@ -28,7 +28,7 @@ class SQLiteRestoreDB implements RestoreDBInterface
 
     private function getDbPath(): string
     {
-        $path = $_SERVER['DATABASE_HOST'] ?? '';
+        $path = $_SERVER['DATABASE_PATH'] ?? '';
         $path = \str_replace('%kernel.project_dir%', '../', $path);
 
         return \trim($path, '/');
