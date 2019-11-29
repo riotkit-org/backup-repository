@@ -14,3 +14,9 @@ services:
         environment:
             SECURITY_ADMIN_TOKEN: "${SECURITY_ADMIN_TOKEN}"
             HEALTH_CHECK_CODE: "${HEALTH_CHECK_CODE}"
+
+            DATABASE_HOST: "./var/data.db"
+            DATABASE_NAME: ""
+            DATABASE_PASSWORD: ""
+            DATABASE_USER: ""
+            DATABASE_DRIVER: "pdo_sqlite"

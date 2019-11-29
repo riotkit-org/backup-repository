@@ -14,7 +14,10 @@
         <env name="APP_DEBUG" value="1" />
         <env name="FS_ADAPTER" value="local" />
 
-        <server name="DATABASE_URL" value="sqlite:///./var/data.db" />
+        <server name="DATABASE_HOST" value="./var/data.db" />
+        <server name="DATABASE_USER" value="" />
+        <server name="DATABASE_NAME" value="" />
+        <server name="DATABASE_PASSWORD" value="" />
         <server name="DATABASE_DRIVER" value="pdo_sqlite" />
     </php>
 

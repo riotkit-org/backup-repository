@@ -12,13 +12,15 @@ services:
         volumes:
             - postgresql_run:/var/run/postgresql
         environment:
-            DATABASE_URL: "pgsql://riotkit:rojava@postgresql:/rojava"
-            POSTGRES_DB_PDO_ROLE: "riotkit"
-            POSTGRES_DB_PDO_DSN: "pgsql:host=/var/run/postgresql;user=riotkit;dbname=rojava;password=rojava;"
             DATABASE_CHARSET: "UTF8"
             DATABASE_COLLATE: "pl_PL.UTF8"
             DATABASE_DRIVER: "pdo_pgsql"
             DATABASE_VERSION: "10.10"
+
+            DATABASE_HOST: "/var/run/postgresql"
+            DATABASE_NAME: "rojava"
+            DATABASE_PASSWORD: "rojava"
+            DATABASE_USER: "riotkit"
 
     postgresql:
         image: postgres:10.10-alpine

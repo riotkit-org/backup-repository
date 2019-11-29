@@ -148,17 +148,19 @@ $dbalConfiguration = [
         'collate' => '%env(DATABASE_COLLATE)%'
     ],
     'url'      => '%env(resolve:DATABASE_URL)%',
+    'dbname'   => '%env(resolve:DATABASE_NAME)%',
+    'host'     => '%env(resolve:DATABASE_HOST)%',
     'password' => '%env(resolve:DATABASE_PASSWORD)%',
     'user'     => '%env(resolve:DATABASE_USER)%'
 ];
 
-if ($databaseDriver === 'pdo_pgsql') {
-    $dbalConfiguration['driver_class'] = PostgreSQLDoctrineDriver::class;
-
-    if (empty($_SERVER['POSTGRES_DB_PDO_DSN']) || empty($_SERVER['POSTGRES_DB_PDO_ROLE'])) {
-        throw new \Exception('POSTGRES_DB_PDO_DSN and POSTGRES_DB_PDO_ROLE are required, in case when DATABASE_DRIVER=pdo_pgsql');
-    }
-}
+//if ($databaseDriver === 'pdo_pgsql') {
+//    $dbalConfiguration['driver_class'] = PostgreSQLDoctrineDriver::class;
+//
+//    if (empty($_SERVER['POSTGRES_DB_PDO_DSN']) || empty($_SERVER['POSTGRES_DB_PDO_ROLE'])) {
+//        throw new \Exception('POSTGRES_DB_PDO_DSN and POSTGRES_DB_PDO_ROLE are required, in case when DATABASE_DRIVER=pdo_pgsql');
+//    }
+//}
 
 $container->loadFromExtension('doctrine', [
     'dbal' => $dbalConfiguration,
