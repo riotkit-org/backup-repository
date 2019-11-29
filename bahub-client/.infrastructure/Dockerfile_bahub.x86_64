@@ -17,4 +17,4 @@ RUN cd /bahub \
 #VOLUME "/bahub.conf.yaml"
 #VOLUME "/cron"
 
-ENTRYPOINT ["/bahub/docker_entrypoint.sh"]
+ENTRYPOINT ["/bahub/.infrastructure/docker_entrypoint.sh"]

@@ -21,16 +21,16 @@ generate_admin_token () {
 }
 
 console () {
-    sudo docker-compose exec file-repository \
+    sudo -E docker-compose exec file-repository \
         /bin/bash -c "./bin/console --env=prod $@"
 }
 
 exec_in_bahub_container () {
-    sudo docker-compose exec bahub /bin/sh -c "$@"
+    sudo -E docker-compose exec bahub /bin/sh -c "$@"
 }
 
 read_logs () {
-    sudo docker-compose exec file-repository /bin/sh -c 'cat ./var/log/prod.log' || true
+    sudo -E docker-compose exec file-repository /bin/sh -c 'cat ./var/log/prod.log' || true
 }
 
 function_exists () {
@@ -42,20 +42,20 @@ function_exists () {
 }
 
 prepare_file_repository_instance () {
-    sudo docker-compose up -d --force-recreate file-repository
+    sudo -E docker-compose up -d --force-recreate file-repository
 }
 
 prepare_environment() {
     delete_environment
-    sudo docker-compose up -d --force-recreate
+    sudo -E docker-compose up -d --force-recreate
 }
 
 delete_environment() {
-    sudo docker-compose rm -s -v -f
+    sudo -E docker-compose rm -s -v -f
 }
 
 wait_for_container_to_start () {
-    while ! sudo docker-compose exec file-repository curl -s -f http://localhost/health?code=tests_env > /dev/null; do
+    while ! sudo -E docker-compose exec file-repository curl -s -f http://localhost/health?code=tests_env > /dev/null; do
         sleep 0.1
     done
 }
@@ -69,5 +69,5 @@ before_running_all_tests () {
 }
 
 after_all_tests_passed() {
-    sudo docker-compose rm -s -v -f
+    sudo -E docker-compose rm -s -v -f
 }
