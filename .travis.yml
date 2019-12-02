@@ -92,7 +92,7 @@ jobs:
           - sudo curl -L "https://github.com/docker/compose/releases/download/1.24.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/bin/docker-compose
           - cd bahub-client && make build_container TAG=${TRAVIS_TAG:-dev} && cd ..
           - cd server && make build_container TAG=${TRAVIS_TAG:-dev} && cd ..
-      script: cd bahub-client && make test SERVER_DOCKER_TAG=${TRAVIS_TAG:-dev}
+      script: cd bahub-client && make test SERVER_DOCKER_TAG=${TRAVIS_TAG:-dev} TAG=${TRAVIS_TAG:-dev}
       after_success: bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [OK] Bahub functional tests are passing."
       after_failure: bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [FAILURE] Bahub fuctional tests are not passing.."
 

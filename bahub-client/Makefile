@@ -38,8 +38,8 @@ run_test_containers: ## Run testing containers and fork to the background
 kill_test_containers: ## Stop and remove all containers
 	cd tests && ${SUDO} docker-compose down
 
-test: ## Run tests (params: SERVER_DOCKER_TAG)
-	SERVER_TAG=${SERVER_DOCKER_TAG} ./tests/run.sh
+test: ## Run tests (params: SERVER_DOCKER_TAG, TAG)
+	SERVER_TAG=${SERVER_DOCKER_TAG} TAG=${TAG} ./tests/run.sh
 
 unit_test: ## Run unit tests
 	${PY_BIN} -m unittest discover -s ./tests/unit

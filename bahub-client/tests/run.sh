@@ -3,6 +3,8 @@
 TESTS_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )
 cd ${TESTS_DIR}
 
+export TAG="${TAG:-dev}"
+
 source init.sh
 before_running_all_tests
 
