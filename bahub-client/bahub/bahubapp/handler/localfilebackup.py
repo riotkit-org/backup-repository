@@ -15,7 +15,7 @@ class LocalFileBackup(BackupHandler):
             if not os.path.exists(path):
                 raise Exception('Path "' + path + '" does not exist')
 
-    def _read_import_stream(self) -> CommandExecutionResult:
+    def receive_backup_stream(self) -> CommandExecutionResult:
         """ Read from local directory and return as a TAR-OPENSSL stream """
 
         tar_cmd = self._get_definition().get_pack_cmd(self._get_definition().get_paths())
@@ -24,7 +24,7 @@ class LocalFileBackup(BackupHandler):
             self._pipe_factory.create_backup_command(tar_cmd, self._get_definition())
         )
 
-    def _write(self, stream) -> CommandExecutionResult:
+    def restore_backup_from_stream(self, stream) -> CommandExecutionResult:
         """ Write to a local directory - unpack a TAR archive """
 
         return self._execute_command(

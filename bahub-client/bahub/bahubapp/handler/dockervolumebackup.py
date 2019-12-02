@@ -30,7 +30,7 @@ class DockerVolumeHotBackup(AbstractDocker):
                 definition
             )
 
-    def _read_import_stream(self) -> CommandExecutionResult:
+    def receive_backup_stream(self) -> CommandExecutionResult:
         definition = self._get_definition()
 
         return self.backup_directories(
@@ -40,7 +40,7 @@ class DockerVolumeHotBackup(AbstractDocker):
             definition
         )
 
-    def _write(self, stream) -> CommandExecutionResult:
+    def restore_backup_from_stream(self, stream) -> CommandExecutionResult:
         """ Write to a local directory - unpack a TAR archive """
 
         definition = self._get_definition()
@@ -72,7 +72,7 @@ class DockerVolumeBackup(AbstractDocker):
         # check if container exists (may be stopped)?
         pass
 
-    def _read_import_stream(self):
+    def receive_backup_stream(self):
         definition = self._get_definition()
         self._stop_origin_and_start_temporary_containers()
 
@@ -84,7 +84,7 @@ class DockerVolumeBackup(AbstractDocker):
             definition
         )
 
-    def _write(self, stream) -> CommandExecutionResult:
+    def restore_backup_from_stream(self, stream) -> CommandExecutionResult:
         definition = self._get_definition()
         self._stop_origin_and_start_temporary_containers()
 

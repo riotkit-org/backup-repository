@@ -32,7 +32,7 @@ class BackupHandler:
         self._validate()
         self._prevalidate_if_the_command_not_dies_early()
 
-        response = self._read_import_stream()
+        response = self.receive_backup_stream()
 
         if response.return_code != 0 and response.return_code is not None:
             raise ReadWriteException('Backup source read error, use --debug and retry to investigate')
@@ -44,7 +44,7 @@ class BackupHandler:
         return upload_response
 
     def perform_restore(self, version: str):
-        response = self._write(
+        response = self.restore_backup_from_stream(
             self._read_from_storage(version)
         )
 
@@ -100,7 +100,7 @@ class BackupHandler:
     def _prevalidate_if_the_command_not_dies_early(self):
         """ Validate if the command really exports the data, does not end up with an error """
 
-        response = self._read_import_stream()
+        response = self.receive_backup_stream()
         response.stdout.read(1024)
 
         response.process.kill()
@@ -114,13 +114,13 @@ class BackupHandler:
     def _validate(self):
         raise Exception('_validate() not implemented for handler')
 
-    def _read_import_stream(self) -> CommandExecutionResult:
+    def receive_backup_stream(self) -> CommandExecutionResult:
         """ TAR output or file stream buffered from ANY source for example """
-        raise Exception('_read_import_stream() not implemented for handler')
+        raise Exception('receive_backup_stream() not implemented for handler')
 
-    def _write(self, stream) -> CommandExecutionResult:
+    def restore_backup_from_stream(self, stream) -> CommandExecutionResult:
         """ A file stream or tar output be written into the storage. May be OpenSSL encoded, depends on definition """
-        raise Exception('_write() not implemented for handler')
+        raise Exception('restore_backup_from_stream() not implemented for handler')
 
     def _read_from_storage(self, version: str):
         return self._client.fetch(version, self._get_definition())

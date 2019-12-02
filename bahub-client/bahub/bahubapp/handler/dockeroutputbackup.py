@@ -16,7 +16,7 @@ class DockerCommandOutputBackup(AbstractDocker):
             self._get_definition().get_container()
         )
 
-    def _read_import_stream(self):
+    def receive_backup_stream(self):
         definition = self._get_definition()
 
         return self._execute_in_container(
@@ -27,7 +27,7 @@ class DockerCommandOutputBackup(AbstractDocker):
             allocate_pts=True
         )
 
-    def _write(self, stream) -> CommandExecutionResult:
+    def restore_backup_from_stream(self, stream) -> CommandExecutionResult:
         definition = self._get_definition()
 
         if not definition.get_restore_command():
