@@ -1,7 +1,7 @@
 .SILENT:
 
 PIP = sudo pip3
-SUDO = sudo
+SUDO = sudo -E
 PY_BIN = python3
 
 help: ## Help
@@ -31,9 +31,12 @@ push_container: ## Push docker container
 clean: ## Clean up the local build directory
 	${SUDO} rm -rf ./build ./bahub.egg-info
 
-run_test_containers: ## Run testing containers and fork to the background
-	cd tests && ${SUDO} docker-compose up -d
+run_test_containers: ## Run testing containers and fork to the background (params: SERVER_DOCKER_TAG, TAG)
+	cd tests && SERVER_DOCKER_TAG=${SERVER_DOCKER_TAG} TAG=${TAG} ${SUDO} docker-compose up -d
 	${SUDO} docker ps
+
+bahub_shell: ## Go into Bahub container
+	cd tests && SERVER_DOCKER_TAG=${SERVER_DOCKER_TAG} TAG=${TAG} ${SUDO} docker-compose exec bahub bash
 
 kill_test_containers: ## Stop and remove all containers
 	cd tests && ${SUDO} docker-compose down
