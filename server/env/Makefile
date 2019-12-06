@@ -1,12 +1,17 @@
 .SILENT:
 .PHONY: help
 
+include .env
+export $(shell sed 's/=.*//' .env)
+
 SHELL=/bin/bash
 SUDO=sudo
 COMPOSE_ARGS=docker-compose -p fr_tests -f docker-compose.yaml
+BAHUB_PATH=$(shell pwd)/../../bahub-client/
+BAHUB_CONFIG_PATH=$(shell pwd)/bahub.conf.yaml
 
 help:
-	@grep -E '^[a-zA-Z\-\_0-9\.@]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
+	@grep -E '^[a-zA-Z\-\_0-9\.@]+:.*?## .*$$' Makefile | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
 test_api@ci: wait_for_app ## Run API tests in a docker container (params: CODECEPT_ARGS)
 	${SUDO} ${COMPOSE_ARGS} exec --user www-data filerepository composer install
@@ -31,6 +36,9 @@ print: ## Print the docker-compose.yaml file (params: VARIANT)
 down: ## Delete the development environment
 	${SUDO} ${COMPOSE_ARGS} rm -f -s -v
 
+sh: ## Get a shell, where Symfony console is present
+	${SUDO} ${COMPOSE_ARGS} exec --user www-data filerepository bash
+
 wait_for_app: ## Wait for application to be ready
 	${SUDO} ${COMPOSE_ARGS} ps
 	echo " >> Waiting for the application to start..."
@@ -54,3 +62,11 @@ _build_variant_list: ## (Params: VARIANT)
 		VARIANT_ARGS="$${VARIANT_ARGS} -f docker-compose.$${variant}.yaml "; \
 	done; \
 	echo "$${VARIANT_ARGS}"
+
+#### Bahub related tasks
+
+bahub@backup_postgres: ## Bahub: Backup PostgreSQL
+	cd ${BAHUB_PATH} && ./bahub-dev.sh --debug --config=${BAHUB_CONFIG_PATH} backup postgres
+
+bahub@restore_postgres: ## Bahub: Backup PostgreSQL
+	cd ${BAHUB_PATH} && ./bahub-dev.sh --debug --config=${BAHUB_CONFIG_PATH} restore postgres

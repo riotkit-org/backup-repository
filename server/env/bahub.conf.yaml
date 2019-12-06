@@ -1,0 +1,21 @@
+accesses:
+    local:
+        url: http://localhost:8000
+        token: "${SECURITY_ADMIN_TOKEN}"
+
+encryption:
+    example_aes:
+        passphrase: "${BAHUB_PASSPHRASE}"
+        method: ""
+
+backups:
+    postgres:
+        type: postgres
+        access: local
+        encryption: example_aes
+        collection_id: "${COLLECTIONS_POSTGRES_ID}"
+        host: "localhost"
+        port: 5432
+        user: "${POSTGRES_USER}"
+        password: "${POSTGRES_PASSWORD}"
+        database: ""

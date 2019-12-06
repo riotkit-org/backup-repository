@@ -4,6 +4,9 @@ version: "3.5"
 # This file extends docker-compose.yaml by adding additional services and environment variables to existing services
 #
 
+volumes:
+    minio_data:
+
 services:
     filerepository:
         environment:
@@ -14,8 +17,8 @@ services:
             FS_AWSS3V3_OPTIONS_ENDPOINT: "http://s3-minio-test:9000"
             FS_AWSS3V3_VERSION: "latest"
             FS_AWSS3V3_REGION: "eu-central-1"
-            FS_AWSS3V3_KEY: "international_workers_association"
-            FS_AWSS3V3_SECRET: "six_hour_workingday_for_everybody"
+            FS_AWSS3V3_KEY: "${MINIO_ACCESS_KEY}"
+            FS_AWSS3V3_SECRET: "${MINIO_SECRET_KEY}"
 
     #
     # Serves
@@ -25,10 +28,12 @@ services:
         expose:
             - "9000"
         command: server /data
+        volumes:
+            - minio_data:/data
         environment:
-            MINIO_DOMAIN: s3-minio-test
-            MINIO_ACCESS_KEY: "international_workers_association"
-            MINIO_SECRET_KEY: "six_hour_workingday_for_everybody"
+            MINIO_DOMAIN: "${MINIO_DOMAIN}"
+            MINIO_ACCESS_KEY: "${MINIO_ACCESS_KEY}"
+            MINIO_SECRET_KEY: "${MINIO_SECRET_KEY}"
 
     #
     # Create a Min.io bucket at start

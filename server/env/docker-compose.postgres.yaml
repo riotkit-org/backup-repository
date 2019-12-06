@@ -15,12 +15,13 @@ services:
             DATABASE_CHARSET: "UTF8"
             DATABASE_COLLATE: "pl_PL.UTF8"
             DATABASE_DRIVER: "pdo_pgsql"
-            DATABASE_VERSION: "10.10"
+            DATABASE_VERSION: "11"
+            DATABASE_URL: ""
 
             DATABASE_HOST: "/var/run/postgresql"
-            DATABASE_NAME: "rojava"
-            DATABASE_PASSWORD: "rojava"
-            DATABASE_USER: "riotkit"
+            DATABASE_NAME: "${POSTGRES_DB}"
+            DATABASE_PASSWORD: "${POSTGRES_PASSWORD}"
+            DATABASE_USER: "${POSTGRES_USER}"
             DATABASE_PORT: "5432"
 
     postgresql:
@@ -29,6 +30,6 @@ services:
             - postgresql_run:/var/run/postgresql
             - ./postgres/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
         environment:
-            POSTGRES_USER: "riotkit"
-            POSTGRES_DB: "rojava"
-            POSTGRES_PASSWORD: "rojava"
+            POSTGRES_USER: "${POSTGRES_USER}"
+            POSTGRES_DB: "${POSTGRES_DB}"
+            POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"

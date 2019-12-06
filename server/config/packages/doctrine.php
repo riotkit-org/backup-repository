@@ -141,6 +141,10 @@ $container->setParameter('env(DATABASE_VERSION)', $driverDefaults['env(DATABASE_
 $container->setParameter('env(DATABASE_CHARSET)', $driverDefaults['env(DATABASE_CHARSET)'] ?? '');
 $container->setParameter('env(DATABASE_COLLATE)', $driverDefaults['env(DATABASE_COLLATE)'] ?? '');
 $container->setParameter('env(DATABASE_PORT)',    $driverDefaults['env(DATABASE_PORT)'] ?? '');
+$container->setParameter('env(DATABASE_NAME)', 'riotkit_filerepository');
+$container->setParameter('env(DATABASE_HOST)', 'localhost');
+$container->setParameter('env(DATABASE_PASSWORD)', '');
+$container->setParameter('env(DATABASE_USER)', 'riotkit');
 
 // sqlite3
 $container->setParameter('env(DATABASE_PATH)', './var/data.db');
@@ -153,7 +157,7 @@ $dbalConfiguration = [
         'charset' => '%env(DATABASE_CHARSET)%',
         'collate' => '%env(DATABASE_COLLATE)%'
     ],
-    'url'      => '%env(resolve:DATABASE_URL)%',
+    'default_dbname' => '%env(resolve:DATABASE_NAME)%',
     'dbname'   => '%env(resolve:DATABASE_NAME)%',
     'host'     => '%env(resolve:DATABASE_HOST)%',
     'password' => '%env(resolve:DATABASE_PASSWORD)%',
@@ -161,6 +165,10 @@ $dbalConfiguration = [
     'port'     => '%env(resolve:DATABASE_PORT)%',
     'path'     => '%env(resolve:DATABASE_PATH)%'
 ];
+
+if ($_SERVER['DATABASE_URL'] ?? '') {
+    $dbalConfiguration['url'] = '%env(resolve:DATABASE_URL)%';
+}
 
 $container->loadFromExtension('doctrine', [
     'dbal' => $dbalConfiguration,
