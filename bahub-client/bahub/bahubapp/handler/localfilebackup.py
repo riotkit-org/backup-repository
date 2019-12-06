@@ -1,7 +1,7 @@
 
 from . import BackupHandler
 from ..result import CommandExecutionResult
-from ..entity.definition import LocalFileDefinition
+from ..entity.definition.local import LocalFileDefinition
 import os
 
 
@@ -10,7 +10,7 @@ class LocalFileBackup(BackupHandler):
     def _get_definition(self) -> LocalFileDefinition:
         return self._definition
 
-    def _validate(self):
+    def validate_before_creating_backup(self):
         for path in self._get_definition().get_paths():
             if not os.path.exists(path):
                 raise Exception('Path "' + path + '" does not exist')

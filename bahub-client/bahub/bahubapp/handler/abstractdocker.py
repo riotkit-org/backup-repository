@@ -1,16 +1,23 @@
 
 from . import BackupHandler
-from ..entity.definition import BackupDefinition
+from ..entity.definition import ContainerizedDefinition
 from ..exceptions import ReadWriteException
 from ..result import CommandExecutionResult
 
 
 class AbstractDocker(BackupHandler):
-    def _execute_in_container(self,
-                              docker_bin: str,
-                              container: str,
-                              command: str,
-                              definition: BackupDefinition,
+    """
+        Base class for all handlers that uses docker
+        When a handler inherits from this class it does not mean it works only with docker, can work with both
+        host and docker (execute_command_in_proper_context() is example of such behavior)
+
+        :author: RiotKit Team, Andrew Johnson
+    """
+
+    def _get_definition(self) -> ContainerizedDefinition:
+        return self._definition
+
+    def _execute_in_container(self, docker_bin: str, container: str, command: str, definition: ContainerizedDefinition,
                               allocate_pts=False,
                               interactive=False,
                               with_crypto=True,
@@ -27,6 +34,7 @@ class AbstractDocker(BackupHandler):
         if interactive:
             opts += ' -i'
 
+        # the pipe factory constructs the end command, including details such as encryption
         method = self._pipe_factory.create_backup_command
 
         if mode == 'restore':
@@ -42,7 +50,7 @@ class AbstractDocker(BackupHandler):
         )
 
     def backup_directories(self, docker_bin: str, container: str, paths: list,
-                           definition: BackupDefinition) -> CommandExecutionResult:
+                           definition: ContainerizedDefinition) -> CommandExecutionResult:
         """ Performs a backup of multiple directories using TAR with gzip/xz/bz2 compression """
 
         return self._execute_in_container(
@@ -51,10 +59,43 @@ class AbstractDocker(BackupHandler):
             definition
         )
 
-    def _spawn_temporary_container(self,
-                                   docker_bin: str,
-                                   origin_container: str,
-                                   temp_image_name: str,
+    def execute_command_in_proper_context(self, command: str, mode: str = '', with_crypto: bool = True,
+                                          stdin=None) -> CommandExecutionResult:
+        """
+        Execute command in docker or on host
+        """
+
+        factory_method = self._pipe_factory.create_pure_command
+
+        if mode == 'restore':
+            factory_method = self._pipe_factory.create_restore_command
+
+        elif mode == 'backup':
+            factory_method = self._pipe_factory.create_backup_command
+
+        definition = self._get_definition()
+
+        if definition.should_use_docker():
+            return self._execute_in_container(
+                definition.get_docker_bin(),
+                definition.get_container(),
+                command,
+                definition,
+                mode=mode,
+                interactive=True,
+                stdin=stdin
+            )
+
+        return self._execute_command(
+            factory_method(
+                command=command,
+                definition=self._get_definition(),
+                with_crypto=with_crypto
+            ),
+            stdin=stdin
+        )
+
+    def _spawn_temporary_container(self, docker_bin: str, origin_container: str, temp_image_name: str,
                                    temp_container_cmd: str):
         """ Runs a temporary container that has mounted volumes from other container """
 
@@ -82,11 +123,8 @@ class AbstractDocker(BackupHandler):
 
         return container_id
 
-    def _assert_all_paths_exists(self,
-                                 docker_bin: str,
-                                 container: str,
-                                 paths: list,
-                                 definition: BackupDefinition):
+    def _assert_all_paths_exists(self, docker_bin: str, container: str, paths: list,
+                                 definition: ContainerizedDefinition):
         """ Multiple assertion for directory/files presence """
 
         self.assert_container_running(docker_bin, container)

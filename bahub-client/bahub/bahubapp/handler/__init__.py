@@ -7,6 +7,7 @@ from logging import Logger
 import string
 import random
 import subprocess
+import sys
 from shutil import copyfileobj
 
 
@@ -29,7 +30,7 @@ class BackupHandler:
         self._definition = _definition
 
     def perform_backup(self):
-        self._validate()
+        self.validate_before_creating_backup()
         self._prevalidate_if_the_command_not_dies_early()
 
         response = self.receive_backup_stream()
@@ -95,24 +96,30 @@ class BackupHandler:
 
             process.stdin.close()
 
+        process.wait(60)
+        print(process.stderr.read())
+
+        # todo: Add --redirect-stdout --redirect-stderr support, or even redirect all stderr by default with a "WARNING" level
+
         return CommandExecutionResult(process.stdout, process.stderr, process.returncode, process)
 
     def _prevalidate_if_the_command_not_dies_early(self):
         """ Validate if the command really exports the data, does not end up with an error """
 
         response = self.receive_backup_stream()
-        response.stdout.read(1024)
+        stderr = response.stderr.read(1024)
 
         response.process.kill()
         response.process.wait(15)
 
         if response.process.returncode > 0:
             raise ReadWriteException(
-                'The process exited with incorrect code, try to verify the command in with --debug switch'
+                'The process exited with incorrect code, try to verify the command in with --debug switch. Stderr: %s'
+                % stderr.decode('utf-8')[0:512]
             )
 
-    def _validate(self):
-        raise Exception('_validate() not implemented for handler')
+    def validate_before_creating_backup(self):
+        raise Exception('validate_before_creating_backup() not implemented for handler')
 
     def receive_backup_stream(self) -> CommandExecutionResult:
         """ TAR output or file stream buffered from ANY source for example """

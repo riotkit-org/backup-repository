@@ -1,0 +1,154 @@
+
+from . import ContainerizedDefinition
+from . import BackupDefinition
+from ..access import ServerAccess
+from ..encryption import Encryption
+from abc import ABC, abstractmethod
+
+
+class AbstractSQLDefinition(ABC, ContainerizedDefinition):
+    """ Common model for all SQL backups, contains connection details that are common across all databases """
+
+    _host: str
+    _port: int
+    _user: str
+    _password: str
+    _database: str
+
+    def __init__(self,
+                 access: ServerAccess, _type: str, collection_id: str, encryption: Encryption,
+                 tar_pack_cmd: str, tar_unpack_cmd: str, host: str, port: int, user: str,
+                 password: str, database: str, docker_bin: str, container: str, name: str):
+
+        super().__init__(access, _type, collection_id, encryption, tar_pack_cmd, tar_unpack_cmd, name)
+
+        self._host = host
+        self._port = port
+        self._user = user
+        self._password = password
+        self._database = database
+        self._docker_bin = docker_bin
+        self._container = container
+
+    def fill_template(self, template: str, use_database: bool = True):
+        return template\
+            .replace('%host%', self._host) \
+            .replace('%user%', self._user) \
+            .replace('%port%', str(self._port)) \
+            .replace('%database%', self._database if use_database else '') \
+            .replace('%password%', self._password)
+
+
+class AbstractDumpAndRestoreDefinition(AbstractSQLDefinition):
+    """ Common model for dump & restore workflow when working with databases """
+
+    _dump_cmd: str
+    _restore_cmd: str
+    _query_cmd: str
+
+    _dump_opts: str
+    _restore_opts: str
+
+    def fill_template(self, template: str, use_database: bool = True):
+        return super().fill_template(template, use_database) \
+            .replace('%dump_opts%', self._dump_opts) \
+            .replace('%restore_opts%', self._restore_opts)
+
+    @classmethod
+    def from_config(cls, config: dict, name: str):
+        definition = cls(
+            access=config['access'],
+            _type=config['type'],
+            collection_id=config['collection_id'],
+            encryption=config['encryption'],
+            tar_pack_cmd=config.get('tar_pack_cmd', BackupDefinition._tar_pack_cmd),
+            tar_unpack_cmd=config.get('tar_unpack_cmd', BackupDefinition._tar_unpack_cmd),
+            host=config['host'],
+            port=int(config['port']),
+            user=config['user'],
+            password=config['password'],
+            database=config['database'],
+            docker_bin=config.get('docker_bin', 'sudo docker'),
+            container=config.get('container', ''),
+            name=name
+        )
+
+        definition._dump_opts = config.get('dump_opts', '')
+        definition._restore_opts = config.get('restore_opts', '')
+
+        definition._init_cmds(config)
+        return definition
+
+    def get_database(self) -> str:
+        return self._database
+
+    def get_dump_command(self) -> str:
+        return self.fill_template(self._dump_cmd)
+
+    def get_restore_command(self, use_database: bool = True):
+        return self.fill_template(self._restore_cmd, use_database=use_database)
+
+    @abstractmethod
+    def _init_cmds(self, config: dict):
+        raise NotImplementedError('Please implement _init_cmds() in child class')
+
+    def __repr__(self):
+        return 'Definition<name=' + self._name + ',collection_id=' + \
+               str(self.get_collection_id()) + ',docker_container=' + \
+               str(self.get_container()) + ',sql_host=' + str(self._host) + '>'
+
+
+class MySQLDefinition(AbstractDumpAndRestoreDefinition):
+    """ MySQL backup model using mysqldump command """
+
+    def _init_cmds(self, config: dict):
+        self._dump_cmd = config.get('dump_cmd') if config.get('dump_cmd') else \
+            'mysqldump --skip-lock-tables -u %user% -P %port% -p%password% -h %host% %database%'
+
+        self._restore_cmd = config.get('restore_cmd') if config.get('restore_cmd') else \
+            'mysql -u %user% -p%password% -h %host% -P %port% %database%'
+
+    def get_database(self) -> str:
+        return self._database if self._database else '--all-databases'
+
+    def is_copying_all_databases(self) -> bool:
+        return self.get_database() is "--all-databases"
+
+
+class PostgreSQLDefinition(AbstractDumpAndRestoreDefinition):
+    """ PostgreSQL definition for using pg_dump pg_dumpall and pg_restore """
+
+    def _init_cmds(self, config: dict):
+        self._dump_cmd = config.get('dump_cmd')
+
+        if not self._dump_cmd:
+            #
+            # Decide if we use pg_dump or pg_dumpall
+            #
+            if self.get_database():
+                pg_dump_part = 'pg_dump -U %user% -p %port% -h %host% -d %database% -c %dump_opts%'
+            else:
+                pg_dump_part = 'pg_dumpall -U %user% -p %port% -h %host% -c %dump_opts%'
+
+            self._dump_cmd = 'PGPASSWORD=%password% ' + pg_dump_part
+
+        self._restore_cmd = config.get('restore_cmd')
+
+        if not self._restore_cmd:
+            self._restore_cmd = 'PGPASSWORD=%password% psql -U %user% -p %port% -h %host% postgres'
+
+    def get_all_sessions_command(self) -> str:
+        return self.fill_template(
+            'echo "SELECT pg_terminate_backend(pid) FROM pg_stat_activity  WHERE pid <> pg_backend_pid() "' +
+            ' | PGPASSWORD=%password% psql -U %user% -p %port% -h %host% postgres'
+        )
+
+    def get_psycopg2_connection_params(self):
+        return {
+            'host': self._host,
+            'port': self._port,
+            'database': 'postgres',
+            'user': self._user,
+            'password': self._password,
+            'connect_timeout': 300
+        }

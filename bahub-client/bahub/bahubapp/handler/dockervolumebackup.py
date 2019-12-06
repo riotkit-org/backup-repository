@@ -1,7 +1,6 @@
 from .abstractdocker import AbstractDocker
-from ..entity.definition import DockerVolumesDefinition, DockerOfflineVolumesDefinition
+from ..entity.definition.docker import DockerVolumesDefinition, DockerOfflineVolumesDefinition
 from ..result import CommandExecutionResult
-from ..exceptions import ReadWriteException
 
 
 class DockerVolumeHotBackup(AbstractDocker):
@@ -14,7 +13,7 @@ class DockerVolumeHotBackup(AbstractDocker):
     def _get_definition(self) -> DockerVolumesDefinition:
         return self._definition
 
-    def _validate(self):
+    def validate_before_creating_backup(self):
         definition = self._get_definition()
 
         self.assert_container_running(
@@ -68,7 +67,7 @@ class DockerVolumeBackup(AbstractDocker):
     def _get_definition(self) -> DockerOfflineVolumesDefinition:
         return self._definition
 
-    def _validate(self):
+    def validate_before_creating_backup(self):
         # check if container exists (may be stopped)?
         pass
 

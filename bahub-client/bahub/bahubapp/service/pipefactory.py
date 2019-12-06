@@ -27,3 +27,9 @@ class PipeFactory:
 
         piped += command
         return piped
+
+    @staticmethod
+    def create_pure_command(command: str, definition: BackupDefinition, with_crypto=True):
+        """ Do not encrypt, do not do anything, just allow execution of original command """
+
+        return command

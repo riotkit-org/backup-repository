@@ -1,7 +1,7 @@
 
 from .abstractdocker import AbstractDocker
 from ..result import CommandExecutionResult
-from ..entity.definition import MySQLDefinition
+from ..entity.definition.sql import MySQLDefinition
 from ..exceptions import ReadWriteException
 
 
@@ -9,15 +9,15 @@ class MySQLBackup(AbstractDocker):
     def _get_definition(self) -> MySQLDefinition:
         return self._definition
 
-    def _validate(self):
+    def validate_before_creating_backup(self):
         pass
 
     def receive_backup_stream(self):
         """
         Use MySQL dump command to extract data from database
         """
-        return self._execute_command_in_proper_context(
-            command=self._get_definition().get_mysql_dump_args() + ' | gzip',
+        return self.execute_command_in_proper_context(
+            command=self._get_definition().get_dump_command() + ' | gzip',
             mode='backup'
         )
 
@@ -31,40 +31,8 @@ class MySQLBackup(AbstractDocker):
 
         self._logger.info('Not sending any DROP TABLE, mysqldump should already have "drop if exists" in dump')
 
-        return self._execute_command_in_proper_context(
-            command='gunzip | ' + self._get_definition().get_mysql_command(),
+        return self.execute_command_in_proper_context(
+            command='gunzip | ' + self._get_definition().get_restore_command(),
             mode='restore',
             stdin=stream
-        )
-
-    def _execute_command_in_proper_context(self, command: str, mode: str,
-                                           with_crypto: bool = True,
-                                           stdin=None) -> CommandExecutionResult:
-        """
-        Execute command in docker or on host
-        """
-
-        factory_method = self._pipe_factory.create_restore_command if mode == 'restore' else \
-            self._pipe_factory.create_backup_command
-
-        definition = self._get_definition()
-
-        if definition.should_use_docker():
-            return self._execute_in_container(
-                definition.get_docker_bin(),
-                definition.get_container(),
-                command,
-                definition,
-                mode=mode,
-                interactive=True,
-                stdin=stdin
-            )
-
-        return self._execute_command(
-            factory_method(
-                command=command,
-                definition=self._get_definition(),
-                with_crypto=with_crypto
-            ),
-            stdin=stdin
         )

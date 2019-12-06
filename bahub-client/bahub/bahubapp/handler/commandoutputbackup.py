@@ -2,7 +2,7 @@
 from . import BackupHandler
 from ..result import CommandExecutionResult
 from ..exceptions import ReadWriteException
-from ..entity.definition import CommandOutputDefinition
+from ..entity.definition.local import CommandOutputDefinition
 
 
 class CommandOutputBackup(BackupHandler):
@@ -10,7 +10,7 @@ class CommandOutputBackup(BackupHandler):
     def _get_definition(self) -> CommandOutputDefinition:
         return self._definition
 
-    def _validate(self):
+    def validate_before_creating_backup(self):
         pass
 
     def receive_backup_stream(self) -> CommandExecutionResult:

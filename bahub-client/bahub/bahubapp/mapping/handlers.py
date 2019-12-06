@@ -4,6 +4,7 @@ from ..handler.localfilebackup import LocalFileBackup
 from ..handler.commandoutputbackup import CommandOutputBackup
 from ..handler.dockeroutputbackup import DockerCommandOutputBackup
 from ..handler.mysqlbackup import MySQLBackup
+from ..handler.postgresbackup import PostgreSQLBackup
 
 
 class HandlersMapping:
@@ -11,6 +12,7 @@ class HandlersMapping:
         'docker_hot_volumes': DockerVolumeHotBackup,
         'docker_volumes': DockerVolumeBackup,
         'mysql': MySQLBackup,
+        'postgres': PostgreSQLBackup,
         'docker_output': DockerCommandOutputBackup,
         'command_output': CommandOutputBackup,
         'directory': LocalFileBackup
