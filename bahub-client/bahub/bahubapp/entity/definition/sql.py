@@ -135,7 +135,8 @@ class PostgreSQLDefinition(AbstractDumpAndRestoreDefinition):
         self._restore_cmd = config.get('restore_cmd')
 
         if not self._restore_cmd:
-            self._restore_cmd = 'PGPASSWORD=%password% psql -U %user% -p %port% -h %host% postgres'
+            db = self.get_database() if self.get_database() else 'postgres'
+            self._restore_cmd = 'PGPASSWORD=%password% psql -U %user% -p %port% -h %host% ' + db
 
     def get_all_sessions_command(self) -> str:
         return self.fill_template(
