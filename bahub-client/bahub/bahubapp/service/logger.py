@@ -85,6 +85,8 @@ class PasswordsProtectedFilter(logging.Filter):
         return True
 
     def redact(self, msg):
+        msg = str(msg)
+
         for pattern in self._patterns:
             if len(pattern) < 2:
                 continue

@@ -7,7 +7,6 @@ from logging import Logger
 import string
 import random
 import subprocess
-import sys
 from shutil import copyfileobj
 
 
@@ -18,6 +17,7 @@ class BackupHandler:
     _pipe_factory = None  # type: PipeFactory
     _logger = None  # type: Logger
     _definition = None
+    _max_process_wait_timeout: int
 
     def __init__(self,
                  _client: FileRepositoryClient,
@@ -28,6 +28,7 @@ class BackupHandler:
         self._pipe_factory = _pipe_factory
         self._logger = _logger
         self._definition = _definition
+        self._max_process_wait_timeout = 3600
 
     def perform_backup(self):
         self.validate_before_creating_backup()
@@ -39,7 +40,6 @@ class BackupHandler:
             raise ReadWriteException('Backup source read error, use --debug and retry to investigate')
 
         upload_response = self._client.send(response.stdout, self._get_definition())
-        response.process.wait(15)
         response.stdout.close()
 
         return upload_response
@@ -48,9 +48,6 @@ class BackupHandler:
         response = self.restore_backup_from_stream(
             self._read_from_storage(version)
         )
-
-        response.process.wait()
-        self._logger.info('Waiting for process to finish')
 
         if response.return_code is not None and response.return_code > 0:
             raise ReadWriteException('Cannot write files to disk while restoring from backup. Errors: '
@@ -96,10 +93,8 @@ class BackupHandler:
 
             process.stdin.close()
 
-        process.wait(60)
-        print(process.stderr.read())
-
-        # todo: Add --redirect-stdout --redirect-stderr support, or even redirect all stderr by default with a "WARNING" level
+        self._logger.info('Waiting for process to finish, timeout=%i' % self._max_process_wait_timeout)
+        process.wait(self._max_process_wait_timeout)
 
         return CommandExecutionResult(process.stdout, process.stderr, process.returncode, process)
 
