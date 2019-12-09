@@ -4,15 +4,15 @@ from typing import IO
 
 
 class CommandExecutionResult:
-    stdout = None       # type: IO
-    stderr = None       # type: IO
-    return_code = None  # type: int
-    process = None      # type: subprocess.Popen
+    stdout: IO
+    stderr: IO
+    process: subprocess.Popen
+    command: str
 
-    def __init__(self, stdout: IO, stderr: IO, returncode: int, process: subprocess.Popen):
+    def __init__(self, command: str, stdout: IO, stderr: IO, process: subprocess.Popen):
+        self.command = command
         self.stdout = stdout
         self.stderr = stderr
-        self.return_code = returncode
         self.process = process
 
     def __del__(self):

@@ -5,7 +5,7 @@ from ..exceptions import ReadWriteException
 from ..result import CommandExecutionResult
 
 
-class AbstractDocker(BackupHandler):
+class AbstractDockerAwareHandler(BackupHandler):
     """
         Base class for all handlers that uses docker
         When a handler inherits from this class it does not mean it works only with docker, can work with both
@@ -17,12 +17,26 @@ class AbstractDocker(BackupHandler):
     def _get_definition(self) -> ContainerizedDefinition:
         return self._definition
 
+    def validate_before_creating_backup(self):
+        definition = self._get_definition()
+
+        if self.is_using_container():
+            self.assert_container_running(
+                definition.get_docker_bin(),
+                self.get_container_name()
+            )
+
+    def is_using_container(self) -> bool:
+        return self._get_definition().should_use_docker()
+
     def _execute_in_container(self, docker_bin: str, container: str, command: str, definition: ContainerizedDefinition,
                               allocate_pts=False,
                               interactive=False,
                               with_crypto=True,
                               stdin=None,
-                              mode='backup') -> CommandExecutionResult:
+                              mode='backup',
+                              wait: int = None,
+                              copy_stdin: bool = False) -> CommandExecutionResult:
 
         """ Executes any command inside of the container """
 
@@ -46,21 +60,14 @@ class AbstractDocker(BackupHandler):
                 definition,
                 with_crypto=with_crypto
             ),
-            stdin=stdin
+            stdin=stdin,
+            copy_stdin=copy_stdin,
+            wait=wait
         )
 
-    def backup_directories(self, docker_bin: str, container: str, paths: list,
-                           definition: ContainerizedDefinition) -> CommandExecutionResult:
-        """ Performs a backup of multiple directories using TAR with gzip/xz/bz2 compression """
-
-        return self._execute_in_container(
-            docker_bin, container,
-            definition.get_pack_cmd(paths),
-            definition
-        )
-
-    def execute_command_in_proper_context(self, command: str, mode: str = '', with_crypto: bool = True,
-                                          stdin=None) -> CommandExecutionResult:
+    def execute_command_in_proper_context(self, command: str, mode: str = '', with_crypto_support: bool = True,
+                                          stdin=None, container: str = None,
+                                          wait: int = None, copy_stdin: bool = False) -> CommandExecutionResult:
         """
         Execute command in docker or on host
         """
@@ -75,25 +82,32 @@ class AbstractDocker(BackupHandler):
 
         definition = self._get_definition()
 
-        if definition.should_use_docker():
+        if self.is_using_container():
             return self._execute_in_container(
                 definition.get_docker_bin(),
-                definition.get_container(),
+                container if container else self.get_container_name(),
                 command,
                 definition,
                 mode=mode,
                 interactive=True,
-                stdin=stdin
+                stdin=stdin,
+                copy_stdin=copy_stdin,
+                wait=wait
             )
 
         return self._execute_command(
             factory_method(
                 command=command,
                 definition=self._get_definition(),
-                with_crypto=with_crypto
+                with_crypto=with_crypto_support
             ),
-            stdin=stdin
+            stdin=stdin,
+            copy_stdin=copy_stdin,
+            wait=wait
         )
+
+    def get_container_name(self) -> str:
+        return self._get_definition().get_container()
 
     def _spawn_temporary_container(self, docker_bin: str, origin_container: str, temp_image_name: str,
                                    temp_container_cmd: str):
@@ -111,7 +125,8 @@ class AbstractDocker(BackupHandler):
                 run_command,
                 self._get_definition(),
                 with_crypto=False
-            )
+            ),
+            wait=300
         )
 
         out, code = result.process.communicate()
@@ -154,14 +169,15 @@ class AbstractDocker(BackupHandler):
 
         if "does-not-exist" in response.stdout.read().decode('utf-8'):
             raise ReadWriteException(
-                'Path "' + path + '" does not exist in container "' + definition.get_container() + '"'
+                'Path "' + path + '" does not exist in container "' + self.get_container_name() + '"'
             )
 
     def assert_container_running(self, docker_bin: str, container: str):
         """ Checks if a docker container is running """
 
         response = self._execute_command(
-            docker_bin + ' ps | grep "' + container + '"'
+            docker_bin + ' ps | grep "' + container + '"',
+            wait=30
         )
 
         response.process.wait()
@@ -181,7 +197,8 @@ class AbstractDocker(BackupHandler):
             raise ReadWriteException('Container seems to be not running, check docker ps')
 
         if response.process.returncode > 0:
-            raise ReadWriteException('Command failed with non-zero exit code, probably the container is not running, output: ' + output)
+            raise ReadWriteException('Command failed with non-zero exit code, ' +
+                                     'probably the container is not running, output: ' + output)
 
     @staticmethod
     def _assert_container_name_present(out: CommandExecutionResult, container_name: str, operation_name: str):
@@ -192,14 +209,14 @@ class AbstractDocker(BackupHandler):
             raise ReadWriteException('Cannot ' + operation_name + ' container "' + container_name + '". ' + stdout)
 
     def _kill_container(self, docker_bin: str, container_name: str):
-        out = self._execute_command(docker_bin + ' kill ' + container_name)
+        out = self._execute_command(docker_bin + ' kill ' + container_name, wait=300)
         self._assert_container_name_present(out, container_name, 'kill')
 
     def _stop_container(self, docker_bin: str, container_name: str):
-        out = self._execute_command(docker_bin + ' stop ' + container_name)
+        out = self._execute_command(docker_bin + ' stop ' + container_name, wait=300)
         self._assert_container_name_present(out, container_name, 'stop')
 
     def _start_container(self, docker_bin: str, container_name: str):
-        out = self._execute_command(docker_bin + ' start ' + container_name)
+        out = self._execute_command(docker_bin + ' start ' + container_name, wait=300)
         self._assert_container_name_present(out, container_name, 'start')
 

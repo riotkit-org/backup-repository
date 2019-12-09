@@ -30,12 +30,15 @@ class AbstractSQLDefinition(ABC, ContainerizedDefinition):
         self._docker_bin = docker_bin
         self._container = container
 
-    def fill_template(self, template: str, use_database: bool = True):
+    def get_database(self) -> str:
+        return self._database
+
+    def fill_template(self, template: str):
         return template\
             .replace('%host%', self._host) \
             .replace('%user%', self._user) \
             .replace('%port%', str(self._port)) \
-            .replace('%database%', self._database if use_database else '') \
+            .replace('%database%', self.get_database()) \
             .replace('%password%', self._password)
 
 
@@ -49,8 +52,8 @@ class AbstractDumpAndRestoreDefinition(AbstractSQLDefinition):
     _dump_opts: str
     _restore_opts: str
 
-    def fill_template(self, template: str, use_database: bool = True):
-        return super().fill_template(template, use_database) \
+    def fill_template(self, template: str):
+        return super().fill_template(template) \
             .replace('%dump_opts%', self._dump_opts) \
             .replace('%restore_opts%', self._restore_opts)
 
@@ -79,14 +82,11 @@ class AbstractDumpAndRestoreDefinition(AbstractSQLDefinition):
         definition._init_cmds(config)
         return definition
 
-    def get_database(self) -> str:
-        return self._database
-
     def get_dump_command(self) -> str:
         return self.fill_template(self._dump_cmd)
 
-    def get_restore_command(self, use_database: bool = True):
-        return self.fill_template(self._restore_cmd, use_database=use_database)
+    def get_restore_command(self):
+        return self.fill_template(self._restore_cmd)
 
     @abstractmethod
     def _init_cmds(self, config: dict):
@@ -102,17 +102,30 @@ class MySQLDefinition(AbstractDumpAndRestoreDefinition):
     """ MySQL backup model using mysqldump command """
 
     def _init_cmds(self, config: dict):
-        self._dump_cmd = config.get('dump_cmd') if config.get('dump_cmd') else \
-            'mysqldump --skip-lock-tables -u %user% -P %port% -p%password% -h %host% %database%'
+        self._dump_cmd = config.get('dump_cmd')
+        self._restore_cmd = config.get('restore_cmd')
 
-        self._restore_cmd = config.get('restore_cmd') if config.get('restore_cmd') else \
-            'mysql -u %user% -p%password% -h %host% -P %port% %database%'
+        if not self._dump_cmd:
+            self._dump_cmd = \
+                'mysqldump --skip-lock-tables -u %user% -P %port% -p%password% ' + \
+                '-h %host% --all-databases %dump_opts%'
+
+            if self.get_database():
+                self._dump_cmd = \
+                    'mysqldump --skip-lock-tables -u %user% -P %port% -p%password% ' + \
+                    '-h %host% %database% %dump_opts%'
+
+        if not self._restore_cmd:
+            self._restore_cmd = 'mysql -u %user% -p%password% -h %host% -P %port%'
+
+            if self.get_database():
+                self._restore_cmd = 'mysql -u %user% -p%password% -h %host% -P %port% %database%'
 
     def get_database(self) -> str:
-        return self._database if self._database else '--all-databases'
+        return str(self._database)
 
     def is_copying_all_databases(self) -> bool:
-        return self.get_database() is "--all-databases"
+        return self.get_database() != ''
 
 
 class PostgreSQLDefinition(AbstractDumpAndRestoreDefinition):

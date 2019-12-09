@@ -1,65 +1,80 @@
-from .abstractdocker import AbstractDocker
-from ..entity.definition.docker import DockerVolumesDefinition, DockerOfflineVolumesDefinition
+
+from .fileordirectorybackup import FileOrDirectoryBackup
+from ..entity.definition.docker import DockerOfflineVolumesDefinition
 from ..result import CommandExecutionResult
 
 
-class DockerVolumeHotBackup(AbstractDocker):
+class DockerVolumeHotBackup(FileOrDirectoryBackup):
     """
-    Backups a RUNNING container. For some applications it may be safe to backup a running container, for some not.
-    See DockerVolumesBackup and adjust backup method to the application you want to keep safe.
-    Gets into the container and makes a backup of directories into a single tar file.
+<sphinx>
+docker_hot_volumes
+------------------
+
+Alias to "path" with enforced container parameter.
+
+Backups a RUNNING container. For some applications it may be safe to backup a running container, for some not.
+See DockerVolumesBackup and adjust backup method to the application you want to keep safe.
+Gets into the container and makes a backup of directories into a single tar file.
+
+**Example:**
+
+.. code:: yaml
+
+    docker_hot_volumes_example:
+        type: docker_hot_volumes
+        container: "test_www"
+        access: backup_one
+        encryption: none
+        collection_id: "${COLLECTION_ID}"
+        paths:
+            - /var/www
+            - /var/log/nginx/access.log
+
+        # optional
+        #tar_pack_cmd: "tar -czf %stdin% %paths%"
+        #tar_unpack_cmd: "tar -xzf %stdin% %target%"
+        #docker_bin: "sudo docker"
+
+</sphinx>
     """
 
-    def _get_definition(self) -> DockerVolumesDefinition:
-        return self._definition
-
-    def validate_before_creating_backup(self):
-        definition = self._get_definition()
-
-        self.assert_container_running(
-            definition.get_docker_bin(),
-            definition.get_container()
-        )
-
-        for path in definition.get_paths():
-            self._assert_path_exists_in_container(
-                path,
-                definition.get_docker_bin(),
-                definition.get_container(),
-                definition
-            )
-
-    def receive_backup_stream(self) -> CommandExecutionResult:
-        definition = self._get_definition()
-
-        return self.backup_directories(
-            definition.get_docker_bin(),
-            definition.get_container(),
-            definition.get_paths(),
-            definition
-        )
-
-    def restore_backup_from_stream(self, stream) -> CommandExecutionResult:
-        """ Write to a local directory - unpack a TAR archive """
-
-        definition = self._get_definition()
-
-        return self._execute_in_container(
-            definition.get_docker_bin(),
-            definition.get_container(),
-            definition.get_unpack_cmd(),
-            definition,
-            stdin=stream,
-            mode='restore',
-            interactive=True
-        )
+    def is_using_container(self) -> bool:
+        return True
 
 
-class DockerVolumeBackup(AbstractDocker):
+class DockerVolumeBackup(DockerVolumeHotBackup):
     """
-    Offline docker container backup. Runs a new container mounting volumes of other container and performs a backup
-    of those mounted volumes. Fully secure option for all kind of applications, as the applications are shut down for
-    a moment.
+docker_volumes
+--------------
+
+Offline docker container backup. Runs a new container, mounts volumes of origin container and performs a backup
+of those mounted volumes. Fully secure option for all kind of applications, as the applications are shut down for
+a moment.
+
+Notice: Your applications will have a downtime. Be careful about dependent services, those may exit unexpectedly.
+
+**Example:**
+
+.. code:: yaml
+
+    www_docker_offline:
+        type: docker_volumes
+        container: "test_www"
+        access: backup_one
+        encryption: enc1
+        collection_id: "${COLLECTION_ID}"
+        paths:
+            - /etc
+            - /var/lib/mysql
+            - /var/log/mysql.log
+
+        # optional
+        docker_bin: "sudo docker"
+        tar_pack_cmd: "tar -czf %stdin% %paths%"
+        tar_unpack_cmd: "tar -xzf %stdin% %target%"
+        temp_image_name: "alpine:3.9"
+        temp_image_cmd: "apk add --update xz bzip2 && sleep 3600"
+
     """
 
     _container_id = ""
@@ -68,38 +83,35 @@ class DockerVolumeBackup(AbstractDocker):
         return self._definition
 
     def validate_before_creating_backup(self):
-        # check if container exists (may be stopped)?
+        # do not check if container is up, it does not need to be. It must only exists.
         pass
 
-    def receive_backup_stream(self):
-        definition = self._get_definition()
-        self._stop_origin_and_start_temporary_containers()
-
+    def receive_backup_stream(self, container: str = None):
         self._logger.info('Performing backup of origin container in offline mode')
-        return self.backup_directories(
-            definition.get_docker_bin(),
-            self._container_id,
-            definition.get_paths(),
+        temporary_container_id = self._stop_origin_and_start_temporary_containers()
+
+        return super().receive_backup_stream(container=temporary_container_id)
+
+    def restore_backup_from_stream(self, stream, container: str = None) -> CommandExecutionResult:
+        self._logger.info('Restoring backup to the temporary container through mounted volumes of origin container')
+        temporary_container_id = self._stop_origin_and_start_temporary_containers()
+
+        return super().restore_backup_from_stream(stream, container=temporary_container_id)
+
+    def backup_container_directories(self, docker_bin: str, container: str, paths: list,
+                                     definition: DockerOfflineVolumesDefinition) -> CommandExecutionResult:
+        """ Performs a backup of multiple directories using TAR with gzip/xz/bz2 compression """
+
+        return self._execute_in_container(
+            docker_bin, container,
+            definition.get_pack_cmd(paths),
             definition
         )
 
-    def restore_backup_from_stream(self, stream) -> CommandExecutionResult:
-        definition = self._get_definition()
-        self._stop_origin_and_start_temporary_containers()
-
-        self._logger.info('Restoring backup to the temporary container through mounted volumes of origin container')
-        return self._execute_in_container(
-            definition.get_docker_bin(),
-            self._container_id,
-            definition.get_unpack_cmd(),
-            definition,
-            stdin=stream,
-            mode='restore',
-            interactive=True
-        )
-
-    def _stop_origin_and_start_temporary_containers(self):
+    def _stop_origin_and_start_temporary_containers(self) -> str:
         """ Stop origin container and start a temporary container """
+
+        # @todo: Support linked/dependent containers
 
         definition = self._get_definition()
 
@@ -114,6 +126,8 @@ class DockerVolumeBackup(AbstractDocker):
             definition.get_temp_cmd()
         )
 
+        return self._container_id
+
     def _close(self):
         definition = self._get_definition()
 
@@ -123,6 +137,8 @@ class DockerVolumeBackup(AbstractDocker):
 
         except Exception:
             self._logger.warning('Cannot kill temporary container "' + self._container_id + '"')
+
+        # @todo: Support linked/dependent containers
 
         self._logger.info('Starting origin container')
         self._start_container(definition.get_docker_bin(), definition.get_container())

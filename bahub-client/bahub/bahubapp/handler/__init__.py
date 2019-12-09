@@ -32,15 +32,21 @@ class BackupHandler:
 
     def perform_backup(self):
         self.validate_before_creating_backup()
-        self._prevalidate_if_the_command_not_dies_early()
 
+        self._logger.info('Receiving backup stream')
         response = self.receive_backup_stream()
 
-        if response.return_code != 0 and response.return_code is not None:
-            raise ReadWriteException('Backup source read error, use --debug and retry to investigate')
+        try:
+            self._logger.info('Starting sending backup stream to server')
+            upload_response = self._client.send(response.stdout, self._get_definition())
 
-        upload_response = self._client.send(response.stdout, self._get_definition())
-        response.stdout.close()
+        finally:
+            self.wait_for_process_to_finish(response.process)
+
+        if response.process.returncode != 0:
+            raise ReadWriteException('Backup source read error, use --debug and retry to investigate. ' +
+                                     'Exit code: %i, Command: %s, Stderr: %s' %
+                                     (response.process.returncode, response.command, response.stderr.read()[0:512]))
 
         return upload_response
 
@@ -49,8 +55,10 @@ class BackupHandler:
             self._read_from_storage(version)
         )
 
-        if response.return_code is not None and response.return_code > 0:
-            raise ReadWriteException('Cannot write files to disk while restoring from backup. Errors: '
+        self.wait_for_process_to_finish(response.process)
+
+        if response.process.returncode > 0:
+            raise ReadWriteException('Cannot restore backup. Errors: '
                                      + str(response.stderr.read().decode('utf-8')))
 
         self._logger.info('No errors found, sending success information')
@@ -64,7 +72,15 @@ class BackupHandler:
     def _get_definition(self) -> BackupDefinition:
         return self._definition
 
-    def _execute_command(self, command: str, stdin=None) -> CommandExecutionResult:
+    def wait_for_process_to_finish(self, process):
+        self._logger.info('Waiting for process %i to finish, timeout=%i' %
+                          (process.pid, self._max_process_wait_timeout))
+
+        process.wait(self._max_process_wait_timeout)
+        process.stdout.close()
+
+    def _execute_command(self, command: str, stdin=None,
+                         copy_stdin: bool = False, wait: int = None) -> CommandExecutionResult:
         """
         Executes a command on local machine, returning stdout as a stream, and streaming in the stdin (optionally)
         """
@@ -78,40 +94,36 @@ class BackupHandler:
                                    executable='/bin/bash',
                                    shell=True)
 
-        if stdin:
+        if stdin and copy_stdin:
             self._logger.info('Copying stdin to process')
 
             try:
                 copyfileobj(stdin, process.stdin)
             except BrokenPipeError:
+                self._logger.warning('Broken pipe happened, trying to kill process')
                 process.kill()
+                process.wait(15)
 
                 raise ReadWriteException(
                     'Cannot write to process, broken pipe occurred, probably a tar process died. '
-                    + str(process.stderr.read().decode('utf-8')) + ' ' + str(process.stdout.read().decode('utf-8'))
+                    + process.stderr.read().decode('utf-8')[0:512]
+                )
+            except Exception as e:
+                self._logger.warning('Unknown problem happened, trying to kill process')
+                process.kill()
+                process.wait(15)
+
+                raise ReadWriteException(
+                    'Cannot write to process, unknown error occurred: ' + str(e) + ', exiting... '
+                    + process.stderr.read().decode('utf-8')[0:512]
                 )
 
             process.stdin.close()
 
-        self._logger.info('Waiting for process to finish, timeout=%i' % self._max_process_wait_timeout)
-        process.wait(self._max_process_wait_timeout)
+        if wait is not None:
+            process.wait(wait)
 
-        return CommandExecutionResult(process.stdout, process.stderr, process.returncode, process)
-
-    def _prevalidate_if_the_command_not_dies_early(self):
-        """ Validate if the command really exports the data, does not end up with an error """
-
-        response = self.receive_backup_stream()
-        stderr = response.stderr.read(1024)
-
-        response.process.kill()
-        response.process.wait(15)
-
-        if response.process.returncode > 0:
-            raise ReadWriteException(
-                'The process exited with incorrect code, try to verify the command in with --debug switch. Stderr: %s'
-                % stderr.decode('utf-8')[0:512]
-            )
+        return CommandExecutionResult(command, process.stdout, process.stderr, process)
 
     def validate_before_creating_backup(self):
         raise Exception('validate_before_creating_backup() not implemented for handler')

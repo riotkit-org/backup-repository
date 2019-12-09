@@ -2,12 +2,12 @@
 import psycopg2
 import psycopg2.extras
 
-from .abstractdocker import AbstractDocker
+from .abstractdocker import AbstractDockerAwareHandler
 from ..result import CommandExecutionResult
 from ..entity.definition.sql import PostgreSQLDefinition
 
 
-class PostgreSQLBackup(AbstractDocker):
+class PostgreSQLBackup(AbstractDockerAwareHandler):
     """
         PostgreSQL backup using traditional dump & import method
 
@@ -34,16 +34,15 @@ class PostgreSQLBackup(AbstractDocker):
         self.set_connection_limit_on_databases(0)
         self._kill_all_other_connections_to_the_database()
 
-        try:
-            out = self.execute_command_in_proper_context(
-                command='gunzip | ' + self._get_definition().get_restore_command(),
-                mode='restore',
-                stdin=stream
-            )
-        finally:
-            self.set_connection_limit_on_databases(-1)
+        return self.execute_command_in_proper_context(
+            command='gunzip | ' + self._get_definition().get_restore_command(),
+            mode='restore',
+            stdin=stream,
+            copy_stdin=True
+        )
 
-        return out
+    def _close(self):
+        self.set_connection_limit_on_databases(-1)
 
     def set_connection_limit_on_databases(self, limit: int):
         databases: list = self.execute_query('SELECT datname FROM pg_database WHERE datistemplate = false;')
@@ -59,7 +58,7 @@ class PostgreSQLBackup(AbstractDocker):
         :return:
         """
 
-        self.execute_command_in_proper_context(self._get_definition().get_all_sessions_command())
+        self.execute_command_in_proper_context(self._get_definition().get_all_sessions_command(), wait=300)
 
     def execute_query(self, query: str, fetch: bool = True):
         conn = psycopg2.connect(**self._get_definition().get_psycopg2_connection_params())

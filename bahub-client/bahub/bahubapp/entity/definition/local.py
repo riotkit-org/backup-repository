@@ -1,10 +1,10 @@
 
-from . import BackupDefinition
+from . import ContainerizedDefinition
 from ..access import ServerAccess
 from ..encryption import Encryption
 
 
-class CommandOutputDefinition(BackupDefinition):
+class CommandOutputDefinition(ContainerizedDefinition):
     _command = ""
     _restore_command = ""
 
@@ -36,15 +36,15 @@ class CommandOutputDefinition(BackupDefinition):
             _type=config['type'],
             collection_id=config['collection_id'],
             encryption=config['encryption'],
-            tar_pack_cmd=config.get('tar_pack_cmd', BackupDefinition._tar_pack_cmd),
-            tar_unpack_cmd=config.get('tar_unpack_cmd', BackupDefinition._tar_unpack_cmd),
+            tar_pack_cmd=config.get('tar_pack_cmd', ContainerizedDefinition._tar_pack_cmd),
+            tar_unpack_cmd=config.get('tar_unpack_cmd', ContainerizedDefinition._tar_unpack_cmd),
             command=config['command'],
             restore_command=config.get('restore_command', ''),
             name=name
         )
 
 
-class LocalFileDefinition(BackupDefinition):
+class PathBackupDefinition(ContainerizedDefinition):
     _paths = ""
 
     def __init__(self,
@@ -65,13 +65,18 @@ class LocalFileDefinition(BackupDefinition):
 
     @staticmethod
     def from_config(config: dict, name: str):
-        return LocalFileDefinition(
+        definition = PathBackupDefinition(
             access=config['access'],
             _type=config['type'],
             collection_id=config['collection_id'],
             encryption=config['encryption'],
-            tar_pack_cmd=config.get('tar_pack_cmd', BackupDefinition._tar_pack_cmd),
-            tar_unpack_cmd=config.get('tar_unpack_cmd', BackupDefinition._tar_unpack_cmd),
+            tar_pack_cmd=config.get('tar_pack_cmd', ContainerizedDefinition._tar_pack_cmd),
+            tar_unpack_cmd=config.get('tar_unpack_cmd', ContainerizedDefinition._tar_unpack_cmd),
             paths=config['paths'],
             name=name
         )
+
+        definition._container = config.get('container', '')
+        definition._docker_bin = config.get('docker_bin', 'sudo docker')
+
+        return definition

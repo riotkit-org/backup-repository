@@ -9,8 +9,8 @@ sys.path.append(os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentf
 
 from bahub.bahubapp.entity.access import ServerAccess
 from bahub.bahubapp.entity.encryption import Encryption
-from bahub.bahubapp.handler import FileRepositoryClient, Logger, PipeFactory
-from bahub.bahubapp.handler.localfilebackup import LocalFileBackup, LocalFileDefinition
+from bahub.bahubapp.handler import FileRepositoryClient, PipeFactory
+from bahub.bahubapp.handler.fileordirectorybackup import FileOrDirectoryBackup, PathBackupDefinition
 from bahub.bahubapp.handler.commandoutputbackup import CommandOutputBackup, CommandOutputDefinition
 
 
@@ -39,14 +39,14 @@ class HandlersTest(unittest.TestCase):
         return [
             # directory: the directory does not exist
             [
-                LocalFileDefinition.from_config({
+                PathBackupDefinition.from_config({
                     'type': 'directory',
                     'access': server_access,
                     'collection_id': 'does-not-matter-in-this-test',
                     'encryption': encryption,
                     'paths': ['/etc/something-that-does-not-exist']
                 }, 'test'),
-                LocalFileBackup,
+                FileOrDirectoryBackup,
                 'Path "/etc/something-that-does-not-exist" does not exist'
             ],
 
@@ -108,14 +108,14 @@ class HandlersTest(unittest.TestCase):
 
         return [
             [
-                LocalFileDefinition.from_config({
+                PathBackupDefinition.from_config({
                     'type': 'directory',
                     'access': server_access,
                     'collection_id': 'does-not-matter-in-this-test',
                     'encryption': encryption,
                     'paths': ['/etc/modprobe.d']
                 }, 'test'),
-                LocalFileBackup
+                FileOrDirectoryBackup
             ],
 
             [

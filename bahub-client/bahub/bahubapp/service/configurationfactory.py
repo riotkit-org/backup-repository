@@ -7,7 +7,7 @@ from ..entity.definition import BackupDefinition
 from .errorhandler import ErrorHandlerFactory, ErrorHandlerInterface
 from .notifier import NotifierInterface, NotifierFactory
 from ..mapping.definitions import DefinitionsMapping
-from ..exceptions import ConfigurationFactoryException
+from ..exceptions import ConfigurationFactoryException, ConfigurationError
 import yaml
 from yaml import SafeLoader as Loader
 import os
@@ -103,7 +103,13 @@ class ConfigurationFactory:
                     values['encryption'] = self._encryption[values['encryption']]
 
                 factory_method = DefinitionsMapping.get(values['type'])
-                self._backups[key] = factory_method.from_config(values, key)
+
+                try:
+                    self._backups[key] = factory_method.from_config(values, key)
+
+                except KeyError as config_key_name:
+                    raise ConfigurationError('Backup "%s" is missing "%s" configuration option' %
+                                             (key, config_key_name))
 
     def _parse_monitoring_error_handlers(self, config: dict):
         """ Error handlers integration """

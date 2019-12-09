@@ -1,11 +1,11 @@
 
-from .abstractdocker import AbstractDocker
+from .abstractdocker import AbstractDockerAwareHandler
 from ..result import CommandExecutionResult
 from ..entity.definition.sql import MySQLDefinition
 from ..exceptions import ReadWriteException
 
 
-class MySQLBackup(AbstractDocker):
+class MySQLBackup(AbstractDockerAwareHandler):
     def _get_definition(self) -> MySQLDefinition:
         return self._definition
 
@@ -34,5 +34,6 @@ class MySQLBackup(AbstractDocker):
         return self.execute_command_in_proper_context(
             command='gunzip | ' + self._get_definition().get_restore_command(),
             mode='restore',
-            stdin=stream
+            stdin=stream,
+            copy_stdin=True
         )

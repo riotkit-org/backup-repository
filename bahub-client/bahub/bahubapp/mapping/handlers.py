@@ -1,8 +1,7 @@
 
 from ..handler.dockervolumebackup import DockerVolumeHotBackup, DockerVolumeBackup
-from ..handler.localfilebackup import LocalFileBackup
+from ..handler.fileordirectorybackup import FileOrDirectoryBackup
 from ..handler.commandoutputbackup import CommandOutputBackup
-from ..handler.dockeroutputbackup import DockerCommandOutputBackup
 from ..handler.mysqlbackup import MySQLBackup
 from ..handler.postgresbackup import PostgreSQLBackup
 
@@ -13,9 +12,13 @@ class HandlersMapping:
         'docker_volumes': DockerVolumeBackup,
         'mysql': MySQLBackup,
         'postgres': PostgreSQLBackup,
-        'docker_output': DockerCommandOutputBackup,
+
+        'docker_output': CommandOutputBackup,
         'command_output': CommandOutputBackup,
-        'directory': LocalFileBackup
+
+        'directory': FileOrDirectoryBackup,
+        'file': FileOrDirectoryBackup,
+        'path': FileOrDirectoryBackup
     }
 
     def get(self, name: str):

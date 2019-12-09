@@ -8,6 +8,10 @@ class ConfigurationFactoryException(ApplicationException):
     pass
 
 
+class ConfigurationError(ApplicationException):
+    pass
+
+
 class InvalidRequestException(ApplicationException):
     _json = None
     _exit_code = 0

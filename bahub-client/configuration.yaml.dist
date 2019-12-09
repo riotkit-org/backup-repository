@@ -142,6 +142,34 @@ backups:
         #docker_bin: "sudo docker"
 
     #
+    # PostgreSQL backup using pg_dumpall. For restore psql is used.
+    #
+    postgres:
+        type: postgres
+        access: backup_one
+        encryption: enc1
+        collection_id: "${COLLECTION_ID}"
+        host: "localhost"
+        port: 5432
+        user: "${POSTGRES_USER}"
+        password: "${POSTGRES_PASSWORD}"
+        database: ""
+
+    #
+    # PostgreSQL backup using pg_dump to dump single database. For restore psql is used.
+    #
+    postgres_single_db:
+        type: postgres
+        access: backup_one
+        encryption: enc1
+        collection_id: "${COLLECTION_ID}"
+        host: "localhost"
+        port: 5432
+        user: "${POSTGRES_USER}"
+        password: "${POSTGRES_PASSWORD}"
+        database: "some_db_name"
+
+    #
     # Execute a local command
     #
     #   Executes command on this machine/environment on local shell and captures output
