@@ -11,7 +11,7 @@ BAHUB_PATH=$(shell pwd)/../../bahub-client/
 BAHUB_CONFIG_PATH=$(shell pwd)/bahub.conf.yaml
 
 help:
-	@grep -E '^[a-zA-Z\-\_0-9\.@]+:.*?## .*$$' Makefile | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
+	@grep -E '^[a-zA-Z\-\_0-9\.@]+:.*?## .*$$' Makefile | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
 test_api@ci: wait_for_app ## Run API tests in a docker container (params: CODECEPT_ARGS)
 	${SUDO} ${COMPOSE_ARGS} exec --user www-data filerepository composer install
@@ -30,11 +30,11 @@ up: ## Bring up the development environment (params: VARIANT). Example: up VARIA
 	fi; \
 	set -x; ${SUDO} ${COMPOSE_ARGS} $$(make _build_variant_list VARIANT="${VARIANT}") up --remove-orphans -d --force-recreate
 
-print: ## Print the docker-compose.yaml file (params: VARIANT)
-	${SUDO} ${COMPOSE_ARGS} $$(make _build_variant_list VARIANT="${VARIANT}") config
-
 down: ## Delete the development environment
 	${SUDO} ${COMPOSE_ARGS} rm -f -s -v
+
+print: ## Print the docker-compose.yaml file (params: VARIANT)
+	${SUDO} ${COMPOSE_ARGS} $$(make _build_variant_list VARIANT="${VARIANT}") config
 
 sh: ## Get a shell, where Symfony console is present
 	${SUDO} ${COMPOSE_ARGS} exec --user www-data filerepository bash
@@ -54,7 +54,7 @@ wait_for_app: ## Wait for application to be ready
 	done; \
 	sleep 5
 
-_build_variant_list: ## (Params: VARIANT)
+_build_variant_list:
 	VARIANT_ARGS=""; \
 	lstr="${VARIANT}"; \
 	ll=($$lstr); \
@@ -68,5 +68,23 @@ _build_variant_list: ## (Params: VARIANT)
 bahub@backup_postgres: ## Bahub: Backup PostgreSQL
 	cd ${BAHUB_PATH} && ./bahub-dev.sh --debug --config=${BAHUB_CONFIG_PATH} backup postgres
 
-bahub@restore_postgres: ## Bahub: Backup PostgreSQL
+bahub@restore_postgres: ## Bahub: Restore PostgreSQL
 	cd ${BAHUB_PATH} && ./bahub-dev.sh --debug --config=${BAHUB_CONFIG_PATH} restore postgres
+
+bahub@backup_www_files: ## Bahub: Backup WWW files
+	cd ${BAHUB_PATH} && ./bahub-dev.sh --debug --config=${BAHUB_CONFIG_PATH} backup www
+
+bahub@restore_www_files: ## Bahub: Restore WWW files
+	cd ${BAHUB_PATH} && ./bahub-dev.sh --debug --config=${BAHUB_CONFIG_PATH} restore www
+
+bahub@volume_backup_www_files: ## Bahub: Backup WWW files (with temporary container)
+	cd ${BAHUB_PATH} && ./bahub-dev.sh --debug --config=${BAHUB_CONFIG_PATH} backup www_using_temporary_container
+
+bahub@volume_restore_www_files: ## Bahub: Restore WWW files (with temporary container)
+	cd ${BAHUB_PATH} && ./bahub-dev.sh --debug --config=${BAHUB_CONFIG_PATH} restore www_using_temporary_container
+
+bahub@backup_mysql: ## Bahub: Backup MySQL server
+	cd ${BAHUB_PATH} && ./bahub-dev.sh --debug --config=${BAHUB_CONFIG_PATH} backup mariadb
+
+bahub@restore_mysql: ## Bahub: Restore MySQL server
+	cd ${BAHUB_PATH} && ./bahub-dev.sh --debug --config=${BAHUB_CONFIG_PATH} restore mariadb
