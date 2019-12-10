@@ -17,16 +17,16 @@ class BackupController(AbstractController):
 
         try:
             result = handler.perform_backup()
-            handler.close()
+            handler.close(action='backup')
 
             self._notifier.backup_was_uploaded(definition)
 
         except KeyboardInterrupt:
-            handler.close()
+            handler.close(action='backup')
             result = ""
 
         except Exception as e:
-            handler.close()
+            handler.close(action='backup')
             self._notifier.failed_to_upload_backup(definition, e)
 
             raise e

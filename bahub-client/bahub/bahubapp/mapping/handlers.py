@@ -3,15 +3,17 @@ from ..handler.dockervolumebackup import DockerVolumeHotBackup, DockerVolumeBack
 from ..handler.fileordirectorybackup import FileOrDirectoryBackup
 from ..handler.commandoutputbackup import CommandOutputBackup
 from ..handler.mysqlbackup import MySQLBackup
-from ..handler.postgresbackup import PostgreSQLBackup
+from ..handler.postgresbackup import PostgreSQLDumpBackup, PostgreSQLBaseBackup
 
 
 class HandlersMapping:
     _mapping = {
         'docker_hot_volumes': DockerVolumeHotBackup,
         'docker_volumes': DockerVolumeBackup,
+
         'mysql': MySQLBackup,
-        'postgres': PostgreSQLBackup,
+        'postgres': PostgreSQLDumpBackup,
+        'postgres_base': PostgreSQLBaseBackup,
 
         'docker_output': CommandOutputBackup,
         'command_output': CommandOutputBackup,

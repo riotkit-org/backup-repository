@@ -20,16 +20,16 @@ class RestoreController(AbstractController):
 
         try:
             result = handler.perform_restore(version)
-            handler.close()
+            handler.close(action='restore')
 
             self._notifier.backup_was_restored(definition)
 
         except KeyboardInterrupt:
-            handler.close()
+            handler.close(action='restore')
             result = ""
 
         except Exception as e:
-            handler.close()
+            handler.close(action='restore')
             self._notifier.failed_to_restore_backup(definition, e)
 
             raise e

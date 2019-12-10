@@ -77,6 +77,6 @@ class PathBackupDefinition(ContainerizedDefinition):
         )
 
         definition._container = config.get('container', '')
-        definition._docker_bin = config.get('docker_bin', 'sudo docker')
+        definition._docker_bin = config.get('docker_bin', 'docker')
 
         return definition

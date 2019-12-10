@@ -38,7 +38,7 @@ class DockerVolumesDefinition(ContainerizedDefinition):
             tar_pack_cmd=config.get('tar_pack_cmd', BackupDefinition._tar_pack_cmd),
             tar_unpack_cmd=config.get('tar_unpack_cmd', BackupDefinition._tar_unpack_cmd),
             container=config['container'],
-            docker_bin=config.get('docker_bin', 'sudo docker'),
+            docker_bin=config.get('docker_bin', 'docker'),
             paths=config['paths'],
             name=name
         )
@@ -91,7 +91,7 @@ class DockerOfflineVolumesDefinition(DockerVolumesDefinition):
             tar_pack_cmd=config.get('tar_pack_cmd', BackupDefinition._tar_pack_cmd),
             tar_unpack_cmd=config.get('tar_unpack_cmd', BackupDefinition._tar_unpack_cmd),
             container=config['container'],
-            docker_bin=config.get('docker_bin', 'sudo docker'),
+            docker_bin=config.get('docker_bin', 'docker'),
             paths=config['paths'],
             temp_image_name=config.get('temp_image_name', 'alpine:3.9'),
             temp_cmd=config.get('temp_image_cmd', 'apk add --update xz bzip2 && sleep 3600'),

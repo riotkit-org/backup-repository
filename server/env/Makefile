@@ -88,3 +88,6 @@ bahub@backup_mysql: ## Bahub: Backup MySQL server
 
 bahub@restore_mysql: ## Bahub: Restore MySQL server
 	cd ${BAHUB_PATH} && ./bahub-dev.sh --debug --config=${BAHUB_CONFIG_PATH} restore mariadb
+
+bahub: ## Bahub (params: ARGS)
+	cd ${BAHUB_PATH} && ./bahub-dev.sh --debug --config=${BAHUB_CONFIG_PATH} ${ARGS}

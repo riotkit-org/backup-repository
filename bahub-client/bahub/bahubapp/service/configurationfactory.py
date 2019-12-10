@@ -24,9 +24,11 @@ class ConfigurationFactory:
     _error_handlers = {}  # type: dict[ErrorHandlerInterface]
     _notifiers = {}       # type: dict[NotifierInterface]
     _debug = False        # type: bool
+    _config_dir: str
 
     def __init__(self, configuration_path: str, debug: bool):
         self._debug = debug
+        self._config_dir = os.path.abspath(os.path.dirname(configuration_path))
         self._parse(self._read(configuration_path))
 
     def _parse(self, config: dict):
@@ -51,10 +53,12 @@ class ConfigurationFactory:
         f.close()
         return config
 
-    @staticmethod
-    def _process_env_variables(content: str) -> str:
+    def _process_env_variables(self, content: str) -> str:
         env_list = list(dict(os.environ).items())
         env_list.sort(key=lambda item: (-len(item[0]), item[0]))
+
+        # add special variables:
+        env_list.append(['CONFIG_DIR', self._config_dir])
 
         for env in env_list:
             content = content.replace('${' + env[0] + '}', env[1])

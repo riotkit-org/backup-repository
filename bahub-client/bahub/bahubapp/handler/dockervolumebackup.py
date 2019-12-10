@@ -69,7 +69,7 @@ Notice: Your applications will have a downtime. Be careful about dependent servi
             - /var/log/mysql.log
 
         # optional
-        docker_bin: "sudo docker"
+        docker_bin: "docker"
         tar_pack_cmd: "tar -czf %stdin% %paths%"
         tar_unpack_cmd: "tar -xzf %stdin% %target%"
         temp_image_name: "alpine:3.9"
@@ -128,7 +128,7 @@ Notice: Your applications will have a downtime. Be careful about dependent servi
 
         return self._container_id
 
-    def _close(self):
+    def _finalize(self, action: str):
         definition = self._get_definition()
 
         try:

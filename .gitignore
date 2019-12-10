@@ -32,3 +32,5 @@
 .phpunit.result.cache
 ###< phpunit/phpunit ###
 
+
+/server/env/.data/postgresql

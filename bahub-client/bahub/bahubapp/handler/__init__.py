@@ -31,6 +31,8 @@ class BackupHandler:
         self._max_process_wait_timeout = 3600
 
     def perform_backup(self):
+        """ Prepares the backup and sends to the server """
+
         self.validate_before_creating_backup()
 
         self._logger.info('Receiving backup stream')
@@ -51,23 +53,33 @@ class BackupHandler:
         return upload_response
 
     def perform_restore(self, version: str):
-        response = self.restore_backup_from_stream(
-            self._read_from_storage(version)
-        )
+        """ Downloads backup version from server and applies locally """
 
-        self.wait_for_process_to_finish(response.process)
+        try:
+            # @todo: Implement a switch, that would allow to save file to temporary path instead of piping
+            #        It would be just an additional option for safety
 
-        if response.process.returncode > 0:
-            raise ReadWriteException('Cannot restore backup. Errors: '
-                                     + str(response.stderr.read().decode('utf-8')))
+            response = self.restore_backup_from_stream(
+                self._read_from_storage(version)
+            )
+
+            self.wait_for_process_to_finish(response.process)
+
+            if response.process.returncode > 0:
+                raise ReadWriteException('Cannot restore backup. Errors: '
+                                         + str(response.stderr.read().decode('utf-8')))
+        except Exception:
+            self._logger.error('Executing on_failed_restore() if defined')
+            self.on_failed_restore()
+            raise
 
         self._logger.info('No errors found, sending success information')
 
         return '{"status": "OK"}'
 
-    def close(self):
+    def close(self, action: str):
         self._logger.info('Finishing the process')
-        self._close()
+        self._finalize(action=action)
 
     def _get_definition(self) -> BackupDefinition:
         return self._definition
@@ -139,9 +151,13 @@ class BackupHandler:
     def _read_from_storage(self, version: str):
         return self._client.fetch(version, self._get_definition())
 
-    def _close(self):
+    def on_failed_restore(self):
+        """ When restore is failed. Allows to specify a recovery procedure """
+        pass
+
+    def _finalize(self, action: str):
         pass
 
     @staticmethod
-    def generate_id(size=6, chars=string.ascii_uppercase + string.digits):
+    def generate_id(size: int = 6, chars=string.ascii_uppercase + string.digits):
         return ''.join(random.choice(chars) for _ in range(size))

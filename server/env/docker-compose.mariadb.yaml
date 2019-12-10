@@ -31,3 +31,5 @@ services:
             MYSQL_DATABASE: "${MYSQL_DB}"
             MYSQL_USER: "${MYSQL_USER}"
             MYSQL_PASSWORD: "${MYSQL_PASSWORD}"
+        ports:
+            - "127.0.0.1:3306:3306"

@@ -71,7 +71,7 @@ class AbstractDumpAndRestoreDefinition(AbstractSQLDefinition):
             user=config['user'],
             password=config['password'],
             database=config['database'],
-            docker_bin=config.get('docker_bin', 'sudo docker'),
+            docker_bin=config.get('docker_bin', 'docker'),
             container=config.get('container', ''),
             name=name
         )
@@ -166,3 +166,97 @@ class PostgreSQLDefinition(AbstractDumpAndRestoreDefinition):
             'password': self._password,
             'connect_timeout': 300
         }
+
+
+class PostgreSQLBaseBackupDefinition(AbstractSQLDefinition):
+    """
+        PostgreSQL backup using pg_basedump
+    """
+
+    _base_backup_cmd: str
+    _server_shutdown_cmd: str
+    _server_start_cmd: str
+    _temp_dir: str
+    _pack_cmd: str
+    _restore_dir: str
+    _ownership: str
+
+    def fill_template(self, template: str):
+        return super().fill_template(template) \
+            .replace('%temp_dir%', self._temp_dir) \
+            .replace('%restore_dir%', self._restore_dir) \
+            .replace('%old_dir%', self._old_dir)
+
+    def _init_cmds(self, config: dict):
+        self._base_backup_cmd = config.get('base_backup_cmd')
+        self._server_shutdown_cmd = config['server_shutdown_cmd']
+        self._server_start_cmd = config['server_start_cmd']
+        self._restore_dir = config['restore_dir'].rstrip('/')
+        self._old_dir = config['old_dir']
+        self._temp_dir = config.get('temp_dir', '/tmp/.pg_basebackup')
+        self._pack_cmd = config.get('pack_cmd', 'cd %temp_dir% && tar --exclude=".." --exclude="." -cvf - * .*')
+        self._ownership = config.get('ownership', '')
+
+        if not self._base_backup_cmd:
+            self._base_backup_cmd = 'PGPASSWORD=%password% ' + \
+                                    'pg_basebackup -X stream -h %host% -U %user% -v -D %temp_dir% -F plain'
+
+    def get_backup_command(self) -> str:
+        """ Uses pg_basebackup to dump all required database files and configuration files """
+
+        return self.fill_template(
+            self._base_backup_cmd + ' && ' + self._pack_cmd
+        )
+
+    def get_restore_command(self) -> str:
+        """ Will unpack tar archive with database files """
+
+        return self.fill_template('tar --same-owner -xf - -C %restore_dir%')
+
+    def get_rename_data_dir_command(self) -> str:
+        """ We want to keep the previous data in {{ old_dir }} directory, for safety """
+
+        return self.fill_template('rm -rf %old_dir% && mv %restore_dir% %old_dir% && mkdir -p %restore_dir%')
+
+    def get_rescue_command_on_failed_restore(self) -> str:
+        return self.fill_template('mv %restore_dir% %restore_dir%.abort && mv %old_dir% %restore_dir%')
+
+    def get_server_shutdown_command(self) -> str:
+        return self._server_shutdown_cmd
+
+    def get_server_start_command(self) -> str:
+        return self._server_start_cmd
+
+    def get_permissions_restore_command(self):
+        if self._ownership:
+            return self.fill_template('chown -R ' + self._ownership + ' %restore_dir%')
+
+        return ''
+
+    def get_make_tempdir_command(self) -> str:
+        return self.fill_template('rm -rf %temp_dir% && mkdir -p %temp_dir%')
+
+    def get_temporary_directory_clean_up_command(self) -> str:
+        return self.fill_template('rm -rf %temp_dir%')
+
+    @classmethod
+    def from_config(cls, config: dict, name: str):
+        definition = cls(
+            access=config['access'],
+            _type=config['type'],
+            collection_id=config['collection_id'],
+            encryption=config['encryption'],
+            tar_pack_cmd=config.get('tar_pack_cmd', BackupDefinition._tar_pack_cmd),
+            tar_unpack_cmd=config.get('tar_unpack_cmd', BackupDefinition._tar_unpack_cmd),
+            host=config['host'],
+            port=int(config['port']),
+            user=config['user'],
+            password=config['password'],
+            database=config['database'],
+            docker_bin=config.get('docker_bin', 'docker'),
+            container=config.get('container', ''),
+            name=name
+        )
+
+        definition._init_cmds(config)
+        return definition

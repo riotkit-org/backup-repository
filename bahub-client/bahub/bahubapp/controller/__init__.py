@@ -29,6 +29,8 @@ class AbstractController:
         if not self._mapping.has_handler(definition.get_type()):
             raise Exception('Unknown type "' + definition.get_type() + '"')
 
+        self._logger.debug('Using handler "%s"' % str(self._mapping.get(definition.get_type())))
+
         return self._mapping.get(definition.get_type())(
             _client=self._client,
             _pipe_factory=PipeFactory(),

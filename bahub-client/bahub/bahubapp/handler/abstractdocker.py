@@ -48,8 +48,11 @@ class AbstractDockerAwareHandler(BackupHandler):
         if interactive:
             opts += ' -i'
 
+        method = self._pipe_factory.create_pure_command
+
         # the pipe factory constructs the end command, including details such as encryption
-        method = self._pipe_factory.create_backup_command
+        if mode == 'backup':
+            method = self._pipe_factory.create_backup_command
 
         if mode == 'restore':
             method = self._pipe_factory.create_restore_command
@@ -103,6 +106,18 @@ class AbstractDockerAwareHandler(BackupHandler):
             ),
             stdin=stdin,
             copy_stdin=copy_stdin,
+            wait=wait
+        )
+
+    def shell(self, cmd: str, stdin=None, wait: int = 30):
+        """ Shortcut for execute_command_in_proper_context() to just execute freely shell commands """
+
+        return self.execute_command_in_proper_context(
+            command=cmd,
+            mode='',
+            with_crypto_support=False,
+            stdin=stdin,
+            copy_stdin=stdin is not None,
             wait=wait
         )
 
@@ -185,7 +200,8 @@ class AbstractDockerAwareHandler(BackupHandler):
 
         if "got permission denied while trying to connect" in output:
             raise ReadWriteException(
-                'You do not have access rights to the docker daemon, shoudn\'t you use sudo in docker_bin?'
+                'You do not have access rights to the docker daemon, ' +
+                'shoudn\'t you use sudo in docker_bin or run bahub as root?'
             )
 
         if "cannot connect" in output or "connection refused" in output:

@@ -1,7 +1,7 @@
 
 from ..exceptions import ConfigurationError
 from ..entity.definition import BackupDefinition
-from ..entity.definition.sql import MySQLDefinition, PostgreSQLDefinition
+from ..entity.definition.sql import MySQLDefinition, PostgreSQLDefinition, PostgreSQLBaseBackupDefinition
 from ..entity.definition.local import PathBackupDefinition, CommandOutputDefinition
 from ..entity.definition.docker import DockerVolumesDefinition, DockerOfflineVolumesDefinition
 
@@ -12,6 +12,7 @@ class DefinitionsMapping:
         'docker_volumes': DockerOfflineVolumesDefinition,
         'mysql': MySQLDefinition,
         'postgres': PostgreSQLDefinition,
+        'postgres_base': PostgreSQLBaseBackupDefinition,
 
         'docker_output': CommandOutputDefinition,
         'command_output': CommandOutputDefinition,

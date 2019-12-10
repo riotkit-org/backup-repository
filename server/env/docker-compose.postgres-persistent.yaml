@@ -11,4 +11,4 @@ services:
 
     postgresql:
         volumes:
-            - /var/lib/postgresql-filerepository:/var/lib/postgresql
+            - ./.data/postgresql:/var/lib/postgresql
