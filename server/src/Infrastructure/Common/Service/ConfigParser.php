@@ -55,7 +55,7 @@ class ConfigParser
 
     protected function buildAdapter(string $suffix): array
     {
-        $adapterName = strtolower((string) $this->getValue($suffix. 'ADAPTER'));
+        $adapterName = strtolower((string) $this->getValue($suffix. 'ADAPTER', 'local'));
 
         if (!\array_key_exists($adapterName, $this->getMapping())) {
             throw new \InvalidArgumentException(
@@ -102,8 +102,8 @@ class ConfigParser
         return $optionsFilledUp;
     }
 
-    protected function getValue(string $envName)
+    protected function getValue(string $envName, $default = '')
     {
-        return getenv($envName);
+        return getenv($envName) ?: $default;
     }
 }

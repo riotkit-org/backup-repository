@@ -116,8 +116,7 @@ if (!function_exists('generateDoctrineMappings')) {
 # Adds a fallback DATABASE_URL if the env var is not set.
 # This allows you to run cache:warmup even if your
 # environment variables are not available yet.
-# You should not need to change this value.
-$databaseDriver = $_SERVER['DATABASE_DRIVER'] ?? 'pdo_mysql';
+$databaseDriver = $_SERVER['DATABASE_DRIVER'] ?? 'pdo_sqlite';
 $defaultsForSupportedDrivers = [
     'pdo_mysql' => [
         'env(DATABASE_VERSION)' => '5.8',
@@ -136,7 +135,7 @@ $defaultsForSupportedDrivers = [
 $driverDefaults = $defaultsForSupportedDrivers[$databaseDriver] ?? [];
 
 $container->setParameter('env(DATABASE_URL)', '');
-$container->setParameter('env(DATABASE_DRIVER)', 'pdo_mysql');
+$container->setParameter('env(DATABASE_DRIVER)', 'pdo_sqlite');
 $container->setParameter('env(DATABASE_VERSION)', $driverDefaults['env(DATABASE_VERSION)'] ?? '');
 $container->setParameter('env(DATABASE_CHARSET)', $driverDefaults['env(DATABASE_CHARSET)'] ?? '');
 $container->setParameter('env(DATABASE_COLLATE)', $driverDefaults['env(DATABASE_COLLATE)'] ?? '');
@@ -179,3 +178,4 @@ $container->loadFromExtension('doctrine', [
         'mappings' => sortByLongestKey(generateDoctrineMappings())
     ]
 ]);
+
