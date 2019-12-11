@@ -74,6 +74,12 @@ class ContainerizedDefinition(BackupDefinition):
     _container: str
     _docker_bin: str
 
+    def __init__(self, *args, **kwargs):
+        self._container = ''
+        self._docker_bin = 'docker'
+
+        super().__init__(*args, **kwargs)
+
     def get_container(self) -> str:
         return self._container
 

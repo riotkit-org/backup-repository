@@ -5,8 +5,8 @@ from ..encryption import Encryption
 
 
 class CommandOutputDefinition(ContainerizedDefinition):
-    _command = ""
-    _restore_command = ""
+    _command: str
+    _restore_command: str
 
     def __init__(self,
                  access: ServerAccess,

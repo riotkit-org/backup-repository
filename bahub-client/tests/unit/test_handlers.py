@@ -60,7 +60,7 @@ class HandlersTest(unittest.TestCase):
                     'command': 'cat /some-non-existing-file'
                 }, 'test'),
                 CommandOutputBackup,
-                'The process exited with incorrect code, try to verify the command in with --debug switch'
+                'Backup source read error, use --debug and retry to investigate. Exit code: 1'
             ],
 
             # command: the encryption command will break the whole command pipeline
@@ -73,7 +73,7 @@ class HandlersTest(unittest.TestCase):
                     'command': 'cat /etc/hosts'
                 }, 'test'),
                 CommandOutputBackup,
-                'The process exited with incorrect code, try to verify the command in with --debug switch'
+                'Backup source read error, use --debug and retry to investigate. Exit code: 1'
             ]
         ]
 
@@ -93,7 +93,7 @@ class HandlersTest(unittest.TestCase):
         except Exception as e:
             msg = str(e)
 
-        self.assertEqual(msg, expected_message)
+        self.assertIn(expected_message, msg)
 
     def success_cases():
         server_access = ServerAccess.from_config({

@@ -4,7 +4,7 @@ import os
 import inspect
 
 sys.path.append(os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe()))) + '/../')
-from bahub.bahubapp.entity.definition import CommandOutputDefinition
+from bahub.bahubapp.entity.definition.local import CommandOutputDefinition
 from bahub.bahubapp.entity.recovery import RecoveryPlan
 from bahub.bahubapp.exceptions import ConfigurationFactoryException
 import bahub.bahubapp.service.configurationfactory
