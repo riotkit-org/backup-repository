@@ -6,3 +6,4 @@ simplejson>=3.16
 unittest-data-provider
 coverage
 sentry-sdk==0.7.14
+psycopg2>=2.7
