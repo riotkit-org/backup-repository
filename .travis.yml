@@ -49,7 +49,7 @@ jobs:
           - mkdir -p ./var && chmod 777 ./var -R
       script: make coverage || true
 
-    - stage: File Repository API tests (local storage)
+    - stage: File Repository API tests (local storage + SQLite3)
       language: php
       services:
           - docker

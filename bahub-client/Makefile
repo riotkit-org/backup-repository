@@ -13,7 +13,7 @@ build_package: install_requirements ## Build the package
 
 install_requirements: ## Install requirements
 	echo " >> Installing requirements"
-	${PIP} install -r ./requirements.txt || true
+	${PIP} install -r ./requirements.txt
 
 install: build_package ## Install
 	${SUDO} ${PY_BIN} ./setup.py install
