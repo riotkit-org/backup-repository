@@ -10,7 +10,7 @@
         - sudo ln -s $(which python) /usr/bin/python
         - sudo ln -s $(which python) /usr/bin/python3
     script:
-        - make install unit_test
+        - make install unit_test SUDO="" PIP="pip"
     before_deploy:
         - sudo mv /usr/bin/{python.backup,python}
         - sudo mv /usr/bin/{python3.backup,python3}
