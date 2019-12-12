@@ -50,7 +50,7 @@ assert_local_command_output() {
 #
 # Execution of all cases, one-by-one
 #
-variants=(some_local_logs local_command_output docker_hot_volumes_example www_docker_offline mysql_docker_single_database)
+variants=(some_local_logs local_command_output docker_hot_volumes_example www_docker_offline mysql_native_single_database mysql_all_databases mysql_docker_single_database)
 
 for variant in ${variants[@]}; do
     echo ""
@@ -73,7 +73,7 @@ for variant in ${variants[@]}; do
     fi
 
     echo " >> Restoring..."
-    bahub --config /etc/bahub/without_crypto.conf.yaml restore ${variant} v1
+    bahub --config /etc/bahub/without_crypto.conf.yaml --debug restore ${variant} v1
 
     if function_exists "assert_${variant}"; then
         eval "assert_${variant}"

@@ -105,15 +105,18 @@ class MySQLDefinition(AbstractDumpAndRestoreDefinition):
         self._dump_cmd = config.get('dump_cmd')
         self._restore_cmd = config.get('restore_cmd')
 
+        if not self._dump_opts:
+            self._dump_opts = ' --skip-lock-tables --add-drop-table --add-drop-database --add-drop-trigger '
+
         if not self._dump_cmd:
             self._dump_cmd = \
-                'mysqldump --skip-lock-tables -u %user% -P %port% -p%password% ' + \
-                '-h %host% --all-databases %dump_opts%'
+                'mysqldump %dump_opts% -u %user% -P %port% -p%password% ' + \
+                '-h %host% --all-databases'
 
             if self.get_database():
                 self._dump_cmd = \
-                    'mysqldump --skip-lock-tables -u %user% -P %port% -p%password% ' + \
-                    '-h %host% %database% %dump_opts%'
+                    'mysqldump %dump_opts% -u %user% -P %port% -p%password% ' + \
+                    '-h %host% %database% '
 
         if not self._restore_cmd:
             self._restore_cmd = 'mysql -u %user% -p%password% -h %host% -P %port%'

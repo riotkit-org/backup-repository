@@ -1,9 +1,9 @@
-FROM docker:stable
+FROM alpine:3.10
 
 ENV DISABLE_SCHEDULED_JOBS=0
 ARG TEMPORARY_PACKAGES="postgresql-dev openssl-dev gcc python3-dev musl-dev"
 
-RUN apk --update add python3 make bash sudo git openssl supervisor rsyslog xz bzip2 pigz postgresql-client
+RUN apk --update add docker python3 make bash sudo git openssl supervisor rsyslog xz bzip2 pigz mysql-client postgresql-client
 
 ADD bahub-client /bahub
 ADD .git /bahub/.git
