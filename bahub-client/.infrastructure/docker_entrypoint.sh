@@ -9,8 +9,10 @@ if [[ ! -f /cron ]]; then
 fi
 
 # setup dns
-echo "nameserver 1.1.1.1" > /etc/resolv.conf
-echo "nameserver 8.8.8.8" >> /etc/resolv.conf
+if [[ $(cat /etc/resolv.conf) != *"1.1.1.1"* ]]; then
+    echo "nameserver 1.1.1.1" >> /etc/resolv.conf
+    echo "nameserver 8.8.8.8" >> /etc/resolv.conf
+fi
 
 if [[ "$@" ]]; then
     echo "BAHUB_ARGS=\"$@\"" >> /.bahub.env
