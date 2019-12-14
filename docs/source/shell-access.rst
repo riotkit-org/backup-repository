@@ -4,7 +4,7 @@ Shell access
 File Repository usage can be automated using shell commands.
 There are not so many commands, but basic usage could be automated using scripts.
 
-It is very helpful to create initially all required tokens and collections, so you can connect applications quickly and starting doing backups or just file storing.
+It is very helpful to create initially all required tokens and collections, so you can connect applications quickly and start doing backups or just file storing.
 
 Introduction
 ------------

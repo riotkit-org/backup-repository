@@ -27,6 +27,9 @@ manage everything. We already knew about such case and we're prepared for it! ;-
 
 In this case "1B3B15EC-18E9-45DD-846B-42C5006E872A" is your administrative token, pssst... keep it safe!
 
+*Note: You can also generate a token with custom tokenId using the --id switch*
+*Note: Use --ignore-error-if-token-exists in scripts*
+
 Generating a normal token
 -------------------------
 
@@ -49,25 +52,28 @@ For such cases you can generate a token that will allow access to specified coll
           --tags=TAGS
           --mimes=MIMES
           --max-file-size=MAX-FILE-SIZE
-          --expires=EXPIRES              Example: 2020-05-01 or +10 years
-      -h, --help                         Display this help message
-      -q, --quiet                        Do not output any message
-      -V, --version                      Display this application version
-          --ansi                         Force ANSI output
-          --no-ansi                      Disable ANSI output
-      -n, --no-interaction               Do not ask any interactive question
-      -e, --env=ENV                      The Environment name. [default: "dev"]
-          --no-debug                     Switches off debug mode.
-      -v|vv|vvv, --verbose               Increase the verbosity of messages: 1 for normal output, 2 for more verbose output and 3 for debug
+      -i, --id[=ID]
+          --expires=EXPIRES               Example: 2020-05-01 or +10 years
+          --ignore-error-if-token-exists  Exit with success if token already exists. Does not check strictly permissions and other attributes, just the id.
+      -h, --help                          Display this help message
+      -q, --quiet                         Do not output any message
+      -V, --version                       Display this application version
+          --ansi                          Force ANSI output
+          --no-ansi                       Disable ANSI output
+      -n, --no-interaction                Do not ask any interactive question
+      -e, --env=ENV                       The Environment name. [default: "test"]
+          --no-debug                      Switches off debug mode.
+      -v|vv|vvv, --verbose                Increase the verbosity of messages: 1 for normal output, 2 for more verbose output and 3 for debug
 
     Help:
       Allows to generate a token you can use later to authenticate in application for a specific thing
+
 
 Example of generating a token with specified roles:
 
 .. code:: bash
 
-    ✗ ./bin/console auth:create-token --roles upload.images,upload.enforce_no_password --expires="+30 minutes"
+    ✗ ./bin/console auth:create-token --roles upload.images,upload.enforce_no_password --expires="+30 minutes" --id="A757A8CB-964F-4F7B-BB70-9DB2CF524BB9"
     ========================
     Form:
      [Role] -> upload.images
@@ -80,6 +86,8 @@ Example of generating a token with specified roles:
         "expires": "2019-02-11 08:01:00"
     }
 
+*Note: When you not specify the --id, then the id will be generated automatically*
+*Note: Use --ignore-error-if-token-exists in scripts*
 
 Deleting expired tokens
 -----------------------

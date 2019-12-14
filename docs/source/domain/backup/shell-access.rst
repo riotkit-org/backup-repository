@@ -34,3 +34,5 @@ Example failure output:
         "context": []
     }
 
+*Note: Use --id parameter to assign custom id for the collection. Helpful in deployment automation.*
+*Note: Use --ignore-error-if-token-exists in scripts*
