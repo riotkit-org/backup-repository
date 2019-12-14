@@ -37,6 +37,7 @@ class CollectionManager
 
     /**
      * @param BackupCollection $collection
+     * @param null|string      $customId
      *
      * @return BackupCollection
      *
@@ -44,12 +45,18 @@ class CollectionManager
      * @throws ValidationException
      * @throws \Exception
      */
-    public function create(BackupCollection $collection): BackupCollection
+    public function create(BackupCollection $collection, ?string $customId): BackupCollection
     {
         // second stage of validation - logic, permissions and existence validation
-        $this->validator->validateBeforeCreation($collection);
-
+        $this->validator->validateBeforeCreation($collection, $customId);
         $this->repository->persist($collection);
+
+        // allow to assign custom UUID in case we need a reproducible collectionId
+        // example cases: deploying a ready-to-use environment on cloud
+        if ($customId) {
+            $collection = $collection->changeId($customId);
+            $this->repository->persist($collection);
+        }
 
         return $collection;
     }

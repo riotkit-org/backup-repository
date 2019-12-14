@@ -3,10 +3,14 @@
 namespace App\Infrastructure\Backup\Repository;
 
 use App\Domain\Backup\Entity\BackupCollection;
+use App\Domain\Backup\Exception\CollectionIdNotUniqueException;
+use App\Domain\Backup\Exception\DatabaseException;
 use App\Domain\Backup\Parameters\Repository\ListingParameters;
 use App\Domain\Backup\Repository\CollectionRepository;
 use App\Domain\Common\Repository\BaseRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\DBAL\Driver\PDOException;
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\QueryBuilder;
 
 class CollectionDoctrineRepository extends BaseRepository implements CollectionRepository
@@ -39,12 +43,26 @@ class CollectionDoctrineRepository extends BaseRepository implements CollectionR
     }
 
     /**
-     * @throws \Doctrine\ORM\ORMException
+     * @throws DatabaseException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
     public function flushAll(): void
     {
-        $this->getEntityManager()->flush();
+        try {
+            $this->getEntityManager()->flush();
+
+        } catch (UniqueConstraintViolationException $exception) {
+            throw new CollectionIdNotUniqueException('Collection id is not unique');
+
+        } catch (PDOException $exception) {
+            throw new DatabaseException(
+                $exception->getMessage(),
+                $exception->getCode(),
+                $exception->getSQLState(),
+                (string) $exception->getErrorCode(),
+                $exception
+            );
+        }
     }
 
     /**

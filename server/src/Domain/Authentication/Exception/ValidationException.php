@@ -2,7 +2,9 @@
 
 namespace App\Domain\Authentication\Exception;
 
-class ValidationException extends \Exception
+use App\Domain\Common\Exception\CommonValidationException;
+
+class ValidationException extends \Exception implements CommonValidationException
 {
     /**
      * @var array

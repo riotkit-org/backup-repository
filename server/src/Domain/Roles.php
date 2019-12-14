@@ -5,6 +5,13 @@ namespace App\Domain;
 /**
  * List of roles which could be required for a temporary token
  *
+ *   There are 2 types of roles:
+ *       - GRANT
+ *       - RESTRICTION
+ *
+ *   They are distinguished because, we want to GRANT all rights to administrator for example, excluding RESTRICTION
+ *   roles.
+ *
  * @codeCoverageIgnore
  */
 final class Roles
@@ -100,6 +107,9 @@ final class Roles
     /** Allow person creating a new backup collection */
     public const ROLE_COLLECTION_ADD = 'collections.create_new';
 
+    /** Allow to assign a specific id, when creating a collection */
+    public const ROLE_COLLECTION_CUSTOM_ID = 'collections.create_new.with_custom_id';
+
     /** Allow creating backup collections that have no limits on size and length */
     public const ROLE_COLLECTION_ADD_WITH_INFINITE_LIMITS = 'collections.allow_infinite_limits';
 
@@ -161,6 +171,7 @@ final class Roles
         self::ROLE_ADMINISTRATOR,
 
         self::ROLE_COLLECTION_ADD,
+        self::ROLE_COLLECTION_CUSTOM_ID,
         self::ROLE_COLLECTION_ADD_WITH_INFINITE_LIMITS,
         self::ROLE_CAN_DELETE_ALLOWED_COLLECTIONS,
         self::ROLE_COLLECTION_MODIFY_ANY_COLLECTION,
@@ -184,6 +195,12 @@ final class Roles
         return \array_merge(self::GRANTS_LIST, self::RESTRICTIONS_LIST);
     }
 
+    /**
+     * The test token is available only in APP_ENV=test
+     *
+     * @param string|null $tokenId
+     * @return bool
+     */
     public static function isTestToken(?string $tokenId): bool
     {
         return $tokenId === static::TEST_TOKEN;

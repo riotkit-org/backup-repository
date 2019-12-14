@@ -5,6 +5,11 @@ namespace App\Domain\Backup\Form\Collection;
 class CreationForm
 {
     /**
+     * @var string|null
+     */
+    public $id;
+
+    /**
      * @var int
      */
     public $maxBackupsCount;

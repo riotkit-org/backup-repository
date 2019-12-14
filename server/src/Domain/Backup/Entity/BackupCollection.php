@@ -78,6 +78,20 @@ class BackupCollection implements \JsonSerializable
         $this->creationDate = new \DateTimeImmutable();
     }
 
+    /**
+     * Be careful with this method, should be used only on creation
+     *
+     * @param string $id
+     *
+     * @return BackupCollection
+     */
+    public function changeId(string $id): BackupCollection
+    {
+        $this->id = $id;
+
+        return $this;
+    }
+
     public function withAnonymousData(): BackupCollection
     {
         $clone                = clone $this;

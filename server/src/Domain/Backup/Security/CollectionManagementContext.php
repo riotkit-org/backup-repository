@@ -17,6 +17,11 @@ class CollectionManagementContext
     /**
      * @var bool
      */
+    private $canAssignCustomIdInNewCollection;
+
+    /**
+     * @var bool
+     */
     private $canCreateCollectionsWithoutLimit;
 
     /**
@@ -56,6 +61,7 @@ class CollectionManagementContext
 
     public function __construct(
         bool $canCreateCollections,
+        bool $canAssignCustomIdInNewCollection,
         bool $canCreateCollectionsWithoutLimit,
         bool $canModifyAllowedCollections,
         bool $canModifyAnyCollection,
@@ -66,6 +72,7 @@ class CollectionManagementContext
         ?string $tokenId
     ) {
         $this->canCreateCollections             = $canCreateCollections;
+        $this->canAssignCustomIdInNewCollection = $canAssignCustomIdInNewCollection;
         $this->canCreateCollectionsWithoutLimit = $canCreateCollectionsWithoutLimit;
         $this->canModifyAllowedCollections      = $canModifyAllowedCollections;
         $this->canModifyAnyCollection           = $canModifyAnyCollection;
@@ -83,6 +90,15 @@ class CollectionManagementContext
         }
 
         return $this->canCreateCollections;
+    }
+
+    public function canCreateCollectionWithCustomId(CreationForm $form): bool
+    {
+        if (!$this->canCreateCollection($form)) {
+            return false;
+        }
+
+        return $this->canAssignCustomIdInNewCollection;
     }
 
     private function checkCollectionCanBeCreatedIfUnlimitedLimitsWereSet(CreationForm $form): bool

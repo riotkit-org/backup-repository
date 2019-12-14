@@ -4,13 +4,16 @@ namespace App\Domain\Backup\ActionHandler\Collection;
 
 use App\Domain\Backup\Entity\BackupCollection;
 use App\Domain\Backup\Exception\AuthenticationException;
+use App\Domain\Backup\Exception\CollectionIdNotUniqueException;
 use App\Domain\Backup\Exception\CollectionMappingError;
+use App\Domain\Backup\Exception\DatabaseException;
 use App\Domain\Backup\Exception\ValidationException;
 use App\Domain\Backup\Form\Collection\CreationForm;
 use App\Domain\Backup\Manager\CollectionManager;
 use App\Domain\Backup\Mapper\CollectionMapper;
 use App\Domain\Backup\Response\Collection\CrudResponse;
 use App\Domain\Backup\Security\CollectionManagementContext;
+use Doctrine\DBAL\Driver\PDOException;
 
 class CreationHandler
 {
@@ -54,7 +57,7 @@ class CreationHandler
                 $collection = $this->mapper->mapTokenIntoCollection($collection, $securityContext->getTokenId());
             }
 
-            $collection = $this->manager->create($collection);
+            $collection = $this->manager->create($collection, $form->id);
 
         } catch (CollectionMappingError $mappingError) {
             return CrudResponse::createWithValidationErrors($mappingError->getErrors());
@@ -76,7 +79,16 @@ class CreationHandler
      */
     public function flush(): void
     {
-        $this->manager->flush();
+        try {
+            $this->manager->flush();
+
+        } catch (CollectionIdNotUniqueException $exception) {
+            throw ValidationException::createFromFieldError(
+                'id_not_unique',
+                'id',
+                ValidationException::COLLECTION_ID_NOT_UNIQUE
+            );
+        }
     }
 
     /**
@@ -91,6 +103,13 @@ class CreationHandler
             throw new AuthenticationException(
                 'Current token does not allow to create this collection',
                 AuthenticationException::CODES['not_authenticated']
+            );
+        }
+
+        if ($form->id && !$securityContext->canCreateCollectionWithCustomId($form)) {
+            throw new AuthenticationException(
+                'Current token does not allow to create collection with custom id',
+                AuthenticationException::CODES['no_permission_to_assign_custom_id']
             );
         }
     }

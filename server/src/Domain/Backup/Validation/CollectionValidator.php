@@ -7,6 +7,7 @@ use App\Domain\Backup\Entity\StoredVersion;
 use App\Domain\Backup\Exception\ValidationException;
 use App\Domain\Backup\Repository\VersionRepository;
 use App\Domain\Backup\Service\Filesystem;
+use App\Domain\Backup\Service\UuidValidator;
 use App\Domain\Backup\Settings\BackupSettings;
 use App\Domain\Backup\ValueObject\Filesize;
 use App\Domain\Common\ValueObject\DiskSpace;
@@ -28,11 +29,18 @@ class CollectionValidator
      */
     private $fs;
 
-    public function __construct(BackupSettings $settings, VersionRepository $versionRepository, Filesystem $fs)
+    /**
+     * @var UuidValidator
+     */
+    private $uuidValidator;
+
+    public function __construct(BackupSettings $settings, VersionRepository $versionRepository, Filesystem $fs,
+                                UuidValidator $uuidValidator)
     {
         $this->settings          = $settings;
         $this->versionRepository = $versionRepository;
         $this->fs                = $fs;
+        $this->uuidValidator     = $uuidValidator;
     }
 
     /**
@@ -40,13 +48,14 @@ class CollectionValidator
      *
      * @throws ValidationException
      */
-    public function validateBeforeCreation(BackupCollection $collection): void
+    public function validateBeforeCreation(BackupCollection $collection, ?string $customId): void
     {
         $this->validateMaxBackupsCount($collection);
         $this->validateMaxOneVersionSize($collection);
         $this->validateMaxCollectionSize($collection);
         $this->validateCollectionSizeIsHigherThanSingleElementSize($collection);
         $this->validateCollectionSizeHasEnoughSize($collection);
+        $this->validateCustomId($customId);
     }
 
     /**
@@ -63,6 +72,17 @@ class CollectionValidator
         $this->validateCollectionSizeHasEnoughSize($collection);
 
         $this->validateExistingElementsDoesNotExceedSubmittedLimit($collection, null);
+    }
+
+    private function validateCustomId(string $customId): void
+    {
+        if ($customId && !$this->uuidValidator->isValid($customId)) {
+            throw ValidationException::createFromFieldError(
+                'custom_id_is_not_uuid_format',
+                'id',
+                ValidationException::COLLECTION_ID_INVALID_FORMAT
+            );
+        }
     }
 
     /**

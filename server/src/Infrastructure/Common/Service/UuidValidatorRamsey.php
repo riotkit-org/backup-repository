@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace App\Infrastructure\Authentication\Service;
+namespace App\Infrastructure\Common\Service;
 
-use App\Domain\Authentication\Service\UuidValidator;
+use App\Domain\Common\Service\UuidValidator;
 use Ramsey\Uuid\Uuid;
 
 class UuidValidatorRamsey implements UuidValidator

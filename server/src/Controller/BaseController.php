@@ -3,8 +3,8 @@
 namespace App\Controller;
 
 use App\Domain\Authentication\Entity\Token;
-use App\Domain\Authentication\Exception\ValidationException;
 use App\Domain\Common\Exception\AuthenticationException;
+use App\Domain\Common\Exception\CommonValidationException;
 use App\Domain\Common\Exception\ReadOnlyException;
 use App\Domain\Common\Exception\RequestException;
 use App\Domain\Common\ValueObject\BaseUrl;
@@ -145,7 +145,7 @@ abstract class BaseController extends AbstractController
         } catch (AuthenticationException $exception) {
             return $this->createAccessDeniedResponse($exception->getMessage());
 
-        } catch (ValidationException $exception) {
+        } catch (CommonValidationException $exception) {
             return new JsonResponse(
                 [
                     'status' => 'Validation error',

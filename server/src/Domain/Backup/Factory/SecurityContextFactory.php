@@ -13,6 +13,7 @@ class SecurityContextFactory
     {
         return new CollectionManagementContext(
             $token->hasRole(Roles::ROLE_COLLECTION_ADD),
+            $token->hasRole(Roles::ROLE_COLLECTION_CUSTOM_ID),
             $token->hasRole(Roles::ROLE_COLLECTION_ADD_WITH_INFINITE_LIMITS),
             $token->hasRole(Roles::ROLE_MODIFY_ALLOWED_COLLECTIONS),
             $token->hasRole(Roles::ROLE_COLLECTION_MODIFY_ANY_COLLECTION),
@@ -38,7 +39,11 @@ class SecurityContextFactory
     public function createShellContext(): CollectionManagementContext
     {
         return new CollectionManagementContext(
-            true, true, true, true, true, true, true, true, null
+            true, true,
+            true, true,
+            true, true,
+            true, true,
+            true, null
         );
     }
 }

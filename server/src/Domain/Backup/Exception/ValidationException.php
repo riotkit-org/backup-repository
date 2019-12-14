@@ -2,7 +2,9 @@
 
 namespace App\Domain\Backup\Exception;
 
-class ValidationException extends BackupException
+use App\Domain\Common\Exception\CommonValidationException;
+
+class ValidationException extends BackupException implements CommonValidationException
 {
     public const CODE_MAX_BACKUPS_COUNT_EXCEEDED                             = 4000;
     public const CODE_MAX_COLLECTION_SIZE_EXCEEDED                           = 4001;
@@ -14,6 +16,8 @@ class ValidationException extends BackupException
     public const CODE_NEW_VERSION_MAKES_COLLECTION_TOO_BIG_ON_DISK           = 4007;
     public const CODE_BACKUP_VERSION_DUPLICATED                              = 4008;
     public const CODE_VERSION_COLLECTION_DOES_NOT_MATCH_SUBMITTED_COLLECTION = 4009;
+    public const COLLECTION_ID_NOT_UNIQUE                                    = 4010;
+    public const COLLECTION_ID_INVALID_FORMAT                                = 4011;
 
     /**
      * @var string
@@ -45,5 +49,10 @@ class ValidationException extends BackupException
     public function getReference()
     {
         return $this->reference;
+    }
+
+    public function getFields(): array
+    {
+        return [$this->getField() => [$this->getMessage()]];
     }
 }

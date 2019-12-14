@@ -2,6 +2,7 @@
 
 namespace App\Command\Backup;
 
+use App\Domain\Backup\Exception\ValidationException;
 use App\Domain\Backup\Factory\SecurityContextFactory;
 use App\Domain\Backup\ActionHandler\Collection\CreationHandler;
 use App\Domain\Backup\Form\Collection\CreationForm;
@@ -47,6 +48,10 @@ class CreateCollectionCommand extends Command
             ->addOption('description', 'd', InputOption::VALUE_REQUIRED)
             ->addOption('password', 'p', InputOption::VALUE_OPTIONAL)
             ->addOption('filename', 'f', InputOption::VALUE_REQUIRED)
+            ->addOption('id', 'i', InputOption::VALUE_OPTIONAL,
+                'Assign custom id, do not generate random', '')
+            ->addOption('ignore-error-if-exists', null, InputOption::VALUE_NONE,
+                'Return success, when collection of given id already exists (does not compare collection details)')
             ->setHelp('Specify all limits and parameters to create a collection');
     }
 
@@ -64,6 +69,7 @@ class CreateCollectionCommand extends Command
         $form->maxBackupsCount   = (int) $input->getOption('max-backups-count');
         $form->maxCollectionSize = $input->getOption('max-collection-size');
         $form->maxOneVersionSize = $input->getOption('max-one-version-size');
+        $form->id                = $input->getOption('id');
 
         $form->strategy    = $input->getOption('strategy');
         $form->description = $input->getOption('description');
@@ -71,7 +77,19 @@ class CreateCollectionCommand extends Command
         $form->filename    = $input->getOption('filename');
 
         $response = $this->handler->handle($form, $this->authFactory->createShellContext());
-        $this->handler->flush();
+
+        try {
+            $this->handler->flush();
+        } catch (ValidationException $exception) {
+            if (!$input->getOption('ignore-error-if-exists')) {
+                throw $exception;
+            }
+
+            // case: when collection already exists, and we want to skip this error, then we return normal exit code
+            //       It's very useful in scripts in Docker, where we want to have a "present state" enforced
+            $output->writeln($form->id);
+            return 0;
+        }
 
         if ($response->isSuccess()) {
             $output->writeln($response->getCollection()->getId());

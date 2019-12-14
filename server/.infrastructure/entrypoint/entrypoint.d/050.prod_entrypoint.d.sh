@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 
 wait_for_db_to_get_up() {
     if [[ ${WAIT_FOR_HOST} != "" ]]; then
@@ -35,7 +35,16 @@ install() {
     su www-data -s /bin/bash -c "cd /var/www/html/ && make install"
 }
 
+execute_post_install_commands() {
+    echo " >> Executing commands from POST_INSTALL_CMD if set"
+
+    if [[ "${POST_INSTALL_CMD}" != "" ]]; then
+        su www-data -s /bin/bash -c "cd /var/www/html; set -xe; ${POST_INSTALL_CMD}"
+    fi
+}
+
 wait_for_db_to_get_up
 correct_permissions
 install
 setup_admin_user
+execute_post_install_commands

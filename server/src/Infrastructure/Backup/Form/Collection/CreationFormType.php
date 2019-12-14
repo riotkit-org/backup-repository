@@ -23,7 +23,8 @@ class CreationFormType extends AbstractType
             ->add('maxOneVersionSize', TextType::class)
             ->add('description',       TextType::class)
             ->add('password',          TextType::class)
-            ->add('filename',          TextType::class);
+            ->add('filename',          TextType::class)
+            ->add('id',                TextType::class);
     }
 
     public function configureOptions(OptionsResolver $resolver)
