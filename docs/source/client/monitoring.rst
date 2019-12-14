@@ -19,8 +19,8 @@ To enable the monitoring you need to have a ready-to-use Sentry instance/account
             type: sentry
             url: "https://some-url"
 
-Notifications
-=============
+Slack/Mattermost notifications
+==============================
 
 .. image:: ../_static/screenshots/bahub/notifier-mattermost.png
 
