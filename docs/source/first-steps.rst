@@ -111,10 +111,10 @@ You can also run the application with PostgreSQL and/or with S3 as a storage.
     make up VARIANT="test postgres postgres-persistent gateway"
 
     # to have a good, production type configuration
-    make up VARIANT="postgres postgres-persistent gateway"
+    make up VARIANT="s3 postgres postgres-persistent gateway"
 
     # to have a production type configuration, that can be behind reverse proxy (do not expose ports itself to host)
-    make up VARIANT="postgres postgres-persistent"
+    make up VARIANT="s3 postgres postgres-persistent"
 
 
 Please check out the detailed instruction in the **./server/env/README.md** file.
