@@ -3,6 +3,7 @@
 PIP = sudo pip3
 SUDO = sudo -E
 PY_BIN = python3
+PIP_ARGS = ""
 
 help: ## Help
 	@grep -E '^[a-zA-Z\-\_0-9\.@]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
@@ -13,7 +14,7 @@ build_package: install_requirements ## Build the package
 
 install_requirements: ## Install requirements
 	echo " >> Installing requirements"
-	${SUDO} ${PIP} install -r ./requirements.txt
+	${SUDO} ${PIP} install ${PIP_ARGS} -r ./requirements.txt
 
 install: build_package ## Install
 	${SUDO} ${PY_BIN} ./setup.py install

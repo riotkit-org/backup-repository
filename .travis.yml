@@ -2,10 +2,9 @@
     before_install:
         - sudo apt-get update
         - sudo apt-get install -y openssl
-        - pip install --upgrade --force-reinstall PyYAML
     before_script:
         - cd bahub-client
-        - make install_requirements PIP="pip"
+        - make install_requirements PIP="pip" PIP_ARGS=" --ignore-installed "
         - sudo mv /usr/bin/{python,python.backup}
         - sudo mv /usr/bin/{python3,python3.backup}
         - sudo ln -s $(which python) /usr/bin/python
