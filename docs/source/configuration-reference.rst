@@ -20,7 +20,8 @@ You can get a permissions list by accessing an endpoint in your application:
 
     GET /auth/roles?_token=test-token-full-permissions
 
-There is also an always up-to-date permissions list, taken directly from the recent version of the application.
+There is also an always up-to-date permissions list, taken directly from the current version of the application for which
+the documentation you are browsing.
 
 How to read the list by example:
 
@@ -32,7 +33,7 @@ How to read the list by example:
 Legend:
 
     - Between /\*\* and \*/ is the description
-    - **upload.images** is the role name
+    - **upload.images** is the role name that you need to know
 
 
 .. literalinclude:: ../../server/src/Domain/Roles.php
@@ -70,6 +71,7 @@ PostgreSQL support
 
 .. code:: bash
 
+    DATABASE_URL: ""
     DATABASE_HOST: "/var/run/postgresql"
     DATABASE_NAME: "rojava"
     DATABASE_PASSWORD: "rojava"
@@ -84,6 +86,7 @@ PostgreSQL support
 
 .. code:: bash
 
+    DATABASE_URL: ""
     DATABASE_HOST: "192.168.2.161"
     DATABASE_NAME: "rojava"
     DATABASE_PASSWORD: "rojava"
