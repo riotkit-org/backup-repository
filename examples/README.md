@@ -1,2 +1,10 @@
-- files: Example files used by automatic tests 
-- docker: example docker environment
+Bahub example docker-compose network
+------------------------------------
+
+Use `make` command to deploy the environment.
+
+
+**Requirements:**
+
+- docker
+- docker-compose

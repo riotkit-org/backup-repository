@@ -1,6 +1,6 @@
 accesses:
     some_server:
-        url: http://api.some-domain.org
+        url: ${SERVER_URL}
         token: "${BACKUPS_TOKEN}"
 
 encryption:

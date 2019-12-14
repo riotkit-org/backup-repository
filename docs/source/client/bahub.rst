@@ -19,35 +19,32 @@ Setup
 -----
 
 Bahub can be running as a separate container attached to docker containers network or manually as a regular process.
-The recommended way is to use a docker container, which provides a working job scheduling, installed dependencies and preconfigured most of the things.
+The recommended way is to use a docker container, which provides a working job scheduling, installed dependencies and a warranty that it will work.
 
 Using docker container
 ----------------------
 
-There exists a bahub tag on the docker hub container, **wolnosciowiec/file-repository:bahub**
-You can find an example in "examples/client" directory in the repository_.
+There exists a repository **quay.io/riotkit/bahub**, for testing purposes you can pick "latest-build" tag, for production it is recommended to pick a fixed version.
+Example installation on the simplest construction - docker-compose is placed in "examples/client" directory in the repository_.
 
-**docker-compose.yml**
+**Running a demo**
 
-.. literalinclude:: ../../../examples/client/docker-compose.yml
-   :language: yaml
+We prepared a demo environment that has a Bahub client, a Redis container and the File Repository server in one network.
+It's recommended to have client and server separated on different servers.
 
-**/cron**
+Take a look around, and create your own docker-compose, kubernetes or plain docker setup basing on our demo configuration.
 
-.. literalinclude:: ../../../examples/client/cron
-   :language: bash
+.. code:: bash
 
-**/bahub.conf.yaml** (see: :ref:`bahub_configuration_reference`)
+    git clone https://github.com/riotkit-org/file-repository
+    cd file-repository/examples/client
+    make start
+    make sh
 
-.. literalinclude:: ../../../examples/client/config.yaml
-   :language: bash
+.. _repository: https://github.com/riotkit-org/file-repository/tree/master/examples/client
 
-*Note: It's very important to specify the project name in docker-compose with "-p", so it will have same value as "COMPOSE_PROJECT_NAME". You may want to add it to .env file and reuse in Makefile and in docker-compose.yml for automation**
-
-.. _repository: https://github.com/riotkit-org/file-repository/tree/master/examples
-
-Using bare metal
-----------------
+Without docker
+--------------
 
 Use Python's PIP to install the package, and run it.
 
