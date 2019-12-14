@@ -77,6 +77,7 @@ jobs:
     - stage: Bahub Unit test @ Python 3.6
       language: python
       python: 3.6
+      dist: bionic
       <<: *bahub_unit_tests_template
 
     - stage: Bahub functional test
