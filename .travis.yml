@@ -1,7 +1,7 @@
 .bahub_unit_tests_template: &bahub_unit_tests_template
     before_install:
         - sudo apt-get update
-        - sudo apt-get install -y openssl
+        - sudo apt-get install -y openssl lsb-release
     before_script:
         - cd bahub-client
         - make install_requirements PIP="pip" PIP_ARGS=" --ignore-installed "
