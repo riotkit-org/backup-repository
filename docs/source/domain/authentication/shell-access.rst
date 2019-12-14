@@ -28,6 +28,7 @@ manage everything. We already knew about such case and we're prepared for it! ;-
 In this case "1B3B15EC-18E9-45DD-846B-42C5006E872A" is your administrative token, pssst... keep it safe!
 
 *Note: You can also generate a token with custom tokenId using the --id switch*
+
 *Note: Use --ignore-error-if-token-exists in scripts*
 
 Generating a normal token
@@ -87,6 +88,7 @@ Example of generating a token with specified roles:
     }
 
 *Note: When you not specify the --id, then the id will be generated automatically*
+
 *Note: Use --ignore-error-if-token-exists in scripts*
 
 Deleting expired tokens
