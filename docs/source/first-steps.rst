@@ -37,22 +37,29 @@ To install the application - download dependencies, install database schema use 
 
     make install install_frontend
 
-All right! The application should be ready to go. You can check the health check endpoint.
+All right! The application should be ready to go.
+
+Now set up an NGINX + PHP-FPM or Apache to redirect all traffic to point at /public/index.php
+
+For more help please visit: https://symfony.com/doc/current/setup/web_server_configuration.html
+
+When you have the web server up and running, you check the health check endpoint.
 
 .. code:: bash
 
-    curl http://localhost:8000/health?code=test
+    curl http://localhost/health?code=test
 
 
 
 Installation with docker
 ========================
 
-There are at least three choices:
+There are at least four choices:
 
 - Use `quay.io/riotkit/file-repository` container by your own (advanced) and follow the configuration reference
-- Generate a docker-compose.yaml using `make print VARIANT="gateway s3 postgres persistent"` in `server/env` directory, and create your own environment basing on it
+- Generate a docker-compose.yaml using `make print VARIANT="gateway s3 postgres postgres-persistent"` in `server/env` directory, and create your own environment basing on it
 - Copy the `server/env` environment from this repository and adjust to your needs
+- Take a look at our compose in `server/env` and at configuration reference and create a Kubernetes or other deployment
 
 Proposed way to choose is the prepared docker-compose environment that is placed in `server/env` directory.
 
@@ -79,6 +86,7 @@ Proposed way to choose is the prepared docker-compose environment that is placed
 - Mount data as volumes. Use bind-mounts to have files placed on host filesystem (volumes can be deleted, bind-mounted files stays anyway)
 - Application behind a gateway (proxy_pass) should have *NGINX_REQUEST_BUFFERING=off* to avoid double-buffering (slows down performance)
 - Use *SECURITY_ADMIN_TOKEN* environment variable to setup an administrative token to be able to log-in into the application
+- For automation, use *POST_INSTALL_CMD* to execute console commands to create collections and tokens with ids your applications expects
 
 Development environment setup
 =============================
@@ -100,7 +108,13 @@ You can also run the application with PostgreSQL and/or with S3 as a storage.
     make up VARIANT="test postgres gateway"
 
     # keep all of the changes between environment restarts
-    make up VARIANT="test persistent postgres gateway"
+    make up VARIANT="test postgres postgres-persistent gateway"
+
+    # to have a good, production type configuration
+    make up VARIANT="postgres postgres-persistent gateway"
+
+    # to have a production type configuration, that can be behind reverse proxy (do not expose ports itself to host)
+    make up VARIANT="postgres postgres-persistent"
 
 
 Please check out the detailed instruction in the **./server/env/README.md** file.
