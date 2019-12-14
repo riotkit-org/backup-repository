@@ -2,6 +2,7 @@
     before_install:
         - sudo apt-get update
         - sudo apt-get install -y openssl
+        - pip install --upgrade --force-reinstall PyYAML
     before_script:
         - cd bahub-client
         - make install_requirements PIP="pip"
@@ -24,52 +25,52 @@
 
 jobs:
   include:
-    - stage: File Repository unit tests @ PHP 7.3
-      language: php
-      php: '7.3'
-      before_script:
-          - cd server
-          - composer install
-          - make migrate
-          - mkdir -p ./var && chmod 777 ./var -R
-      script:
-          - make coverage
-      after_success:
-          - bash <(curl -s https://codecov.io/bash) -cF php
-          - bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [OK] File repository unit tests passed."
-      after_failure: bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [FAILURE] File repository unit tests are failing."
-
-    - stage: File Repository unit tests @ PHP nightly (allowed to fail)
-      language: php
-      php: nightly
-      before_script:
-          - cd server
-          - composer update || true
-          - make migrate || true
-          - mkdir -p ./var && chmod 777 ./var -R
-      script: make coverage || true
-
-    - stage: File Repository API tests (local storage + SQLite3)
-      language: php
-      services:
-          - docker
-      php:
-          - '7.3'
-      before_script: cd server
-      script: make test_api@ci SUDO="" TAG=${TRAVIS_TAG:-dev} VARIANT=""
-      after_success: bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [OK] File repository API tests on local storage passed."
-      after_failure: bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [FAILURE] File repository API tests on local storage are failing."
-
-    - stage: File Repository API tests (Min.io + PostgreSQL)
-      language: php
-      services:
-          - docker
-      php:
-          - '7.3'
-      before_script: cd server
-      script: make test_api@ci SUDO="" TAG=${TRAVIS_TAG:-dev} VARIANT="s3 postgres"
-      after_success: bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [OK] File repository API tests on Min.io passed."
-      after_failure: bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [FAILURE] File repository API tests on Min.io are failing."
+#    - stage: File Repository unit tests @ PHP 7.3
+#      language: php
+#      php: '7.3'
+#      before_script:
+#          - cd server
+#          - composer install
+#          - make migrate
+#          - mkdir -p ./var && chmod 777 ./var -R
+#      script:
+#          - make coverage
+#      after_success:
+#          - bash <(curl -s https://codecov.io/bash) -cF php
+#          - bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [OK] File repository unit tests passed."
+#      after_failure: bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [FAILURE] File repository unit tests are failing."
+#
+#    - stage: File Repository unit tests @ PHP nightly (allowed to fail)
+#      language: php
+#      php: nightly
+#      before_script:
+#          - cd server
+#          - composer update || true
+#          - make migrate || true
+#          - mkdir -p ./var && chmod 777 ./var -R
+#      script: make coverage || true
+#
+#    - stage: File Repository API tests (local storage + SQLite3)
+#      language: php
+#      services:
+#          - docker
+#      php:
+#          - '7.3'
+#      before_script: cd server
+#      script: make test_api@ci SUDO="" TAG=${TRAVIS_TAG:-dev} VARIANT=""
+#      after_success: bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [OK] File repository API tests on local storage passed."
+#      after_failure: bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [FAILURE] File repository API tests on local storage are failing."
+#
+#    - stage: File Repository API tests (Min.io + PostgreSQL)
+#      language: php
+#      services:
+#          - docker
+#      php:
+#          - '7.3'
+#      before_script: cd server
+#      script: make test_api@ci SUDO="" TAG=${TRAVIS_TAG:-dev} VARIANT="s3 postgres"
+#      after_success: bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [OK] File repository API tests on Min.io passed."
+#      after_failure: bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [FAILURE] File repository API tests on Min.io are failing."
 
     #
     # Bahub (Backups API client)
