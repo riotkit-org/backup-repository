@@ -74,7 +74,7 @@ class CollectionValidator
         $this->validateExistingElementsDoesNotExceedSubmittedLimit($collection, null);
     }
 
-    private function validateCustomId(string $customId): void
+    private function validateCustomId(?string $customId): void
     {
         if ($customId && !$this->uuidValidator->isValid($customId)) {
             throw ValidationException::createFromFieldError(
