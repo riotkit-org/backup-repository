@@ -70,7 +70,7 @@ class FileRepositoryClient:
         curl.setopt(curl.UPLOAD, 1)
         curl.setopt(curl.READFUNCTION, process_reader.read_callback)
         curl.setopt(curl.WRITEFUNCTION, response_body_stream.write)
-        curl.setopt(curl.VERBOSE, True)
+        curl.setopt(curl.VERBOSE, False)
 
         try:
             curl.perform()
