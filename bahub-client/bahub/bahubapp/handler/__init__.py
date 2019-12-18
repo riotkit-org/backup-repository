@@ -50,7 +50,7 @@ class BackupHandler:
                 pass
 
             self._raise_read_error_if_invalid_error_code(response)
-            upload_response = self._client.send(response.stdout, self._get_definition())
+            upload_response = self._client.send(response.process, self._get_definition())
 
         except Exception as e:
             response.process.kill()
@@ -77,6 +77,7 @@ class BackupHandler:
         try:
             # @todo: Implement a switch, that would allow to save file to temporary path instead of piping
             #        It would be just an additional option for safety
+            #        See: https://github.com/riotkit-org/file-repository/issues/101
 
             stream = self._read_from_storage(version)
             response = self.restore_backup_from_stream(stream)
