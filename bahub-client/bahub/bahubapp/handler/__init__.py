@@ -3,6 +3,7 @@ from ..service.client import FileRepositoryClient
 from ..service.pipefactory import PipeFactory
 from ..exceptions import ReadWriteException
 from ..result import CommandExecutionResult
+from subprocess import TimeoutExpired
 from logging import Logger
 import string
 import random
@@ -40,6 +41,15 @@ class BackupHandler:
 
         try:
             self._logger.info('Starting sending backup stream to server')
+
+            # read first bytes, wait for process to early exit (if it would exit due to error)
+            # that would allow us to grab its error code
+            try:
+                response.process.wait(3)
+            except TimeoutExpired:
+                pass
+
+            self._raise_read_error_if_invalid_error_code(response)
             upload_response = self._client.send(response.stdout, self._get_definition())
 
         except Exception as e:
@@ -49,12 +59,15 @@ class BackupHandler:
         finally:
             self.wait_for_process_to_finish(response.process)
 
+        self._raise_read_error_if_invalid_error_code(response)
+        return upload_response
+
+    @staticmethod
+    def _raise_read_error_if_invalid_error_code(response):
         if response.process.returncode != 0:
             raise ReadWriteException('Backup source read error, use --debug and retry to investigate. ' +
                                      'Exit code: %i, Command: %s, Stderr: %s' %
                                      (response.process.returncode, response.command, response.stderr.read()[0:512]))
-
-        return upload_response
 
     def perform_restore(self, version: str):
         """ Downloads backup version from server and applies locally """
