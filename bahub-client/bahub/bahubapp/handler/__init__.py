@@ -64,7 +64,7 @@ class BackupHandler:
 
     @staticmethod
     def _raise_read_error_if_invalid_error_code(response):
-        if response.process.returncode != 0:
+        if response.process.returncode is not None and response.process.returncode != 0:
             raise ReadWriteException('Backup source read error, use --debug and retry to investigate. ' +
                                      'Exit code: %i, Command: %s, Stderr: %s' %
                                      (response.process.returncode, response.command, response.stderr.read()[0:512]))
