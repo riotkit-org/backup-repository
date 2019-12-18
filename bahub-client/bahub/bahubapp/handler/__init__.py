@@ -42,6 +42,10 @@ class BackupHandler:
             self._logger.info('Starting sending backup stream to server')
             upload_response = self._client.send(response.stdout, self._get_definition())
 
+        except Exception as e:
+            response.process.kill()
+            raise e
+
         finally:
             self.wait_for_process_to_finish(response.process)
 
