@@ -59,13 +59,14 @@ class BackupHandler:
     def perform_restore(self, version: str):
         """ Downloads backup version from server and applies locally """
 
+        response = None
+
         try:
             # @todo: Implement a switch, that would allow to save file to temporary path instead of piping
             #        It would be just an additional option for safety
 
-            response = self.restore_backup_from_stream(
-                self._read_from_storage(version)
-            )
+            stream = self._read_from_storage(version)
+            response = self.restore_backup_from_stream(stream)
 
             self.wait_for_process_to_finish(response.process)
 
@@ -75,6 +76,10 @@ class BackupHandler:
         except Exception:
             self._logger.error('Executing on_failed_restore() if defined')
             self.on_failed_restore()
+
+            if response:
+                response.process.kill()
+
             raise
 
         self._logger.info('No errors found, sending success information')
