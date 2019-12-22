@@ -3,6 +3,7 @@ import sys
 import os
 import inspect
 import logging
+import subprocess
 from unittest_data_provider import data_provider
 
 sys.path.append(os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe()))) + '/../')
@@ -143,9 +144,13 @@ class HandlersTest(unittest.TestCase):
 
     @staticmethod
     def _get_client_mock():
-        def _send(read_stream, definition):
-            read_stream.read()
-            return read_stream
+        def _send(process: subprocess.Popen, definition):
+            process.stdout.read()
+            return {
+                'version': 'v1',
+                'file_id': '58a74250-3b51-413a-9b9f-0dd78a9b6c9d',
+                'file_name': 'test-v1.json'
+            }
 
         client = FileRepositoryClient(HandlersTest._create_logger())
         client.send = _send
