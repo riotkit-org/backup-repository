@@ -39,27 +39,6 @@ jobs:
           - bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [OK] File repository unit tests passed."
       after_failure: bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [FAILURE] File repository unit tests are failing."
 
-    - stage: File Repository unit tests @ PHP nightly (allowed to fail)
-      language: php
-      php: nightly
-      before_script:
-          - cd server
-          - composer update || true
-          - make migrate || true
-          - mkdir -p ./var && chmod 777 ./var -R
-      script: make coverage || true
-
-    - stage: File Repository API tests (local storage + SQLite3)
-      language: php
-      services:
-          - docker
-      php:
-          - '7.3'
-      before_script: cd server
-      script: make test_api@ci SUDO="" TAG=${TRAVIS_TAG:-dev} VARIANT=""
-      after_success: bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [OK] File repository API tests on local storage passed."
-      after_failure: bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [FAILURE] File repository API tests on local storage are failing."
-
     - stage: File Repository API tests (Min.io + PostgreSQL)
       language: php
       services:
@@ -98,6 +77,28 @@ jobs:
       after_success: bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [OK] Bahub functional tests are passing."
       after_failure: bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [FAILURE] Bahub fuctional tests are not passing.."
 
+    - stage: File Repository API tests (local storage + SQLite3)
+      language: php
+      services:
+          - docker
+      php:
+          - '7.3'
+      before_script: cd server
+      script: make test_api@ci SUDO="" TAG=${TRAVIS_TAG:-dev} VARIANT=""
+      after_success: bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [OK] File repository API tests on local storage passed."
+      after_failure: bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [FAILURE] File repository API tests on local storage are failing."
+
+    - stage: File Repository API tests (Min.io + MariaDB)
+      language: php
+      services:
+          - docker
+      php:
+          - '7.3'
+      before_script: cd server
+      script: make test_api@ci SUDO="" TAG=${TRAVIS_TAG:-dev} VARIANT="s3 mariadb"
+      after_success: bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [OK] File repository API tests on MariaDB."
+      after_failure: bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [FAILURE] File repository API tests on MariaDB are failing."
+
     - stage: "Server: Publish docker image"
       language: python
       python: 3.6
@@ -127,3 +128,16 @@ jobs:
           user: marek_man
           password:
               secure: XUgQcpOxE2HCcmD8uJ8yzBsxnIdH8SNA91fEC54fzVvD5KupxFtuLs5OAL9Mj0xiXjfoTAS5za4RaPCSQPu/GVvmAtMnA1+tjdk1NxenmtlZOR54PmaQ3gY4QTyb0UUH08QcG5MZA0EDBlhyOcxpf5jp30oUT/h3zSHCM/hJ6lsoDtwn7foBUtLDxlOVIwdA7rO5pWPhg2YKJDlPkg6Bo2TpNMtKh4kjSN3somD1GRDdBEnqPKlSFi5Xiu3RhFwoUohGPMZhocrwA9aaLonx+XmZ+KOqiJX+kJg2c1hreYHUlqVCydHIDrnA8iQKEs+alI71ERGUuTkXZQYDfUJ1s7Ycnpj0Xg8iBa4bGSpvjNJYYfulXjFUH9XdIk2OMYzsKbuv+AS0aIQHjQXqk4u5szqZKhmpTYyRHdMObODjTBB1Vgdz3N437ex+biApsm7fM7QKN7iFD6RNqGPa2ksrF80/lxnvCkVTU1MGOqxsdsBEO1hoCl8OxqtNoTzLoJDwq7zJpMIrBbjnsum86QpGZh85JO8kzDeSvK08lRz3fqwbQjw6WhJbqeev6l+YvUWFKq8E+ElVVuj7xelKSjW0DBYdxVKKhlF7C2CaJnikvd2Y8nnMVtSQrlOPCh0KZm4tj+AoaOKNYa/EdefwS2coJZPstqq8l1AvN3L6fAuxj9s=
+
+    # =============================================
+    #  Additional, optional stages allowed to fail
+    # =============================================
+    - stage: File Repository unit tests @ PHP nightly (allowed to fail)
+      language: php
+      php: nightly
+      before_script:
+          - cd server
+          - composer update || true
+          - make migrate || true
+          - mkdir -p ./var && chmod 777 ./var -R
+      script: make coverage || true
