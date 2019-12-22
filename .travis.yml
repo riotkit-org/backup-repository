@@ -1,7 +1,7 @@
 .bahub_unit_tests_template: &bahub_unit_tests_template
     before_install:
         - sudo apt-get update
-        - sudo apt-get install --reinstall -y openssl
+        - sudo apt-get install -y openssl gnutls-dev
         # fix for the Python PIP that cannot locate lsb-release
         - sudo ln -s /usr/bin/lsb_release /usr/bin/lsb-release
         - lsb_release -a
