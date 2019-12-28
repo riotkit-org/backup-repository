@@ -28,9 +28,9 @@ class TimelinePartial implements CsvSerializableToStream
         return \count($this->lazyLoaders);
     }
 
-    public function outputAsCSVOnStream($stream): callable
+    public function outputAsCSVOnStream($stream, ?callable $onEachChunkWrite = null): callable
     {
-        return function () use ($stream) {
+        return function () use ($stream, $onEachChunkWrite) {
             foreach ($this->lazyLoaders as $loader) {
                 /**
                  * @var File[] $files
@@ -40,6 +40,10 @@ class TimelinePartial implements CsvSerializableToStream
                 foreach ($files as $file) {
                     fwrite($stream, $file->toCSV() . "\n");
                 }
+            }
+
+            if ($onEachChunkWrite) {
+                $onEachChunkWrite();
             }
         };
     }

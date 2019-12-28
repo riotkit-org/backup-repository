@@ -35,7 +35,8 @@ class GenerateReplicationListHandler
             fwrite($out, $this->repositoryLegendFactory->createLegend($baseUrl)->toCSV() . "\n\n");
 
             // then write the data
-            $data = $timeline->outputAsCSVOnStream($out);
+            $onEachChunkWrite = function () { flush(); }; // send response to the browser earlier if that's possible
+            $data = $timeline->outputAsCSVOnStream($out, $onEachChunkWrite);
             $data();
 
             fclose($out);
