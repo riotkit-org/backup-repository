@@ -1,0 +1,7 @@
+replication.dump_all:
+    path: /replication/list/{since}
+    controller: 'App\Controller\Replication\GenerateReplicationListController::dumpAction'
+    methods: ['GET']
+    defaults:
+        since: ""
+        _secured: true
