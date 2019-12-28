@@ -4,7 +4,7 @@ namespace App\Domain\Replication\Contract;
 
 interface CsvSerializable
 {
-    public const SEP = ';';
+    public const SEP = ';;;';
 
     public function toCSV(): string;
 }
