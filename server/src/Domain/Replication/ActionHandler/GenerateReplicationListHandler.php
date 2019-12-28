@@ -20,6 +20,6 @@ class GenerateReplicationListHandler
     {
         $timeline = $this->repository->findFilesToReplicateSinceLazy($since);
 
-        return $timeline->toCSVStream(fopen('php://output', 'wb'));
+        return $timeline->outputAsCSVOnStream(fopen('php://output', 'wb'));
     }
 }

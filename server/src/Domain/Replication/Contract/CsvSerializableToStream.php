@@ -8,5 +8,5 @@ interface CsvSerializableToStream
      * @param resource $stream
      * @return callable
      */
-    public function toCSVStream($stream): callable;
+    public function outputAsCSVOnStream($stream): callable;
 }

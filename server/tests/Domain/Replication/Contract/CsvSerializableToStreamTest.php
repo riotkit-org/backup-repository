@@ -13,7 +13,7 @@ use PHPUnit\Framework\TestCase;
 class CsvSerializableToStreamTest extends TestCase
 {
     /**
-     * @see TimelinePartial::toCSVStream()
+     * @see TimelinePartial::outputAsCSVOnStream()
      */
     public function testSerializationMemoryUsage(): void
     {
@@ -22,7 +22,7 @@ class CsvSerializableToStreamTest extends TestCase
 
         $collection = new TimelinePartial($bigDataList, 5000000);
         $fp = fopen('/dev/null', 'wb');
-        $callback = $collection->toCSVStream($fp);
+        $callback = $collection->outputAsCSVOnStream($fp);
 
         // test
         $callback();
@@ -45,7 +45,7 @@ class CsvSerializableToStreamTest extends TestCase
     /**
      * @dataProvider provideNumberOfRows
      *
-     * @see TimelinePartial::toCSVStream()
+     * @see TimelinePartial::outputAsCSVOnStream()
      */
     public function testReturnsProperNumberOfRows(int $filesNum): void
     {
@@ -53,7 +53,7 @@ class CsvSerializableToStreamTest extends TestCase
 
         $collection = new TimelinePartial($bigDataList, 500000);
         $fp = fopen('php://output', 'wb');
-        $callback = $collection->toCSVStream($fp);
+        $callback = $collection->outputAsCSVOnStream($fp);
 
         // test
         ob_start();

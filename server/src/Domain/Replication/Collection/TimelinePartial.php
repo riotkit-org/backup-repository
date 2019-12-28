@@ -27,7 +27,7 @@ class TimelinePartial implements CsvSerializableToStream
         return \count($this->lazyLoaders);
     }
 
-    public function toCSVStream($stream): callable
+    public function outputAsCSVOnStream($stream): callable
     {
         return function () use ($stream) {
             foreach ($this->lazyLoaders as $loader) {
