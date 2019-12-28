@@ -5,3 +5,19 @@ replication.dump_all:
     defaults:
         since: ""
         _secured: true
+
+replication.files.metadata.fetch:
+    path: /replication/file/{fileId}/metadata
+    controller: 'App\Controller\Replication\GenerateReplicationListController::dumpAction'
+    methods: ['GET']
+    defaults:
+        since: ""
+        _secured: true
+
+replication.files.content.fetch:
+    path: /replication/file/{fileId}/content
+    controller: 'App\Controller\Replication\GenerateReplicationListController::dumpAction'
+    methods: ['GET']
+    defaults:
+        since: ""
+        _secured: true

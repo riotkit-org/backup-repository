@@ -3,6 +3,7 @@
 namespace App\Domain\Replication\Collection;
 
 use App\Domain\Replication\Contract\CsvSerializableToStream;
+use App\Domain\Replication\DTO\File;
 
 class TimelinePartial implements CsvSerializableToStream
 {
@@ -31,6 +32,9 @@ class TimelinePartial implements CsvSerializableToStream
     {
         return function () use ($stream) {
             foreach ($this->lazyLoaders as $loader) {
+                /**
+                 * @var File[] $files
+                 */
                 $files = $loader();
 
                 foreach ($files as $file) {

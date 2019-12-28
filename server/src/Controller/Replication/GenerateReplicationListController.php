@@ -4,6 +4,7 @@ namespace App\Controller\Replication;
 
 use App\Controller\BaseController;
 use App\Domain\Replication\ActionHandler\GenerateReplicationListHandler;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
@@ -19,9 +20,9 @@ class GenerateReplicationListController extends BaseController
         $this->handler = $handler;
     }
 
-    public function dumpAction(\DateTime $since = null): Response
+    public function dumpAction(Request $request, \DateTime $since = null): Response
     {
-        $csvStream = $this->handler->handle($since);
+        $csvStream = $this->handler->handle($since, $this->createBaseUrl($request));
 
         return new StreamedResponse($csvStream, Response::HTTP_OK, [
             'Content-Type'        => 'text/csv',

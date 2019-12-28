@@ -39,6 +39,6 @@ class File implements CsvSerializable
 
     public function toCSV(): string
     {
-        return $this->filename . CsvSerializable::SEP . $this->timestamp . CsvSerializable::SEP . $this->hash;
+        return 'File' . self::SEP . $this->filename . self::SEP . $this->timestamp . self::SEP . $this->hash;
     }
 }
