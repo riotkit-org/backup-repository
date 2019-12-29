@@ -1,9 +1,8 @@
 replication.dump_all:
-    path: /replication/list/{since}
+    path: /replication/list
     controller: 'App\Controller\Replication\GenerateReplicationListController::dumpAction'
     methods: ['GET']
     defaults:
-        since: ""
         _secured: true
 
 replication.files.metadata.fetch:

@@ -8,7 +8,7 @@ nelmio_api_doc:
         securityDefinitions:
             Token:
                 type: apiKey
-                description: 'Value: {token}. ex. "test-token-full-permissions" for APP_ENV=dev and APP_ENV=test'
+                description: 'Value: {token}. example: "test-token-full-permissions" when application is set to APP_ENV=dev or APP_ENV=test'
                 name: Token
                 in: header
 

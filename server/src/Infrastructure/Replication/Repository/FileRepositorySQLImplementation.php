@@ -6,7 +6,6 @@ use App\Domain\Replication\Collection\TimelinePartial;
 use App\Domain\Replication\DTO\File;
 use App\Domain\Replication\Repository\FileRepository;
 use Doctrine\DBAL\Connection;
-use Symfony\Component\Validator\Constraints\Time;
 
 /**
  * Plain SQL implementation of repository for performance reasons

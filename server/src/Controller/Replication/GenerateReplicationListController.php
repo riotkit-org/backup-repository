@@ -22,6 +22,15 @@ class GenerateReplicationListController extends BaseController
     }
 
     /**
+     * @SWG\Parameter(
+     *     name="since",
+     *     type="string",
+     *     format="datetime",
+     *     in="query",
+     *     required=false,
+     *     description="Allows to define a start date. Set empty to get replication list from beginning"
+     * )
+     *
      * @SWG\Response(
      *     response="401",
      *     description="When token has no replication role assigned"
@@ -60,8 +69,10 @@ class GenerateReplicationListController extends BaseController
      * @return Response
      * @throws \Exception
      */
-    public function dumpAction(Request $request, \DateTime $since = null): Response
+    public function dumpAction(Request $request): Response
     {
+        $since = $request->get('since') ? new \DateTime($request->get('since')) : null;
+
         return $this->wrap(function () use ($request, $since) {
             $csvStream = $this->handler->handle($since, $this->createBaseUrl($request));
 
