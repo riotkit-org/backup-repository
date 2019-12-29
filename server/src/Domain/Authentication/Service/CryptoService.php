@@ -2,7 +2,7 @@
 
 namespace App\Domain\Authentication\Service;
 
-interface TokenDecryptionService
+interface CryptoService
 {
     public function decode(string $input): string;
 }

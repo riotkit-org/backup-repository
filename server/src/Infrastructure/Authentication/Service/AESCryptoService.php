@@ -3,9 +3,9 @@
 namespace App\Infrastructure\Authentication\Service;
 
 use Blocktrail\CryptoJSAES\CryptoJSAES;
-use App\Domain\Authentication\Service\TokenDecryptionService;
+use App\Domain\Authentication\Service\CryptoService;
 
-class AESDecryptionService implements TokenDecryptionService
+class AESCryptoService implements CryptoService
 {
     /**
      * @var string

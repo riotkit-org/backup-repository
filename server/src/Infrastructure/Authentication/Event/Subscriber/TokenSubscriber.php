@@ -79,7 +79,7 @@ class TokenSubscriber implements EventSubscriberInterface
         }
 
         try {
-            $token = $this->factory->createFromEncodedString($tokenString);
+            $token = $this->factory->createFromString($tokenString);
 
         } catch (AuthenticationException $exception) {
             $event->setResponse(
