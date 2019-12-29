@@ -6,6 +6,10 @@ use App\Domain\Common\ValueObject\BaseUrl;
 use App\Domain\Replication\Factory\RepositoryLegendFactory;
 use App\Domain\Replication\Repository\FileRepository;
 
+/**
+ * Generates a CSV formatted file with list of all files (optionally: with SINCE parameter)
+ * Lines before "\n\n" are metadata header
+ */
 class GenerateReplicationListHandler
 {
     /**

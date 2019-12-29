@@ -19,6 +19,7 @@ class CsvSerializableTest extends TestCase
     public function testFileImplementation(): void
     {
         $file = new File(
+            1,
             'ulet-columbia.txt',
             '2019-05-01',
             'f22606c02b121b223b506378afc4ecb61640e820e3369c1a94f47a36c5e23d22'
@@ -27,6 +28,6 @@ class CsvSerializableTest extends TestCase
         $csv = $file->toCSV();
 
         $this->assertSame(1, \count(\explode("\n", $csv)));
-        $this->assertStringContainsString('ulet-columbia.txt;2019-05-01;f22606c02b121b223b506378afc4ecb61640e820e3369c1a94f47a36c5e23d22', $csv);
+        $this->assertStringContainsString('File;;;ulet-columbia.txt;;;1;;;2019-05-01;;;f22606c02b121b223b506378afc4ecb61640e820e3369c1a94f47a36c5e23d22', $csv);
     }
 }

@@ -57,12 +57,15 @@ class FileRepositorySQLImplementation implements FileRepository
         $mapped = [];
 
         foreach ($rows as $row) {
-            $mapped[] = new File($row['fileName'], $row['dateAdded'], $row['contentHash']);
+            $mapped[] = new File((int) $row['id'], $row['fileName'], $row['dateAdded'], $row['contentHash']);
         }
 
         return $mapped;
     }
 
+    /**
+     * @{inheritdoc}
+     */
     public function findFilesToReplicateSinceLazy(?\DateTime $since = null, int $buffer = 1000): TimelinePartial
     {
         if (!$since) {
