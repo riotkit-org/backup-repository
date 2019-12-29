@@ -1,10 +1,10 @@
 {
     "name": "riotkit/file-repository",
     "type": "project",
-    "description": "File storage service, built for ultra-low budget shared hostings with no footprint on performance",
+    "description": "Specialized ninja for file storage. Designed to have very low resource requirements.",
     "license": "MIT",
     "require": {
-        "php": ">=7.2",
+        "php": ">=7.4",
         "ext-ctype": "*",
         "ext-fileinfo": "*",
         "ext-iconv": "*",
