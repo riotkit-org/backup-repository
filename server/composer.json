@@ -77,9 +77,7 @@
     "scripts": {
         "update-scripts": [
             "rm -rf ./var/cache/* || true",
-            "./bin/console cache:clear --env=prod -vvv",
-            "./bin/console cache:clear --env=test || true",
-            "./bin/console cache:clear --env=dev || true",
+            "./bin/console cache:clear",
             "./bin/console assets:install"
         ],
         "post-install-cmd": [
