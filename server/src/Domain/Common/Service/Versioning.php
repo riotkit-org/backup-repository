@@ -11,7 +11,7 @@ class Versioning
      */
     private $version;
 
-    private $filePath = __DIR__ . '/../../../../version.yaml';
+    private $filePath = __DIR__ . '/../../../../config/version.yaml';
 
     public function getVersion(): string
     {
