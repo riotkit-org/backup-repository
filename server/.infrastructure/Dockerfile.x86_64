@@ -1,7 +1,7 @@
 #
 ## Build stage container: Build frontend
 #
-FROM quay.io/riotkit/php-app:7.3-x86_64 as builder
+FROM quay.io/riotkit/php-app:7.4-x86_64 as builder
 
 ADD server/Makefile /var/www/html/
 ADD server/package.json /var/www/html/
