@@ -34,17 +34,20 @@ class TokenDoctrineRepository extends BaseRepository implements TokenRepository
         }
     }
 
-    public function findTokenById(string $id): ?Token
+    public function findTokenById(string $id, string $className = Token::class)
     {
         if (Roles::isTestToken($id)) {
-            $token = new Token();
+            /**
+             * @var Token $token
+             */
+            $token = new $className();
             $token->setId(Roles::TEST_TOKEN);
             $token->setRoles([Roles::ROLE_ADMINISTRATOR]);
 
             return $token;
         }
 
-        return $this->find($id);
+        return $this->_em->find($className, $id);
     }
 
     public function remove(Token $token): void

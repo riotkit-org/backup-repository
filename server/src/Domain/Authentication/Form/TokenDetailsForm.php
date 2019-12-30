@@ -2,6 +2,8 @@
 
 namespace App\Domain\Authentication\Form;
 
+use App\Domain\Common\SharedEntity\Token;
+
 class TokenDetailsForm
 {
     /**
@@ -29,14 +31,30 @@ class TokenDetailsForm
      */
     public $allowedUserAgents = [];
 
+    /**
+     * @var string
+     */
+    public $replicationEncryptionKey;
+
+    /**
+     * @var string
+     */
+    public $replicationEncryptionMethod;
+
     public function toArray(): array
     {
         return [
-            'tags'               => $this->tags,
-            'allowedMimeTypes'   => $this->allowedMimeTypes,
-            'maxAllowedFileSize' => $this->maxAllowedFileSize,
-            'allowedIpAddresses' => $this->allowedIpAddresses,
-            'allowedUserAgents'  => $this->allowedUserAgents
+            Token::FIELD_TAGS                   => $this->tags,
+            Token::FIELD_ALLOWED_MIME_TYPES     => $this->allowedMimeTypes,
+            Token::FIELD_MAX_ALLOWED_FILE_SIZE  => $this->maxAllowedFileSize,
+            Token::FIELD_ALLOWED_IPS            => $this->allowedIpAddresses,
+            Token::FIELD_ALLOWED_UAS            => $this->allowedUserAgents,
+
+            // the key will be after submit encrypted with File Repository master key
+            // as the key cannot be look up by any user. The key is a limitation on the token, to replicate with
+            // zero-knowledge about the data.
+            Token::FIELD_REPLICATION_ENC_KEY    => (string) $this->replicationEncryptionKey,
+            Token::FIELD_REPLICATION_ENC_METHOD => (string) $this->replicationEncryptionMethod
         ];
     }
 }

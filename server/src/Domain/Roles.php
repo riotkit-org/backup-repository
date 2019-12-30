@@ -100,6 +100,13 @@ final class Roles
 
     //
     //
+    // replication
+    //
+    //
+    public const ROLE_STREAMING_REPLICATION = 'replication.stream';
+
+    //
+    //
     // collections
     //
     //
@@ -170,6 +177,7 @@ final class Roles
         self::ROLE_REVOKE_TOKENS,
         self::ROLE_ADMINISTRATOR,
 
+        // collections
         self::ROLE_COLLECTION_ADD,
         self::ROLE_COLLECTION_CUSTOM_ID,
         self::ROLE_COLLECTION_ADD_WITH_INFINITE_LIMITS,
@@ -181,7 +189,10 @@ final class Roles
         self::ROLE_CAN_MANAGE_TOKENS_IN_ALLOWED_COLLECTIONS,
         self::ROLE_CAN_UPLOAD_TO_ALLOWED_COLLECTIONS,
         self::ROLE_LIST_VERSIONS_FOR_ALLOWED_COLLECTIONS,
-        self::ROLE_DELETE_VERSIONS_IN_ALLOWED_COLLECTIONS
+        self::ROLE_DELETE_VERSIONS_IN_ALLOWED_COLLECTIONS,
+
+        // replication
+        self::ROLE_STREAMING_REPLICATION
     ];
 
     public const RESTRICTIONS_LIST = [

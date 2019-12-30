@@ -29,7 +29,7 @@ services:
     # this creates a service per class whose id is the fully-qualified class name
     App\:
         resource: '../src/*'
-        exclude: '../src/{Kernel.php,Domain/*/Entity,Domain/*/ValueObject,Migrations,Domain/Common/Service/Bus/*,Domain/*/Context,Domain/*/Exception,Domain/*/Form,Domain/*/Parameters,Domain/*/Response,Domain/*/Security}'
+        exclude: '../src/{Kernel.php,Domain/*/Entity,Domain/*/SharedEntity,Domain/*/ValueObject,Migrations,Domain/Common/Service/Bus/*,Domain/*/Context,Domain/*/Exception,Domain/*/Form,Domain/*/Parameters,Domain/*/Response,Domain/*/Security}'
 
     # controllers are imported separately to make sure services can be injected
     # as action arguments even if you don't extend any base controller class
@@ -53,7 +53,7 @@ services:
         arguments:
             $basePath: '%env(TEMP_DIRECTORY)%'
 
-    App\Infrastructure\Authentication\Service\AESDecryptionService:
+    App\Infrastructure\Authentication\Service\AESCryptoService:
         arguments:
             $secret: '%env(ENC_TOKEN_PHRASE)%'
 
@@ -122,6 +122,14 @@ services:
             $registry: '@Doctrine\Common\Persistence\ManagerRegistry'
             $fs: '@App\Domain\Backup\Service\Filesystem'
             $readOnly: '%env(bool:READ_ONLY)%'
+
+    App\Infrastructure\Replication\Service\AESCryptoService:
+        arguments:
+            $secret: '%env(ENC_TOKEN_PHRASE)%'
+
+    App\Domain\Authentication\Factory\IncomingTokenFactory:
+        public: true
+        autowire: true
 
     ro_fs:
         class: App\Infrastructure\Storage\Manager\FlysystemFilesystemManager

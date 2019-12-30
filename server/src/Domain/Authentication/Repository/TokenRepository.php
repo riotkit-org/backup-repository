@@ -10,7 +10,7 @@ interface TokenRepository
     public function remove(Token $token): void;
     public function flush(Token $token = null): void;
 
-    public function findTokenById(string $id): ?Token;
+    public function findTokenById(string $id, string $className = Token::class);
 
     /**
      * @return Token[]

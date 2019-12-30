@@ -4,6 +4,8 @@ namespace App\Controller\Replication;
 
 use App\Controller\BaseController;
 use App\Domain\Replication\ActionHandler\GenerateReplicationListHandler;
+use App\Domain\Replication\Entity\Authentication\Token;
+use App\Domain\Replication\Factory\SecurityContextFactory;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -16,9 +18,15 @@ class GenerateReplicationListController extends BaseController
      */
     private $handler;
 
-    public function __construct(GenerateReplicationListHandler $handler)
+    /**
+     * @var SecurityContextFactory
+     */
+    private $contextFactory;
+
+    public function __construct(GenerateReplicationListHandler $handler, SecurityContextFactory $contextFactory)
     {
-        $this->handler = $handler;
+        $this->handler        = $handler;
+        $this->contextFactory = $contextFactory;
     }
 
     /**
@@ -73,8 +81,14 @@ class GenerateReplicationListController extends BaseController
     {
         $since = $request->get('since') ? new \DateTime($request->get('since')) : null;
 
-        return $this->wrap(function () use ($request, $since) {
-            $csvStream = $this->handler->handle($since, $this->createBaseUrl($request));
+        /**
+         * @var Token $token
+         */
+        $token = $this->getLoggedUserToken(Token::class);
+        $context = $this->contextFactory->create($token);
+
+        return $this->wrap(function () use ($request, $since, $context) {
+            $csvStream = $this->handler->handle($since, $this->createBaseUrl($request), $context);
 
             return new StreamedResponse($csvStream, Response::HTTP_OK, [
                 'Content-Type'        => 'text/csv',

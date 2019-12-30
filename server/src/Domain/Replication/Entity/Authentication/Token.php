@@ -3,17 +3,25 @@
 namespace App\Domain\Replication\Entity\Authentication;
 
 use App\Domain\Common\SharedEntity\Token as TokenFromCommon;
-use App\Domain\Replication\Entity\ReplicationClient;
 
 class Token extends TokenFromCommon
 {
     /**
-     * @var ReplicationClient
+     * @var array
      */
-    private $replicationClient;
+    private $data = [];
 
-    public function getReplicationClient(): ReplicationClient
+    public function setId(string $id)
     {
-        return $this->replicationClient;
+        $this->id = $id;
+    }
+
+    public function getDataField(string $fieldName, $default)
+    {
+        if (!isset($this->data[$fieldName])) {
+            return $default;
+        }
+
+        return $this->data[$fieldName];
     }
 }

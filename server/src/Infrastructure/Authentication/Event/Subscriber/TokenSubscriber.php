@@ -79,6 +79,9 @@ class TokenSubscriber implements EventSubscriberInterface
         }
 
         try {
+            /**
+             * @var Token $token
+             */
             $token = $this->factory->createFromString($tokenString);
 
         } catch (AuthenticationException $exception) {

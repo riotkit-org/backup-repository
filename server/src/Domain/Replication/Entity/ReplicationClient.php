@@ -10,10 +10,16 @@ class ReplicationClient
     /**
      * @var EncryptionPassphrase
      */
-    private $passphrase;
+    public $passphrase;
 
     /**
      * @var EncryptionAlgorithm
      */
-    private $algorithm;
+    public $algorithm;
+
+    public function __construct(EncryptionPassphrase $passphrase, EncryptionAlgorithm $algorithm)
+    {
+        $this->passphrase = $passphrase;
+        $this->algorithm  = $algorithm;
+    }
 }

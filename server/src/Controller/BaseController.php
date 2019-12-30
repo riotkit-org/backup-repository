@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use App\Domain\Authentication\Entity\Token;
+use App\Domain\Authentication\Factory\IncomingTokenFactory;
 use App\Domain\Common\Exception\AuthenticationException;
 use App\Domain\Common\Exception\CommonValidationException;
 use App\Domain\Common\Exception\ReadOnlyException;
@@ -10,22 +10,37 @@ use App\Domain\Common\Exception\RequestException;
 use App\Domain\Common\ValueObject\BaseUrl;
 use App\Domain\Storage\Exception\StorageException;
 use App\Infrastructure\Authentication\Token\TokenTransport;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Bundle\FrameworkBundle\Controller\ControllerTrait;
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-abstract class BaseController extends AbstractController
+abstract class BaseController implements ContainerAwareInterface
 {
-    protected function getLoggedUserToken(): Token
+    use ContainerAwareTrait;
+    use ControllerTrait;
+
+    protected function getParameter(string $name)
+    {
+        return $this->container->getParameter($name);
+    }
+
+    protected function getLoggedUserToken(?string $className = null)
     {
         /**
          * @var TokenTransport $sessionToken
          */
         $sessionToken = $this->get('security.token_storage')->getToken();
+        $token = $sessionToken->getToken();
 
-        return $sessionToken->getToken();
+        if ($className) {
+            return $this->get(IncomingTokenFactory::class)->createFromString($token->getId(), $className);
+        }
+
+        return $token;
     }
 
     protected function submitFormFromJsonRequest(Request $request, $formObject, string $formType): FormInterface

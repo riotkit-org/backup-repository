@@ -19,15 +19,16 @@ class IncomingTokenFactory
     }
 
     /**
-     * @param string $tokenString
+     * @param string      $tokenString
+     * @param string|null $className
      *
      * @return Token
      *
      * @throws AuthenticationException
      */
-    public function createFromString(string $tokenString): Token
+    public function createFromString(string $tokenString, string $className = Token::class)
     {
-        $persistedToken = $this->repository->findTokenById($tokenString);
+        $persistedToken = $this->repository->findTokenById($tokenString, $className);
 
         if (!$persistedToken) {
             throw new AuthenticationException(

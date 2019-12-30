@@ -5,6 +5,7 @@ namespace App\Domain\Authentication\Manager;
 use App\Domain\Authentication\Entity\Token;
 use App\Domain\Authentication\Exception\InvalidTokenIdException;
 use App\Domain\Authentication\Repository\TokenRepository;
+use App\Domain\Authentication\Service\CryptoService;
 use App\Domain\Authentication\Service\UuidValidator;
 use Exception;
 use Ramsey\Uuid\Uuid;
@@ -21,10 +22,16 @@ class TokenManager
      */
     private $uuidValidator;
 
-    public function __construct(TokenRepository $repository, UuidValidator $uuidValidator)
+    /**
+     * @var CryptoService
+     */
+    private $cryptoService;
+
+    public function __construct(TokenRepository $repository, UuidValidator $uuidValidator, CryptoService $crypto)
     {
         $this->repository    = $repository;
         $this->uuidValidator = $uuidValidator;
+        $this->cryptoService = $crypto;
     }
 
     /**
@@ -42,7 +49,7 @@ class TokenManager
         $token->setId($customId ?: uniqid('', true));
         $token->setRoles($roles);
         $token->setExpirationDate($expirationTime);
-        $token->setData($details);
+        $token->setData($this->processTokenData($details));
 
         $this->repository->persist($token);
 
@@ -66,5 +73,15 @@ class TokenManager
     public function flushAll(): void
     {
         $this->repository->flush();
+    }
+
+    private function processTokenData(array $data): array
+    {
+        // encrypt the key with master key, as it should not be visible to the user
+        if ($data[Token::FIELD_REPLICATION_ENC_KEY] ?? '') {
+            $data[Token::FIELD_REPLICATION_ENC_KEY] = $this->cryptoService->encode($data[Token::FIELD_REPLICATION_ENC_KEY]);
+        }
+
+        return $data;
     }
 }

@@ -2,31 +2,8 @@
 
 namespace App\Domain\Authentication\Entity;
 
-use App\Domain\Roles;
-
-class Token
+class Token extends \App\Domain\Common\SharedEntity\Token
 {
-    public const REQUIRED_FIELDS = [
-        'roles'          => 'array',
-        'expirationDate' => 'string',
-        'data'           => 'array'
-    ];
-
-    /**
-     * @var string $id
-     */
-    private $id;
-
-    /**
-     * @var array $roles
-     */
-    private $roles = [];
-
-    /**
-     * @var bool
-     */
-    private $alreadyGrantedAdminAccess = false;
-
     /**
      * @var \DateTimeImmutable $creationDate
      */
@@ -57,30 +34,10 @@ class Token
         $this->active         = true;
     }
 
-    public function getId(): string
-    {
-        return $this->id;
-    }
-
     public function setId(string $id): Token
     {
         $this->id = $id;
         return $this;
-    }
-
-    public function getRoles(): array
-    {
-        if (!$this->alreadyGrantedAdminAccess && \in_array(Roles::ROLE_ADMINISTRATOR, $this->roles, true)) {
-            $this->roles = \array_merge($this->roles, Roles::GRANTS_LIST);
-            $this->alreadyGrantedAdminAccess = true;
-        }
-
-        return $this->roles;
-    }
-
-    public function hasRole(string $roleName): bool
-    {
-        return \in_array($roleName, $this->getRoles(), true);
     }
 
     public function isNotExpired(\DateTimeImmutable $currentDate = null): bool
@@ -100,12 +57,6 @@ class Token
     public function getExpirationDate(): \DateTimeImmutable
     {
         return $this->expirationDate;
-    }
-
-    public function setRoles(array $roles): Token
-    {
-        $this->roles = $roles;
-        return $this;
     }
 
     public function setCreationDate(\DateTimeImmutable $creationDate): Token
@@ -148,7 +99,8 @@ class Token
      */
     public function getTags(): array
     {
-        return isset($this->data['tags']) && \is_array($this->data['tags']) ? $this->data['tags'] : [];
+        return isset($this->data[self::FIELD_TAGS]) && \is_array($this->data[self::FIELD_TAGS])
+            ? $this->data[self::FIELD_TAGS] : [];
     }
 
     /**
@@ -156,12 +108,14 @@ class Token
      */
     public function getAllowedMimeTypes(): array
     {
-        return isset($this->data['allowedMimeTypes']) && \is_array($this->data['allowedMimeTypes']) ? $this->data['allowedMimeTypes'] : [];
+        return isset($this->data[self::FIELD_ALLOWED_MIME_TYPES]) && \is_array($this->data[self::FIELD_ALLOWED_MIME_TYPES])
+            ? $this->data[self::FIELD_ALLOWED_MIME_TYPES] : [];
     }
 
     public function getMaxAllowedFileSize(): int
     {
-        return isset($this->data['maxAllowedFileSize']) && \is_int($this->data['maxAllowedFileSize']) ? $this->data['maxAllowedFileSize'] : 0;
+        return isset($this->data[self::FIELD_MAX_ALLOWED_FILE_SIZE]) && \is_int($this->data[self::FIELD_MAX_ALLOWED_FILE_SIZE])
+            ? $this->data[self::FIELD_MAX_ALLOWED_FILE_SIZE] : 0;
     }
 
     public function isValid(string $userAgent, string $ipAddress): bool
@@ -181,12 +135,12 @@ class Token
 
     public function getAllowedUserAgents(): array
     {
-        return $this->data['allowedUserAgents'] ?? [];
+        return $this->data[self::FIELD_ALLOWED_UAS] ?? [];
     }
 
     public function getAllowedIpAddresses(): array
     {
-        return $this->data['allowedIpAddresses'] ?? [];
+        return $this->data[self::FIELD_ALLOWED_IPS] ?? [];
     }
 
     private function canBeUsedByIpAddress(string $address): bool

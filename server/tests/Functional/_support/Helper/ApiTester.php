@@ -20,10 +20,12 @@ class ApiTester extends Module\REST
     private function backupDatabase(): void
     {
         $this->sendGET('/db/backup');
+        $this->assertContains('OK, ', $this->grabResponse(), 'Cannot backup database');
     }
 
     private function restoreDatabase(): void
     {
         $this->sendGET('/db/restore');
+        $this->assertContains('OK, ', $this->grabResponse(), 'Cannot restore database');
     }
 }

@@ -39,16 +39,16 @@ class FileRepositorySQLImplementation implements FileRepository
         $params = [$since->format('Y-m-d H:i:s')];
 
         if ($page !== null) {
-            $sql = ' LIMIT ?, ?';
-            $params[] = ($page - 1) * $buffer;
+            $sql = ' LIMIT ? OFFSET ? ';
             $params[] = $buffer;
+            $params[] = ($page - 1) * $buffer;
         }
 
         $rows = $this->connection->fetchAll(
-            'SELECT fileName, contentHash, dateAdded, id 
+            'SELECT fileName as filename, contentHash as contenthash, dateAdded as dateadded, id 
                  FROM file_registry
                  WHERE dateAdded >= ?
-                 ORDER BY dateAdded DESC 
+                 ORDER BY dateAdded DESC
                  ' . $sql,
             $params
         );
@@ -56,7 +56,7 @@ class FileRepositorySQLImplementation implements FileRepository
         $mapped = [];
 
         foreach ($rows as $row) {
-            $mapped[] = new File((int) $row['id'], $row['fileName'], $row['dateAdded'], $row['contentHash']);
+            $mapped[] = new File((int) $row['id'], $row['filename'], $row['dateadded'], $row['contenthash']);
         }
 
         return $mapped;

@@ -35,7 +35,7 @@ class FunctionalTester extends \Codeception\Actor
         $this->haveHttpHeader('token', $token);
     }
 
-    public function haveRoles(array $roles, array $params = []): string
+    public function haveRoles(array $roles, array $params = [], bool $assert = true): string
     {
         $this->amAdmin();
 
@@ -43,9 +43,9 @@ class FunctionalTester extends \Codeception\Actor
             array_merge(
                 ['roles' => $roles],
                 $params
-            )
+            ),
+            $assert
         );
-
         $this->amToken($token);
 
         return $token;
@@ -73,7 +73,7 @@ class FunctionalTester extends \Codeception\Actor
         );
     }
 
-    public function createToken(array $data): string
+    public function createToken(array $data, bool $assert = true): string
     {
         $this->postJson(Urls::URL_TOKEN_GENERATE,
             \array_merge(
@@ -84,6 +84,12 @@ class FunctionalTester extends \Codeception\Actor
                 $data
             )
         );
+
+        $status = $this->grabDataFromResponseByJsonPath('.status')[0] ?? '';
+
+        if ($assert) {
+            $this->assertNotSame('Validation error', $status);
+        }
 
         return $this->grabDataFromResponseByJsonPath('.tokenId')[0] ?? '';
     }

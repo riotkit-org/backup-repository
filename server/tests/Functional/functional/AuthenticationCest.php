@@ -19,7 +19,7 @@ class AuthenticationCest
             'data' => [
                 'tags' => ['gallery']
             ]
-        ]);
+        ], false);
         $I->canSeeResponseCodeIs(202);
         $I->storeIdAs('.tokenId', 'BASIC_TOKEN');
     }
@@ -45,7 +45,7 @@ class AuthenticationCest
                 'allowedMimeTypes'   => ['image/jpeg', 'image/png', 'image/gif'],
                 'maxAllowedFileSize' => 14579
             ]
-        ]);
+        ], false);
         $I->canSeeResponseCodeIs(202);
         $I->storeIdAs('.tokenId', 'LIMITED_TOKEN');
     }
@@ -80,7 +80,7 @@ class AuthenticationCest
                 'allowedMimeTypes'   => ['image/jpeg', 'image/png', 'image/gif'],
                 'maxAllowedFileSize' => 100
             ]
-        ]);
+        ], false);
         $I->canSeeResponseCodeIs(400);
         $I->canSeeResponseContains('Please select valid roles');
     }
@@ -95,7 +95,7 @@ class AuthenticationCest
                 'allowedMimeTypes'   => ['image/jpeg', 'image/png', 'image/gif'],
                 'maxAllowedFileSize' => 100
             ]
-        ]);
+        ], false);
         $I->canSeeResponseCodeIs(403);
         $I->canSeeResponseContains('Current token does not allow to generate tokens');
     }
@@ -164,7 +164,7 @@ class AuthenticationCest
             ],
             'data' => [],
             'id'   => '1c2c84f2-d488-4ea0-9c88-d25aab139ac4'
-        ]);
+        ], false);
         $I->canSeeResponseCodeIs(202);
     }
 
@@ -184,7 +184,7 @@ class AuthenticationCest
             ],
             'data' => [],
             'id'   => '1c2c84f2-d488-4ea0-9c88-d25aab139ac4'
-        ]);
+        ], false);
 
         $I->createToken([
             'roles' => [
@@ -192,7 +192,7 @@ class AuthenticationCest
             ],
             'data' => [],
             'id'   => '1c2c84f2-d488-4ea0-9c88-d25aab139ac4'
-        ]);
+        ], false);
 
         $I->canSeeResponseContains('id_already_exists_please_select_other_one');
         $I->canSeeResponseCodeIs(400);
@@ -214,7 +214,7 @@ class AuthenticationCest
             ],
             'data' => [],
             'id'   => 'international-workers-association'
-        ]);
+        ], false);
 
         $I->canSeeResponseContains('id_expects_to_be_uuidv4_format');
         $I->canSeeResponseCodeIs(400);
@@ -246,7 +246,7 @@ class AuthenticationCest
             ],
             'data' => [],
             'id'   => 'international-workers-association'
-        ]);
+        ], false);
         $I->canSeeResponseCodeIs(403);
 
         // then check that has permissions to create tokens at all, but without specifying "id"
@@ -257,7 +257,7 @@ class AuthenticationCest
             ],
             'data' => []
             // case: no "id" there
-        ]);
+        ], false);
         $I->canSeeResponseCodeIs(202);
     }
 }

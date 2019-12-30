@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace App\Infrastructure\Authentication\Service;
+namespace App\Infrastructure\Replication\Service;
 
-use App\Domain\Authentication\Service\CryptoService;
+use App\Domain\Replication\Service\CryptoService;
 
 class AESCryptoService extends \App\Infrastructure\Common\Service\AESCryptoService implements CryptoService
 {
