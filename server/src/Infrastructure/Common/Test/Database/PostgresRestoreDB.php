@@ -3,7 +3,12 @@
 namespace App\Infrastructure\Common\Test\Database;
 
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Driver\PDOConnection;
+use Doctrine\DBAL\Driver\PDOPgSql\Driver;
 
+/**
+ * Backup & Restore of the database - used in tests
+ */
 class PostgresRestoreDB implements RestoreDBInterface
 {
     /**
@@ -21,7 +26,10 @@ class PostgresRestoreDB implements RestoreDBInterface
         $currentDbName = $this->connection->getDatabase();
         $backupDbName = $currentDbName . '_bckp';
 
+        $this->commit($this->connection);
+        $this->connection->exec('DROP DATABASE IF EXISTS "' . $backupDbName . '";');
         $this->connection->exec('CREATE DATABASE "' . $backupDbName . '" TEMPLATE "' . $currentDbName . '";');
+
         return true;
     }
 
@@ -31,22 +39,38 @@ class PostgresRestoreDB implements RestoreDBInterface
         $backupDbName = $currentDbName . '_bckp';
 
         $this->connection->close();
-        $this->dropAndCreate($currentDbName, $backupDbName);
+        $this->dropAndCreate(
+            $currentDbName,
+            $backupDbName,
+            $this->connection->getParams()
+        );
         $this->connection->connect();
 
         return true;
     }
 
-    private function dropAndCreate(string $toRecreate, string $template): void
+    private function dropAndCreate(string $toRecreate, string $template, array $doctrineParams): void
     {
-        $pdo = new \PDO(
-            str_replace('dbname=' . $toRecreate, 'dbname=' . $template, $_SERVER['POSTGRES_DB_PDO_DSN']) ?? '',
-            $_SERVER['POSTGRES_DB_PDO_ROLE'] ?? ''
-        );
+        // cannot drop currently used database
+        $doctrineParams['dbname'] = 'postgres';
 
-        $pdo->exec('DROP DATABASE "' . $toRecreate . '";');
+        $driver = new Driver();
+        $pdo = $driver->connect($doctrineParams, $doctrineParams['user'], $doctrineParams['password']);
+
+        $this->commit($pdo);
+        $pdo->exec('DROP DATABASE IF EXISTS "' . $toRecreate . '";');
         $pdo->exec('CREATE DATABASE "' . $toRecreate . '" TEMPLATE "' . $template . '";');
+    }
 
-        unset($pdo);
+    /**
+     * @param PDOConnection|Connection $connection
+     */
+    private function commit($connection): void
+    {
+        try {
+            $connection->commit();
+        } catch (\Exception $exception) {
+
+        }
     }
 }
