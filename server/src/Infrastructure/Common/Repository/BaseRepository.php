@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace App\Domain\Common\Repository;
+namespace App\Infrastructure\Common\Repository;
 
 use App\Domain\Common\Exception\ReadOnlyException;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -61,6 +61,11 @@ abstract class BaseRepository extends ServiceEntityRepository
             public function __set($name, $value)
             {
                 return $this->em->$name = $value;
+            }
+
+            public function __isset($name)
+            {
+                return isset($this->em->$name);
             }
 
             public function __call($name, $arguments)

@@ -2,7 +2,7 @@
 
 namespace App\Infrastructure\Storage\Repository;
 
-use App\Domain\Common\Repository\BaseRepository;
+use App\Infrastructure\Common\Repository\BaseRepository;
 use App\Domain\Storage\Entity\Tag;
 use App\Domain\Storage\Repository\TagRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;

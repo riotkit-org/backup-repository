@@ -103,7 +103,12 @@ final class Roles
     // replication
     //
     //
+
+    /** Can replicate at all? */
     public const ROLE_STREAMING_REPLICATION = 'replication.stream';
+
+    /** Read replication secrets: Encryption method, password, initialization vector */
+    public const ROLE_READ_REPLICATION_SECRETS = 'replication.all_secrets_read';
 
     //
     //

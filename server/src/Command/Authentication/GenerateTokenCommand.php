@@ -42,6 +42,8 @@ class GenerateTokenCommand extends Command
             ->addOption('tags', null, InputOption::VALUE_REQUIRED)
             ->addOption('mimes', null, InputOption::VALUE_REQUIRED)
             ->addOption('max-file-size', null, InputOption::VALUE_REQUIRED)
+            ->addOption('replication-encryption-method', null, InputOption::VALUE_OPTIONAL)
+            ->addOption('replication-passphrase', null, InputOption::VALUE_OPTIONAL)
             ->addOption('id', 'i', InputOption::VALUE_OPTIONAL)
             ->addOption('expires', null, InputOption::VALUE_REQUIRED, 'Example: 2020-05-01 or +10 years')
             ->addOption('ignore-error-if-token-exists', null, InputOption::VALUE_NONE,
@@ -64,6 +66,8 @@ class GenerateTokenCommand extends Command
         $form->data->tags               = $this->getMultipleValueOption($input, 'tags');
         $form->data->allowedMimeTypes   = $this->getMultipleValueOption($input, 'mimes');
         $form->data->maxAllowedFileSize = (int) $input->getOption('max-file-size');
+        $form->data->replicationEncryptionKey = (string) $input->getOption('replication-passphrase');
+        $form->data->replicationEncryptionMethod = (string) $input->getOption('replication-encryption-method');
         $form->expires                  = $input->getOption('expires');
         $form->roles                    = $this->getMultipleValueOption($input, 'roles');
         $form->id                       = $input->getOption('id');

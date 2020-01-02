@@ -112,6 +112,11 @@ services:
             $registry: '@Doctrine\Common\Persistence\ManagerRegistry'
             $readOnly: '%env(bool:READ_ONLY)%'
 
+    App\Infrastructure\Replication\Repository\TokenDoctrineRepository:
+        arguments:
+            $registry: '@Doctrine\Common\Persistence\ManagerRegistry'
+            $readOnly: '%env(bool:READ_ONLY)%'
+
     App\Infrastructure\Backup\Repository\TokenDoctrineRepository:
         arguments:
             $registry: '@Doctrine\Common\Persistence\ManagerRegistry'

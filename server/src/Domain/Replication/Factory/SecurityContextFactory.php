@@ -26,7 +26,11 @@ class SecurityContextFactory
             new EncryptionAlgorithm($token->getDataField(Token::FIELD_REPLICATION_ENC_METHOD, ''))
         );
 
-        return new ReplicationContext($token->hasRole(Roles::ROLE_STREAMING_REPLICATION), $client);
+        return new ReplicationContext(
+            $token->hasRole(Roles::ROLE_STREAMING_REPLICATION),
+            $token->hasRole(Roles::ROLE_READ_REPLICATION_SECRETS),
+            $client
+        );
     }
 
     private function getEncryptionKey(Token $token): string
@@ -38,5 +42,15 @@ class SecurityContextFactory
         }
 
         return '';
+    }
+
+    public function createShellContext(Token $token): ReplicationContext
+    {
+        $client = new ReplicationClient(
+            new EncryptionPassphrase($this->getEncryptionKey($token)),
+            new EncryptionAlgorithm($token->getDataField(Token::FIELD_REPLICATION_ENC_METHOD, ''))
+        );
+
+        return new ReplicationContext(true, true, $client);
     }
 }

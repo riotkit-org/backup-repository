@@ -2,7 +2,7 @@
 
 namespace App\Infrastructure\Storage\Repository;
 
-use App\Domain\Common\Repository\BaseRepository;
+use App\Infrastructure\Common\Repository\BaseRepository;
 use App\Domain\Storage\Entity\StoredFile;
 use App\Domain\Storage\Parameters\Repository\FindByParameters;
 use App\Domain\Storage\Repository\FileRepository;

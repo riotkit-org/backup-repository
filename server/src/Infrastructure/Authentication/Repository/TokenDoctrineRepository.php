@@ -5,15 +5,14 @@ namespace App\Infrastructure\Authentication\Repository;
 use App\Domain\Authentication\Entity\Token;
 use App\Domain\Authentication\Exception\TokenAlreadyExistsException;
 use App\Domain\Authentication\Repository\TokenRepository;
-use App\Domain\Common\Repository\BaseRepository;
-use App\Domain\Roles;
+use App\Infrastructure\Common\Repository\TokenDoctrineRepository as CommonTokenRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 
 /**
  * @codeCoverageIgnore
  */
-class TokenDoctrineRepository extends BaseRepository implements TokenRepository
+class TokenDoctrineRepository extends CommonTokenRepository implements TokenRepository
 {
     public function __construct(ManagerRegistry $registry, bool $readOnly)
     {
@@ -32,22 +31,6 @@ class TokenDoctrineRepository extends BaseRepository implements TokenRepository
         } catch (UniqueConstraintViolationException $exception) {
             throw new TokenAlreadyExistsException('Token of selected id already exists');
         }
-    }
-
-    public function findTokenById(string $id, string $className = Token::class)
-    {
-        if (Roles::isTestToken($id)) {
-            /**
-             * @var Token $token
-             */
-            $token = new $className();
-            $token->setId(Roles::TEST_TOKEN);
-            $token->setRoles([Roles::ROLE_ADMINISTRATOR]);
-
-            return $token;
-        }
-
-        return $this->_em->find($className, $id);
     }
 
     public function remove(Token $token): void
