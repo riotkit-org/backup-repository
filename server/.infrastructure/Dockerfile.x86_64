@@ -23,7 +23,7 @@ RUN rm -rf /var/lib/apt/lists/* \
 #
 ## Destination container: Backend + built container from previous stage
 #
-FROM quay.io/riotkit/php-app:7.3-x86_64
+FROM quay.io/riotkit/php-app:7.4-x86_64
 
 RUN rm -rf /var/lib/apt/lists/* \
     && apt-get update \
