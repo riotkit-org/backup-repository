@@ -15,8 +15,7 @@ replication.files.metadata.fetch:
 
 replication.files.content.fetch:
     path: /replication/file/{fileId}/content
-    controller: 'App\Controller\Replication\GenerateReplicationListController::dumpAction'
+    controller: 'App\Controller\Replication\FetchFileController::fetchAction'
     methods: ['GET']
     defaults:
-        since: ""
         _secured: true

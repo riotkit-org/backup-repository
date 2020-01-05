@@ -1,11 +1,11 @@
 <?php declare(strict_types=1);
 
-namespace App\Domain\Replication\DTO;
+namespace App\Domain\Replication\DTO\FileContent;
 
 use App\Domain\Replication\ValueObject\EncryptionAlgorithm;
 use App\Domain\Replication\ValueObject\EncryptionPassphrase;
 
-class Encryption
+class StreamableFileContentWithEncryptionInformation extends StreamableFile
 {
     /**
      * @var string
@@ -22,18 +22,17 @@ class Encryption
      */
     private $algorithm;
 
-    /**
-     * @var callable $callback
-     */
-    private $callback;
+    public function __construct(
+        callable $operationCallback,
+        string $initializationVector,
+        EncryptionPassphrase $passphrase,
+        EncryptionAlgorithm $algorithm
+    ) {
+        $this->initializationVector = $initializationVector;
+        $this->passphrase           = $passphrase;
+        $this->algorithm            = $algorithm;
 
-    public function __construct(string $initializationVector, string $passphrase,
-                                string $algorithm, callable $operationCallback)
-    {
-        $this->initializationVector = \bin2hex($initializationVector);
-        $this->passphrase           = new EncryptionPassphrase($passphrase);
-        $this->algorithm            = new EncryptionAlgorithm($algorithm);
-        $this->callback             = $operationCallback;
+        parent::__construct($operationCallback);
     }
 
     /**
@@ -58,12 +57,5 @@ class Encryption
     public function getAlgorithm(): EncryptionAlgorithm
     {
         return $this->algorithm;
-    }
-
-    public function perform()
-    {
-        $callback = $this->callback;
-
-        return $callback();
     }
 }

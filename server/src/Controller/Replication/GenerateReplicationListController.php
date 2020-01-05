@@ -40,7 +40,7 @@ class GenerateReplicationListController extends BaseController
      * )
      *
      * @SWG\Response(
-     *     response="401",
+     *     response="403",
      *     description="When token has no replication role assigned"
      * )
      *

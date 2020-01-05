@@ -16,4 +16,9 @@ class EncryptionAlgorithm extends BaseChoiceValueObject
     {
         return !\in_array($this->getValue(), ['none', null, '', false, 'no']);
     }
+
+    public function generateInitializationVector(): string
+    {
+        return \bin2hex(\random_bytes(\openssl_cipher_iv_length($this->getValue())));
+    }
 }

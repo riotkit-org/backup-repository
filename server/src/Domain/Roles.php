@@ -197,7 +197,8 @@ final class Roles
         self::ROLE_DELETE_VERSIONS_IN_ALLOWED_COLLECTIONS,
 
         // replication
-        self::ROLE_STREAMING_REPLICATION
+        self::ROLE_STREAMING_REPLICATION,
+        self::ROLE_READ_REPLICATION_SECRETS
     ];
 
     public const RESTRICTIONS_LIST = [

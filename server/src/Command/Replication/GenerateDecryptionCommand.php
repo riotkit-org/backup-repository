@@ -47,6 +47,7 @@ class GenerateDecryptionCommand extends Command
             ->setDescription('Generate a command that can decrypt files replicated from other server instance')
             ->addOption('token', 't', InputOption::VALUE_REQUIRED,
                 'Token used to replicate', '')
+            ->addOption('file-path', 'f', InputOption::VALUE_OPTIONAL, '(optional) Path to encrypted file')
             ->addOption('initialization-vector', 'i', InputOption::VALUE_REQUIRED,
                 'OpenSSL iv - initialization vector', '')
             ->setHelp('Generates an OpenSSL commandline command to use for manual files decryption');
@@ -67,6 +68,7 @@ class GenerateDecryptionCommand extends Command
         $response = $this->handler->handle(
             $input->getOption('token'),
             $input->getOption('initialization-vector'),
+            $input->getOption('file-path'),
             $this->contextFactory->createShellContext($subjectToken)
         );
 

@@ -30,4 +30,9 @@ class EncryptionPassphrase extends BaseValueObject
     {
         return $this->value;
     }
+
+    public function getAsHex(): string
+    {
+        return \bin2hex($this->getValue());
+    }
 }

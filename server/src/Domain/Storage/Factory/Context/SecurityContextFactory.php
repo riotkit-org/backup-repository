@@ -65,6 +65,13 @@ class SecurityContextFactory
         );
     }
 
+    public function createReadContextInShell(): ReadSecurityContext
+    {
+        return new ReadSecurityContext(
+            true, true, true, '', []
+        );
+    }
+
     public function createDeleteContextFromTokenAndForm(Token $token, DeleteFileForm $form): ManagementSecurityContext
     {
         return new ManagementSecurityContext(
