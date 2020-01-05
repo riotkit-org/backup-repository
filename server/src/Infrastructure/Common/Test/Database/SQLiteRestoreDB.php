@@ -2,8 +2,20 @@
 
 namespace App\Infrastructure\Common\Test\Database;
 
+use Doctrine\DBAL\Connection;
+
 class SQLiteRestoreDB implements RestoreDBInterface
 {
+    /**
+     * @var Connection
+     */
+    private $connection;
+
+    public function __construct(Connection $connection)
+    {
+        $this->connection = $connection;
+    }
+
     public function backup(): bool
     {
         $path = $this->getDbPath();
@@ -28,9 +40,6 @@ class SQLiteRestoreDB implements RestoreDBInterface
 
     private function getDbPath(): string
     {
-        $path = $_SERVER['DATABASE_PATH'] ?? '';
-        $path = \str_replace('%kernel.project_dir%', '../', $path);
-
-        return \trim($path, '/');
+        return $this->connection->getParams()['path'] ?? '';
     }
 }

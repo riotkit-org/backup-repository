@@ -40,7 +40,7 @@ class StateManager implements RestoreDBInterface
         }
 
         if ($this->connection->getDriver() instanceof AbstractSQLiteDriver) {
-            return $this->adapter = new SQLiteRestoreDB();
+            return $this->adapter = new SQLiteRestoreDB($this->connection);
         }
 
         if ($this->connection->getDriver() instanceof AbstractPostgreSQLDriver) {
