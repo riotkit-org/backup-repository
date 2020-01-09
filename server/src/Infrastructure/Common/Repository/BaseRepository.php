@@ -4,7 +4,7 @@ namespace App\Infrastructure\Common\Repository;
 
 use App\Domain\Common\Exception\ReadOnlyException;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\ORM\EntityManager;
 
 abstract class BaseRepository extends ServiceEntityRepository

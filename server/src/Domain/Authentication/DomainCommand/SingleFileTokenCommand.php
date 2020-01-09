@@ -52,6 +52,11 @@ class SingleFileTokenCommand implements CommandHandler
         }
     }
 
+    public function supportsInput($input, string $path): bool
+    {
+        return true;
+    }
+
     /**
      * @return array
      */

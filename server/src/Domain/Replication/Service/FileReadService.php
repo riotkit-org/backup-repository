@@ -3,7 +3,7 @@
 namespace App\Domain\Replication\Service;
 
 use App\Command\Storage\ReadFileCommand;
-use App\Domain\Replication\DTO\FileContent\StreamableFile;
+use App\Domain\Replication\DTO\FileContent\StreamableFileContent;
 use App\Domain\Replication\DTO\FileContent\StreamableFileContentWithEncryptionInformation;
 use App\Domain\Replication\Security\ReplicationContext;
 use App\Domain\Replication\ValueObject\EncryptionAlgorithm;
@@ -36,6 +36,7 @@ class FileReadService
         $iv         = $algorithm->generateInitializationVector();
 
         return new StreamableFileContentWithEncryptionInformation(
+            $filename,
             $this->createReadCallback($filename, $algorithm, $passphrase, $iv, $output),
             $iv,
             $passphrase,
@@ -48,7 +49,7 @@ class FileReadService
         $algorithm = new EncryptionAlgorithm('');
         $passphrase = new EncryptionPassphrase('');
 
-        return new StreamableFile($this->createReadCallback($filename, $algorithm, $passphrase, '', $output));
+        return new StreamableFileContent($filename, $this->createReadCallback($filename, $algorithm, $passphrase, '', $output));
     }
 
     public function generateShellCryptoCommand(
@@ -56,7 +57,7 @@ class FileReadService
         EncryptionPassphrase $password,
         string $iv,
         bool $decrypt
-    ) {
+    ): string {
 
         $template = 'openssl enc %opts% -%algorithm_name% -K "%passphrase%" -iv "%iv%"';
 

@@ -2,7 +2,7 @@
 
 namespace App\Domain\Replication\Response;
 
-use App\Domain\Replication\DTO\FileContent\StreamableFile;
+use App\Domain\Replication\DTO\FileContent\StreamableFileContent;
 use App\Domain\Replication\DTO\FileContent\StreamableFileContentWithEncryptionInformation;
 
 class FileReadingResponse
@@ -27,13 +27,16 @@ class FileReadingResponse
      */
     private $callback;
 
-    public static function createOkResponseForStream(StreamableFile $encryption): FileReadingResponse
+    public static function createOkResponseForStream(StreamableFileContent $encryption): FileReadingResponse
     {
         $new = new static();
         $new->status      = 'OK';
         $new->statusCode  = 200;
         $new->callback    = $encryption->getStreamFlushingCallback();
-        $new->headers     = ['Content-Type' => 'application/octet-stream'];
+        $new->headers     = [
+            'Content-Type' => 'application/octet-stream',
+            'Content-Disposition' => 'attachment; filename="' . $encryption->getFileName() . '"'
+        ];
 
         if ($encryption instanceof StreamableFileContentWithEncryptionInformation) {
             $new->headers['Encryption-Initialization-Vector'] = $encryption->getInitializationVector();

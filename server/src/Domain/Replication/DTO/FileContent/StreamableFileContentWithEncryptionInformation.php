@@ -5,7 +5,7 @@ namespace App\Domain\Replication\DTO\FileContent;
 use App\Domain\Replication\ValueObject\EncryptionAlgorithm;
 use App\Domain\Replication\ValueObject\EncryptionPassphrase;
 
-class StreamableFileContentWithEncryptionInformation extends StreamableFile
+class StreamableFileContentWithEncryptionInformation extends StreamableFileContent
 {
     /**
      * @var string
@@ -23,6 +23,7 @@ class StreamableFileContentWithEncryptionInformation extends StreamableFile
     private $algorithm;
 
     public function __construct(
+        string $fileName,
         callable $operationCallback,
         string $initializationVector,
         EncryptionPassphrase $passphrase,
@@ -32,7 +33,7 @@ class StreamableFileContentWithEncryptionInformation extends StreamableFile
         $this->passphrase           = $passphrase;
         $this->algorithm            = $algorithm;
 
-        parent::__construct($operationCallback);
+        parent::__construct($fileName, $operationCallback);
     }
 
     /**

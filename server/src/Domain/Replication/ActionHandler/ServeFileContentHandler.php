@@ -7,7 +7,10 @@ use App\Domain\Replication\Response\FileReadingResponse;
 use App\Domain\Replication\Security\ReplicationContext;
 use App\Domain\Replication\Service\FileReadService;
 
-class ServeFileHandler extends BaseReplicationHandler
+/**
+ * Serves file content with encryption on-the-fly support
+ */
+class ServeFileContentHandler extends BaseReplicationHandler
 {
     /**
      * @var FileReadService

@@ -223,4 +223,9 @@ class StoredFile extends StoredFileFromCommon implements \JsonSerializable
     {
         return Filename::class;
     }
+
+    public function getPassword(): string
+    {
+        return $this->password;
+    }
 }

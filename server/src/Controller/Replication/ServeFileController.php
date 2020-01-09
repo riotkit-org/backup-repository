@@ -3,7 +3,7 @@
 namespace App\Controller\Replication;
 
 use App\Controller\BaseController;
-use App\Domain\Replication\ActionHandler\ServeFileHandler;
+use App\Domain\Replication\ActionHandler\ServeFileContentHandler;
 use App\Domain\Replication\Entity\Authentication\Token;
 use App\Domain\Replication\Exception\AuthenticationException;
 use App\Domain\Replication\Factory\SecurityContextFactory;
@@ -14,7 +14,7 @@ use Swagger\Annotations as SWG;
 class ServeFileController extends BaseController
 {
     /**
-     * @var ServeFileHandler
+     * @var ServeFileContentHandler
      */
     private $handler;
 
@@ -23,7 +23,7 @@ class ServeFileController extends BaseController
      */
     private $contextFactory;
 
-    public function __construct(ServeFileHandler $handler, SecurityContextFactory $contextFactory)
+    public function __construct(ServeFileContentHandler $handler, SecurityContextFactory $contextFactory)
     {
         $this->handler        = $handler;
         $this->contextFactory = $contextFactory;
@@ -42,14 +42,14 @@ class ServeFileController extends BaseController
      *     description="When token has no replication role assigned"
      * )
      *
-     * @param string $fileId
+     * @param string $fileName
      *
      * @return Response
      * @throws AuthenticationException
      */
-    public function fetchAction(string $fileId): Response
+    public function fetchAction(string $fileName): Response
     {
-        $output   = fopen('php://output', 'wb');
+        $output = fopen('php://output', 'wb');
 
         /**
          * @var Token $token
@@ -58,7 +58,7 @@ class ServeFileController extends BaseController
         $context  = $this->contextFactory->create($token);
 
         // act, and get response
-        $response = $this->handler->handle($fileId, $output, $context);
+        $response = $this->handler->handle($fileName, $output, $context);
 
         return new StreamedResponse(
             $response->getFlushingCallback(),

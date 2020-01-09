@@ -32,6 +32,11 @@ class GetFileUrlCommand implements CommandHandler
         return $this->factory->fromFilename(Filename::createFromBasicForm($filename), $baseUrl);
     }
 
+    public function supportsInput($input, string $path): bool
+    {
+        return true;
+    }
+
     public function getSupportedPaths(): array
     {
         return [

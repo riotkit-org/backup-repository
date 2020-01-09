@@ -5,7 +5,7 @@ namespace App\Domain\Replication\DTO;
 use App\Domain\Replication\Contract\CsvSerializable;
 
 /**
- * File in the storage. Short version of only necessary metadata, as Replication domain expects huge amounts of data.
+ * Describes the format of an output CSV dump
  */
 class RepositoryLegend implements CsvSerializable
 {

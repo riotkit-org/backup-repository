@@ -5,17 +5,23 @@ replication.dump_all:
     defaults:
         _secured: true
 
-replication.files.metadata.fetch:
-    path: /replication/file/{fileId}/metadata
-    controller: 'App\Controller\Replication\GenerateReplicationListController::dumpAction'
+replication.files.submitdata.schema:
+    path: /replication/submitdata/schema/{name}.json
+    controller: 'App\Controller\Replication\SchemaServingController::dumpSchemaAction'
     methods: ['GET']
     defaults:
-        since: ""
+        _secured: false
+
+replication.files.submitdata.fetch:
+    path: /replication/file/{fileName}/submitdata
+    controller: 'App\Controller\Replication\SubmitData\DumpFileSubmitDataController::dumpSubmitDataAction'
+    methods: ['GET']
+    defaults:
         _secured: true
 
 replication.files.content.fetch:
-    path: /replication/file/{fileId}/content
-    controller: 'App\Controller\Replication\FetchFileController::fetchAction'
+    path: /replication/file/{fileName}/content
+    controller: 'App\Controller\Replication\ServeFileController::fetchAction'
     methods: ['GET']
     defaults:
         _secured: true

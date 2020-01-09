@@ -21,8 +21,8 @@ interface FileRepository
      * by other layers
      *
      * @param \DateTime|null $since
-     *
      * @param int $buffer
+     *
      * @return TimelinePartial
      */
     public function findFilesToReplicateSinceLazy(?\DateTime $since = null, int $buffer = 1000): TimelinePartial;

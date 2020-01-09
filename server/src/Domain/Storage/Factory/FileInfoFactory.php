@@ -29,26 +29,26 @@ class FileInfoFactory
      */
     private $cache = [];
 
-    public function generateForStagedFile(StagedFile $stagedFile): FileInfo
+    public function generateForStagedFile(StagedFile $stagedFile, string $contentIdent = ''): FileInfo
     {
         if ($this->isInCache($stagedFile)) {
             return $this->getFromCache($stagedFile);
         }
 
-        $info = $this->generateForPath($stagedFile->getFilePath());
+        $info = $this->generateForPath($stagedFile->getFilePath(), $contentIdent);
         $this->storeToCache($stagedFile, $info);
 
         return $info;
     }
 
-    private function generateForPath(Path $path): FileInfo
+    private function generateForPath(Path $path, string $contentIdent): FileInfo
     {
         if (!$path->isFile()) {
             throw new \LogicException('"' . $path->getValue() . '" does not exist');
         }
 
         return new FileInfo(
-            new Checksum($this->doCheckSum($path), $this->checksumTool),
+            new Checksum($contentIdent . $this->doCheckSum($path), $this->checksumTool),
             new Mime($this->getMimeForFile($path)),
             new Filesize(\filesize($path->getValue()))
         );

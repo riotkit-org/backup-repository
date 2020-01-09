@@ -24,10 +24,10 @@ class RepositoryLegendFactory
 
         return new RepositoryLegend(
             $baseUrl->getValue() .
-                str_replace('FILE_ID', '%file_id',$this->urlFactory->generate('replication.files.metadata.fetch', ['fileId' => 'FILE_ID'])) .
+                str_replace('FILE_ID', '%file_id',$this->urlFactory->generate('replication.files.metadata.fetch', ['fileName' => 'FILE_ID'])) .
                 $tokenParam,
             $baseUrl->getValue() .
-                str_replace('FILE_ID', '%file_id', $this->urlFactory->generate('replication.files.content.fetch', ['fileId' => 'FILE_ID'])) .
+                str_replace('FILE_ID', '%file_id', $this->urlFactory->generate('replication.files.content.fetch', ['fileName' => 'FILE_ID'])) .
                 $tokenParam
         );
     }

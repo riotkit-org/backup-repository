@@ -216,6 +216,9 @@
     "phar-io/version": {
         "version": "2.0.1"
     },
+    "php": {
+        "version": "7.4"
+    },
     "php-http/client-common": {
         "version": "2.0.0"
     },
@@ -419,6 +422,9 @@
     },
     "symfony/dotenv": {
         "version": "v4.1.4"
+    },
+    "symfony/error-handler": {
+        "version": "v4.4.2"
     },
     "symfony/event-dispatcher": {
         "version": "v4.1.4"

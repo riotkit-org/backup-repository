@@ -17,6 +17,7 @@ use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
 abstract class BaseController implements ContainerAwareInterface
 {
@@ -35,6 +36,10 @@ abstract class BaseController implements ContainerAwareInterface
          */
         $sessionToken = $this->get('security.token_storage')->getToken();
         $token = $sessionToken->getToken();
+
+        if (!$token->getId()) {
+            throw new AccessDeniedHttpException('No active token found');
+        }
 
         if ($className) {
             return $this->get(IncomingTokenFactory::class)->createFromString($token->getId(), $className);
