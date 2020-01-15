@@ -61,12 +61,13 @@ class GenerateReplicationListController extends BaseController
     [2] file name
     [3] file id (to insert into template link as %file_id%)
     [4] timestamp
-    [5] sha256 checksum",
+    [5] sha256 checksum
+    [6] timezone for any timestamp returned",
      *     @SWG\Schema(
      *          type="string",
      *          example="http://localhost:8000/replication/file/%file_id/metadata?_token=%token%;;;http://localhost:8000/replication/file/%file_id/content?_token=%token%
 
-    File;;;fe5b5b9567solidarity-with-postal-workers-article-v4;;;2019-12-28 22:37:42;;;272073374953da7ce4c47cc7de17686968295af84add416720af0c99ecc7483a"
+    File;;;fe5b5b9567solidarity-with-postal-workers-article-v4;;;2019-12-28 22:37:42;;;272073374953da7ce4c47cc7de17686968295af84add416720af0c99ecc7483a;;UTC"
      *     )
      * )
      *

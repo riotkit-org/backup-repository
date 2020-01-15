@@ -39,11 +39,11 @@ class GenerateReplicationListHandler extends BaseReplicationHandler
             $out = fopen('php://output', 'wb');
 
             // write headers first
-            fwrite($out, $this->repositoryLegendFactory->createLegend($baseUrl)->toCSV() . "\n\n");
+            fwrite($out, \json_encode($this->repositoryLegendFactory->createLegend($baseUrl)->jsonSerialize()) . "\n\n");
 
             // then write the data
             $onEachChunkWrite = function () { flush(); }; // send response to the browser earlier if that's possible
-            $data = $timeline->outputAsCSVOnStream($out, $onEachChunkWrite);
+            $data = $timeline->outputAsJsonOnStream($out, $onEachChunkWrite);
             $data();
 
             fclose($out);

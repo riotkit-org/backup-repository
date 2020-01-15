@@ -10,5 +10,5 @@ interface CsvSerializableToStream
      *
      * @return callable
      */
-    public function outputAsCSVOnStream($stream, ?callable $onEachChunkWrite = null): callable;
+    public function outputAsJsonOnStream($stream, ?callable $onEachChunkWrite = null): callable;
 }

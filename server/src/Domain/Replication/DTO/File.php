@@ -2,12 +2,10 @@
 
 namespace App\Domain\Replication\DTO;
 
-use App\Domain\Replication\Contract\CsvSerializable;
-
 /**
  * File in the storage. Short version of only necessary metadata, as Replication domain expects huge amounts of data.
  */
-class File implements CsvSerializable
+class File implements \JsonSerializable
 {
     /**
      * Do not use objects: It's expected that File instances could be returned in milions of copies
@@ -37,20 +35,46 @@ class File implements CsvSerializable
      */
     private $hash;
 
-    public function __construct(int $fileId, string $filename, string $timestamp, string $hash)
+    /**
+     * Do not use objects: It's expected that File instances could be returned in milions of copies
+     *
+     * @var string
+     */
+    private $timezone;
+
+    public function __construct(int $fileId, string $filename, string $timestamp, string $hash, string $timezone)
     {
         $this->fileId    = $fileId;
         $this->filename  = $filename;
         $this->timestamp = $timestamp;
         $this->hash      = $hash;
+        $this->timezone  = $timezone;
     }
 
-    public function toCSV(): string
+    public function jsonSerialize(): array
     {
-        return 'File' .
-            self::SEP . $this->filename .
-            self::SEP . $this->fileId .
-            self::SEP . $this->timestamp .
-            self::SEP . $this->hash;
+        return [
+            'filename'  => $this->filename,
+            'fileId'    => $this->fileId,
+            'timestamp' => $this->timestamp,
+            'hash'      => $this->hash,
+            'timezone'  => $this->timestamp
+        ];
+    }
+
+    public static function fromArray(array $attributes): File
+    {
+        return new static(
+            $attributes['fileId'],
+            $attributes['filename'],
+            $attributes['timestamp'],
+            $attributes['hash'],
+            $attributes['timezone']
+        );
+    }
+
+    public function getTimestamp(): \DateTime
+    {
+        return new \DateTime($this->timestamp);
     }
 }

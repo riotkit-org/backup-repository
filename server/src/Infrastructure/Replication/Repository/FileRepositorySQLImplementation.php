@@ -45,7 +45,7 @@ class FileRepositorySQLImplementation implements FileRepository
         }
 
         $rows = $this->connection->fetchAll(
-            'SELECT fileName as filename, contentHash as contenthash, dateAdded as dateadded, id 
+            'SELECT fileName as filename, contentHash as contenthash, dateAdded as dateadded, id, timezone 
                  FROM file_registry
                  WHERE dateAdded >= ?
                  ORDER BY dateAdded DESC
@@ -56,7 +56,7 @@ class FileRepositorySQLImplementation implements FileRepository
         $mapped = [];
 
         foreach ($rows as $row) {
-            $mapped[] = new File((int) $row['id'], $row['filename'], $row['dateadded'], $row['contenthash']);
+            $mapped[] = new File((int) $row['id'], $row['filename'], $row['dateadded'], $row['contenthash'], $row['timezone']);
         }
 
         return $mapped;

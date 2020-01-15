@@ -23,6 +23,11 @@ App\Domain\Storage\Entity\StoredFile:
             type: datetime_immutable
             column: dateAdded
 
+        timezone:
+            type: string
+            column: timezone
+            length: 48
+
         mimeType:
             type: string
             length: 48

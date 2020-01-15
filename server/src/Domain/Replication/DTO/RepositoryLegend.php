@@ -2,12 +2,10 @@
 
 namespace App\Domain\Replication\DTO;
 
-use App\Domain\Replication\Contract\CsvSerializable;
-
 /**
  * Describes the format of an output CSV dump
  */
-class RepositoryLegend implements CsvSerializable
+class RepositoryLegend implements \JsonSerializable
 {
     /**
      * @var string
@@ -25,8 +23,11 @@ class RepositoryLegend implements CsvSerializable
         $this->fetchUrlTemplate    = $fetchUrlTemplate;
     }
 
-    public function toCSV(): string
+    public function jsonSerialize()
     {
-        return $this->metadataUrlTemplate . self::SEP . $this->fetchUrlTemplate;
+        return [
+            'metadataUrlTemplate' => $this->metadataUrlTemplate,
+            'fetchUrlTemplate'    => $this->fetchUrlTemplate
+        ];
     }
 }

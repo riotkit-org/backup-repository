@@ -161,6 +161,13 @@ services:
     App\Infrastructure\Common\Test\Database\RestoreDBInterface:
         alias: App\Infrastructure\Common\Test\Database\StateManager
 
+    App\Infrastructure\Replication\Service\Client\GuzzleRemoteStreamFetcher:
+        autowire: true
+        arguments:
+            # @todo
+            $primaryServerUrl: 'http://localhost'
+            $token: 'test-token-full-permissions'
+
     s3_client:
         class: Aws\S3\S3Client
         arguments:

@@ -22,6 +22,11 @@ class StoredFile extends StoredFileFromCommon implements \JsonSerializable
     /**
      * @var string
      */
+    protected $timezone;
+
+    /**
+     * @var string
+     */
     protected $password = '';
 
     /**
@@ -45,6 +50,7 @@ class StoredFile extends StoredFileFromCommon implements \JsonSerializable
     public function __construct()
     {
         $this->dateAdded = new \DateTimeImmutable();
+        $this->timezone  = \date_default_timezone_get();
         $this->tags      = [];
     }
 
@@ -58,9 +64,9 @@ class StoredFile extends StoredFileFromCommon implements \JsonSerializable
     public static function newFromFilename(Filename $filename): StoredFile
     {
         $new = new static();
-        $new->fileName = $filename->getValue();
+        $new->fileName  = $filename->getValue();
         $new->dateAdded = new \DateTimeImmutable();
-        $new->tags = [];
+        $new->tags      = [];
 
         return $new;
     }
@@ -210,6 +216,7 @@ class StoredFile extends StoredFileFromCommon implements \JsonSerializable
             'filename'    => $this->getFilename(),
             'contentHash' => $this->getContentHash(),
             'dateAdded'   => $this->getDateAdded(),
+            'timezone'    => $this->getTimezone(),
             'mimeType'    => $this->getMimeType(),
             'tags'        => $this->getTags(),
             'public'      => $this->public,
@@ -227,5 +234,13 @@ class StoredFile extends StoredFileFromCommon implements \JsonSerializable
     public function getPassword(): string
     {
         return $this->password;
+    }
+
+    /**
+     * @return \DateTimeZone
+     */
+    public function getTimezone(): \DateTimeZone
+    {
+        return new \DateTimeZone($this->timezone);
     }
 }

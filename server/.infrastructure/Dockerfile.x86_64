@@ -76,7 +76,8 @@ ENV DATABASE_URL=sqlite:///%kernel.project_dir%/var/data.db \
     PHP_UPLOAD_MAX_FILESIZE=15G \
     PHP_POST_MAX_SIZE=15G \
     # Executes on each container run, after install/upgrade of the application
-    POST_INSTALL_CMD=""
+    POST_INSTALL_CMD="" \
+    TZ="UTC"
 
 COPY server /var/www/html
 COPY --from=builder /var/www/html/public /var/www/html/

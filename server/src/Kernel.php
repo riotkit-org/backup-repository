@@ -53,6 +53,9 @@ class Kernel extends BaseKernel
 
         $container->addCompilerPass(new DomainBusPass());
         $container->addCompilerPass(new AntiHotlinkFeatureCompilerPass());
+
+        // other configuration stuff
+        $this->configureTimeZone();
     }
 
     protected function configureRoutes(RouteCollectionBuilder $routes)
@@ -62,5 +65,12 @@ class Kernel extends BaseKernel
         $routes->import($confDir.'/{routes}/*' . self::CONFIG_EXTS, '/', 'glob');
         $routes->import($confDir.'/{routes}/' . $this->environment . '/**/*' . self::CONFIG_EXTS, '/', 'glob');
         $routes->import($confDir.'/{routes}' . self::CONFIG_EXTS, '/', 'glob');
+    }
+
+    protected function configureTimeZone(): void
+    {
+        if (isset($_SERVER['TZ'])) {
+            \date_default_timezone_set($_SERVER['TZ']);
+        }
     }
 }
