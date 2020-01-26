@@ -5,7 +5,7 @@ namespace App\Controller\Replication\SubmitData;
 use App\Controller\BaseController;
 use App\Domain\Common\Exception\BusException;
 use App\Domain\SubmitDataTypes;
-use App\Domain\Replication\ActionHandler\ServeSubmitDataHandler;
+use App\Domain\Replication\ActionHandler\Server\ServeSubmitDataHandler;
 use App\Domain\Replication\Entity\Authentication\Token;
 use App\Domain\Replication\Exception\AuthenticationException;
 use App\Domain\Replication\Factory\SecurityContextFactory;

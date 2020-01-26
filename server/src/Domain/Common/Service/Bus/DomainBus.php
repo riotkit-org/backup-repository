@@ -13,7 +13,7 @@ class DomainBus
     /**
      * @var array[]
      */
-    private $commands;
+    private array $commands;
 
     /**
      * @param array[] $commands

@@ -8,30 +8,11 @@ use App\Domain\Storage\ValueObject\Filesize;
 
 class BytesRangeAggregate
 {
-    /**
-     * @var PositiveNumberOrZero $from
-     */
-    private $from;
-
-    /**
-     * @var PositiveNumberOrZero $to
-     */
-    private $to;
-
-    /**
-     * @var Filesize
-     */
-    private $totalLength;
-
-    /**
-     * @var PositiveNumberOrZero
-     */
-    private $rangeContentLength;
-
-    /**
-     * @var PositiveNumberOrZero
-     */
-    private $fileSize;
+    private PositiveNumberOrZero $from;
+    protected PositiveNumberOrZero $to;
+    private Filesize $totalLength;
+    private PositiveNumberOrZero $rangeContentLength;
+    private PositiveNumberOrZero $fileSize;
 
     /**
      * @param string $headerValue

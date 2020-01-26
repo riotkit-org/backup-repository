@@ -1,0 +1,13 @@
+framework:
+    messenger:
+        failure_transport: replication
+
+        transports:
+            # https://symfony.com/doc/current/messenger.html#transport-configuration
+            replication: "%env(REPLICATION_QUEUE_DSN)%"
+
+            # failed: 'doctrine://default?queue_name=failed'
+            # sync: 'sync://'
+
+        routing:
+            '*': replication

@@ -6,12 +6,8 @@ use Symfony\Component\Yaml\Yaml;
 
 class Versioning
 {
-    /**
-     * @var string
-     */
-    private $version;
-
-    private $filePath = __DIR__ . '/../../../../config/version.yaml';
+    private ?string $version = null;
+    private string $filePath = __DIR__ . '/../../../../config/version.yaml';
 
     public function getVersion(): string
     {

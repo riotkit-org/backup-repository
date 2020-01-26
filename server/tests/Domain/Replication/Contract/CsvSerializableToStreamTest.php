@@ -3,17 +3,17 @@
 namespace Tests\Domain\Replication\ActionHandler;
 
 use App\Domain\Replication\Collection\TimelinePartial;
-use App\Domain\Replication\Contract\CsvSerializableToStream;
+use App\Domain\Replication\Contract\MultiDocumentJsonSerializable;
 use App\Domain\Replication\DTO\File;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @see CsvSerializableToStream
+ * @see MultiDocumentJsonSerializable
  */
 class CsvSerializableToStreamTest extends TestCase
 {
     /**
-     * @see TimelinePartial::outputAsCSVOnStream()
+     * @see TimelinePartial::toMultipleJsonDocuments()
      */
     public function testSerializationMemoryUsage(): void
     {
@@ -22,7 +22,7 @@ class CsvSerializableToStreamTest extends TestCase
 
         $collection = new TimelinePartial($bigDataList, 5000000);
         $fp = fopen('/dev/null', 'wb');
-        $callback = $collection->outputAsCSVOnStream($fp);
+        $callback = $collection->toMultipleJsonDocuments($fp);
 
         // test
         $callback();
@@ -45,7 +45,7 @@ class CsvSerializableToStreamTest extends TestCase
     /**
      * @dataProvider provideNumberOfRows
      *
-     * @see TimelinePartial::outputAsCSVOnStream()
+     * @see TimelinePartial::toMultipleJsonDocuments()
      */
     public function testReturnsProperNumberOfRows(int $filesNum): void
     {
@@ -53,7 +53,7 @@ class CsvSerializableToStreamTest extends TestCase
 
         $collection = new TimelinePartial($bigDataList, 500000);
         $fp = fopen('php://output', 'wb');
-        $callback = $collection->outputAsCSVOnStream($fp);
+        $callback = $collection->toMultipleJsonDocuments($fp);
 
         // test
         ob_start();

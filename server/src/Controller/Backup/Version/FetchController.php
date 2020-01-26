@@ -58,11 +58,10 @@ class FetchController extends BaseController
         $form->token = $this->getLoggedUserToken()->getId();
 
         return $this->wrap(
-            function () use ($form, $request) {
+            function () use ($form) {
                 $response = $this->handler->handle(
                     $form,
-                    $this->authFactory->createVersioningContext($this->getLoggedUserToken()),
-                    $this->createBaseUrl($request)
+                    $this->authFactory->createVersioningContext($this->getLoggedUserToken())
                 );
 
                 if ($response->shouldRedirectToUrl()) {

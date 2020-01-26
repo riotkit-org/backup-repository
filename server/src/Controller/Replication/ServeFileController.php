@@ -3,7 +3,7 @@
 namespace App\Controller\Replication;
 
 use App\Controller\BaseController;
-use App\Domain\Replication\ActionHandler\ServeFileContentHandler;
+use App\Domain\Replication\ActionHandler\Server\ServeFileContentHandler;
 use App\Domain\Replication\Entity\Authentication\Token;
 use App\Domain\Replication\Exception\AuthenticationException;
 use App\Domain\Replication\Factory\SecurityContextFactory;
@@ -13,15 +13,8 @@ use Swagger\Annotations as SWG;
 
 class ServeFileController extends BaseController
 {
-    /**
-     * @var ServeFileContentHandler
-     */
-    private $handler;
-
-    /**
-     * @var SecurityContextFactory
-     */
-    private $contextFactory;
+    private ServeFileContentHandler $handler;
+    private SecurityContextFactory $contextFactory;
 
     public function __construct(ServeFileContentHandler $handler, SecurityContextFactory $contextFactory)
     {

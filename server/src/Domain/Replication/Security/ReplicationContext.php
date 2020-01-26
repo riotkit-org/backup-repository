@@ -2,7 +2,7 @@
 
 namespace App\Domain\Replication\Security;
 
-use App\Domain\Replication\Entity\ReplicationClient;
+use App\Domain\Replication\DTO\ReplicationClient;
 use App\Domain\Replication\ValueObject\EncryptionAlgorithm;
 use App\Domain\Replication\ValueObject\EncryptionPassphrase;
 

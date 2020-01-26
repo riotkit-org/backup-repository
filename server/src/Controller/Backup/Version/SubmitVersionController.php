@@ -71,7 +71,6 @@ class SubmitVersionController extends BaseController
                 $response = $this->handler->handle(
                     $form,
                     $this->authFactory->createVersioningContext($this->getLoggedUserToken()),
-                    $this->createBaseUrl($request),
                     $this->getLoggedUserToken()
                 );
 

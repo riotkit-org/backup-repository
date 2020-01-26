@@ -2,49 +2,38 @@
 
 namespace App\Domain\Replication\Collection;
 
-use App\Domain\Replication\Contract\CsvSerializableToStream;
+use App\Domain\Replication\Contract\MultiDocumentJsonSerializable;
 use App\Domain\Replication\DTO\File;
+use App\Domain\Replication\DTO\StreamList\SubmitData;
+use JsonSerializable;
 
-class TimelinePartial implements CsvSerializableToStream
+class TimelinePartial implements MultiDocumentJsonSerializable
 {
     /**
-     * @var callable[] $lazyLoaders
+     * @var SubmitData[]
      */
-    private $lazyLoaders;
+    private array $entries;
+    private int $totalCount;
 
-    /**
-     * @var int $count
-     */
-    private $count;
-
-    public function __construct(array $lazyLoaders, int $count)
+    public function __construct(array $entries, int $totalCount)
     {
-        $this->lazyLoaders = $lazyLoaders;
-        $this->count       = $count;
+        $this->entries    = $entries;
+        $this->totalCount = $totalCount;
     }
 
     public function count(): int
     {
-        return \count($this->lazyLoaders);
+        return $this->totalCount;
     }
 
-    public function outputAsCSVOnStream($stream, ?callable $onEachChunkWrite = null): callable
+    public function toMultipleJsonDocuments(): string
     {
-        return function () use ($stream, $onEachChunkWrite) {
-            foreach ($this->lazyLoaders as $loader) {
-                /**
-                 * @var File[] $files
-                 */
-                $files = $loader();
+        $docs = '';
 
-                foreach ($files as $file) {
-                    fwrite($stream, $file->toCSV() . "\n");
-                }
-            }
+        foreach ($this->entries as $serializedEntry) {
+            $docs .= \json_encode($serializedEntry, JSON_THROW_ON_ERROR, 512) . "\n";
+        }
 
-            if ($onEachChunkWrite) {
-                $onEachChunkWrite();
-            }
-        };
+        return $docs;
     }
 }

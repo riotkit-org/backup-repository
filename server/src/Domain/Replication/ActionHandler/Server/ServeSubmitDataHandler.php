@@ -1,13 +1,14 @@
 <?php declare(strict_types=1);
 
-namespace App\Domain\Replication\ActionHandler;
+namespace App\Domain\Replication\ActionHandler\Server;
 
 use App\Domain\Bus;
 use App\Domain\Common\Exception\BusException;
 use App\Domain\Common\Service\Bus\DomainBus;
-use App\Domain\Replication\DTO\StoredFileMetadata;
+use App\Domain\Replication\ActionHandler\BaseReplicationHandler;
+use App\Domain\Replication\DTO\StreamList\SubmitData;
 use App\Domain\Replication\Exception\AuthenticationException;
-use App\Domain\Replication\Response\ReplicationMetadataResponse;
+use App\Domain\Replication\Response\ReplicationSubmitDataResponse;
 use App\Domain\Replication\Security\ReplicationContext;
 
 /**
@@ -22,10 +23,7 @@ use App\Domain\Replication\Security\ReplicationContext;
  */
 class ServeSubmitDataHandler extends BaseReplicationHandler
 {
-    /**
-     * @var DomainBus
-     */
-    private $bus;
+    private DomainBus $bus;
 
     public function __construct(DomainBus $bus)
     {
@@ -37,43 +35,37 @@ class ServeSubmitDataHandler extends BaseReplicationHandler
      * @param string $id
      * @param ReplicationContext $context
      *
-     * @return ReplicationMetadataResponse
+     * @return ReplicationSubmitDataResponse
      *
      * @throws BusException
      * @throws AuthenticationException
      */
-    public function handle(string $type, string $id, ReplicationContext $context): ReplicationMetadataResponse
+    public function handle(string $type, string $id, ReplicationContext $context): ReplicationSubmitDataResponse
     {
         $this->assertHasRights($context);
 
         $submitData = $this->getSubmitData($type, $id);
 
         if (!$submitData) {
-            return ReplicationMetadataResponse::createFileNotFoundResponse();
+            return ReplicationSubmitDataResponse::createFileNotFoundResponse();
         }
 
-        return ReplicationMetadataResponse::createSuccessfulResponse($submitData);
+        return ReplicationSubmitDataResponse::createSuccessfulResponse($submitData);
     }
 
     /**
      * @param string $type
      * @param string $id
      *
-     * @return StoredFileMetadata|null
+     * @return SubmitData|null
      *
      * @throws BusException
      */
-    private function getSubmitData(string $type, string $id): ?StoredFileMetadata
+    private function getSubmitData(string $type, string $id): ?SubmitData
     {
-        [$submitData, $className] = $this->bus->callForFirstMatching(Bus::GET_ENTITY_SUBMIT_DATA, [
+        return $this->bus->callForFirstMatching(Bus::GET_ENTITY_SUBMIT_DATA, [
             'fileName' => $id,
             'type'     => $type
         ]);
-
-        if (!$submitData) {
-            return null;
-        }
-
-        return new StoredFileMetadata($className, $submitData);
     }
 }

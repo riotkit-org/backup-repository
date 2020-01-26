@@ -15,6 +15,9 @@ parameters:
     env(LONG_EXECUTION_TIME): 300
     env(TOKEN_EXPIRATION_TIME): "+30 minutes"
     env(ENC_TOKEN_PHRASE): "test123"
+    env(REPLICATION_SECRET): ''
+    env(REPLICATION_PRIMARY_URL): ''
+    env(REPLICATION_QUEUE_DSN): ''
 
 services:
     # default configuration for services in *this* file
@@ -88,38 +91,43 @@ services:
             $maxWholeCollectionSize: '%env(BACKUP_COLLECTION_MAX_SIZE)%'
 
     App\Infrastructure\Backup\Repository\CollectionDoctrineRepository:
+        autowire: true
         arguments:
-            $registry: '@Doctrine\Common\Persistence\ManagerRegistry'
             $readOnly: '%env(bool:READ_ONLY)%'
 
     App\Infrastructure\Storage\Repository\FileDoctrineRepository:
+        autowire: true
         arguments:
-            $registry: '@Doctrine\Common\Persistence\ManagerRegistry'
             $readOnly: '%env(bool:READ_ONLY)%'
 
     App\Infrastructure\Backup\Repository\StorageDoctrineRepository:
+        autowire: true
         arguments:
-            $registry: '@Doctrine\Common\Persistence\ManagerRegistry'
             $readOnly: '%env(bool:READ_ONLY)%'
 
     App\Infrastructure\Storage\Repository\TagsDoctrineRepository:
+        autowire: true
         arguments:
-            $registry: '@Doctrine\Common\Persistence\ManagerRegistry'
             $readOnly: '%env(bool:READ_ONLY)%'
 
     App\Infrastructure\Authentication\Repository\TokenDoctrineRepository:
+        autowire: true
         arguments:
-            $registry: '@Doctrine\Common\Persistence\ManagerRegistry'
             $readOnly: '%env(bool:READ_ONLY)%'
 
     App\Infrastructure\Replication\Repository\TokenDoctrineRepository:
+        autowire: true
         arguments:
-            $registry: '@Doctrine\Common\Persistence\ManagerRegistry'
             $readOnly: '%env(bool:READ_ONLY)%'
 
     App\Infrastructure\Backup\Repository\TokenDoctrineRepository:
+        autowire: true
         arguments:
-            $registry: '@Doctrine\Common\Persistence\ManagerRegistry'
+            $readOnly: '%env(bool:READ_ONLY)%'
+
+    App\Infrastructure\Replication\Repository\Client\DoctrineReplicationHistoryRepository:
+        autowire: true
+        arguments:
             $readOnly: '%env(bool:READ_ONLY)%'
 
     App\Infrastructure\Backup\Repository\VersionDoctrineRepository:
@@ -135,6 +143,22 @@ services:
     App\Domain\Authentication\Factory\IncomingTokenFactory:
         public: true
         autowire: true
+
+    App\Domain\Storage\Factory\PublicUrlFactory:
+        autowire: true
+        arguments:
+            $baseUrl: '%env(BASE_URL)%'
+
+    App\Domain\Replication\Factory\RepositoryLegendFactory:
+        autowire: true
+        arguments:
+            $baseUrl: '%env(BASE_URL)%'
+
+    App\Domain\Replication\Provider\ConfigurationProvider:
+        arguments:
+            $token: '%env(REPLICATION_SECRET)%'
+            $primaryUrl: '%env(REPLICATION_PRIMARY_URL)%'
+            $queueDsn: '%env(REPLICATION_QUEUE_DSN)%'
 
     ro_fs:
         class: App\Infrastructure\Storage\Manager\FlysystemFilesystemManager
@@ -160,6 +184,24 @@ services:
 
     App\Infrastructure\Common\Test\Database\RestoreDBInterface:
         alias: App\Infrastructure\Common\Test\Database\StateManager
+
+    replication_primary_httpclient:
+        class: GuzzleHttp\Client
+        factory: ['\App\Infrastructure\Replication\Factory\Http\PrimaryGuzzleClientFactory', 'createClient']
+        arguments:
+            - '@App\Domain\Common\Service\Versioning'
+            - '%env(REPLICATION_PRIMARY_URL)%'
+            - '%env(REPLICATION_SECRET)%'
+
+    App\Infrastructure\Replication\Service\Client\GuzzleRemoteFileProvider:
+        autowire: true
+        arguments:
+            $httpClient: '@replication_primary_httpclient'
+
+    App\Infrastructure\Replication\Service\Client\GuzzleRemoteStreamProvider:
+        autowire: true
+        arguments:
+            $httpClient: '@replication_primary_httpclient'
 
     s3_client:
         class: Aws\S3\S3Client

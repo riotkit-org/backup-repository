@@ -14,10 +14,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class UploadByPostController extends BaseController
 {
-    /**
-     * @var UploadFileByPostHandler
-     */
-    private $handler;
+    private UploadFileByPostHandler $handler;
 
     public function __construct(UploadFileByPostHandler $handler)
     {
@@ -50,10 +47,9 @@ class UploadByPostController extends BaseController
         }
 
         return $this->wrap(
-            function () use ($form, $tokenTransport, $request) {
+            function () use ($form, $tokenTransport) {
                 $appResponse = $this->handler->handle(
                     $form,
-                    $this->createBaseUrl($request),
                     $tokenTransport->getToken()
                 );
 
@@ -65,7 +61,7 @@ class UploadByPostController extends BaseController
         );
     }
 
-    private function applyFilenameFromMultipartIfParamEmpty(string $filename, Request $request)
+    private function applyFilenameFromMultipartIfParamEmpty(string $filename, Request $request): string
     {
         if ($filename) {
             return $filename;
@@ -77,7 +73,7 @@ class UploadByPostController extends BaseController
              */
             $indexedNumerically = \array_values($request->files->all());
 
-            return $indexedNumerically[0]->getClientOriginalName();
+            return (string) $indexedNumerically[0]->getClientOriginalName();
         }
 
         return '';

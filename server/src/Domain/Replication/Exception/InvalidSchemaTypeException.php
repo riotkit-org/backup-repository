@@ -2,6 +2,6 @@
 
 namespace App\Domain\Replication\Exception;
 
-class InvalidSchemaTypeException extends ReplicationException
+class InvalidSchemaTypeException extends CompatibilityException
 {
 }

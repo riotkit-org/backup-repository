@@ -73,7 +73,7 @@ class UploadFileByPostHandler extends AbstractUploadHandler
      *
      * @throws FileRetrievalError
      */
-    protected function createStream($form): Stream
+    protected function createStreamFromRequest($form): Stream
     {
         return $this->uploadProvider->getStreamFromHttp();
     }

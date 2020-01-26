@@ -10,37 +10,37 @@ use App\Domain\Storage\Entity\Tag;
 class UploadForm extends ApplicationForm
 {
     /**
-     * @ApplicationForm::typeInSchema array
+     * @internal ApplicationForm::typeInSchema array
      * @var string[]
      */
     public $tags;
 
     /**
-     * @ApplicationForm::typeInSchema string
+     * @internal ApplicationForm::typeInSchema string
      * @var string|Password
      */
     public $password;
 
     /**
-     * @ApplicationForm::typeInSchema bool
+     * @internal ApplicationForm::typeInSchema bool
      * @var bool
      */
     public $fileOverwrite = false;
 
     /**
-     * @ApplicationForm::typeInSchema string
+     * @internal ApplicationForm::typeInSchema string
      * @var string
      */
     public $backUrl = '';
 
     /**
-     * @ApplicationForm::typeInSchema bool
+     * @internal ApplicationForm::typeInSchema bool
      * @var bool
      */
     public $public = true;
 
     /**
-     * @ApplicationForm::typeInSchema string
+     * @internal ApplicationForm::typeInSchema string
      * @var string
      */
     public $contentIdent = '';
@@ -48,10 +48,17 @@ class UploadForm extends ApplicationForm
     /**
      * eg. base64 (if the data in body is encoded with base64 and needs to be decoded)
      *
-     * @ApplicationForm::typeInSchema string
+     * @internal ApplicationForm::typeInSchema string
      * @var string|null
      */
     public $encoding;
+
+    /**
+     * Optional stream to use instead of HTTP, when using internally with DomainBus
+     *
+     * @var resource|null
+     */
+    public $stream;
 
     public static function createFromFile(StoredFile $file): UploadForm
     {

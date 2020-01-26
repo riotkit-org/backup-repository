@@ -14,7 +14,7 @@ replication.files.submitdata.schema:
 
 replication.files.submitdata.fetch:
     path: /replication/file/{fileName}/submitdata
-    controller: 'App\Controller\Replication\SubmitData\DumpFileSubmitDataController::dumpSubmitDataAction'
+    controller: 'App\Controller\Replication\SubmitData\ServeSubmitDataController::dumpSubmitDataAction'
     methods: ['GET']
     defaults:
         _secured: true

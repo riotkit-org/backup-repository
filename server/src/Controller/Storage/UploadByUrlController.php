@@ -14,10 +14,7 @@ use Symfony\Component\HttpFoundation\Response;
 
 class UploadByUrlController extends BaseController
 {
-    /**
-     * @var UploadFileByUrlHandler
-     */
-    private $handler;
+    private UploadFileByUrlHandler $handler;
 
     public function __construct(UploadFileByUrlHandler $handler)
     {

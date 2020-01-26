@@ -4,6 +4,9 @@ namespace App\Domain\Storage\DomainCommand;
 
 use App\Domain\Bus;
 use App\Domain\Common\Service\Bus\CommandHandler;
+use App\Domain\Replication\CompatibilityNames;
+use App\Domain\Storage\DTO\SubmitData;
+use App\Domain\Storage\Form\UploadByPostForm;
 use App\Domain\SubmitDataTypes;
 use App\Domain\Storage\Form\UploadForm;
 use App\Domain\Storage\Repository\FileRepository;
@@ -11,10 +14,7 @@ use App\Domain\Storage\ValueObject\Filename;
 
 class GetFileSubmitDataCommand implements CommandHandler
 {
-    /**
-     * @var FileRepository
-     */
-    private $repository;
+    private FileRepository $repository;
 
     public function __construct(FileRepository $repository)
     {
@@ -23,21 +23,31 @@ class GetFileSubmitDataCommand implements CommandHandler
 
     /**
      * @param mixed $input
+     * @param string $path
      *
-     * @return mixed
+     * @return null|SubmitData
      *
      * @see Bus::GET_ENTITY_SUBMIT_DATA
      */
-    public function handle($input, string $path)
+    public function handle($input, string $path): ?SubmitData
     {
         $fileName = new Filename($input['fileName'] ?? '');
-        $file     = $this->repository->findByName($fileName);
+        $file     = $fileName === CompatibilityNames::EXAMPLE_FILE_NAME
+            ? $this->repository->findExampleFile() : $this->repository->findByName($fileName);
 
         if (!$file) {
-            return [null, SubmitDataTypes::TYPE_FILE];
+            return null;
         }
 
-        return [UploadForm::createFromFile($file)->toArray(), SubmitDataTypes::TYPE_FILE];
+        return new SubmitData(
+            SubmitDataTypes::TYPE_FILE,
+            $file->getFilename()->getValue(),
+            $file->getDateAdded(),
+            $file->getTimezone(),
+
+            // we want to make possible to re-submit this form later by eg. a replica server
+            UploadByPostForm::createFromFile($file)->toArray()
+        );
     }
 
     public function supportsInput($input, string $path): bool

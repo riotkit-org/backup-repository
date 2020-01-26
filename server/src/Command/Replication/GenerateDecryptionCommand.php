@@ -15,20 +15,9 @@ class GenerateDecryptionCommand extends Command
 {
     public const NAME = 'replication:generate-decryption-command';
 
-    /**
-     * @var GenerateDecryptionCommandHandler
-     */
-    private $handler;
-
-    /**
-     * @var TokenRepository
-     */
-    private $tokenRepository;
-
-    /**
-     * @var SecurityContextFactory
-     */
-    private $contextFactory;
+    private GenerateDecryptionCommandHandler $handler;
+    private TokenRepository $tokenRepository;
+    private SecurityContextFactory $contextFactory;
 
     public function __construct(GenerateDecryptionCommandHandler $handler,
                                 TokenRepository $tokenRepository,
@@ -41,7 +30,7 @@ class GenerateDecryptionCommand extends Command
         parent::__construct(self::NAME);
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this->setName(self::NAME)
             ->setDescription('Generate a command that can decrypt files replicated from other server instance')
@@ -53,7 +42,7 @@ class GenerateDecryptionCommand extends Command
             ->setHelp('Generates an OpenSSL commandline command to use for manual files decryption');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): void
     {
         $subjectToken = $this->tokenRepository->findTokenById($input->getOption('token'), Token::class);
 

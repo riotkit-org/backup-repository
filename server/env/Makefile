@@ -37,7 +37,10 @@ print: ## Print the docker-compose.yaml file (params: VARIANT)
 	${SUDO} ${COMPOSE_ARGS} $$(make _build_variant_list VARIANT="${VARIANT}") config
 
 sh: ## Get a shell, where Symfony console is present
-	${SUDO} ${COMPOSE_ARGS} exec --user www-data filerepository bash
+	${SUDO} ${COMPOSE_ARGS} $$(make _build_variant_list VARIANT="${VARIANT}") exec --user www-data filerepository bash
+
+sh@replica: ## Get a shell, where Symfony console is present
+	${SUDO} ${COMPOSE_ARGS} $$(make _build_variant_list VARIANT="${VARIANT}") exec --user www-data replica_filerepository bash
 
 wait_for_app: ## Wait for application to be ready
 	${SUDO} ${COMPOSE_ARGS} ps

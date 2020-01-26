@@ -70,7 +70,7 @@ class UploadFileByUrlHandler extends AbstractUploadHandler
      *
      * @return Stream
      */
-    protected function createStream($form): Stream
+    protected function createStreamFromRequest($form): Stream
     {
         return $this->provider->getStreamFromUrl(new Url($form->fileUrl));
     }

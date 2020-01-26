@@ -6,10 +6,7 @@ use App\Domain\Common\SharedEntity\Token as TokenFromCommon;
 
 class Token extends TokenFromCommon
 {
-    /**
-     * @var array
-     */
-    private $data = [];
+    private array $data = [];
 
     public function setId(string $id)
     {

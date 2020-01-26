@@ -40,7 +40,7 @@ class VersionListingController extends BaseController
      *
      * @throws \Exception
      */
-    public function handleAction(Request $request, string $collectionId): Response
+    public function handleAction(string $collectionId): Response
     {
         $form = new VersionsListingForm();
         $infrastructureForm = $this->createForm(VersionListingFormType::class, $form);
@@ -53,11 +53,10 @@ class VersionListingController extends BaseController
         }
 
         return $this->wrap(
-            function () use ($form, $request) {
+            function () use ($form) {
                 $response = $this->handler->handle(
                     $form,
-                    $this->authFactory->createVersioningContext($this->getLoggedUserToken()),
-                    $this->createBaseUrl($request)
+                    $this->authFactory->createVersioningContext($this->getLoggedUserToken())
                 );
 
                 return new JsonResponse($response, $response->getExitCode());

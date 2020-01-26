@@ -1,7 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace App\Domain\Replication\ActionHandler;
+namespace App\Domain\Replication\ActionHandler\Server;
 
+use App\Domain\Replication\ActionHandler\BaseReplicationHandler;
 use App\Domain\Replication\Exception\InvalidSchemaTypeException;
 use App\Domain\Replication\Exception\ValidationException;
 use App\Domain\Replication\Provider\SchemaProvider;
@@ -11,10 +12,7 @@ use App\Domain\Replication\Provider\SchemaProvider;
  */
 class ServeSchemaHandler extends BaseReplicationHandler
 {
-    /**
-     * @var SchemaProvider
-     */
-    private $provider;
+    private SchemaProvider $provider;
 
     public function __construct(SchemaProvider $provider)
     {

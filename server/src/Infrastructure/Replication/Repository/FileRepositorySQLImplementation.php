@@ -2,9 +2,15 @@
 
 namespace App\Infrastructure\Replication\Repository;
 
+use App\Domain\Bus;
+use App\Domain\Common\Exception\BusException;
+use App\Domain\Common\Service\Bus\DomainBus;
 use App\Domain\Replication\Collection\TimelinePartial;
-use App\Domain\Replication\DTO\File;
+use App\Domain\Replication\CompatibilityNames;
+use App\Domain\Replication\DTO\StreamList\SubmitData;
 use App\Domain\Replication\Repository\FileRepository;
+use App\Domain\SubmitDataTypes;
+use DateTime;
 use Doctrine\DBAL\Connection;
 
 /**
@@ -16,79 +22,48 @@ use Doctrine\DBAL\Connection;
  */
 class FileRepositorySQLImplementation implements FileRepository
 {
-    /**
-     * @var Connection
-     */
-    private $connection;
+    private Connection $connection;
+    private DomainBus $bus;
 
-    public function __construct(Connection $connection)
+    public function __construct(Connection $connection, DomainBus $bus)
     {
         $this->connection = $connection;
+        $this->bus        = $bus;
     }
 
     /**
-     * @{inheritdoc}
+     * {@inheritdoc}
+     *
+     * @throws BusException
      */
-    public function findFilesToReplicateSince(?\DateTime $since, ?int $page = null, int $buffer = 1000): array
+    public function findFilesToReplicateSince(?DateTime $since, int $limit = 256): TimelinePartial
     {
         if (!$since) {
-            $since = new \DateTime('1990-01-01');
-        }
-
-        $sql = '';
-        $params = [$since->format('Y-m-d H:i:s')];
-
-        if ($page !== null) {
-            $sql = ' LIMIT ? OFFSET ? ';
-            $params[] = $buffer;
-            $params[] = ($page - 1) * $buffer;
+            $since = new DateTime('1990-01-01');
         }
 
         $rows = $this->connection->fetchAll(
-            'SELECT fileName as filename, contentHash as contenthash, dateAdded as dateadded, id 
+            'SELECT fileName as filename
                  FROM file_registry
-                 WHERE dateAdded >= ?
+                 WHERE dateAdded > ?
                  ORDER BY dateAdded DESC
-                 ' . $sql,
-            $params
+                 LIMIT ? OFFSET 0',
+            [$since->format('Y-m-d H:i:s'), $limit]
         );
 
         $mapped = [];
 
         foreach ($rows as $row) {
-            $mapped[] = new File((int) $row['id'], $row['filename'], $row['dateadded'], $row['contenthash']);
+            $mapped[] = $this->bus->callForFirstMatching(Bus::GET_ENTITY_SUBMIT_DATA, [
+                'fileName' => $row['filename'],
+                'type'     => SubmitDataTypes::TYPE_FILE
+            ]);
         }
 
-        return $mapped;
+        return new TimelinePartial($mapped, $this->findMaxCount($since));
     }
 
-    /**
-     * @{inheritdoc}
-     */
-    public function findFilesToReplicateSinceLazy(?\DateTime $since = null, int $buffer = 1000): TimelinePartial
-    {
-        if (!$since) {
-            $since = new \DateTime('1990-01-01');
-        }
-
-        $maxCount = $this->findMaxCount($since);
-        $iterations = ceil($maxCount / $buffer);
-
-        /**
-         * @var callable[] $callbacks
-         */
-        $callbacks = [];
-
-        for ($currentIter = 1; $currentIter <= $iterations; $currentIter++) {
-            $callbacks[] = function () use ($since, $currentIter, $buffer) {
-                return $this->findFilesToReplicateSince($since, $currentIter, $buffer);
-            };
-        }
-
-        return new TimelinePartial($callbacks, $maxCount);
-    }
-
-    private function findMaxCount(?\DateTime $since): int
+    private function findMaxCount(?DateTime $since): int
     {
         $result = $this->connection->fetchColumn(
             'SELECT count(id) 
@@ -98,5 +73,15 @@ class FileRepositorySQLImplementation implements FileRepository
         );
 
         return (int) $result;
+    }
+
+    public function findExampleData(): TimelinePartial
+    {
+        $example = $this->bus->callForFirstMatching(Bus::GET_ENTITY_SUBMIT_DATA, [
+            'fileName' => CompatibilityNames::EXAMPLE_FILE_NAME,
+            'type'     => SubmitDataTypes::TYPE_FILE
+        ]);
+
+        return new TimelinePartial([$example], 1);
     }
 }

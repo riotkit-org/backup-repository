@@ -3,7 +3,7 @@
 namespace App\Controller\Replication;
 
 use App\Controller\BaseController;
-use App\Domain\Replication\ActionHandler\ServeSchemaHandler;
+use App\Domain\Replication\ActionHandler\Server\ServeSchemaHandler;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 

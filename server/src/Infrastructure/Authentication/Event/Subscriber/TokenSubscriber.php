@@ -65,7 +65,7 @@ class TokenSubscriber implements EventSubscriberInterface
         $tokenString = $this->getTokenStringFromRequest($event->getRequest());
 
         // Development token
-        if ($this->isDev && ($tokenString === Roles::TEST_TOKEN || $this->isProfilerRoute($event->getRequest()))) {
+        if ($this->isDev && (Roles::isTestToken($tokenString) || $this->isProfilerRoute($event->getRequest()))) {
             $this->handleTestToken();
             return;
         }

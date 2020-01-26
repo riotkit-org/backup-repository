@@ -213,13 +213,6 @@ abstract class BaseController implements ContainerAwareInterface
         throw new \InvalidArgumentException('Invalid data type "' . \gettype($value) . '" specified, cannot parse boolean');
     }
 
-    protected function createBaseUrl(Request $request): BaseUrl
-    {
-        $fixedDomain = $_ENV['APP_DOMAIN'] ?? '';
-
-        return new BaseUrl($request->isSecure(), $fixedDomain ?: $request->getHttpHost());
-    }
-
     private function collectErrorsForForm(FormInterface $form, string $inputName, array $errors = []): array
     {
         $errorsForField = [];

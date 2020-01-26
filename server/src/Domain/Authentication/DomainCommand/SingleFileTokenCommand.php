@@ -13,15 +13,8 @@ use App\Domain\Roles;
  */
 class SingleFileTokenCommand implements CommandHandler
 {
-    /**
-     * @var TokenManager
-     */
-    private $tokenManager;
-
-    /**
-     * @var TokenRepository
-     */
-    private $repository;
+    private TokenManager $tokenManager;
+    private TokenRepository $repository;
 
     public function __construct(TokenManager $tokenManager, TokenRepository $repository)
     {

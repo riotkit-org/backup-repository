@@ -32,7 +32,7 @@ abstract class ApplicationForm
 
     private static function extractJsonSchemaFieldTypeFromDoc(string $doc, string $fieldName): string
     {
-        preg_match('/@ApplicationForm::typeInSchema ([a-z]+)/i', $doc, $matches);
+        preg_match('/@internal ApplicationForm::typeInSchema ([a-z]+)/i', $doc, $matches);
 
         if (!isset($matches[1])) {
             throw new \LogicException('No valid "@ApplicationForm::typeInSchema" annotation defined on field "' . $fieldName . '"');

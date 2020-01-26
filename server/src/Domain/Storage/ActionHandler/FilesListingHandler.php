@@ -2,7 +2,6 @@
 
 namespace App\Domain\Storage\ActionHandler;
 
-use App\Domain\Common\ValueObject\BaseUrl;
 use App\Domain\Storage\Entity\AnonymousFile;
 use App\Domain\Storage\Entity\StoredFile;
 use App\Domain\Storage\Exception\AuthenticationException;
@@ -14,15 +13,8 @@ use App\Domain\Storage\Security\ReadSecurityContext;
 
 class FilesListingHandler
 {
-    /**
-     * @var FileRepository
-     */
-    private $repository;
-
-    /**
-     * @var PublicUrlFactory
-     */
-    private $urlFactory;
+    private FileRepository $repository;
+    private PublicUrlFactory $urlFactory;
 
     public function __construct(FileRepository $repository, PublicUrlFactory $urlFactory)
     {
@@ -33,13 +25,12 @@ class FilesListingHandler
     /**
      * @param FilesListingForm $form
      * @param ReadSecurityContext $securityContext
-     * @param BaseUrl $baseUrl
      *
      * @return array
      *
      * @throws AuthenticationException
      */
-    public function handle(FilesListingForm $form, ReadSecurityContext $securityContext, BaseUrl $baseUrl): array
+    public function handle(FilesListingForm $form, ReadSecurityContext $securityContext): array
     {
         $form->public = true; // enforce: only public files can be listed
 
@@ -51,7 +42,7 @@ class FilesListingHandler
 
         // normalize results
         $entriesUserHasAccessTo = $this->filterOutEntriesUserCannotSee($entries, $securityContext);
-        $entriesWithPublicLink = $this->prepareFilesForPublicResponse($entriesUserHasAccessTo, $baseUrl);
+        $entriesWithPublicLink = $this->prepareFilesForPublicResponse($entriesUserHasAccessTo);
 
         return [
             'results' => $entriesWithPublicLink,
@@ -72,7 +63,7 @@ class FilesListingHandler
     private function filterOutEntriesUserCannotSee(array $entries, ReadSecurityContext $securityContext): array
     {
         return array_map(
-            function (StoredFile $file) use ($securityContext) {
+            static function (StoredFile $file) use ($securityContext) {
                 if (!$securityContext->canUserSeeFileOnList($file)) {
                     return AnonymousFile::createFromStoredFile($file);
                 }
@@ -85,11 +76,10 @@ class FilesListingHandler
 
     /**
      * @param StoredFile[] $entries
-     * @param BaseUrl $baseUrl
      *
      * @return array
      */
-    private function prepareFilesForPublicResponse(array $entries, BaseUrl $baseUrl): array
+    private function prepareFilesForPublicResponse(array $entries): array
     {
         $output = [];
 
@@ -97,7 +87,7 @@ class FilesListingHandler
             $asArray = $entry->jsonSerialize();
 
             if (!$entry instanceof AnonymousFile) {
-                $asArray['publicUrl'] = $this->urlFactory->fromStoredFile($entry, $baseUrl);
+                $asArray['publicUrl'] = $this->urlFactory->fromStoredFile($entry);
             }
 
             $output[] = $asArray;

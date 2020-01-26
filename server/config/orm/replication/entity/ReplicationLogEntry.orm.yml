@@ -1,0 +1,44 @@
+App\Domain\Replication\Entity\ReplicationLogEntry:
+    type: entity
+    table: replication_log_entry
+    read_only: true
+
+    id:
+        contentHash:
+            type: string
+            unique: true
+            nullable: false
+            id: true
+            length: 64
+            generator:
+                strategy: NONE
+
+    fields:
+        date:
+            type: datetime_immutable
+
+        queueUpdateDate:
+            type: datetime_immutable
+            column: queue_update_date
+
+        timezone:
+            type: string
+            length: 36
+
+        id:
+            type: string
+            length: 128
+
+        type:
+            type: string
+            length: 36
+
+        form:
+            type: text
+            length: 2048
+
+        status:
+            type: integer
+            length: 1
+            options:
+                default: 0

@@ -9,19 +9,18 @@ use App\Domain\Backup\Form\Version\FetchVersionForm;
 use App\Domain\Backup\Repository\VersionRepository;
 use App\Domain\Backup\Response\Version\FetchResponse;
 use App\Domain\Backup\Security\VersioningContext;
-use App\Domain\Common\ValueObject\BaseUrl;
 
 class FetchHandler
 {
     /**
      * @var VersionRepository
      */
-    private $repository;
+    private VersionRepository $repository;
 
     /**
      * @var PublicUrlFactory
      */
-    private $urlFactory;
+    private PublicUrlFactory $urlFactory;
 
     public function __construct(VersionRepository $repository, PublicUrlFactory $urlFactory)
     {
@@ -32,13 +31,12 @@ class FetchHandler
     /**
      * @param FetchVersionForm  $form
      * @param VersioningContext $securityContext
-     * @param BaseUrl           $baseUrl
      *
      * @return FetchResponse
      *
      * @throws AuthenticationException
      */
-    public function handle(FetchVersionForm $form, VersioningContext $securityContext, BaseUrl $baseUrl): FetchResponse
+    public function handle(FetchVersionForm $form, VersioningContext $securityContext): FetchResponse
     {
         if (!$form->collection) {
             return FetchResponse::createWithNotFoundError();
@@ -56,7 +54,7 @@ class FetchHandler
         }
 
         return FetchResponse::createSuccessResponseFromUrl(
-            $this->urlFactory->getUrlForVersion($version, $baseUrl)
+            $this->urlFactory->getUrlForVersion($version)
                 ->withQueryParam('password', $form->password ?? '')
                 ->withQueryParam('_token', $form->token),
             $form->redirect

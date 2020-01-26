@@ -3,7 +3,7 @@
 namespace App\Domain\Replication\Factory;
 
 use App\Domain\Replication\Entity\Authentication\Token;
-use App\Domain\Replication\Entity\ReplicationClient;
+use App\Domain\Replication\DTO\ReplicationClient;
 use App\Domain\Replication\Security\ReplicationContext;
 use App\Domain\Replication\Service\CryptoService;
 use App\Domain\Replication\ValueObject\EncryptionAlgorithm;

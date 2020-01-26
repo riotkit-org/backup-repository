@@ -1,7 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace App\Domain\Replication\ActionHandler;
+namespace App\Domain\Replication\ActionHandler\Server;
 
+use App\Domain\Replication\ActionHandler\BaseReplicationHandler;
 use App\Domain\Replication\Exception\AuthenticationException;
 use App\Domain\Replication\Response\FileReadingResponse;
 use App\Domain\Replication\Security\ReplicationContext;
@@ -12,10 +13,7 @@ use App\Domain\Replication\Service\FileReadService;
  */
 class ServeFileContentHandler extends BaseReplicationHandler
 {
-    /**
-     * @var FileReadService
-     */
-    private $frs;
+    private FileReadService $frs;
 
     public function __construct(FileReadService $frs)
     {

@@ -9,19 +9,18 @@ use App\Domain\Backup\Response\Internal\StorageUploadResponse;
 use App\Domain\Backup\ValueObject\Filename;
 use App\Domain\Bus;
 use App\Domain\Common\Service\Bus\DomainBus;
-use App\Domain\Common\ValueObject\BaseUrl;
 
 class FileUploader
 {
     /**
      * @var DomainBus
      */
-    private $bus;
+    private DomainBus $bus;
 
     /**
      * @var NameFactory
      */
-    private $nameFactory;
+    private NameFactory $nameFactory;
 
     public function __construct(DomainBus $bus, NameFactory $nameFactory)
     {
@@ -29,7 +28,7 @@ class FileUploader
         $this->nameFactory = $nameFactory;
     }
 
-    public function upload(BackupCollection $collection, BaseUrl $baseUrl, Token $token): StorageUploadResponse
+    public function upload(BackupCollection $collection, Token $token): StorageUploadResponse
     {
         $responseAsArray = $this->bus->call(Bus::STORAGE_UPLOAD, [
             'form' => [
@@ -42,8 +41,7 @@ class FileUploader
                 'contentIdent'   => '_COLLECTION_' . $collection->getId()
             ],
 
-            'baseUrl' => $baseUrl,
-            'token'   => $token
+            'token' => $token
         ]);
 
         return StorageUploadResponse::createFromArray($responseAsArray);

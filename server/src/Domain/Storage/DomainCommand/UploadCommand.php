@@ -10,10 +10,7 @@ use App\Domain\Storage\ValueObject\Filename;
 
 class UploadCommand implements CommandHandler
 {
-    /**
-     * @var UploadFileByPostHandler
-     */
-    private $handler;
+    private UploadFileByPostHandler $handler;
 
     public function __construct(UploadFileByPostHandler $handler)
     {
@@ -23,18 +20,18 @@ class UploadCommand implements CommandHandler
     public function handle($input, string $path)
     {
         $form = new UploadByPostForm();
-        $form->password      = $input['form']['password'];
-        $form->tags          = $input['form']['tags'];
-        $form->fileName      = (new Filename($input['form']['fileName']))->getValue();
-        $form->fileOverwrite = $input['form']['fileOverwrite'];
-        $form->backUrl       = $input['form']['backUrl'];
-        $form->contentIdent  = $input['form']['contentIdent'] ?? '';
+        $form->password        = $input['form']['password'];
+        $form->tags            = $input['form']['tags'];
+        $form->fileName        = (new Filename($input['form']['fileName']))->getValue();
+        $form->fileOverwrite   = $input['form']['fileOverwrite'];
+        $form->backUrl         = $input['form']['backUrl'];
+        $form->contentIdent    = $input['form']['contentIdent'] ?? '';
+        $form->isFinalFilename = $input['form']['isFinalFilename'] ?? false;
+        $form->stream          = $input['form']['stream'];
 
         return \json_decode(
-            \json_encode(
-                $this->handler->handle($form, $input['baseUrl'], $input['token'])
-            ),
-            true
+            \json_encode($this->handler->handle($form, $input['token']), JSON_THROW_ON_ERROR, 512),
+            true, 512, JSON_THROW_ON_ERROR
         );
     }
 
@@ -43,13 +40,8 @@ class UploadCommand implements CommandHandler
         return true;
     }
 
-    /**
-     * @return array
-     */
     public function getSupportedPaths(): array
     {
-        return [
-            Bus::STORAGE_UPLOAD
-        ];
+        return [Bus::STORAGE_UPLOAD];
     }
 }

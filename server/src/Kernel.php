@@ -3,7 +3,10 @@
 namespace App;
 
 use App\Infrastructure\Common\DependencyInjection\DomainBusPass;
+use App\Infrastructure\Replication\DependencyInjection\ConfigurationProviderPass;
+use App\Infrastructure\Replication\DependencyInjection\EndpointValidatorPass;
 use App\Infrastructure\Storage\DependencyInjection\AntiHotlinkFeatureCompilerPass;
+use App\Infrastructure\Replication\DependencyInjection\TaskManagerPass;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\Config\Resource\FileResource;
@@ -15,7 +18,7 @@ class Kernel extends BaseKernel
 {
     use MicroKernelTrait;
 
-    const CONFIG_EXTS = '.{php,xml,yaml,yml}';
+    private const CONFIG_EXTS = '.{php,xml,yaml,yml}';
 
     public function getCacheDir()
     {
@@ -53,6 +56,12 @@ class Kernel extends BaseKernel
 
         $container->addCompilerPass(new DomainBusPass());
         $container->addCompilerPass(new AntiHotlinkFeatureCompilerPass());
+        $container->addCompilerPass(new TaskManagerPass());
+        $container->addCompilerPass(new ConfigurationProviderPass());
+        $container->addCompilerPass(new EndpointValidatorPass());
+
+        // other configuration stuff
+        $this->configureTimeZone();
     }
 
     protected function configureRoutes(RouteCollectionBuilder $routes)
@@ -62,5 +71,12 @@ class Kernel extends BaseKernel
         $routes->import($confDir.'/{routes}/*' . self::CONFIG_EXTS, '/', 'glob');
         $routes->import($confDir.'/{routes}/' . $this->environment . '/**/*' . self::CONFIG_EXTS, '/', 'glob');
         $routes->import($confDir.'/{routes}' . self::CONFIG_EXTS, '/', 'glob');
+    }
+
+    protected function configureTimeZone(): void
+    {
+        if (isset($_SERVER['TZ'])) {
+            \date_default_timezone_set($_SERVER['TZ']);
+        }
     }
 }

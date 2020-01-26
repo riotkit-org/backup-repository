@@ -107,11 +107,17 @@ class FileDoctrineRepository extends BaseRepository implements FileRepository
         return $qb->getQuery()->getResult();
     }
 
+    public function findExampleFile(): StoredFile
+    {
+        return StoredFile::newFromFilename(new Filename('example'));
+    }
+
     /**
      * @param FindByParameters $parameters
      * @return int
      *
      * @throws \Doctrine\ORM\NonUniqueResultException
+     * @throws NoResultException
      */
     public function getMultipleByPagesCount(FindByParameters $parameters): int
     {

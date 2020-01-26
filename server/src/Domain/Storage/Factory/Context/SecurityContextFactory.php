@@ -14,10 +14,7 @@ use App\Domain\Storage\Security\UploadSecurityContext;
 
 class SecurityContextFactory
 {
-    /**
-     * @var MimeTypeProvider
-     */
-    private $mimeProvider;
+    private MimeTypeProvider $mimeProvider;
 
     public function __construct(MimeTypeProvider $mimeTypeProvider)
     {

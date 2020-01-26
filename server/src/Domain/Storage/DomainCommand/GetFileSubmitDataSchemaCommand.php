@@ -8,26 +8,18 @@ use App\Domain\SubmitDataTypes;
 use App\Domain\Storage\Form\UploadForm;
 use App\Domain\Storage\Repository\FileRepository;
 use App\Domain\Storage\ValueObject\Filename;
+use ReflectionException;
 
 class GetFileSubmitDataSchemaCommand implements CommandHandler
 {
     /**
-     * @var FileRepository
-     */
-    private $repository;
-
-    public function __construct(FileRepository $repository)
-    {
-        $this->repository = $repository;
-    }
-
-    /**
      * @param mixed $input
      *
+     * @param string $path
      * @return mixed
      *
-     * @throws \ReflectionException
-     *
+     * @throws ReflectionException
+     * 
      * @see Bus::GET_ENTITY_SUBMIT_DATA_SCHEMA
      */
     public function handle($input, string $path)

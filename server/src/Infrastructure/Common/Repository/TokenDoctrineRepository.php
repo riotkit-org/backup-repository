@@ -17,18 +17,23 @@ abstract class TokenDoctrineRepository extends BaseRepository implements TokenRe
             $className = $this->getTokenClass();
         }
 
-        if (Roles::isTestToken($id)) {
+        if (Roles::isTestToken($id) || Roles::isInternalApplicationToken($id)) {
             /**
              * @var Token $token
              */
             $token = new $className();
-            $token->setId(Roles::TEST_TOKEN);
+            $token->setId($id);
             $token->setRoles([Roles::ROLE_ADMINISTRATOR]);
 
             return $token;
         }
 
         return $this->_em->find($className, $id);
+    }
+
+    public function findApplicationInternalToken(): Token
+    {
+        return $this->findTokenById(Roles::INTERNAL_CONSOLE_TOKEN, Token::class);
     }
 
     protected function getTokenClass(): string

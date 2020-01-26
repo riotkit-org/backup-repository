@@ -7,6 +7,12 @@ namespace App\Domain;
  */
 final class SubmitDataTypes
 {
-    public const TYPE_FILE       = 'file';
-    public const TYPE_COLLECTION = 'collection';
+    public const TYPE_TOKEN           = 'token';
+    public const TYPE_FILE            = 'file';
+    public const TYPE_COLLECTION      = 'collection';
+    public const TYPE_COLLECTION_FILE = 'collection-file';
+
+    public const TYPES = [
+        self::TYPE_FILE
+    ];
 }

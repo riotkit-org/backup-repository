@@ -13,15 +13,8 @@ use Symfony\Component\HttpFoundation\Response;
 
 class FilesListingController extends BaseController
 {
-    /**
-     * @var FilesListingHandler
-     */
-    private $handler;
-
-    /**
-     * @var SecurityContextFactory
-     */
-    private $authFactory;
+    private FilesListingHandler $handler;
+    private SecurityContextFactory $authFactory;
 
     public function __construct(FilesListingHandler $handler, SecurityContextFactory $authFactory)
     {
@@ -49,12 +42,11 @@ class FilesListingController extends BaseController
             ->createListingContextFromTokenAndForm($this->getLoggedUserToken(), $form);
 
         return $this->wrap(
-            function () use ($form, $securityContext, $request) {
+            function () use ($form, $securityContext) {
                 return new JsonResponse(
                     $this->handler->handle(
                         $form,
-                        $securityContext,
-                        $this->createBaseUrl($request)
+                        $securityContext
                     ),
                     JsonResponse::HTTP_OK
                 );

@@ -1,21 +1,14 @@
 <?php declare(strict_types=1);
 
-namespace App\Domain\Replication\Entity;
+namespace App\Domain\Replication\DTO;
 
 use App\Domain\Replication\ValueObject\EncryptionAlgorithm;
 use App\Domain\Replication\ValueObject\EncryptionPassphrase;
 
 class ReplicationClient
 {
-    /**
-     * @var EncryptionPassphrase
-     */
-    public $passphrase;
-
-    /**
-     * @var EncryptionAlgorithm
-     */
-    public $algorithm;
+    public EncryptionPassphrase $passphrase;
+    public EncryptionAlgorithm $algorithm;
 
     public function __construct(EncryptionPassphrase $passphrase, EncryptionAlgorithm $algorithm)
     {

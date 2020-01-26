@@ -1,0 +1,40 @@
+version: "3.5"
+
+#
+# This file extends docker-compose.yaml by adding additional services and environment variables to existing services
+#
+
+volumes:
+    replica_data_dir:
+
+services:
+    queue:
+        image: rabbitmq:3
+        environment:
+            RABBITMQ_DEFAULT_USER: riotkit_queue_user
+            RABBITMQ_DEFAULT_PASS: some-password-there
+
+    replica_filerepository:
+        image: quay.io/riotkit/file-repository:${FILE_REPOSITORY_VERSION}
+        environment:
+            APP_ENV: "dev"
+            SECURITY_ADMIN_TOKEN: "${SECURITY_ADMIN_TOKEN}"
+            HEALTH_CHECK_CODE: "${HEALTH_CHECK_CODE}"
+            BASE_URL: "http://localhost:9001" # public URL
+
+            DATABASE_PATH: "./var/replica.sqlite3"
+            DATABASE_URL: "sqlite3://./var/replica.sqlite3"
+            DATABASE_PASSWORD: ""
+            DATABASE_USER: ""
+            DATABASE_DRIVER: "pdo_sqlite"
+            DATABASE_PORT: ""
+
+            # replication configuration
+            REPLICATION_QUEUE_DSN: amqp://riotkit_queue_user:some-password-there@queue:5672/%2f/messages
+            REPLICATION_PRIMARY_URL: http://filerepository  # address to the PRIMARY server in the internal network
+            REPLICATION_SECRET: test-token-full-permissions
+        ports:
+            - 9001:80
+        volumes:
+            - "../:/var/www/html"
+            - "replica_data_dir:/var/www/html/var"

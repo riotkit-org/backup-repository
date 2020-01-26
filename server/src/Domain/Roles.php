@@ -16,7 +16,8 @@ namespace App\Domain;
  */
 final class Roles
 {
-    public const TEST_TOKEN = 'test-token-full-permissions';
+    public const TEST_TOKEN             = 'test-token-full-permissions';
+    public const INTERNAL_CONSOLE_TOKEN = 'internal-console-token';
 
     //
     //
@@ -221,5 +222,17 @@ final class Roles
     public static function isTestToken(?string $tokenId): bool
     {
         return $tokenId === static::TEST_TOKEN;
+    }
+
+    /**
+     * Internal token is used only in CLI commands
+     * Cannot be used within any remote access (eg. via HTTP)
+     *
+     * @param string|null $tokenId
+     * @return bool
+     */
+    public static function isInternalApplicationToken(?string $tokenId): bool
+    {
+        return $tokenId === static::INTERNAL_CONSOLE_TOKEN;
     }
 }

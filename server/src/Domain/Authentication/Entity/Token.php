@@ -22,7 +22,7 @@ class Token extends \App\Domain\Common\SharedEntity\Token
     /**
      * @var bool
      */
-    private $active;
+    private bool $active;
 
     /**
      * @throws \Exception
