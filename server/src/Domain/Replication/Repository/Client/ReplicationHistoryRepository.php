@@ -10,6 +10,8 @@ interface ReplicationHistoryRepository
 {
     public function findLastEntryTimestamp(): ?DateTimeImmutable;
 
+    public function getErrorsCount(): int;
+
     /**
      * @param ReplicationLogEntry $entry
      *

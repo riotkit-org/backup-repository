@@ -18,6 +18,7 @@ parameters:
     env(REPLICATION_SECRET): ''
     env(REPLICATION_PRIMARY_URL): ''
     env(REPLICATION_QUEUE_DSN): ''
+    env(BASE_URL): ''
 
 services:
     # default configuration for services in *this* file
@@ -40,10 +41,9 @@ services:
         resource: '../src/Controller'
         tags: ['controller.service_arguments']
 
-    App\Controller\Technical\HealthController:
+    App\Domain\Technical\ActionHandler\HealthCheckHandler:
+        autowire: true
         arguments:
-            $fs: '@App\Domain\Storage\Manager\FilesystemManager'
-            $ORMConnectionCheck: '@App\Infrastructure\Common\Service\ORMConnectionCheck'
             $secretCode: '%env(HEALTH_CHECK_CODE)%'
 
     App\Domain\Authentication\ActionHandler\TokenGenerationHandler:

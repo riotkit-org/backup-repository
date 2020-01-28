@@ -9,11 +9,15 @@ volumes:
 
 services:
     queue:
+        #image: redis:5.0-alpine
         image: rabbitmq:3
         environment:
             RABBITMQ_DEFAULT_USER: riotkit_queue_user
             RABBITMQ_DEFAULT_PASS: some-password-there
 
+    #
+    # Full File Repository instance in REPLICA MODE
+    #
     replica_filerepository:
         image: quay.io/riotkit/file-repository:${FILE_REPOSITORY_VERSION}
         environment:
@@ -21,20 +25,39 @@ services:
             SECURITY_ADMIN_TOKEN: "${SECURITY_ADMIN_TOKEN}"
             HEALTH_CHECK_CODE: "${HEALTH_CHECK_CODE}"
             BASE_URL: "http://localhost:9001" # public URL
-
-            DATABASE_PATH: "./var/replica.sqlite3"
-            DATABASE_URL: "sqlite3://./var/replica.sqlite3"
-            DATABASE_PASSWORD: ""
-            DATABASE_USER: ""
-            DATABASE_DRIVER: "pdo_sqlite"
-            DATABASE_PORT: ""
-
-            # replication configuration
-            REPLICATION_QUEUE_DSN: amqp://riotkit_queue_user:some-password-there@queue:5672/%2f/messages
-            REPLICATION_PRIMARY_URL: http://filerepository  # address to the PRIMARY server in the internal network
-            REPLICATION_SECRET: test-token-full-permissions
+        env_file:
+            - replica.env
         ports:
             - 9001:80
         volumes:
-            - "../:/var/www/html"
+            #- "../:/var/www/html"
+            - "replica_data_dir:/var/www/html/var"
+
+    #
+    # Scheduler only - picks tasks from PRIMARY server and puts into the queue
+    #
+    replica_scheduler:
+        image: quay.io/riotkit/file-repository-scheduler:${FILE_REPOSITORY_VERSION}
+        env_file:
+            - replica.env
+        environment:
+            WAIT_FOR_INSTACE_URL: 'http://replica_filerepository'
+            WAIT_FOR_INSTANCE_TOKEN: 'test-token-full-permissions'
+        volumes:
+            #- "../:/var/www/html"
+            - "replica_data_dir:/var/www/html/var"
+
+    #
+    # Workers are picking and executing the queued tasks, collected by scheduler
+    # The workers are easily scalable
+    #
+    replica_worker:
+        image: quay.io/riotkit/file-repository-worker:${FILE_REPOSITORY_VERSION}
+        env_file:
+            - replica.env
+        environment:
+            WAIT_FOR_INSTACE_URL: 'http://replica_filerepository'
+            WAIT_FOR_INSTANCE_TOKEN: 'test-token-full-permissions'
+        volumes:
+            #- "../:/var/www/html"
             - "replica_data_dir:/var/www/html/var"

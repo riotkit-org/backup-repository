@@ -40,6 +40,21 @@ class DoctrineReplicationHistoryRepository extends BaseRepository implements Rep
         return $entry->getTimestamp();
     }
 
+    public function getErrorsCount(): int
+    {
+        $qb = $this->createQueryBuilder('entry');
+        $qb->select('COUNT(entry)');
+        $qb->where('entry.status = :status');
+        $qb->setParameter('status', ReplicationLogEntry::STATUS_ERROR);
+
+        try {
+            return (int) $qb->getQuery()->getSingleScalarResult();
+
+        } catch (NoResultException $e) {
+            return 0;
+        }
+    }
+
     public function wasEntryAlreadyFetched(ReplicationLogEntry $entry): bool
     {
         $qb = $this->createQueryBuilder('entry');

@@ -1,0 +1,3 @@
+FROM riotkit/file-repository-replica-base
+
+ENTRYPOINT ["/entrypoint.scheduler.sh"]

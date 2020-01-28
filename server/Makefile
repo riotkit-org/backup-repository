@@ -32,8 +32,23 @@ run_dev: ## Run a developer web server (do not use on production)
 deploy: install install_frontend ## Deploy the application
 
 build_container: ## Build docker image (params: TAG)
-	${SUDO} docker build .. -f ./.infrastructure/Dockerfile.x86_64 -t quay.io/riotkit/file-repository:${TAG}
+	j2 ./.infrastructure/primary/Dockerfile.x86_64.j2 > ./.infrastructure/primary/Dockerfile.x86_64
+	${SUDO} docker build .. -f ./.infrastructure/primary/Dockerfile.x86_64 -t quay.io/riotkit/file-repository:${TAG}
 	${SUDO} docker tag quay.io/riotkit/file-repository:${TAG} quay.io/riotkit/file-repository:latest-build
+	rm ./.infrastructure/primary/Dockerfile.x86_64
+
+build_replica_scheduler_container: build_replica_base_image ## Build docker image for REPLICA distributor (params: TAG)
+	${SUDO} docker build .. -f ./.infrastructure/replica/Dockerfile.scheduler.x86_64 -t quay.io/riotkit/file-repository-scheduler:${TAG}
+	${SUDO} docker tag quay.io/riotkit/file-repository-scheduler:${TAG} quay.io/riotkit/file-repository-scheduler:latest-build
+
+build_replica_worker_container: build_replica_base_image ## Build docker image for REPLICA worker (params: TAG)
+	${SUDO} docker build .. -f ./.infrastructure/replica/Dockerfile.worker.x86_64 -t quay.io/riotkit/file-repository-worker:${TAG}
+	${SUDO} docker tag quay.io/riotkit/file-repository-worker:${TAG} quay.io/riotkit/file-repository-worker:latest-build
+
+build_replica_base_image: ## Build a base docker image for REPLICA container
+	j2 ./.infrastructure/replica/Dockerfile.base.x86_64.j2 > ./.infrastructure/replica/Dockerfile.base.x86_64
+	${SUDO} docker build .. -f ./.infrastructure/replica/Dockerfile.base.x86_64 -t riotkit/file-repository-replica-base
+	rm ./.infrastructure/replica/Dockerfile.base.x86_64
 
 push_container: ## Push docker container
 	${SUDO} docker push quay.io/riotkit/file-repository:${TAG}

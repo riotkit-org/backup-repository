@@ -2,13 +2,10 @@
 
 namespace App\Controller\Technical;
 
-use App\Domain\Storage\Exception\StorageException;
-use App\Domain\Storage\Manager\FilesystemManager;
-use App\Infrastructure\Common\Service\ORMConnectionCheck;
+use App\Domain\Technical\ActionHandler\HealthCheckHandler;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Swagger\Annotations as SWG;
 
 /**
@@ -16,26 +13,11 @@ use Swagger\Annotations as SWG;
  */
 class HealthController extends AbstractController
 {
-    /**
-     * @var FilesystemManager
-     */
-    private $fs;
+    private HealthCheckHandler $handler;
 
-    /**
-     * @var ORMConnectionCheck
-     */
-    private $ormConnectionCheck;
-
-    /**
-     * @var string
-     */
-    private $secretCode;
-
-    public function __construct(FilesystemManager $fs, ORMConnectionCheck $ORMConnectionCheck, string $secretCode)
+    public function __construct(HealthCheckHandler $handler)
     {
-        $this->fs                 = $fs;
-        $this->ormConnectionCheck = $ORMConnectionCheck;
-        $this->secretCode         = $secretCode;
+        $this->handler = $handler;
     }
 
     /**
@@ -92,60 +74,13 @@ class HealthController extends AbstractController
      */
     public function healthAction(Request $request): JsonResponse
     {
-        if ($request->get('code') !== $this->secretCode || !$request->get('code')) {
-            throw new AccessDeniedHttpException();
-        }
-
-        $storageIsOk = false;
-        $dbIsOk      = false;
-        $messages = ['database' => [], 'storage' => []];
-
-        try {
-            $dbIsOk = $this->ormConnectionCheck->test();
-
-        } catch (\Exception $exception) {
-            $messages['database'][] = $exception->getMessage();
-        }
-
-        try {
-            $this->fs->test();
-            $storageIsOk = true;
-
-        } catch (StorageException $exception) {
-            $messages['storage'][] = $exception->getMessage();
-
-            if ($exception->getPrevious()) {
-                $messages['storage'][] = $exception->getPrevious()->getMessage();
-            }
-        }
-
-        $globalStatus = $storageIsOk && $dbIsOk;
+        $result = $this->handler->handle($request->get('code'));
 
         return new JsonResponse(
-            json_encode(
-                [
-                    'status' => [
-                        'storage'  => $storageIsOk,
-                        'database' => $dbIsOk
-                    ],
-                    'messages'      => $messages,
-                    'global_status' => $globalStatus,
-                    'ident'         => [
-                        'global_status=' . $this->boolToStr($globalStatus),
-                        'storage=' . $this->boolToStr($storageIsOk),
-                        'database=' . $this->boolToStr($dbIsOk)
-                    ]
-                ],
-                JSON_PRETTY_PRINT
-            ),
-            $globalStatus ? JsonResponse::HTTP_OK : JsonResponse::HTTP_SERVICE_UNAVAILABLE,
+            json_encode($result['response'], JSON_PRETTY_PRINT),
+            $result['status'] ? JsonResponse::HTTP_OK : JsonResponse::HTTP_SERVICE_UNAVAILABLE,
             [],
             true
         );
-    }
-
-    private function boolToStr(bool $value): string
-    {
-        return $value ? 'True' : 'False';
     }
 }
