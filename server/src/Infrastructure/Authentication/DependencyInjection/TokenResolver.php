@@ -13,7 +13,7 @@ class TokenResolver implements ParamConverterInterface
     /**
      * @var Security
      */
-    private $security;
+    private Security $security;
 
     public function __construct(Security $security)
     {

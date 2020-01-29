@@ -4,6 +4,7 @@ namespace App;
 
 use App\Infrastructure\Common\DependencyInjection\DomainBusPass;
 use App\Infrastructure\Storage\DependencyInjection\AntiHotlinkFeatureCompilerPass;
+use App\Infrastructure\Technical\DependencyInjection\VersionExtension;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\Config\Resource\FileResource;
@@ -44,6 +45,8 @@ class Kernel extends BaseKernel
         // if you are using symfony/dependency-injection 4.0+ as it's the default behavior
         $container->setParameter('container.autowiring.strict_mode', true);
         $container->setParameter('container.dumper.inline_class_loader', true);
+        VersionExtension::load($container);
+
         $confDir = $this->getProjectDir() . '/config';
 
         $loader->load($confDir.'/{packages}/*' . self::CONFIG_EXTS, 'glob');

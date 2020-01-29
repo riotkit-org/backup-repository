@@ -4,11 +4,19 @@ namespace App\Domain\Common\Service;
 
 use Symfony\Component\Yaml\Yaml;
 
+/**
+ * NOTICE: No dependency injection support. The __construct() cannot use DI as we want to use this class on very low level.
+ */
 class Versioning
 {
     private ?string $version = null;
     private string $filePath = __DIR__ . '/../../../../config/version.yaml';
 
+    /**
+     * @return string
+     *
+     * @throws \Exception
+     */
     public function getVersion(): string
     {
         if ($this->version) {
