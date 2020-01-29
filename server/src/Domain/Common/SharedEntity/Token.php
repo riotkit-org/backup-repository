@@ -11,8 +11,8 @@ class Token
     public const FIELD_MAX_ALLOWED_FILE_SIZE  = 'maxAllowedFileSize';
     public const FIELD_ALLOWED_IPS            = 'allowedIpAddresses';
     public const FIELD_ALLOWED_UAS            = 'allowedUserAgents';
-    public const FIELD_REPLICATION_ENC_METHOD = 'replicationEncryptionMethod';
-    public const FIELD_REPLICATION_ENC_KEY    = 'replicationEncryptionKey';
+    public const FIELD_SECURE_COPY_ENC_METHOD = 'secureCopyEncryptionMethod';
+    public const FIELD_SECURE_COPY_ENC_KEY    = 'secureCopyEncryptionKey';
 
     /**
      * @var string $id

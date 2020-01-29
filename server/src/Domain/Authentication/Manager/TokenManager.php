@@ -78,8 +78,8 @@ class TokenManager
     private function processTokenData(array $data): array
     {
         // encrypt the key with master key, as it should not be visible to the user
-        if ($data[Token::FIELD_REPLICATION_ENC_KEY] ?? '') {
-            $data[Token::FIELD_REPLICATION_ENC_KEY] = $this->cryptoService->encode($data[Token::FIELD_REPLICATION_ENC_KEY]);
+        if ($data[Token::FIELD_SECURE_COPY_ENC_KEY] ?? '') {
+            $data[Token::FIELD_SECURE_COPY_ENC_KEY] = $this->cryptoService->encode($data[Token::FIELD_SECURE_COPY_ENC_KEY]);
         }
 
         return $data;

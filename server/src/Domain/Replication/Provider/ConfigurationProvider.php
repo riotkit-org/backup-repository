@@ -6,13 +6,11 @@ class ConfigurationProvider
 {
     private string $token;
     private string $primaryUrl;
-    private string $queueDsn;
 
-    public function __construct(string $token, string $primaryUrl, string $queueDsn)
+    public function __construct(string $token, string $primaryUrl)
     {
         $this->token      = $token;
-        $this->primaryUrl = $primaryUrl;
-        $this->queueDsn   = $queueDsn;
+        $this->primaryUrl = rtrim($primaryUrl, ' /');
     }
 
     public function getToken(): string
@@ -25,13 +23,8 @@ class ConfigurationProvider
         return $this->primaryUrl;
     }
 
-    public function getQueueDsn(): string
-    {
-        return $this->queueDsn;
-    }
-
     public function isNodeConfiguredAsReplica(): bool
     {
-        return $this->primaryUrl !== '' && $this->queueDsn !== '';
+        return $this->primaryUrl !== '';
     }
 }

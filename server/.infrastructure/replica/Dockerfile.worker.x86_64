@@ -1,3 +1,0 @@
-FROM riotkit/file-repository-replica-base
-
-ENTRYPOINT ["/entrypoint.worker.sh"]

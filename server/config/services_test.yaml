@@ -18,6 +18,6 @@ services:
         public: true
         autowire: true
 
-    App\Infrastructure\Replication\Repository\FileRepositorySQLImplementation:
+    App\Infrastructure\SecureCopy\Repository\FileRepositorySQLImplementation:
         public: true
         autowire: true

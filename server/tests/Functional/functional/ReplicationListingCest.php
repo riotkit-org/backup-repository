@@ -23,14 +23,14 @@ class ReplicationListingCest
 
     public function testUserWithReplicationRoleCanSeeReplicationList(FunctionalTester $I): void
     {
-        $I->haveRoles(['upload.all', 'replication.stream']);
+        $I->haveRoles(['upload.all', 'securecopy.stream']);
         $I->sendGET(Urls::URL_REPLICATION);
         $I->canSeeResponseCodeIs(200);
     }
 
     public function testCreateTokenWithReplicationPassword(FunctionalTester $I): void
     {
-        $I->haveRoles(['upload.all', 'replication.stream'], [
+        $I->haveRoles(['upload.all', 'securecopy.stream'], [
             'data' => [
                 'replicationEncryptionMethod' => 'aes-128-cbc',
                 'replicationEncryptionKey'    => 'Worlds-26-richest-people-control-as-much-as-poorest-50-percent'
@@ -42,7 +42,7 @@ class ReplicationListingCest
 
     public function testEncryptionMethodValueValidation(FunctionalTester $I): void
     {
-        $I->haveRoles(['upload.all', 'replication.stream'], [
+        $I->haveRoles(['upload.all', 'securecopy.stream'], [
             'data' => [
                 'replicationEncryptionMethod' => 'SOME',
                 'replicationEncryptionKey'    => 'class-struggle36'

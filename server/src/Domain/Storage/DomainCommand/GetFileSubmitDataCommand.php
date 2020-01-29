@@ -4,7 +4,7 @@ namespace App\Domain\Storage\DomainCommand;
 
 use App\Domain\Bus;
 use App\Domain\Common\Service\Bus\CommandHandler;
-use App\Domain\Replication\CompatibilityNames;
+use App\Domain\SecureCopy\CompatibilityNames;
 use App\Domain\Storage\DTO\SubmitData;
 use App\Domain\Storage\Form\UploadByPostForm;
 use App\Domain\SubmitDataTypes;
@@ -32,8 +32,7 @@ class GetFileSubmitDataCommand implements CommandHandler
     public function handle($input, string $path): ?SubmitData
     {
         $fileName = new Filename($input['fileName'] ?? '');
-        $file     = $fileName === CompatibilityNames::EXAMPLE_FILE_NAME
-            ? $this->repository->findExampleFile() : $this->repository->findByName($fileName);
+        $file     = $this->repository->findByName($fileName);
 
         if (!$file) {
             return null;

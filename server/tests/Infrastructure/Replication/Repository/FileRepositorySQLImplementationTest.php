@@ -2,7 +2,7 @@
 
 namespace Tests\Infrastructure\Replication\Repository;
 
-use App\Infrastructure\Replication\Repository\FileRepositorySQLImplementation;
+use App\Infrastructure\SecureCopy\Repository\FileRepositorySQLImplementation;
 use Doctrine\DBAL\Connection;
 use Symfony\Bundle\FrameworkBundle\Client;
 use Tests\FunctionalTestCase;
@@ -45,7 +45,7 @@ class FileRepositorySQLImplementationTest extends FunctionalTestCase
          */
         $repository = $client->getContainer()->get(FileRepositorySQLImplementation::class);
 
-        $results = $repository->findFilesToReplicateSince($sice);
+        $results = $repository->findFilesSince($sice);
 
         $this->assertEquals($expectedCount, \count($results));
     }

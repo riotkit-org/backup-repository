@@ -29,5 +29,5 @@ class Urls
     public const URL_COLLECTION_GRANT_TOKEN = '/repository/collection/{{ collectionId }}/token';
     public const URL_COLLECTION_REVOKE_TOKEN = '/repository/collection/{{ collectionId }}/token/{{ tokenId }}';
 
-    public const URL_REPLICATION = '/replication/list';
+    public const URL_REPLICATION = '/securecopy/list';
 }

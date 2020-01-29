@@ -378,9 +378,6 @@
             "ref": "9746f0823302d7980e5273ef7a69ef3f5ac80914"
         }
     },
-    "symfony/amqp-pack": {
-        "version": "v1.0.12"
-    },
     "symfony/asset": {
         "version": "v4.3.2"
     },
@@ -572,12 +569,6 @@
             "version": "3.3",
             "ref": "f8a63faa0d9521526499c0a8f403c9964ecb0527"
         }
-    },
-    "symfony/serializer": {
-        "version": "v4.4.2"
-    },
-    "symfony/serializer-pack": {
-        "version": "v1.0.2"
     },
     "symfony/stopwatch": {
         "version": "v4.1.4"

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace DoctrineMigrations;
 
-use App\Domain\Replication\Entity\ReplicationLogEntry;
+use App\Domain\SecureCopy\Entity\ReplicationLogEntry;
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\Migrations\AbstractMigration;

@@ -10,27 +10,16 @@ use App\Infrastructure\Authentication\Token\TokenTransport;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpKernel\Event\GetResponseEvent;
+use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class TokenSubscriber implements EventSubscriberInterface
 {
     public const EVENT_PRIORITY = 0;
 
-    /**
-     * @var IncomingTokenFactory
-     */
-    private $factory;
-
-    /**
-     * @var TokenStorageInterface
-     */
-    private $tokenStorage;
-
-    /**
-     * @var bool
-     */
-    private $isDev;
+    private IncomingTokenFactory $factory;
+    private TokenStorageInterface $tokenStorage;
+    private bool $isDev;
 
     public function __construct(IncomingTokenFactory $factory, TokenStorageInterface $tokenStorage, bool $isDev)
     {
@@ -49,11 +38,11 @@ class TokenSubscriber implements EventSubscriberInterface
     }
 
     /**
-     * @param GetResponseEvent $event
+     * @param RequestEvent $event
      *
      * @throws \Exception
      */
-    public function handleIncomingToken(GetResponseEvent $event): void
+    public function handleIncomingToken(RequestEvent $event): void
     {
         $request = $event->getRequest();
 

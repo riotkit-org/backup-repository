@@ -1,0 +1,23 @@
+secure_copy.dump_all:
+    path: /secure-copy/list
+    controller: 'App\Controller\SecureCopy\GenerateEventListController::dumpAction'
+    methods: ['GET']
+    defaults:
+        _secured: true
+        _access_in_replica_mode: local
+
+secure_copy.files.submitdata.fetch:
+    path: /secure-copy/file/{fileName}/submitdata
+    controller: 'App\Controller\SecureCopy\SubmitData\ServeSubmitDataController::dumpSubmitDataAction'
+    methods: ['GET']
+    defaults:
+        _secured: true
+        _access_in_replica_mode: local
+
+secure_copy.files.content.fetch:
+    path: /secure-copy/file/{fileName}/content
+    controller: 'App\Controller\SecureCopy\ServeFileController::fetchAction'
+    methods: ['GET']
+    defaults:
+        _secured: true
+        _access_in_replica_mode: local

@@ -1,12 +1,9 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace App;
 
 use App\Infrastructure\Common\DependencyInjection\DomainBusPass;
-use App\Infrastructure\Replication\DependencyInjection\ConfigurationProviderPass;
-use App\Infrastructure\Replication\DependencyInjection\EndpointValidatorPass;
 use App\Infrastructure\Storage\DependencyInjection\AntiHotlinkFeatureCompilerPass;
-use App\Infrastructure\Replication\DependencyInjection\TaskManagerPass;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
 use Symfony\Component\Config\Loader\LoaderInterface;
 use Symfony\Component\Config\Resource\FileResource;
@@ -56,9 +53,6 @@ class Kernel extends BaseKernel
 
         $container->addCompilerPass(new DomainBusPass());
         $container->addCompilerPass(new AntiHotlinkFeatureCompilerPass());
-        $container->addCompilerPass(new TaskManagerPass());
-        $container->addCompilerPass(new ConfigurationProviderPass());
-        $container->addCompilerPass(new EndpointValidatorPass());
 
         // other configuration stuff
         $this->configureTimeZone();

@@ -2,8 +2,6 @@
 
 namespace App\Domain\Technical\ActionHandler;
 
-use App\Domain\Replication\Exception\ReplicaNodeUnhealthyError;
-use App\Domain\Replication\Service\ReplicationStatusCheck;
 use App\Domain\Storage\Exception\StorageException;
 use App\Domain\Storage\Manager\FilesystemManager;
 use App\Infrastructure\Common\Service\ORMConnectionCheck;
@@ -13,17 +11,12 @@ class HealthCheckHandler
 {
     private FilesystemManager $fs;
     private ORMConnectionCheck $ormConnectionCheck;
-    private ReplicationStatusCheck $replicationCheck;
     private string $secretCode;
 
-    public function __construct(FilesystemManager $fs,
-                                ORMConnectionCheck $ORMConnectionCheck,
-                                ReplicationStatusCheck $replicationCheck,
-                                string $secretCode)
+    public function __construct(FilesystemManager $fs, ORMConnectionCheck $ORMConnectionCheck, string $secretCode)
     {
         $this->fs                 = $fs;
         $this->ormConnectionCheck = $ORMConnectionCheck;
-        $this->replicationCheck   = $replicationCheck;
         $this->secretCode         = $secretCode;
     }
 
@@ -36,12 +29,10 @@ class HealthCheckHandler
 
         $storageIsOk   = false;
         $dbIsOk        = false;
-        $replicaStatus = false;
 
         $messages = [
             'database'        => [],
-            'storage'         => [],
-            'replica_status'  => []
+            'storage'         => []
         ];
 
         // database
@@ -65,31 +56,19 @@ class HealthCheckHandler
             }
         }
 
-        // replication
-        try {
-            $this->replicationCheck->assertIsHealthy();
-            $replicaStatus = $this->replicationCheck->isConfiguredAsReplica() ? true : 'Not configured as replica';
-
-        } catch (ReplicaNodeUnhealthyError $exception) {
-            $messages['replica_status'][] = $exception->getMessage();
-            $replicaStatus = false;
-        }
-
-        $globalStatus = $storageIsOk && $dbIsOk && $replicaStatus !== false;
+        $globalStatus = $storageIsOk && $dbIsOk;
 
         return [
             'response' => [
                 'status' => [
                     'storage'  => $storageIsOk,
-                    'database' => $dbIsOk,
-                    'replica'  => $replicaStatus
+                    'database' => $dbIsOk
                 ],
                 'messages'      => $messages,
                 'global_status' => $globalStatus,
                 'ident'         => [
                     'global_status=' . $this->boolToStr($globalStatus),
                     'storage=' . $this->boolToStr($storageIsOk),
-                    'replica=' . $this->boolToStr($replicaStatus),
                     'database=' . $this->boolToStr($dbIsOk)
                 ]
             ],

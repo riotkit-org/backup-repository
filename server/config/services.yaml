@@ -17,7 +17,6 @@ parameters:
     env(ENC_TOKEN_PHRASE): "test123"
     env(REPLICATION_SECRET): ''
     env(REPLICATION_PRIMARY_URL): ''
-    env(REPLICATION_QUEUE_DSN): ''
     env(BASE_URL): ''
 
 services:
@@ -61,10 +60,15 @@ services:
             $secret: '%env(ENC_TOKEN_PHRASE)%'
 
     App\Infrastructure\Authentication\Event\Subscriber\TokenSubscriber:
-        class: App\Infrastructure\Authentication\Event\Subscriber\TokenSubscriber
+        autowire: true
+        autoconfigure: true
         arguments:
-            $factory: '@App\Domain\Authentication\Factory\IncomingTokenFactory'
-            $tokenStorage: '@security.token_storage'
+            $isDev: '%kernel.debug%'
+
+    App\Infrastructure\Replication\Event\Subscriber\ReplicationRoutingSubscriber:
+        autowire: true
+        autoconfigure: true
+        arguments:
             $isDev: '%kernel.debug%'
 
     App\Domain\Storage\Repository\StagingAreaRepository:
@@ -115,17 +119,12 @@ services:
         arguments:
             $readOnly: '%env(bool:READ_ONLY)%'
 
-    App\Infrastructure\Replication\Repository\TokenDoctrineRepository:
+    App\Infrastructure\SecureCopy\Repository\TokenDoctrineRepository:
         autowire: true
         arguments:
             $readOnly: '%env(bool:READ_ONLY)%'
 
     App\Infrastructure\Backup\Repository\TokenDoctrineRepository:
-        autowire: true
-        arguments:
-            $readOnly: '%env(bool:READ_ONLY)%'
-
-    App\Infrastructure\Replication\Repository\Client\DoctrineReplicationHistoryRepository:
         autowire: true
         arguments:
             $readOnly: '%env(bool:READ_ONLY)%'
@@ -136,7 +135,7 @@ services:
             $fs: '@App\Domain\Backup\Service\Filesystem'
             $readOnly: '%env(bool:READ_ONLY)%'
 
-    App\Infrastructure\Replication\Service\AESCryptoService:
+    App\Infrastructure\SecureCopy\Service\AESCryptoService:
         arguments:
             $secret: '%env(ENC_TOKEN_PHRASE)%'
 
@@ -149,7 +148,7 @@ services:
         arguments:
             $baseUrl: '%env(BASE_URL)%'
 
-    App\Domain\Replication\Factory\RepositoryLegendFactory:
+    App\Domain\SecureCopy\Factory\RepositoryLegendFactory:
         autowire: true
         arguments:
             $baseUrl: '%env(BASE_URL)%'
@@ -158,7 +157,6 @@ services:
         arguments:
             $token: '%env(REPLICATION_SECRET)%'
             $primaryUrl: '%env(REPLICATION_PRIMARY_URL)%'
-            $queueDsn: '%env(REPLICATION_QUEUE_DSN)%'
 
     ro_fs:
         class: App\Infrastructure\Storage\Manager\FlysystemFilesystemManager
@@ -184,24 +182,6 @@ services:
 
     App\Infrastructure\Common\Test\Database\RestoreDBInterface:
         alias: App\Infrastructure\Common\Test\Database\StateManager
-
-    replication_primary_httpclient:
-        class: GuzzleHttp\Client
-        factory: ['\App\Infrastructure\Replication\Factory\Http\PrimaryGuzzleClientFactory', 'createClient']
-        arguments:
-            - '@App\Domain\Common\Service\Versioning'
-            - '%env(REPLICATION_PRIMARY_URL)%'
-            - '%env(REPLICATION_SECRET)%'
-
-    App\Infrastructure\Replication\Service\Client\GuzzleRemoteFileProvider:
-        autowire: true
-        arguments:
-            $httpClient: '@replication_primary_httpclient'
-
-    App\Infrastructure\Replication\Service\Client\GuzzleRemoteStreamProvider:
-        autowire: true
-        arguments:
-            $httpClient: '@replication_primary_httpclient'
 
     s3_client:
         class: Aws\S3\S3Client

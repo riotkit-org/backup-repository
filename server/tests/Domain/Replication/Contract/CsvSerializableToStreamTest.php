@@ -2,9 +2,9 @@
 
 namespace Tests\Domain\Replication\ActionHandler;
 
-use App\Domain\Replication\Collection\TimelinePartial;
-use App\Domain\Replication\Contract\MultiDocumentJsonSerializable;
-use App\Domain\Replication\DTO\File;
+use App\Domain\SecureCopy\Collection\TimelinePartial;
+use App\Domain\SecureCopy\Contract\MultiDocumentJsonSerializable;
+use App\Domain\SecureCopy\DTO\File;
 use PHPUnit\Framework\TestCase;
 
 /**

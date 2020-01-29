@@ -13,7 +13,7 @@ class UploadByPostForm extends UploadForm
 
     /**
      * Is this file name a final, and should not be changed?
-     * Used at least in replication.
+     * Used at least in securecopy.
      */
     public bool $isFinalFilename = false;
 

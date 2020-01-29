@@ -24,7 +24,6 @@
         "ramsey/uuid": "^3.8",
         "sensio/framework-extra-bundle": "^5.2",
         "sentry/sentry-symfony": "^3.1",
-        "symfony/amqp-pack": "^1.0",
         "symfony/asset": "4.4.*",
         "symfony/console": "*",
         "symfony/debug-pack": "^1.0",

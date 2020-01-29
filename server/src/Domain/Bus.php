@@ -21,7 +21,6 @@ final class Bus
 
     // data that can be submitted via File Repository endpoint to add a valid file
     public const GET_ENTITY_SUBMIT_DATA        = 'entity.get_submit_data';
-    public const GET_ENTITY_SUBMIT_DATA_SCHEMA = 'entity.submit_data.get_schema';
 
     //
     // events

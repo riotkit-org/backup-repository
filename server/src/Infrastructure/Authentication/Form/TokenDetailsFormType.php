@@ -35,11 +35,11 @@ class TokenDetailsFormType extends AbstractType
                 'allow_add'    => true,
                 'allow_delete' => true
             ])
-            ->add(Token::FIELD_REPLICATION_ENC_KEY, TextType::class, [
+            ->add(Token::FIELD_SECURE_COPY_ENC_KEY, TextType::class, [
                 'required'   => false,
                 'empty_data' => ''
             ])
-            ->add(Token::FIELD_REPLICATION_ENC_METHOD, ChoiceType::class, [
+            ->add(Token::FIELD_SECURE_COPY_ENC_METHOD, ChoiceType::class, [
                 'choices'    => SSLAlgorithms::ALGORITHMS
             ]);
     }

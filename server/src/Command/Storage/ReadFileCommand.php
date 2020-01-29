@@ -18,15 +18,8 @@ class ReadFileCommand extends Command
 {
     public const NAME = 'storage:file:read';
 
-    /**
-     * @var ViewFileHandler
-     */
-    private $handler;
-
-    /**
-     * @var SecurityContextFactory
-     */
-    private $contextFactory;
+    private ViewFileHandler $handler;
+    private SecurityContextFactory $contextFactory;
 
     public function __construct(ViewFileHandler $handler, SecurityContextFactory $contextFactory)
     {

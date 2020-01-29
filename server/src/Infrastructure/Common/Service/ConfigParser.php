@@ -4,10 +4,7 @@ namespace App\Infrastructure\Common\Service;
 
 class ConfigParser
 {
-    /**
-     * @var array
-     */
-    private $mapping;
+    private array $mapping;
 
     public function __construct(array $mapping)
     {

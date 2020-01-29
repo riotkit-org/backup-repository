@@ -4,6 +4,7 @@ minimumui.upload_image:
     methods: ['GET']
     defaults:
         _secured: true
+        _access_in_replica_mode: local
 
 minimumui.upload_file:
     path: /upload/file
@@ -11,6 +12,7 @@ minimumui.upload_file:
     methods: ['GET']
     defaults:
         _secured: true
+        _access_in_replica_mode: local
 
 minimumui.watch_video:
     path: /watch/video/{fileId}
@@ -18,3 +20,4 @@ minimumui.watch_video:
     methods: ['GET']
     defaults:
         _secured: true
+        _access_in_replica_mode: local

@@ -101,15 +101,15 @@ final class Roles
 
     //
     //
-    // replication
+    // SecureCopy domain
     //
     //
 
-    /** Can replicate at all? */
-    public const ROLE_STREAMING_REPLICATION = 'replication.stream';
+    /** Can use SecureCopy at all? */
+    public const ROLE_SECURE_COPY_READ_DATA_STREAM = 'securecopy.stream';
 
-    /** Read replication secrets: Encryption method, password, initialization vector */
-    public const ROLE_READ_REPLICATION_SECRETS = 'replication.all_secrets_read';
+    /** Read SecureCopy secrets: Encryption method, password, initialization vector */
+    public const ROLE_READ_SECURE_COPY_SECRETS = 'securecopy.all_secrets_read';
 
     //
     //
@@ -197,9 +197,9 @@ final class Roles
         self::ROLE_LIST_VERSIONS_FOR_ALLOWED_COLLECTIONS,
         self::ROLE_DELETE_VERSIONS_IN_ALLOWED_COLLECTIONS,
 
-        // replication
-        self::ROLE_STREAMING_REPLICATION,
-        self::ROLE_READ_REPLICATION_SECRETS
+        // securecopy
+        self::ROLE_SECURE_COPY_READ_DATA_STREAM,
+        self::ROLE_READ_SECURE_COPY_SECRETS
     ];
 
     public const RESTRICTIONS_LIST = [
