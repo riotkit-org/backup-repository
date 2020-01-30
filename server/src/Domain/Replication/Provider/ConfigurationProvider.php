@@ -2,6 +2,8 @@
 
 namespace App\Domain\Replication\Provider;
 
+use App\Domain\Replication\Exception\PrimaryLinkNotConfiguredError;
+
 class ConfigurationProvider
 {
     private string $token;
@@ -26,5 +28,12 @@ class ConfigurationProvider
     public function isNodeConfiguredAsReplica(): bool
     {
         return $this->primaryUrl !== '';
+    }
+
+    public function assertIsConfiguredAsReplica()
+    {
+        if (!$this->isNodeConfiguredAsReplica()) {
+            throw new PrimaryLinkNotConfiguredError('The instance is not configured as a replica');
+        }
     }
 }

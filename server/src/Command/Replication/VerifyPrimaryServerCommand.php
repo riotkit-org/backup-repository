@@ -2,6 +2,7 @@
 
 namespace App\Command\Replication;
 
+use App\Domain\Replication\ActionHandler\VerifyPrimaryServerHandler;
 use App\Domain\Replication\Provider\ConfigurationProvider;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Console\Command\Command;
@@ -14,13 +15,16 @@ class VerifyPrimaryServerCommand extends Command
 
     private ConfigurationProvider                  $configurationProvider;
     private LoggerInterface                        $logger;
+    private VerifyPrimaryServerHandler             $handler;
 
     public function __construct(ConfigurationProvider $configurationProvider,
                                 LoggerInterface $logger,
+                                VerifyPrimaryServerHandler $handler,
                                 string $name = null)
     {
         $this->configurationProvider = $configurationProvider;
         $this->logger                = $logger;
+        $this->handler               = $handler;
 
         parent::__construct($name);
     }
@@ -37,7 +41,6 @@ class VerifyPrimaryServerCommand extends Command
         $output->writeln('TIP: Increase verbosity using -v, -vv, -vvv to see detailed log messages');
         $this->logger->debug('==> Primary URL: ' . $this->configurationProvider->getPrimaryUrl());
 
-        // @todo: Primary - replica version checking
-        // $this->handler->handle();
+        $this->handler->handle();
     }
 }

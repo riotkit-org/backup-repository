@@ -194,3 +194,15 @@ services:
               credentials:
                   key: "%env(FS_AWSS3V3_KEY)%"
                   secret: "%env(FS_AWSS3V3_SECRET)%"
+
+    replication_primary_httpclient:
+        class: App\Infrastructure\Replication\Service\HttpClient
+        autowire: true
+        factory: ['\App\Infrastructure\Replication\Factory\Http\PrimaryGuzzleClientFactory', 'createClient']
+        arguments:
+            $primaryServerUrl: '%env(REPLICATION_PRIMARY_URL)%'
+            $token: '%env(REPLICATION_SECRET)%'
+
+    App\Infrastructure\Replication\Provider\GuzzlePrimaryServerVersionProvider:
+        arguments:
+            $client: '@replication_primary_httpclient'
