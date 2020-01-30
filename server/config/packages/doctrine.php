@@ -1,14 +1,17 @@
 <?php declare(strict_types=1);
 
+use Symfony\Component\DependencyInjection\ContainerInterface;
+
 /*
  * Doctrine auto-mapping
  */
 
-use App\Infrastructure\Common\Service\PostgreSQLDoctrineDriver;
+/**
+ * @var ContainerInterface $container
+ */
 
 if (!\function_exists('getDirSubDirs')) {
-    function getDirSubDirs($dir, &$results = array())
-    {
+    function getDirSubDirs($dir, &$results = array()) {
         $files = \scandir($dir, SCANDIR_SORT_NONE);
 
         foreach ($files as $key => $value) {
@@ -26,8 +29,7 @@ if (!\function_exists('getDirSubDirs')) {
 }
 
 if (!\function_exists('sortByLongestKey')) {
-    function sortByLongestKey(array $array)
-    {
+    function sortByLongestKey(array $array) {
         $keys = [];
         $results = [];
 
@@ -46,6 +48,16 @@ if (!\function_exists('sortByLongestKey')) {
 }
 
 if (!\function_exists('addDoctrineMappings')) {
+    /**
+     * Add DOMAIN subdirectory eg. "Entity" to the mapping list
+     *
+     * @param string $domainPath
+     * @param string $mappingPath
+     * @param string $domainName
+     * @param string $dirName
+     * @param string $configDirname
+     * @param $mappings
+     */
     function addDoctrineMappings(
         string $domainPath,
         string $mappingPath,
@@ -84,8 +96,13 @@ if (!\function_exists('addDoctrineMappings')) {
 }
 
 if (!function_exists('generateDoctrineMappings')) {
-    function generateDoctrineMappings(): array
-    {
+    /**
+     * 1. Scan all DOMAINS.
+     * 2. For each DOMAIN generate a ORM configuration for entities and value objects
+     *
+     * @return array
+     */
+    function generateDoctrineMappings(): array {
         $domains = glob(__DIR__ . '/../../src/Domain/*/');
         $rootDir = dirname(__DIR__, 2) . '/';
         $mappings = [];
@@ -110,6 +127,46 @@ if (!function_exists('generateDoctrineMappings')) {
         }
 
         return $mappings;
+    }
+}
+
+if (!function_exists('generateReplicasConfiguration')) {
+    function generateReplicasConfiguration(): array {
+        $replicas = [];
+
+        foreach ($_SERVER as $var => $value) {
+            if (substr($var, 0, strlen('DB_REPLICA_')) !== 'DB_REPLICA_') {
+                continue;
+            }
+
+            $parts = explode('_', $var);
+
+            if (count($parts) < 3) {
+                throw new \Exception('"' . $var . '" name has invalid format');
+            }
+
+            $doctrineKey = strtolower(substr($var, strlen($parts[0] . '_' . $parts[1] . '_' . $parts[2] . '_')));
+            $replicas[$parts[1] . '_' . $parts[2]][$doctrineKey] = $value;
+        }
+
+        foreach ($replicas as $replica => $configuration) {
+            validateReplicaConfigurationFields($replica, $configuration);
+        }
+
+        return $replicas;
+    }
+}
+
+function validateReplicaConfigurationFields(string $replicaName, array $configuration) {
+    $expectedKeys = ['default_dbname', 'dbname', 'host', 'password', 'user', 'port', 'path'];
+
+    foreach ($expectedKeys as $key) {
+        if (!isset($configuration[$key])) {
+            throw new \Exception(
+                '"' . $replicaName . '" is missing configuration key "' . $key . '" ' .
+                '(DB_' . $replicaName . '_' . strtoupper($key)  . ')'
+            );
+        }
     }
 }
 
@@ -151,22 +208,32 @@ $container->setParameter('env(DATABASE_PATH)', './var/data.db');
 $dbalConfiguration = [
     'driver'         => '%env(resolve:DATABASE_DRIVER)%',
     'server_version' => '%env(resolve:DATABASE_VERSION)%',
-    'charset'        => '%env(DATABASE_CHARSET)%',
+    'charset'        => '%env(resolve:DATABASE_CHARSET)%',
     'default_table_options' => [
-        'charset' => '%env(DATABASE_CHARSET)%',
-        'collate' => '%env(DATABASE_COLLATE)%'
-    ],
-    'default_dbname' => '%env(resolve:DATABASE_NAME)%',
-    'dbname'   => '%env(resolve:DATABASE_NAME)%',
-    'host'     => '%env(resolve:DATABASE_HOST)%',
-    'password' => '%env(resolve:DATABASE_PASSWORD)%',
-    'user'     => '%env(resolve:DATABASE_USER)%',
-    'port'     => '%env(resolve:DATABASE_PORT)%',
-    'path'     => '%env(resolve:DATABASE_PATH)%'
+        'charset' => '%env(resolve:DATABASE_CHARSET)%',
+        'collate' => '%env(resolve:DATABASE_COLLATE)%'
+    ]
 ];
 
+//
+// Database URL or multiple parameters
+//
 if ($_SERVER['DATABASE_URL'] ?? '') {
     $dbalConfiguration['url'] = '%env(resolve:DATABASE_URL)%';
+} else {
+    $dbalConfiguration = \array_merge($dbalConfiguration, [
+        'default_dbname' => '%env(resolve:DATABASE_NAME)%',
+        'dbname'         => '%env(resolve:DATABASE_NAME)%',
+        'host'           => '%env(resolve:DATABASE_HOST)%',
+        'password'       => '%env(resolve:DATABASE_PASSWORD)%',
+        'user'           => '%env(resolve:DATABASE_USER)%',
+        'port'           => '%env(resolve:DATABASE_PORT)%',
+        'path'           => '%env(resolve:DATABASE_PATH)%'
+    ]);
+}
+
+if ($_SERVER['DB_REPLICATION'] ?? false) {
+    $dbalConfiguration['slaves'] = generateReplicasConfiguration();
 }
 
 $container->loadFromExtension('doctrine', [
@@ -178,4 +245,3 @@ $container->loadFromExtension('doctrine', [
         'mappings' => sortByLongestKey(generateDoctrineMappings())
     ]
 ]);
-

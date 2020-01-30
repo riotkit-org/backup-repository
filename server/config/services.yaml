@@ -65,12 +65,6 @@ services:
         arguments:
             $isDev: '%kernel.debug%'
 
-    App\Infrastructure\Replication\Event\Subscriber\ReplicationRoutingSubscriber:
-        autowire: true
-        autoconfigure: true
-        arguments:
-            $isDev: '%kernel.debug%'
-
     App\Domain\Storage\Repository\StagingAreaRepository:
         class: App\Domain\Storage\Repository\StagingAreaRepository
         arguments:
