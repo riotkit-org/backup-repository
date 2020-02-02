@@ -67,6 +67,7 @@ On restore:
         self.execute_command_in_proper_context(self._get_definition().get_all_sessions_command(), wait=300)
 
     def execute_query(self, query: str, fetch: bool = True):
+        # @todo: Rewrite to shell command, as it needs to support in-docker execution (server can listen on localhost only, so that could make psycopg2 not working)
         conn = psycopg2.connect(**self._get_definition().get_psycopg2_connection_params())
         cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
         cur.execute(query)
