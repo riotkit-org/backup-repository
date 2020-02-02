@@ -51,7 +51,8 @@ const tableStyle = theme => ({
     lineHeight: "1.42857143",
     padding: "12px 8px",
     verticalAlign: "middle",
-    fontSize: "0.8125rem"
+    fontSize: "0.8125rem",
+    color: "white"
   },
   tableResponsive: {
     width: "100%",
