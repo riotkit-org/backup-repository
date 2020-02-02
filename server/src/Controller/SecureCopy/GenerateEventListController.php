@@ -6,12 +6,12 @@ use App\Controller\BaseController;
 use App\Domain\SecureCopy\ActionHandler\GenerateEventListHandler;
 use App\Domain\SecureCopy\Entity\Authentication\Token;
 use App\Domain\SecureCopy\Exception\AuthenticationException;
+use App\Domain\SecureCopy\Exception\ValidationException;
 use App\Domain\SecureCopy\Factory\SecurityContextFactory;
-use DateTime;
-use Exception;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Swagger\Annotations as SWG;
+use DateTime;
 
 class GenerateEventListController extends BaseController
 {
@@ -25,6 +25,15 @@ class GenerateEventListController extends BaseController
     }
 
     /**
+     * @SWG\Parameter(
+     *     name="type",
+     *     type="string",
+     *     in="path",
+     *     required=true,
+     *     allowEmptyValue=false,
+     *     description="Object type. Supported types: file"
+     * )
+     *
      * @SWG\Parameter(
      *     name="since",
      *     type="string",
@@ -45,21 +54,18 @@ class GenerateEventListController extends BaseController
      *     )
      * )
      *
-     *
      * @param Request $request
+     * @param string  $type
+     *
      * @return Response
      *
      * @throws AuthenticationException
-     * @throws Exception
+     * @throws ValidationException
      */
-    public function dumpAction(Request $request): Response
+    public function dumpAction(Request $request, string $type): Response
     {
         $since       = $request->get('since') ? new DateTime($request->get('since')) : null;
         $limit       = (int) $request->get('limit', 256);
-
-        if ($limit > 2048) {
-            throw new \Exception('Cannot increase limit parameter to more than 2048 elements');
-        }
 
         /**
          * @var Token $token
@@ -68,7 +74,7 @@ class GenerateEventListController extends BaseController
         $context = $this->contextFactory->create($token);
 
         return new Response(
-            $this->handler->handle($since, $context, $limit),
+            $this->handler->handle($since, $context, $limit, $type),
             Response::HTTP_OK,
             [
                 'Content-Type'        => 'text/plain',

@@ -4,7 +4,7 @@ backup.collection_create_and_edit:
     methods: ['POST', 'PUT']
     defaults:
         _secured: true
-        _access_in_replica_mode: redirect-to-primary
+
 
 backup.collection_delete:
     path: /repository/collection/{id}
@@ -12,7 +12,7 @@ backup.collection_delete:
     methods: ['DELETE']
     defaults:
         _secured: true
-        _access_in_replica_mode: redirect-to-primary
+
 
 backup.collection_fetch:
     path: /repository/collection/{id}
@@ -20,7 +20,7 @@ backup.collection_fetch:
     methods: ['GET']
     defaults:
         _secured: true
-        _access_in_replica_mode: local
+
 
 backup.collection_listing:
     path: /repository/collection
@@ -28,7 +28,7 @@ backup.collection_listing:
     methods: ['GET']
     defaults:
         _secured: true
-        _access_in_replica_mode: local
+
 
 backup.collection_add_token:
     path: /repository/collection/{id}/token
@@ -36,7 +36,7 @@ backup.collection_add_token:
     methods: ['POST']
     defaults:
         _secured: true
-        _access_in_replica_mode: redirect-to-primary
+
 
 backup.collection_delete_token:
     path: /repository/collection/{id}/token/{tokenId}
@@ -44,7 +44,7 @@ backup.collection_delete_token:
     methods: ['DELETE']
     defaults:
         _secured: true
-        _access_in_replica_mode: redirect-to-primary
+
 
 backup.submit_version:
     path: /repository/collection/{collectionId}/{naming}
@@ -52,7 +52,7 @@ backup.submit_version:
     methods: ['POST']
     defaults:
         _secured: true
-        _access_in_replica_mode: redirect-to-primary
+
         naming: (backup|version)
 
 backup.list_versions:
@@ -61,7 +61,7 @@ backup.list_versions:
     methods: ['GET']
     defaults:
         _secured: true
-        _access_in_replica_mode: local
+
         naming: (backup|version)
 
 backup.delete_version:
@@ -70,7 +70,7 @@ backup.delete_version:
     methods: ['DELETE']
     defaults:
         _secured: true
-        _access_in_replica_mode: redirect-to-primary
+
         naming: (backup|version)
 
 backup.fetch_version:
@@ -79,5 +79,5 @@ backup.fetch_version:
     methods: ['GET']
     defaults:
         _secured: true
-        _access_in_replica_mode: local
+
         naming: (backup|version)

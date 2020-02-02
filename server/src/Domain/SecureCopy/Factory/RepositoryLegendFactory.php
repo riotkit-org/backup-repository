@@ -24,10 +24,10 @@ class RepositoryLegendFactory
 
         return new RepositoryLegend(
             $this->baseUrl->getValue() .
-                str_replace('FILE_ID', '%file_id',$this->urlFactory->generate('securecopy.files.submitdata.fetch', ['fileName' => 'FILE_ID'])) .
+                str_replace('FILE_ID', '%file_id',$this->urlFactory->generate('secure_copy.files.submitdata.fetch', ['fileName' => 'FILE_ID'])) .
                 $tokenParam,
             $this->baseUrl->getValue() .
-                str_replace('FILE_ID', '%file_id', $this->urlFactory->generate('securecopy.files.submitdata.fetch', ['fileName' => 'FILE_ID'])) .
+                str_replace('FILE_ID', '%file_id', $this->urlFactory->generate('secure_copy.files.submitdata.fetch', ['fileName' => 'FILE_ID'])) .
                 $tokenParam,
             $remainingSince
         );

@@ -4,7 +4,7 @@ technical.routing_map:
     methods: ['GET']
     defaults:
         _secured: false
-        _access_in_replica_mode: local
+
 
 technical.hello:
     path: /
@@ -12,7 +12,7 @@ technical.hello:
     methods: ['GET']
     defaults:
         _secured: false
-        _access_in_replica_mode: local
+
 
 technical.version:
     path: /version
@@ -20,7 +20,7 @@ technical.version:
     methods: ['GET']
     defaults:
         _secured: true
-        _access_in_replica_mode: local
+
 
 technical.healthcheck:
     path: /health
@@ -28,4 +28,4 @@ technical.healthcheck:
     methods: ['GET']
     defaults:
         _secured: false
-        _access_in_replica_mode: local
+

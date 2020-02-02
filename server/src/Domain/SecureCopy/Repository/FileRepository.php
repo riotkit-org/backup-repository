@@ -11,7 +11,7 @@ interface FileRepository
      * Finds all filenames and their checksums, timestamps SINCE selected date
      *
      * @param DateTime|null $since
-     * @param int $limit
+     * @param int           $limit
      *
      * @return TimelinePartial
      */

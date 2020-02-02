@@ -4,7 +4,7 @@ storage.list_files:
     methods: ['GET']
     defaults:
         _secured: true
-        _access_in_replica_mode: local
+
 
 storage.upload_by_url:
     path: /repository/{type}/add-by-url
@@ -12,7 +12,7 @@ storage.upload_by_url:
     methods: ['POST']
     defaults:
         _secured: true
-        _access_in_replica_mode: redirect-to-primary
+
         type: image
 
 storage.upload_by_post:
@@ -21,7 +21,7 @@ storage.upload_by_post:
     methods: ['POST']
     defaults:
         _secured: true
-        _access_in_replica_mode: redirect-to-primary
+
         type: image
 
 # REST
@@ -31,7 +31,7 @@ storage.rest_delete:
     methods: ['DELETE']
     defaults:
         _secured: true
-        _access_in_replica_mode: redirect-to-primary
+
 
 storage.rest_upload_by_post:
     path: /repository/file/{filename}
@@ -39,4 +39,4 @@ storage.rest_upload_by_post:
     methods: ['POST']
     defaults:
         _secured: true
-        _access_in_replica_mode: redirect-to-primary
+

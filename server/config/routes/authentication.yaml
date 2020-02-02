@@ -4,7 +4,7 @@ authentication.generate_token:
     methods: ['POST']
     defaults:
         _secured: true
-        _access_in_replica_mode: redirect-to-primary
+
 
 authentication.clear_expired_tokens:
     path: /jobs/token/expired/clear
@@ -12,7 +12,7 @@ authentication.clear_expired_tokens:
     methods: ['GET']
     defaults:
         _secured: true
-        _access_in_replica_mode: redirect-to-primary
+
 
 authentication.roles_listing:
     path: /auth/roles
@@ -20,7 +20,7 @@ authentication.roles_listing:
     methods: ['GET']
     defaults:
         _secured: true
-        _access_in_replica_mode: local
+
 
 authentication.lookup:
     path: /auth/token/{token}
@@ -28,7 +28,7 @@ authentication.lookup:
     methods: ['GET']
     defaults:
         _secured: true
-        _access_in_replica_mode: local
+
 
 authentication.delete:
     path: /auth/token/{token}
@@ -36,4 +36,4 @@ authentication.delete:
     methods: ['DELETE']
     defaults:
         _secured: true
-        _access_in_replica_mode: redirect-to-primary
+

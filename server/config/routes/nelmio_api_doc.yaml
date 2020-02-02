@@ -4,7 +4,7 @@ app.swagger:
     defaults:
         _controller: nelmio_api_doc.controller.swagger
         _secured: false
-        _access_in_replica_mode: local
+
 
 app.swagger_ui:
     path: /api/doc
@@ -12,4 +12,4 @@ app.swagger_ui:
     defaults:
         _controller: nelmio_api_doc.controller.swagger_ui
         _secured: false
-        _access_in_replica_mode: local
+

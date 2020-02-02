@@ -5,7 +5,7 @@ database_backup:
     methods: ['GET']
     defaults:
         _secured: false
-        _access_in_replica_mode: local
+
 
 database_restore:
     path: /db/restore
@@ -13,4 +13,4 @@ database_restore:
     methods: ['GET']
     defaults:
         _secured: false
-        _access_in_replica_mode: local
+

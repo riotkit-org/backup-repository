@@ -34,4 +34,13 @@ class TimelinePartial implements MultiDocumentJsonSerializable
 
         return $docs;
     }
+
+    public function withMerged(TimelinePartial $partial): TimelinePartial
+    {
+        $merged = new TimelinePartial($this->entries, $this->totalCount);
+        $merged->entries = \array_merge($merged->entries, $partial->entries);
+        $merged->totalCount += $partial->totalCount;
+
+        return $merged;
+    }
 }
