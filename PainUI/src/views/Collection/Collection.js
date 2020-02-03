@@ -71,33 +71,6 @@ export default function UserProfile() {
   return (
     <div>
       <GridContainer>
-        <GridItem xs={12} sm={12} md={12}>
-          <Card>
-            <CardHeader color="primary">
-              <h4 className={classes.cardTitleWhite}>Load Collection</h4>
-              <p className={classes.cardCategoryWhite}>
-                Collection loaded from UUIDv4: {UUIDv4}
-              </p>
-            </CardHeader>
-            <CardBody>
-              <GridContainer>
-                {/* <ul dangerouslySetInnerHTML={{ __html: displayedData }}></ul> */}
-                <CardBody>
-                  <Table
-                    tableHeaderColor="primary"
-                    tableHead={[
-                      "FileName",
-                      "MaxBackupSize",
-                      "MaxCollectionSize",
-                      "Created"
-                    ]}
-                    tableData={displayedData}
-                  />
-                </CardBody>
-              </GridContainer>
-            </CardBody>
-          </Card>
-        </GridItem>
         <GridItem xs={12} sm={12} md={8}>
           <Card>
             <CardHeader color="primary">
