@@ -4,7 +4,7 @@ import os
 
 version = '?'
 
-with open(os.path.dirname(os.path.realpath(__file__)) + '/../src/config/version.yaml', 'rb') as yamlFile:
+with open(os.path.dirname(os.path.realpath(__file__)) + '/../server/config/version.yaml', 'rb') as yamlFile:
     asDict = yaml.safe_load(yamlFile)
     version = asDict['version']
 
@@ -14,6 +14,6 @@ setup(
     package_dir={'': 'src'},
     packages=find_packages(where='src'),
     entry_points={
-        'console_scripts': ['riotkit.filerepository.littlecopymachine=littlecopymachine:main'],
-    }, install_requires=['requests', 'sqlalchemy==1.3.13']
+        'console_scripts': ['rkt-lcm=riotkit.filerepository.littlecopymachine:main'],
+    }, install_requires=['requests>=2.20', 'sqlalchemy>=1.3']
 )
