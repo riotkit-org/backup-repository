@@ -13,6 +13,13 @@ class StorageManager:
         self._path = storage_path
 
     def write(self, fileid: str, stream: IO):
+        """
+        Copy file content from stream to a file on the disk
+        :param fileid:
+        :param stream:
+        :return:
+        """
+
         # mkdir -p
         pathlib.Path(self.construct_storage_directory_path(fileid)).mkdir(parents=True, exist_ok=True)
 
@@ -26,7 +33,7 @@ class StorageManager:
         depth_one = fileid[0:2]
         depth_two = fileid[2:4] if len(fileid[2:4]) == 2 else 'unknown'
 
-        return self._path + '/' + depth_one + '/' + depth_two
+        return self._path + '/' + depth_one + '/' + depth_two + '/v1'
 
     def get_file_path(self, fileid: str):
         return self.construct_storage_directory_path(fileid) + '/' + fileid

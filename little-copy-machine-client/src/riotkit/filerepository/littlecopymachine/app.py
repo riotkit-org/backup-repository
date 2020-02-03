@@ -36,6 +36,7 @@ class LittleCopyMachine:
 
     def collect_action(self):
         Logger.info('Starting RiotKit\'s LittleCopyMachine...')
+        Logger.info('>> https://riotkit.org | https://github.com/riotkit-org')
         Logger.info('Connecting to ' + self.url)
 
         processor = EventProcessor(self.client, self.storage_manager, self.log_repository)

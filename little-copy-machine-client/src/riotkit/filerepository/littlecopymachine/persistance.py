@@ -47,6 +47,10 @@ class ProcessedElementLog(Base):
 
 
 class LogRepository:
+    """
+    Repository - interacts with database, operating on ProcessedElementLog model
+    """
+
     _orm: ORM
 
     def __init__(self, orm: ORM):
