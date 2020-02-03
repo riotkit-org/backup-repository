@@ -1,0 +1,16 @@
+FROM python:3.8-alpine3.11
+
+ADD little-copy-machine-client /build
+ADD server/config/version.yaml /build/version.yaml
+RUN apk --update add make \
+    && cd /build \
+    && pip install -r setuptools-requirements.txt \
+    && make install
+
+RUN mkdir /app \
+    && addgroup -g 1000 -S riotkit \
+    && adduser -u 1000 -S riotkit -G riotkit
+
+USER "riotkit"
+WORKDIR "/app"
+ENTRYPOINT ["rkt-lcm"]
