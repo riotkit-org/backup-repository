@@ -1,7 +1,10 @@
 # filesystem configuration
 /config/packages/oneup_flysystem.yaml
+
+# IDE
 /server/.idea
 /bahub-client/.idea
+/little-copy-machine-client/.idea
 
 /.idea
 /supervisord.log
@@ -22,15 +25,16 @@
 # bahub
 /bahub-client/bahub.egg-info
 /bahub-client/build
-/bahub-client/.idea
 /bahub-client/supervisord.log
 /bahub-client/supervisord.pid
 *.pyc
 
 ###> phpunit/phpunit ###
-/phpunit.xml
-.phpunit.result.cache
+/server/phpunit.xml
+/server/.phpunit.result.cache
 ###< phpunit/phpunit ###
 
-
 /server/env/.data/postgresql
+
+# lcm
+/little-copy-machine-client/src/database.db
