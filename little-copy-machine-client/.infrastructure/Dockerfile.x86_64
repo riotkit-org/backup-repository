@@ -9,7 +9,8 @@ RUN apk --update add make \
 
 RUN mkdir /app \
     && addgroup -g 1000 -S riotkit \
-    && adduser -u 1000 -S riotkit -G riotkit
+    && adduser -u 1000 -S riotkit -G riotkit \
+    && chown riotkit:riotkit /app -R
 
 USER "riotkit"
 WORKDIR "/app"
