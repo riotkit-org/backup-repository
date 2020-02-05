@@ -21,10 +21,17 @@ class PostgresRestoreDB implements RestoreDBInterface
         $this->connection = $connection;
     }
 
+    private function createBackupDatabaseName(): string
+    {
+        $currentDbName = $this->connection->getDatabase();
+
+        return $currentDbName . '_bckp';
+    }
+
     public function backup(): bool
     {
         $currentDbName = $this->connection->getDatabase();
-        $backupDbName = $currentDbName . '_bckp';
+        $backupDbName = $this->createBackupDatabaseName();
 
         $this->commit($this->connection);
         $this->connection->exec('DROP DATABASE IF EXISTS "' . $backupDbName . '";');
@@ -36,7 +43,7 @@ class PostgresRestoreDB implements RestoreDBInterface
     public function restore(): bool
     {
         $currentDbName = $this->connection->getDatabase();
-        $backupDbName = $currentDbName . '_bckp';
+        $backupDbName = $this->createBackupDatabaseName();
 
         $this->connection->close();
         $this->dropAndCreate(
@@ -47,6 +54,14 @@ class PostgresRestoreDB implements RestoreDBInterface
         $this->connection->connect();
 
         return true;
+    }
+
+    public function canRestore(): bool
+    {
+        $backupDbName = $this->createBackupDatabaseName();
+        $cursor = $this->connection->executeQuery("SELECT 1 FROM pg_database WHERE datname='" . $backupDbName . "'");
+
+        return (int) $cursor->fetch(\Doctrine\DBAL\FetchMode::COLUMN) === 1;
     }
 
     private function dropAndCreate(string $toRecreate, string $template, array $doctrineParams): void

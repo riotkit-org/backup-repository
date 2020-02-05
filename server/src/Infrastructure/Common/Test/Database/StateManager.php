@@ -5,22 +5,17 @@ namespace App\Infrastructure\Common\Test\Database;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver\AbstractPostgreSQLDriver;
 use Doctrine\DBAL\Driver\AbstractSQLiteDriver;
+use Exception;
 
 class StateManager implements RestoreDBInterface
 {
-    /**
-     * @var Connection
-     */
-    private $connection;
-
-    /**
-     * @var RestoreDBInterface
-     */
-    private $adapter;
+    private Connection $connection;
+    private ?RestoreDBInterface $adapter;
 
     public function __construct(Connection $connection)
     {
         $this->connection = $connection;
+        $this->adapter    = null;
     }
 
     public function backup(): bool
@@ -30,9 +25,18 @@ class StateManager implements RestoreDBInterface
 
     public function restore(): bool
     {
+        if (!$this->createAdapter()->canRestore()) {
+            return false;
+        }
+
         return $this->createAdapter()->restore();
     }
 
+    /**
+     * @return RestoreDBInterface
+     *
+     * @throws Exception
+     */
     private function createAdapter(): RestoreDBInterface
     {
         if ($this->adapter) {
@@ -47,6 +51,11 @@ class StateManager implements RestoreDBInterface
             return $this->adapter = new PostgresRestoreDB($this->connection);
         }
 
-        throw new \Exception('Currently only SQLite3 and PostgreSQL databases are supported in tests');
+        throw new Exception('Currently only SQLite3 and PostgreSQL databases are supported in tests');
+    }
+
+    public function canRestore(): bool
+    {
+        return true;
     }
 }
