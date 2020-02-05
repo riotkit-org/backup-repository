@@ -8,6 +8,7 @@ use App\Domain\SecureCopy\Entity\Authentication\Token;
 use App\Domain\SecureCopy\Exception\AuthenticationException;
 use App\Domain\SecureCopy\Exception\ValidationException;
 use App\Domain\SecureCopy\Factory\SecurityContextFactory;
+use Exception;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Swagger\Annotations as SWG;
@@ -55,12 +56,11 @@ class GenerateEventListController extends BaseController
      * )
      *
      * @param Request $request
-     * @param string  $type
+     * @param string $type
      *
      * @return Response
      *
-     * @throws AuthenticationException
-     * @throws ValidationException
+     * @throws Exception
      */
     public function dumpAction(Request $request, string $type): Response
     {
@@ -73,13 +73,15 @@ class GenerateEventListController extends BaseController
         $token   = $this->getLoggedUserToken(Token::class);
         $context = $this->contextFactory->create($token);
 
-        return new Response(
-            $this->handler->handle($since, $context, $limit, $type),
-            Response::HTTP_OK,
-            [
-                'Content-Type'        => 'text/plain',
-                'Content-Disposition' => 'attachment; filename="securecopy-list.jstream"'
-            ]
-        );
+        return $this->wrap(function () use ($since, $context, $limit, $type) {
+            return new Response(
+                $this->handler->handle($since, $context, $limit, $type),
+                Response::HTTP_OK,
+                [
+                    'Content-Type'        => 'text/plain',
+                    'Content-Disposition' => 'attachment; filename="securecopy-list.jstream"'
+                ]
+            );
+        });
     }
 }

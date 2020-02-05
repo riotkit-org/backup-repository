@@ -63,14 +63,14 @@ class GenerateTokenCommand extends Command
     {
         $form = new AuthForm();
         $form->data = new TokenDetailsForm();
-        $form->data->tags               = $this->getMultipleValueOption($input, 'tags');
-        $form->data->allowedMimeTypes   = $this->getMultipleValueOption($input, 'mimes');
-        $form->data->maxAllowedFileSize = (int) $input->getOption('max-file-size');
-        $form->data->replicationEncryptionKey = (string) $input->getOption('securecopy-passphrase');
-        $form->data->replicationEncryptionMethod = (string) $input->getOption('securecopy-encryption-method');
-        $form->expires                  = $input->getOption('expires');
-        $form->roles                    = $this->getMultipleValueOption($input, 'roles');
-        $form->id                       = $input->getOption('id');
+        $form->data->tags                       = $this->getMultipleValueOption($input, 'tags');
+        $form->data->allowedMimeTypes           = $this->getMultipleValueOption($input, 'mimes');
+        $form->data->maxAllowedFileSize         = (int) $input->getOption('max-file-size');
+        $form->data->secureCopyEncryptionKey    = (string) $input->getOption('securecopy-passphrase');
+        $form->data->secureCopyEncryptionMethod = (string) $input->getOption('securecopy-encryption-method');
+        $form->expires                          = $input->getOption('expires');
+        $form->roles                            = $this->getMultipleValueOption($input, 'roles');
+        $form->id                               = $input->getOption('id');
 
         $this->debug('Form:', $output);
 

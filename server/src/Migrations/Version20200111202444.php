@@ -14,7 +14,7 @@ final class Version20200111202444 extends AbstractMigration
 
     public function up(Schema $schema) : void
     {
-        $this->addSql('UPDATE file_registry SET timezone = ? WHERE timezone = ""', [$this->getTimezone()]);
+        $this->addSql('UPDATE file_registry SET timezone = ? WHERE timezone is null', [$this->getTimezone()]);
     }
 
     public function down(Schema $schema) : void

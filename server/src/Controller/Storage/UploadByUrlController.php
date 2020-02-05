@@ -47,7 +47,7 @@ class UploadByUrlController extends BaseController
 
         return $this->wrap(
             function () use ($form, $tokenTransport, $request) {
-                $appResponse = $this->handler->handle($form, $this->createBaseUrl($request), $tokenTransport->getToken());
+                $appResponse = $this->handler->handle($form, $tokenTransport->getToken());
 
                 return new JsonResponse(
                     $appResponse,

@@ -53,10 +53,12 @@ class ServeFileController extends BaseController
         // act, and get response
         $response = $this->handler->handle($fileName, $output, $context);
 
-        return new StreamedResponse(
-            $response->getFlushingCallback(),
-            $response->getStatusCode(),
-            $response->getHeaders()
-        );
+        return $this->wrap(function () use ($response) {
+            return new StreamedResponse(
+                $response->getFlushingCallback(),
+                $response->getStatusCode(),
+                $response->getHeaders()
+            );
+        });
     }
 }

@@ -45,7 +45,9 @@ abstract class BaseSubmitDataController extends BaseController
             return new JsonResponse($response->getObject(), $response->getStatusCode());
         }
 
-        return new JsonResponse($response, $response->getStatusCode());
+        return $this->wrap(function () use ($response) {
+            return new JsonResponse($response, $response->getStatusCode());
+        });
     }
 
     abstract protected function getDataType(): string;

@@ -34,12 +34,12 @@ class TokenDetailsForm
     /**
      * @var string
      */
-    public $replicationEncryptionKey;
+    public $secureCopyEncryptionKey;
 
     /**
      * @var string
      */
-    public $replicationEncryptionMethod;
+    public $secureCopyEncryptionMethod;
 
     public function toArray(): array
     {
@@ -53,8 +53,8 @@ class TokenDetailsForm
             // the key will be after submit encrypted with File Repository master key
             // as the key cannot be look up by any user. The key is a limitation on the token, to replicate with
             // zero-knowledge about the data.
-            Token::FIELD_SECURE_COPY_ENC_KEY    => (string) $this->replicationEncryptionKey,
-            Token::FIELD_SECURE_COPY_ENC_METHOD => (string) $this->replicationEncryptionMethod
+            Token::FIELD_SECURE_COPY_ENC_KEY    => (string) $this->secureCopyEncryptionKey,
+            Token::FIELD_SECURE_COPY_ENC_METHOD => (string) $this->secureCopyEncryptionMethod
         ];
     }
 }

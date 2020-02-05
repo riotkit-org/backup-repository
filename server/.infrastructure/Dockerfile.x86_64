@@ -82,8 +82,8 @@ ENV DATABASE_URL=sqlite:///%kernel.project_dir%/var/data.db \
 
 COPY server /var/www/html
 COPY --from=builder /var/www/html/public /var/www/html/
-ADD server/.infrastructure/primary/entrypoint/entrypoint.d/*.sh /entrypoint.d/
-ADD server/.infrastructure/healthcheck.sh /
+ADD server/.infrastructure/container-files/entrypoint/entrypoint.d/*.sh /entrypoint.d/
+ADD server/.infrastructure/container-files/healthcheck.sh /
 
 RUN cd /var/www/html \
     && rm -rf var/cache/* \
@@ -93,12 +93,13 @@ RUN cd /var/www/html \
     && cp .env.dist .env \
     \
     # NGINX configuration
-    && cp /var/www/html/.infrastructure/primary/nginx/nginx.conf /etc/nginx/nginx.conf \
+    && cp /var/www/html/.infrastructure/container-files/nginx/nginx.conf /etc/nginx/nginx.conf \
     \
     # Application permissions and general scripts setup
     && chown www-data:www-data /var/www -R \
     && su www-data -s /bin/bash -c "composer install --no-dev" \
-    && chown www-data:www-data /var/www -R
+    && chown www-data:www-data /var/www -R \
+    && chmod +x /healthcheck.sh
 
 WORKDIR "/var/www/html"
 

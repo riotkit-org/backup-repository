@@ -137,6 +137,11 @@ class FunctionalTester extends \Codeception\Actor
         );
     }
 
+    public function receiveListOfElementsFromSecureCopy(string $type): void
+    {
+        $this->sendGET($this->fill(Urls::URL_SECURE_COPY, ['type' => $type]));
+    }
+
     public function listFiles(array $params = []): void
     {
         $this->sendGET(Urls::URL_REPOSITORY_LISTING, $params);

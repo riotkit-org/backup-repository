@@ -18,12 +18,12 @@ test_api@ci: wait_for_app ## Run API tests in a docker container (params: CODECE
 	make test_api CODECEPT_ARGS="${CODECEPT_ARGS}"
 
 test_api: ## Run API tests in a docker container (params: CODECEPT_ARGS)
-	${SUDO} ${COMPOSE_ARGS} exec --user www-data filerepository ./vendor/bin/codecept -c codeception.local-docker.yml run ${CODECEPT_ARGS}
+	${SUDO} ${COMPOSE_ARGS} exec --user www-data filerepository ./vendor/bin/codecept -vv -c codeception.local-docker.yml run --html ${CODECEPT_ARGS}
 
 test_unit: ## Run unit tests in a docker container (params PHPUNIT_ARGS)
 	${SUDO} ${COMPOSE_ARGS} exec --user www-data filerepository ./bin/phpunit ${PHPUNIT_ARGS}
 
-up: ## Bring up the development environment (params: VARIANT). Example: up VARIANT="s3 postgres"
+up: down ## Bring up the development environment (params: VARIANT). Example: up VARIANT="s3 postgres"
 	VARIANT_ARGS=""; \
 	if [[ "${VARIANT}" != "" ]]; then \
 		VARIANT_ARGS=" -f docker-compose.${VARIANT}.yaml"; \
@@ -31,7 +31,8 @@ up: ## Bring up the development environment (params: VARIANT). Example: up VARIA
 	set -x; ${SUDO} ${COMPOSE_ARGS} $$(make _build_variant_list VARIANT="${VARIANT}") up --remove-orphans -d --force-recreate
 
 down: ## Delete the development environment
-	${SUDO} ${COMPOSE_ARGS} rm -f -s -v
+	${SUDO} ${COMPOSE_ARGS} $$(make _build_variant_list VARIANT="${VARIANT}") down -v --remove-orphans
+	${SUDO} ${COMPOSE_ARGS} $$(make _build_variant_list VARIANT="${VARIANT}") rm -f -s -v
 
 print: ## Print the docker-compose.yaml file (params: VARIANT)
 	${SUDO} ${COMPOSE_ARGS} $$(make _build_variant_list VARIANT="${VARIANT}") config

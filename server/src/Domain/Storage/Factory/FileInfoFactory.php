@@ -17,17 +17,17 @@ class FileInfoFactory
     /**
      * @var string Checksum tool (a shell command)
      */
-    private $checksumTool = 'sha256sum';
+    private string $checksumTool = 'sha256sum';
 
     /**
      * @var int Length of the checksum for validation
      */
-    private $checksumLength = 64;
+    private int $checksumLength = 64;
 
     /**
      * @var array Simple in-memory cache
      */
-    private $cache = [];
+    private array $cache = [];
 
     public function generateForStagedFile(StagedFile $stagedFile, string $contentIdent = ''): FileInfo
     {
@@ -48,7 +48,7 @@ class FileInfoFactory
         }
 
         return new FileInfo(
-            new Checksum($contentIdent . $this->doCheckSum($path), $this->checksumTool),
+            new Checksum($this->doCheckSum($path), $this->checksumTool, $contentIdent),
             new Mime($this->getMimeForFile($path)),
             new Filesize(\filesize($path->getValue()))
         );

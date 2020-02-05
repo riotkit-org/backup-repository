@@ -27,7 +27,7 @@ class UploadCommand implements CommandHandler
         $form->backUrl         = $input['form']['backUrl'];
         $form->contentIdent    = $input['form']['contentIdent'] ?? '';
         $form->isFinalFilename = $input['form']['isFinalFilename'] ?? false;
-        $form->stream          = $input['form']['stream'];
+        $form->stream          = $input['form']['stream'] ?? null;
 
         return \json_decode(
             \json_encode($this->handler->handle($form, $input['token']), JSON_THROW_ON_ERROR, 512),

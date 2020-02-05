@@ -15,6 +15,7 @@ services:
             # Pre-configured administrative token, with this token you can do everything
             SECURITY_ADMIN_TOKEN: "${SECURITY_ADMIN_TOKEN}"
             BASE_URL: "${BASE_URL}"
+            APP_ENV: "prod"
 
             # A secret phase your monitoring software will know to access the health status of the application
             # http://localhost:8000/health?code=${HEALTH_CHECK_CODE}

@@ -13,10 +13,7 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
  */
 class RestoreDBController extends AbstractController
 {
-    /**
-     * @var RestoreDBInterface
-     */
-    private $dbStateManager;
+    private RestoreDBInterface $dbStateManager;
 
     public function __construct(RestoreDBInterface $dbStateManager)
     {
