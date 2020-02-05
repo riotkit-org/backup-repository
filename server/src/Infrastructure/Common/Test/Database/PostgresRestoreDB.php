@@ -11,10 +11,7 @@ use Doctrine\DBAL\Driver\PDOPgSql\Driver;
  */
 class PostgresRestoreDB implements RestoreDBInterface
 {
-    /**
-     * @var Connection
-     */
-    private $connection;
+    private Connection $connection;
 
     public function __construct(Connection $connection)
     {

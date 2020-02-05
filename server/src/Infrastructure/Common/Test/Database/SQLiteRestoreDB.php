@@ -6,10 +6,7 @@ use Doctrine\DBAL\Connection;
 
 class SQLiteRestoreDB implements RestoreDBInterface
 {
-    /**
-     * @var Connection
-     */
-    private $connection;
+    private Connection $connection;
 
     public function __construct(Connection $connection)
     {
