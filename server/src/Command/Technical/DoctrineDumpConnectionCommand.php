@@ -26,7 +26,7 @@ class DoctrineDumpConnectionCommand extends Command
         $this->setDescription('Get information about database connection');
     }
 
-    public function execute(InputInterface $input, OutputInterface $output)
+    public function execute(InputInterface $input, OutputInterface $output): int
     {
         $output->writeln('==> Parameters:');
         dump($this->connection->getParams());
@@ -36,5 +36,7 @@ class DoctrineDumpConnectionCommand extends Command
 
         $output->writeln("\n==> Platform:");
         dump($this->connection->getDriver()->getDatabasePlatform()->getName());
+
+        return 0;
     }
 }

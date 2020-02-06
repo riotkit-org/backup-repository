@@ -59,7 +59,7 @@ class GenerateTokenCommand extends Command
      *
      * @throws \Exception
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $form = new AuthForm();
         $form->data = new TokenDetailsForm();
@@ -120,6 +120,8 @@ class GenerateTokenCommand extends Command
         if (!$output->isVerbose()) {
             $output->writeln($response['tokenId'] ?? '');
         }
+
+        return 0;
     }
 
     private function debug(string $message, OutputInterface $output): void

@@ -29,7 +29,7 @@ class WaitForInstanceToGetUpCommand extends Command
         $this->addOption('timeout', 'x', InputOption::VALUE_OPTIONAL, 'Timeout', 300);
     }
 
-    public function execute(InputInterface $input, OutputInterface $output): void
+    public function execute(InputInterface $input, OutputInterface $output): int
     {
         $result = $this->handler->handle(
             (string) $input->getArgument('url'),
@@ -37,6 +37,6 @@ class WaitForInstanceToGetUpCommand extends Command
             (int) $input->getOption('timeout')
         );
 
-        exit($result ? 0 : 1);
+        return $result ? 0 : 1;
     }
 }

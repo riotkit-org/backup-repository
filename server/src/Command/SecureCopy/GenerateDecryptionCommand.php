@@ -42,7 +42,7 @@ class GenerateDecryptionCommand extends Command
             ->setHelp('Generates an OpenSSL commandline command to use for manual files decryption');
     }
 
-    protected function execute(InputInterface $input, OutputInterface $output): void
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $subjectToken = $this->tokenRepository->findTokenById($input->getOption('token'), Token::class);
 
@@ -62,5 +62,7 @@ class GenerateDecryptionCommand extends Command
         );
 
         $output->writeln($response);
+
+        return 0;
     }
 }

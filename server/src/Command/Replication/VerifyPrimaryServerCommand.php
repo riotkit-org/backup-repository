@@ -42,5 +42,7 @@ class VerifyPrimaryServerCommand extends Command
         $this->logger->debug('==> Primary URL: ' . $this->configurationProvider->getPrimaryUrl());
 
         $this->handler->handle();
+
+        return 0;
     }
 }

@@ -36,7 +36,7 @@ class ReadFileCommand extends Command
             ->addArgument('filename', InputOption::VALUE_REQUIRED,'Filename');
     }
 
-    public function execute(InputInterface $input, OutputInterface $output)
+    public function execute(InputInterface $input, OutputInterface $output): int
     {
         $form = new ViewFileForm();
         $form->filename   = $input->getArgument('filename');
@@ -53,5 +53,7 @@ class ReadFileCommand extends Command
         }
 
         $callback();
+
+        return 0;
     }
 }

@@ -7,20 +7,9 @@ use App\Domain\SecureCopy\ValueObject\EncryptionPassphrase;
 
 class StreamableFileContentWithEncryptionInformation extends StreamableFileContent
 {
-    /**
-     * @var string
-     */
-    private $initializationVector;
-
-    /**
-     * @var EncryptionPassphrase
-     */
-    private $passphrase;
-
-    /**
-     * @var EncryptionAlgorithm
-     */
-    private $algorithm;
+    private string $initializationVector;
+    private EncryptionPassphrase $passphrase;
+    private EncryptionAlgorithm $algorithm;
 
     public function __construct(
         string $fileName,
@@ -36,25 +25,16 @@ class StreamableFileContentWithEncryptionInformation extends StreamableFileConte
         parent::__construct($fileName, $operationCallback);
     }
 
-    /**
-     * @return string
-     */
     public function getInitializationVector(): string
     {
         return $this->initializationVector;
     }
 
-    /**
-     * @return EncryptionPassphrase
-     */
     public function getPassphrase(): EncryptionPassphrase
     {
         return $this->passphrase;
     }
 
-    /**
-     * @return EncryptionAlgorithm
-     */
     public function getAlgorithm(): EncryptionAlgorithm
     {
         return $this->algorithm;

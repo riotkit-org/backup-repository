@@ -26,7 +26,7 @@ class HealthCheckCommand extends Command
         $this->setDescription('Verify application instance health');
     }
 
-    public function execute(InputInterface $input, OutputInterface $output)
+    public function execute(InputInterface $input, OutputInterface $output): int
     {
         $response = $this->handler->handle($this->handler->getSecretCode());
 
@@ -35,5 +35,7 @@ class HealthCheckCommand extends Command
         if (!$response['status']) {
             exit(1);
         }
+
+        return 0;
     }
 }
