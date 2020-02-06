@@ -240,7 +240,7 @@ $container->loadFromExtension('doctrine', [
     'dbal' => $dbalConfiguration,
     'orm' => [
         'auto_generate_proxy_classes' => '%kernel.debug%',
-        'naming_strategy'             => 'doctrine.orm.naming_strategy.underscore',
+        'naming_strategy'             => 'doctrine.orm.naming_strategy.underscore_number_aware',
         'auto_mapping'                => true,
         'mappings' => sortByLongestKey(generateDoctrineMappings())
     ]

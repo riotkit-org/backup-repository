@@ -2,10 +2,11 @@
 
 namespace Tests\Infrastructure\Replication\Repository;
 
+use App\Domain\Common\Exception\BusException;
 use App\Infrastructure\SecureCopy\Repository\FileRepositorySQLImplementation;
+use DateTime;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DBALException;
-use Symfony\Bundle\FrameworkBundle\Client;
 use Tests\FunctionalTestCase;
 use Tests\RestoreDbBetweenTestsTrait;
 
@@ -17,7 +18,7 @@ class FileRepositorySQLImplementationTest extends FunctionalTestCase
     {
         return [
             'Since stone age era' => [
-                'since'         => new \DateTime('1900-01-01'),
+                'since'         => new DateTime('1900-01-01'),
                 'expectedCount' => 1
             ],
             'No since time specified' => [
@@ -25,7 +26,7 @@ class FileRepositorySQLImplementationTest extends FunctionalTestCase
                 'expectedCount' => 1
             ],
             'Since is in the future' => [
-                'since'         => new \DateTime('2050-01-01'),
+                'since'         => new DateTime('2050-01-01'),
                 'expectedCount' => 0
             ]
         ];
@@ -34,9 +35,13 @@ class FileRepositorySQLImplementationTest extends FunctionalTestCase
     /**
      * @dataProvider provideDataForFinding
      *
+     * @param DateTime|null $sice
+     * @param int $expectedCount
+     *
+     * @throws BusException
      * @throws DBALException
      */
-    public function testFindFilesToReplicateSince(?\DateTime $sice, int $expectedCount)
+    public function testFindFilesToReplicateSince(?DateTime $sice, int $expectedCount)
     {
         $client = $this->createClient();
         $this->prepareData();
