@@ -2,6 +2,7 @@
 
 bahub () {
     ARGS=$@
+    set -x;
     exec_in_bahub_container "ADMIN_TOKEN=${ADMIN_TOKEN} COLLECTION_ID=${COLLECTION_ID} bahub-origin ${ARGS}"
 }
 
@@ -54,8 +55,8 @@ delete_environment() {
     sudo -E docker-compose rm -s -v -f
 }
 
-wait_for_container_to_start () {
-    while ! sudo -E docker-compose exec file-repository curl -s -f http://localhost/health?code=tests_env > /dev/null; do
+wait_for_server_to_start () {
+    while ! sudo -E docker-compose exec file-repository curl -s -f http://localhost/health?code=tests_env; do
         sleep 0.1
     done
 }
@@ -65,7 +66,7 @@ before_running_all_tests () {
     prepare_environment 2>&1 > /dev/null
 
     echo " ====> Waiting for application to get up"
-    wait_for_container_to_start "file-repository"
+    wait_for_server_to_start
 }
 
 after_all_tests_passed() {

@@ -152,23 +152,29 @@ class PostgreSQLDefinition(AbstractDumpAndRestoreDefinition):
 
         if not self._restore_cmd:
             db = self.get_database() if self.get_database() else 'postgres'
-            self._restore_cmd = 'PGPASSWORD=%password% psql -U %user% -p %port% -h %host% ' + db
+            self._restore_cmd = self.create_psql_cmdline(db)
 
-    def get_all_sessions_command(self) -> str:
+    def terminate_all_sessions_command(self) -> str:
         return self.fill_template(
             'echo "SELECT pg_terminate_backend(pid) FROM pg_stat_activity  WHERE pid <> pg_backend_pid() "' +
-            ' | PGPASSWORD=%password% psql -U %user% -p %port% -h %host% postgres'
+            ' | ' + self.create_psql_cmdline('postgres')
         )
 
-    def get_psycopg2_connection_params(self):
-        return {
-            'host': self._host,
-            'port': self._port,
-            'database': 'postgres',
-            'user': self._user,
-            'password': self._password,
-            'connect_timeout': 300
-        }
+    def get_all_databases_command(self):
+        return self.fill_template(
+            'echo "SELECT datname FROM pg_database WHERE datistemplate = false;"' +
+            ' | ' + self.create_psql_cmdline('postgres') + ' | sed \'/^$/d\''
+        )
+
+    @staticmethod
+    def create_psql_cmdline(db: str = '') -> str:
+        return 'PGPASSWORD=%password% psql -t -U %user% -p %port% -h %host% ' + db
+
+    def get_connection_limit_setter_command(self, database_name: str, limit: int):
+        return self.fill_template(
+            'echo "ALTER DATABASE ' + database_name + ' CONNECTION LIMIT ' + str(limit) + ';"' +
+            ' | ' + self.create_psql_cmdline('postgres')
+        )
 
 
 class PostgreSQLBaseBackupDefinition(AbstractSQLDefinition):

@@ -5,7 +5,7 @@ source ../init.sh
 set -e
 
 # setup
-ADMIN_TOKEN=$(generate_admin_token)
+export ADMIN_TOKEN=$(generate_admin_token)
 echo " >> Token: ${ADMIN_TOKEN}"
 
 
@@ -50,13 +50,13 @@ assert_local_command_output() {
 #
 # Execution of all cases, one-by-one
 #
-variants=(some_local_logs local_command_output docker_hot_volumes_example www_docker_offline mysql_native_single_database mysql_all_databases mysql_docker_single_database)
+variants=(some_local_logs local_command_output docker_hot_volumes_example www_docker_offline mysql_native_single_database mysql_all_databases mysql_docker_single_database postgresql_docker_single)
 
 for variant in ${variants[@]}; do
     echo ""
     echo " ... Testing variant '${variant}'"
 
-    COLLECTION_ID=$(create_collection "Logs" "logs.tar.gz" 4 3GB 14GB)
+    export COLLECTION_ID=$(create_collection "Logs" "logs.tar.gz" 4 3GB 14GB)
 
     if function_exists "pre_${variant}"; then
         set -x; eval "pre_${variant}"; set +x;
@@ -64,7 +64,7 @@ for variant in ${variants[@]}; do
 
     echo " >> Assert it will be first backup in collection"
     bahub --config /etc/bahub/without_crypto.conf.yaml --debug backup ${variant}
-    
+
     echo " >> Assert submitted backup will be found on listing"
     bahub --config /etc/bahub/without_crypto.conf.yaml list ${variant} | grep '"v1"' > /dev/null
 

@@ -97,6 +97,18 @@ backups:
         encryption: none
         collection_id: "${COLLECTION_ID}"
 
+    postgresql_docker_single:
+        type: postgres
+        host: "test_postgres"
+        user: riotkit
+        port: 5432
+        password: "cooperative-economy"
+        database: "for_the_people"
+        container: "test_postgres"
+        access: backup_one
+        encryption: none
+        collection_id: "${COLLECTION_ID}"
+
 recoveries:
     default:
         policy: restore-whats-possible

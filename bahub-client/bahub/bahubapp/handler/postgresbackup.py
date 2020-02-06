@@ -1,7 +1,4 @@
 
-import psycopg2
-import psycopg2.extras
-
 from .abstractdocker import AbstractDockerAwareHandler
 from ..result import CommandExecutionResult
 from ..entity.definition.sql import PostgreSQLDefinition, PostgreSQLBaseBackupDefinition
@@ -51,11 +48,19 @@ On restore:
             self.set_connection_limit_on_databases(-1)
 
     def set_connection_limit_on_databases(self, limit: int):
-        databases: list = self.execute_query('SELECT datname FROM pg_database WHERE datistemplate = false;')
+        cmd = self.execute_command_in_proper_context(self._get_definition().get_all_databases_command(), wait=300)
+        databases = cmd.stdout.read().decode('utf-8').split("\n")
 
         for row in databases:
-            database_name = row[0]
-            self.execute_query('ALTER DATABASE ' + database_name + ' CONNECTION LIMIT ' + str(limit) + ';', fetch=False)
+            database_name = row.strip()
+
+            if not database_name:
+                continue
+
+            self.execute_command_in_proper_context(
+                self._get_definition().get_connection_limit_setter_command(database_name, limit),
+                wait=300
+            )
 
     def _kill_all_other_connections_to_the_database(self):
         """
@@ -64,22 +69,7 @@ On restore:
         :return:
         """
 
-        self.execute_command_in_proper_context(self._get_definition().get_all_sessions_command(), wait=300)
-
-    def execute_query(self, query: str, fetch: bool = True):
-        # @todo: Rewrite to shell command, as it needs to support in-docker execution (server can listen on localhost only, so that could make psycopg2 not working)
-        conn = psycopg2.connect(**self._get_definition().get_psycopg2_connection_params())
-        cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-        cur.execute(query)
-
-        data = None
-
-        if fetch:
-            data = cur.fetchall()
-
-        conn.close()
-
-        return data
+        self.execute_command_in_proper_context(self._get_definition().terminate_all_sessions_command(), wait=300)
 
 
 class PostgreSQLBaseBackup(AbstractDockerAwareHandler):
