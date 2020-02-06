@@ -1,4 +1,19 @@
+
 FROM python:3.8-alpine3.11
+
+ARG BUILD_DATE=unknown
+ARG VERSION=dev
+ARG VCS_REF=unknown
+
+LABEL org.opencontainers.image.created="$BUILD_DATE" \
+      org.opencontainers.image.ref.name="riotkit/little-copy-machine" \
+      org.opencontainers.image.title="LittleCopyMachine" \
+      org.opencontainers.image.description="File Repository client that makes a mirror/copy of the File Repository files and other objects for backup purpose. Supports zero-knowledge distributed backup." \
+      org.opencontainers.image.documentation="https://riotkit.org" \
+      org.opencontainers.image.source="https://github.com/riotkit-org/filerepository" \
+      org.opencontainers.image.url="https://github.com/riotkit-org/filerepository" \
+      org.opencontainers.image.revision="$VCS_REF" \
+      org.opencontainers.image.authors="RiotKit technical collective"
 
 ADD little-copy-machine-client /build
 ADD server/config/version.yaml /build/version.yaml
@@ -7,10 +22,10 @@ RUN apk --update add make \
     && pip install -r setuptools-requirements.txt \
     && make install
 
-RUN mkdir /app \
+RUN mkdir /app /storage \
     && addgroup -g 1000 -S riotkit \
     && adduser -u 1000 -S riotkit -G riotkit \
-    && chown riotkit:riotkit /app -R
+    && chown riotkit:riotkit /app /storage -R
 
 USER "riotkit"
 WORKDIR "/app"
