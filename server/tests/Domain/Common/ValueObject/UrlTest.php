@@ -16,7 +16,7 @@ class UrlTest extends TestCase
      */
     public function testIsLocalFileUrl(): void
     {
-        $url = new Url('/api/riot/make', new BaseUrl(true, 'riotkit.org'));
+        $url = new Url('/api/riot/make', new BaseUrl('https://riotkit.org'));
         $localFileUrl = new Url('file:///tmp', null);
 
         $this->assertTrue($localFileUrl->isLocalFileUrl());
@@ -28,7 +28,7 @@ class UrlTest extends TestCase
      */
     public function testWithQueryParam(): void
     {
-        $url = new Url('/api/riot/make', new BaseUrl(true, 'riotkit.org'));
+        $url = new Url('/api/riot/make', new BaseUrl('https://riotkit.org'));
         $urlWithParam = $url->withQueryParam('place', 'town-square');
 
         $this->assertNotSame($url, $urlWithParam);
@@ -40,7 +40,7 @@ class UrlTest extends TestCase
      */
     public function testWithVar(): void
     {
-        $template = new Url('/content/{{ postId }}', new BaseUrl(true, 'iwa-ait.org'));
+        $template = new Url('/content/{{ postId }}', new BaseUrl('https://iwa-ait.org'));
         $url = $template->withVar('postId', 'postal-workers-take-action-management-goes-after-zsp');
 
         $this->assertSame(

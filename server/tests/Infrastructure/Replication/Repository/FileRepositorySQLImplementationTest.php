@@ -4,6 +4,7 @@ namespace Tests\Infrastructure\Replication\Repository;
 
 use App\Infrastructure\SecureCopy\Repository\FileRepositorySQLImplementation;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\DBALException;
 use Symfony\Bundle\FrameworkBundle\Client;
 use Tests\FunctionalTestCase;
 use Tests\RestoreDbBetweenTestsTrait;
@@ -33,7 +34,7 @@ class FileRepositorySQLImplementationTest extends FunctionalTestCase
     /**
      * @dataProvider provideDataForFinding
      *
-     * @throws \Doctrine\DBAL\DBALException
+     * @throws DBALException
      */
     public function testFindFilesToReplicateSince(?\DateTime $sice, int $expectedCount)
     {
@@ -47,15 +48,13 @@ class FileRepositorySQLImplementationTest extends FunctionalTestCase
 
         $results = $repository->findFilesSince($sice);
 
-        $this->assertEquals($expectedCount, \count($results));
+        $this->assertEquals($expectedCount, $results->count());
     }
 
     /**
      * Seed te database
      *
-     * @param Client $client
-     *
-     * @throws \Doctrine\DBAL\DBALException
+     * @throws DBALException
      */
     private function prepareData(): void
     {
@@ -66,9 +65,9 @@ class FileRepositorySQLImplementationTest extends FunctionalTestCase
 
         $connection->executeQuery(
             'INSERT INTO file_registry 
-                   (id, fileName, contentHash, dateAdded, mimeType, password, public)
+                   (id, fileName, contentHash, dateAdded, mimeType, password, public, timezone)
                    VALUES (161, "antifa.png", "7c0ca491e121cb0c9fa76a53f0c4348ec3f0362237124785ebe6a4267ba737be", 
-                   "2019-05-01 08:00:00", "image/png", "", true);
+                   "2019-05-01 08:00:00", "image/png", "", true, "Europe/Warsaw");
         ');
     }
 }
