@@ -4,6 +4,13 @@
 include .env
 export $(shell sed 's/=.*//' .env)
 
+IS_CURRENT_ENV_PRESENT := $(shell test -e .current-env && echo -n yes)
+
+ifeq ($(IS_CURRENT_ENV_PRESENT), yes)
+	include .current-env
+	export $(shell sed 's/=.*//' .env)
+endif
+
 SHELL=/bin/bash
 SUDO=sudo
 COMPOSE_ARGS=docker-compose -p fr_tests -f docker-compose.yaml
@@ -13,21 +20,8 @@ BAHUB_CONFIG_PATH=$(shell pwd)/bahub.conf.yaml
 help:
 	@grep -E '^[a-zA-Z\-\_0-9\.@]+:.*?## .*$$' Makefile | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
-test_api@ci: wait_for_app ## Run API tests in a docker container (params: CODECEPT_ARGS)
-	${SUDO} ${COMPOSE_ARGS} exec --user www-data filerepository composer install
-	make test_api CODECEPT_ARGS="${CODECEPT_ARGS}"
-
-test_api: ## Run API tests in a docker container (params: CODECEPT_ARGS)
-	${SUDO} ${COMPOSE_ARGS} exec --user www-data filerepository ./vendor/bin/codecept -vv -c codeception.local-docker.yml run --html ${CODECEPT_ARGS}
-
-test_unit: ## Run unit tests in a docker container (params PHPUNIT_ARGS)
-	${SUDO} ${COMPOSE_ARGS} exec --user www-data filerepository ./bin/phpunit ${PHPUNIT_ARGS}
-
-up: down ## Bring up the development environment (params: VARIANT). Example: up VARIANT="s3 postgres"
+up: _write_current_env down ## Bring up the development environment (params: VARIANT). Example: up VARIANT="s3 postgres"
 	VARIANT_ARGS=""; \
-	if [[ "${VARIANT}" != "" ]]; then \
-		VARIANT_ARGS=" -f docker-compose.${VARIANT}.yaml"; \
-	fi; \
 	set -x; ${SUDO} ${COMPOSE_ARGS} $$(make _build_variant_list VARIANT="${VARIANT}") up --remove-orphans -d --force-recreate
 
 down: ## Delete the development environment
@@ -40,9 +34,6 @@ print: ## Print the docker-compose.yaml file (params: VARIANT)
 sh: ## Get a shell, where Symfony console is present
 	${SUDO} ${COMPOSE_ARGS} $$(make _build_variant_list VARIANT="${VARIANT}") exec --user www-data filerepository bash
 
-sh@replica: ## Get a shell, where Symfony console is present
-	${SUDO} ${COMPOSE_ARGS} $$(make _build_variant_list VARIANT="${VARIANT}") exec --user www-data replica_filerepository bash
-
 wait_for_app: ## Wait for application to be ready
 	${SUDO} ${COMPOSE_ARGS} ps
 	echo " >> Waiting for the application to start..."
@@ -50,9 +41,9 @@ wait_for_app: ## Wait for application to be ready
 	while ! ${SUDO} ${COMPOSE_ARGS} exec filerepository /healthcheck.sh > /dev/null; do \
 		counter=$$((counter-1)); \
 		if [[ "$${counter}" == "0" ]]; then \
-			echo " >> Application didn't get up"; \
+			echo " >> Application didn't get up, showing logs and continuing to be able to run tests, so the tests could show what could potentially be the cause"; \
 			${SUDO} ${COMPOSE_ARGS} logs; \
-			exit 1; \
+			exit 0; \
 		fi; \
 		sleep 1; \
 	done; \
@@ -67,7 +58,29 @@ _build_variant_list:
 	done; \
 	echo "$${VARIANT_ARGS}"
 
-#### Bahub related tasks
+_write_current_env:
+	echo "VARIANT=${VARIANT}" > .current-env
+
+#### Server tests
+
+server@test_api@ci: wait_for_app ## Run API tests in a docker container (params: CODECEPT_ARGS)
+	${SUDO} ${COMPOSE_ARGS} exec --user www-data filerepository composer install
+	make server@test_api CODECEPT_ARGS="${CODECEPT_ARGS}"
+
+server@test_api: ## Run API tests in a docker container (params: CODECEPT_ARGS)
+	${SUDO} ${COMPOSE_ARGS} exec --user www-data filerepository ./vendor/bin/codecept -vv -c codeception.local-docker.yml run --html ${CODECEPT_ARGS}
+
+server@test_unit: ## Run unit tests in a docker container (params PHPUNIT_ARGS)
+	${SUDO} ${COMPOSE_ARGS} exec --user www-data filerepository ./bin/phpunit ${PHPUNIT_ARGS}
+
+
+#### Bahub tests
+
+
+#### LittleCopyMachine tests
+
+
+#### Bahub Client related tasks
 
 bahub@backup_postgres: ## Bahub: Backup PostgreSQL
 	cd ${BAHUB_PATH} && ./bahub-dev.sh --debug --config=${BAHUB_CONFIG_PATH} backup postgres

@@ -34,7 +34,8 @@
 /server/.phpunit.result.cache
 ###< phpunit/phpunit ###
 
-/server/env/.data/postgresql
+/env/.data/postgresql
+/env/.current-env
 
 # lcm
 /little-copy-machine-client/src/database.db
