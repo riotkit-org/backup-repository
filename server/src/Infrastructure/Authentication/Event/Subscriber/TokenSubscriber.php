@@ -52,6 +52,7 @@ class TokenSubscriber implements EventSubscriberInterface
         }
 
         $tokenString = $this->getTokenStringFromRequest($event->getRequest());
+        $token       = null;
 
         // Development token
         if ($this->isDev && (Roles::isTestToken($tokenString) || $this->isProfilerRoute($event->getRequest()))) {
@@ -59,37 +60,39 @@ class TokenSubscriber implements EventSubscriberInterface
             return;
         }
 
+        if ($tokenString) {
+            try {
+                /**
+                 * @var Token $token
+                 */
+                $token = $this->factory->createFromString($tokenString);
+
+            } catch (AuthenticationException $exception) {
+                $event->setResponse(
+                    new JsonResponse(
+                        [
+                            'status' => 'Invalid authorization. Details: ' . $exception->getMessage(),
+                            'error_code' => 403,
+                            'http_code' => 403
+                        ],
+                        JsonResponse::HTTP_FORBIDDEN
+                    )
+                );
+
+                return;
+            }
+        }
+
         // Guest at public endpoints
-        if ($this->isPublicEndpoint($event->getRequest())) {
+        if (!$tokenString && $this->isPublicEndpoint($event->getRequest())) {
             $this->tokenStorage->setToken(
                 new TokenTransport('anonymous', new Token())
             );
             return;
         }
 
-        try {
-            /**
-             * @var Token $token
-             */
-            $token = $this->factory->createFromString($tokenString);
-
-        } catch (AuthenticationException $exception) {
-            $event->setResponse(
-                new JsonResponse(
-                    [
-                        'status'     => 'Invalid authorization. Details: ' . $exception->getMessage(),
-                        'error_code' => 403,
-                        'http_code'  => 403
-                    ],
-                    JsonResponse::HTTP_FORBIDDEN
-                )
-            );
-
-            return;
-        }
-
         $userAgent = $request->headers->get('User-Agent');
-        $ip = $request->getClientIp();
+        $ip        = $request->getClientIp();
 
         if ($token instanceof Token && !$token->isValid($userAgent, $ip)) {
             $this->tokenStorage->setToken(
