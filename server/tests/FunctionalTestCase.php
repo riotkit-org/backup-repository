@@ -3,6 +3,7 @@
 namespace Tests;
 
 use App\Infrastructure\Common\Test\Database\StateManager;
+use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 
 abstract class FunctionalTestCase extends BaseTestCase
 {
@@ -18,6 +19,8 @@ abstract class FunctionalTestCase extends BaseTestCase
 
     protected function getStateManager(): StateManager
     {
+        $this->ensureKernelShutdown();
+
         return $this->createClient()->getContainer()->get(StateManager::class);
     }
 }
