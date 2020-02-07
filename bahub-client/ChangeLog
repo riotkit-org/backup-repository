@@ -1,11 +1,178 @@
 CHANGES
 =======
 
+* LCM: Added OCI labels
+* Environment: Moved environment to the project root directory
+* Server: Resolve deprecations
+* Server: Resolve deprecations related to createClient()
+* Server: Resolved all unit tests
+* Server: Deprecations fix - '4x: Return value of "App\Command\Authentication\GenerateTokenCommand::execute()" should always be of the type int since Symfony 4.4, NULL returned.'
+* Bahub: Resolve issue with PostgreSQL restore. The bahub container was connecting to a remote host using psycopg2 library, but this operation should actually execute in another container
+* Server: Resolved an issue detected by API tests - the token was provided, but the session was anonymous
+* Server: PHP 7.4 specific code improvements
+* Server: Bug fixes based on tests execution, clean up
+* Server: Test database support fixed
+* LCM: Corrected permissions in Dockerfile
+* LCM: Initial Dockerfile
+* LCM: Updated .gitignore
+* LCM: Added more automation to the Makefile
+* LCM: More docs
+* Fixed setuptools scripts
+* Bahub: Found a bug - added todo to resolve before releasing next stable
+* LittleCopyMachine: A new File Repository client, only for simple mirroring of the data
+* SecureCopy: Separation of the event list stream by types, for easier pagination of the data
+* Repliaction: Add support for Doctrine's replication (slaves configuration)
+* Repication: Do not do request forwarding, just the database forwarding
+* Repication: Primary server verification
+* Updated version in API doc
+* [WIP] Distinct: SecureCopy and Replication modules
+* WIP: Working replication for Files
+* WIP: Working replication for Files
+* #107: Added file metadata - "submitdata" dumping support
+* Corrected SQLite support in tests
+* #107: Added endpoint for fetching file contents by replication clients. The endpoint supports zero-knowledge replication
+* Added \`storage:file:read\` command
+* Correct PHP 7.4 migration
+* #107: The tokens are now possible to generate with replication settings
+* Added version information
+* Added version information
+* Migration to PHP 7.4
+* #104: Cover listing with API tests, fix problems eg. malformed SQL, added permissions to the listing endpoint
+* Fixed PostgreSQL database backup & restore
+* Updated PHP version to 7.4
+* Increase application startup speed by not warming up test and dev environments if not necessary
+* Removed unused and undocumented token encryption feature
+* #104: Moved parameter from path to query, as the Date Time format will be escaped
+* #104: Added id to the returned metadata, swagger docs and error handling
+* #104: Flush on each processed chunk if that's possible
+* #104: Changed separator to ';;;'
+* #104: Added a legend in the header
+* #104: Naming refactor
+* #104: WIP beginning of the replication endpoint at /replication/list/{?since}
+* CI: Changed order of stages and added a MariaDB stage
+
+v2.1.0.rc4
+----------
+
+* CI: Trying to run the build
+* CI: Trying to run the build
+* CI: Trying to run the build
+* Bahub client: [#98] Corrected test mock
+* CI: Fixed build
+* Bahub client: [#98] Added gnutls-dev to Dockerfile, as it is required to build pycurl
+* Bahub client: [#98] Added missing requirements
+* Bahub client: [#98] Turn off debug ;-)
+* Bahub client: [#98] Backups command - Interrupt the HTTP request, when UNIX process was interrupted
+* Bahub client: [#98] Corrected early failure check to make sure that case when the process is still running will not throw the exception
+* Bahub client: [#98] Check for early failures
+* Bahub client: [#99] Kill the process on restore whenever its possible
+* Bahub client: [#99] Catch HTTP errors and cancel background process
+
+v2.1.0.rc3
+----------
+
+* CI: Fixed build
+* CI: Test
+* CI: Test
+* CI: Fixed \`ln: failed to create symbolic link '/usr/bin/lsb-release': Permission denied\`
+* Server: Fixed a stupid error
+* Travis: Trying to fix the build
+* Travis: Trying to fix the build
+* Server: Updated the getting started guide in docs
+* Server: Updated the getting started guide in docs
+* Travis: Fixing the build
+* Travis: Fixed build
+* Server: Updated docs
+* Server: Updated docs
+* Server: Updated docs about the shell access
+* Server: Updated docs about the shell access
+* Bahub client: Improved doc header
+* Bahub client: Updated configuration reference
+* Bahub client: Updated docs image
+* Bahub client: Updated guide on starting with docker installation, added a tutorial environment
+* Server: Implemented a feature to assign a custom id, when creating a collection + added a variable "POST\_INSTALL\_CMD" in Docker container, so it allows to execute shell commands on container startup to pre-create tokens and collections
+* Documentation
+* Bahub client: Remove docker-s3-api-client environment, too many environments
+* Bahub client: Critical fix - overwritten docker DNS servers
+* Bahub client: Attempt to run the CI
+* Bahub client: Attempt to fix travis build
+* Bahub client: Switched to Alpine 3.10, moved part of mysqldump arguments to the \`dump\_cmd\` parameter, increased verbosity in tests
+* Bahub client: Corrected Dockerfile, so now it will build
+* Bahub client: Now the unit tests are running. It seems that after refactor everything is working
+* Bahub client: Added missing dependency - psycopg2
+* Server: Restore SQLite3 by default and FS\_ADAPTER=local
+* Environment: Added "postgres\_base" example
+* Bahub client: Get rid of sudo from code, PostgreSQL base backup method, "CONFIG\_DIR" special variable available in YAML, support for recovery method "on\_failed\_restore"
+* Environment: Added MariaDB as database option, also added support for testing bahub locally on the connected environment
+* Bahub: Refactor - shorten and simplify the handlers code, add more exceptions handling and better process control
+* Bahub: Correct usage of timeouts when spawning processes
+* Bahub: Correct restore in PostgreSQL dump/import - now the correct database is choosen, when doing a backup of a single database
+* Server: Fixes related to PostgreSQL support, when DATABASE\_URL is set but empty then Doctrine was showing "role www-data does not exist" which was wrong
+* Bahub: Partial PostgreSQL support
+* Bahub: Added helpful tasks to Makefile
+* Bahub: Pipenv - added wrapper for developers
+* Bahub: Introducing pipenv
+* Bahub: Refactor naming and make a public interface
+* Bahub: CI - Added correct tag recognition
+* Bahub: Added SERVER\_DOCKER\_TAG to specify the server version (docker image tag)
+* Server: Tests - correct configuration for SQLite3
+* Server: Tests - correct env variable to correct one
+* Server: Tests - correct env variable to correct one
+* Server: Add DATABASE\_PATH to the configuration and set default DATABASE\_PORT per supported driver
+* Server: CI - add the database file
+* Server: Corrected SQLite3 driver settings in unit tests
+* Server: Corrected SQLite3 driver detection in unit tests
+* Server: (BC!!!) Now DATABASE\_PORT is mandatory to pass as environment variable
+* Server: (BC!!!) Migrate from database connection using a connection string to the multiple variables used separately. It works with UNIX sockets for PostgreSQL natively, without doing workarounds
+* Server: Use password and user as supplied by DBAL
+* Server: Use password for PostgreSQL as supplied by DBAL
+* Environment: Parametrized the environment and updated docs
+* Server: Fixes to the error handling in health check endpoint and in Flysystem adapter
+* Server: Fix up invisible command "auth:generate-admin-token" in "test" environment
+* CI: Allow to fail for the nightly tests
+* Server: Upgrade dependencies
+* CI: Disable deprecations helper
+* CI: Migrate the database for functional tests in PHPUnit
+* CI: Fix \`copy(./var/data.db): failed to open stream: No such file or directory\`
+* Feature: Predictable user tokens. Allows to create an auth-token with manually entered UUIDv4. This opens a possibility to create an admin account on docker container startup
+* env: Correct mistake
+* env: Make the environment more generic - for production/test/dev
+* Updated formatting in docs
+* Fixed missing includes in docs
+* Docs footer update
+* Updated docs
+
+v2.1.0.rc2
+----------
+
+* Fixed invalid value instead of date string, detected by functional test on PostgreSQL
+* Tests: Support for testing application on PostgreSQL
+* Makefile: Corrected arguments passing - those should be allowed to contain spaces
+* Resolve: \` Path for output is not writable. Please, set appropriate access mode for output path: /var/www/html/tests/Functional/\_output/\`
+* Resolve: \`chown: cannot access '/var/www/html/var': No such file or directory\`
+* Restored .dockerignore and .env.test at correct places
+* Docker: Add permissions normalization on entrypoint
+* CI: Correct permissions
+* CI: Debugging CI
+* CI: Testz
+* CI: Corrected tests. Created new infrastructure for testing locally and on CI - using docker-compose. There are now a few variants of infrastructure - using s3, postgres, with persistence etc
+* Healthcheck: Correct typing problem (on PostgreSQL it seems that fetchColumn() returns an integer instead of string)
+* Tests/CI: Delete external dependencies from tests, and use internally a docker container that serves static files
+* CI: Correct push to quay and tag recognition
+* Corrected usage after names refactor
+* Updated readmes
+* Structure refactor: Added "push\_container" make task
+* Structure refactor: Trying to set up the CI
+* Project structure refactor + moving from quay.io CI to Travis CI
 * Tests: Refactor usages of internal methods
 * CI: Corrected tests on Travis. Those tests were not working due to bug in docker-compose (compose was adding suffixes to container names which caused bash scripts not working)
 * CI: Clean up containers between test cases
 * - Bahub: Fixed incorrect imports - Clean up: Removed gitver, we didnt use it at all
 * File Repository: Corrected error
+
+v2.1.0.rc1
+----------
+
 * Client - Bahub: Mainly naming refactor
 * PostgreSQL support, clean up in "nginx features", updated documentation
 * Refactor imports
@@ -185,7 +352,7 @@ v2.0.3
 * Covered generally backup handlers. The tests are detecting if the failures are properly detected eg. when command pipeline fails
 * Cleaned up unit tests warnings by closing the stream with f.close() even when in YAML parser there is an exception
 * General improvements for error detection on the pipelining process
-* [https://github.com/riotkit-org/file-repository/issues/60] Partially resolved the issue by added upload validation (in \validate_before_creating_backup\_running\_command())
+* [https://github.com/riotkit-org/file-repository/issues/60] Partially resolved the issue by added upload validation (in \_validate\_running\_command())
 * [https://github.com/riotkit-org/file-repository/issues/59] Token is now also hidden in logs
 * [https://github.com/riotkit-org/file-repository/issues/59] Added PasswordsProtectedFilter that is cutting of sensitive data from logs
 * [https://github.com/riotkit-org/file-repository/issues/56] Fixed error handling in docker adapters

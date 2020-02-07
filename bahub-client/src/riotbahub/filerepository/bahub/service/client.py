@@ -3,7 +3,7 @@ from ..entity.definition import BackupDefinition
 from ..exceptions import InvalidRequestException, UnexpectedResponseException, ReadWriteException
 from logging import Logger
 from json import loads as json_loads
-from simplejson.errors import JSONDecodeError
+from json import JSONDecodeError
 from typing import Union
 import requests
 import pycurl

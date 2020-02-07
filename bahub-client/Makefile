@@ -50,3 +50,6 @@ unit_test: ## Run unit tests
 
 coverage: ## Generate code coverage
 	coverage run --source . -m unittest discover -s ./tests/unit
+
+run_dev: ## Run a development package
+	cd src && python -m riotkit.filerepository.bahub ${ARGS}

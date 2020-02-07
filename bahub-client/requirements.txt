@@ -2,9 +2,8 @@ PyYAML>=3.12
 pbr>=5.1
 requests>=2.21
 setuptools>=40.4.3
-simplejson>=3.16
 unittest-data-provider
 coverage
 sentry-sdk==0.7.14
 pycurl>=7
-certifi
+certifi>=2019.11

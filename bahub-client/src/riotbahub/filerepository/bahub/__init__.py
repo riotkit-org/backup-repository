@@ -3,16 +3,12 @@
 import sys
 import os
 import argparse
-import inspect
 
-path = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
-sys.path.insert(0, path)
-
-from bahubapp.service.configurationfactory import ConfigurationFactory
-from bahubapp.app import Bahub
-from bahubapp.service.logger import LoggerFactory
-from bahubapp.service.errorhandler import ErrorHandlerService
-from bahubapp.service.notifier import Notifier
+from .service.configurationfactory import ConfigurationFactory
+from .app import Bahub
+from .service.logger import LoggerFactory
+from .service.errorhandler import ErrorHandlerService
+from .service.notifier import Notifier
 
 
 def main():
