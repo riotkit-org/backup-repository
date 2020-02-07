@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React from "react";
 // @material-ui/core components
 import { makeStyles } from "@material-ui/core/styles";
 import InputLabel from "@material-ui/core/InputLabel";
@@ -12,7 +12,7 @@ import CardHeader from "components/Card/CardHeader.js";
 import CardAvatar from "components/Card/CardAvatar.js";
 import CardBody from "components/Card/CardBody.js";
 import CardFooter from "components/Card/CardFooter.js";
-import Table from "components/Table/Table.js";
+// import Table from "components/Table/Table.js";
 
 import avatar from "assets/img/faces/marc.jpg";
 
@@ -39,34 +39,6 @@ const useStyles = makeStyles(styles);
 
 export default function UserProfile() {
   const classes = useStyles();
-
-  const [fetchedData, updateData] = useState(0);
-  const [isLoaded, updateLoaded] = useState(0);
-  const [UUIDv4, updateUUIDv4] = useState(
-    "67d42b26-8b15-4689-8c78-d24ed15394ef"
-  );
-
-  useEffect(() => {
-    fetch(
-      `https://test-file-repository.riotkit.org/repository/collection?_token=${UUIDv4}`
-    )
-      .then(res => res.json())
-      .then(json => {
-        updateData(json);
-        updateLoaded(true);
-      });
-  }, []);
-
-  let displayedData = [];
-  if (isLoaded) {
-    displayedData = fetchedData.elements.map(element => [
-      element.filename,
-      element.max_one_backup_version_size,
-      element.max_collection_size,
-      element.created_at.date
-    ]);
-    // .join(" ");
-  }
 
   return (
     <div>

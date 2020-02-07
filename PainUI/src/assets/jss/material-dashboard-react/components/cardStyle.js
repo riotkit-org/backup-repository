@@ -10,8 +10,7 @@ const cardStyle = {
     marginBottom: "30px",
     marginTop: "30px",
     borderRadius: "6px",
-    color: "rgba(" + hexToRgb(blackColor) + ", 0.87)",
-    background: whiteColor,
+    color: "rgba(" + hexToRgb(whiteColor) + ", 0.87)",
     width: "100%",
     boxShadow: "0 1px 4px 0 rgba(" + hexToRgb(blackColor) + ", 0.14)",
     position: "relative",
@@ -20,9 +19,10 @@ const cardStyle = {
     minWidth: "0",
     wordWrap: "break-word",
     fontSize: ".875rem",
-    background: "rgba(0,0,0,.5)",
+    backgroundColor: "rgba(0,0,0,.5)",
     background:
-      "url(http://knledg.github.io/react-webpack-skeleton/75ba7ce5490d79ca4da0ed8de8b3d6a4.jpg)",
+      whiteColor +
+      ", url(http://knledg.github.io/react-webpack-skeleton/75ba7ce5490d79ca4da0ed8de8b3d6a4.jpg)",
     transition: "none",
     backgroundAttachment: "fixed",
     backgroundSize: "cover"

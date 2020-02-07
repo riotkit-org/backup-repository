@@ -18,18 +18,27 @@ export default function Footer(props) {
         <div className={classes.left}>
           <List className={classes.list}>
             <ListItem className={classes.inlineBlock}>
-              <a href="#home" className={classes.block}>
-                Home
+              <a
+                href="https://github.com/riotkit-org/file-repository"
+                className={classes.block}
+              >
+                Repository
               </a>
             </ListItem>
             <ListItem className={classes.inlineBlock}>
-              <a href="#company" className={classes.block}>
-                Company
+              <a
+                href="https://file-repository.readthedocs.io/en/latest/index.html"
+                className={classes.block}
+              >
+                Documentation
               </a>
             </ListItem>
             <ListItem className={classes.inlineBlock}>
-              <a href="#portfolio" className={classes.block}>
-                Portfolio
+              <a
+                href="https://test-file-repository.riotkit.org/api/doc"
+                className={classes.block}
+              >
+                API/SWAGGER
               </a>
             </ListItem>
             <ListItem className={classes.inlineBlock}>
