@@ -24,9 +24,9 @@
 
 jobs:
   include:
-    - stage: File Repository unit tests @ PHP 7.3
+    - stage: File Repository unit tests @ PHP 7.4
       language: php
-      php: '7.3'
+      php: '7.4'
       before_script:
           - cd server
           - composer install
@@ -43,8 +43,7 @@ jobs:
       language: php
       services:
           - docker
-      php:
-          - '7.3'
+      php: '7.4'
       before_script: cd server
       script: make test_api@ci SUDO="" TAG=${TRAVIS_TAG:-dev} VARIANT="s3 postgres"
       after_success: bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [OK] File repository API tests on Min.io passed."
@@ -81,8 +80,7 @@ jobs:
       language: php
       services:
           - docker
-      php:
-          - '7.3'
+      php: '7.4'
       before_script: cd server
       script: make test_api@ci SUDO="" TAG=${TRAVIS_TAG:-dev} VARIANT=""
       after_success: bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [OK] File repository API tests on local storage passed."
@@ -92,8 +90,7 @@ jobs:
       language: php
       services:
           - docker
-      php:
-          - '7.3'
+      php: '7.4'
       before_script: cd server
       script: make test_api@ci SUDO="" TAG=${TRAVIS_TAG:-dev} VARIANT="s3 mariadb"
       after_success: bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [OK] File repository API tests on MariaDB."
