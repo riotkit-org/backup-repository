@@ -40,7 +40,7 @@ class Encryption:
         return self._method
 
     def should_use_crypto(self):
-        return self.get_method() is not ""
+        return self.get_method() != ""
 
     def create_encrypt_command(self):
         return self._encrypt_cmd \

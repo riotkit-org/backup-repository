@@ -1,23 +1,50 @@
-FROM alpine:3.10
+FROM alpine:3.11
 
-ENV DISABLE_SCHEDULED_JOBS=0
+ARG BUILD_DATE=unknown
+ARG VERSION=dev
+ARG VCS_REF=unknown
+
+LABEL org.opencontainers.image.created="$BUILD_DATE" \
+      org.opencontainers.image.ref.name="riotkit/bahub" \
+      org.opencontainers.image.title="Bahub" \
+      org.opencontainers.image.description="Backup manager, prepares and sends backups to File Repository server, restores backups on-the-fly. Natively integrates with services, including databases." \
+      org.opencontainers.image.documentation="https://riotkit.org" \
+      org.opencontainers.image.source="https://github.com/riotkit-org/filerepository" \
+      org.opencontainers.image.url="https://github.com/riotkit-org/filerepository" \
+      org.opencontainers.image.revision="$VCS_REF" \
+      org.opencontainers.image.authors="RiotKit technical collective" \
+      org.riotkit.filerepository.version="$VERSION"
+
+ENV DISABLE_SCHEDULED_JOBS=0 \
+    # Arguments passed to each Bahub call, even that call on crontab. So you don't need to repeat it in crontab file
+    BAHUB_ARGS="--config /bahub.conf.yaml --logs-path /var/log/bahub --logs-file bahub.log" \
+    # Use Bahub files from /bahub instead of installed Python package via setuptools? Used at CI and on dev environment
+    TEST_MODE_USE_LOCAL_PACKAGE=false
 ARG TEMPORARY_PACKAGES="postgresql-dev openssl-dev gcc python3-dev musl-dev gnutls-dev curl-dev"
 
 RUN apk --update add docker python3 make bash sudo git openssl supervisor rsyslog xz bzip2 pigz mysql-client postgresql-client
 
-ADD bahub-client /bahub
+ADD ./bahub-client /bahub
 ADD .git /bahub/.git
 
 RUN cd /bahub \
     && apk add $TEMPORARY_PACKAGES \
-    && make install_requirements install \
-    && apk del $TEMPORARY_PACKAGES \
-    && chmod +x /bahub/.infrastructure/docker_entrypoint.sh \
-    && mv /usr/bin/bahub /usr/bin/bahub-origin \
+    && make install_requirements install SUDO="" \
+    && apk del $TEMPORARY_PACKAGES
+
+# replace /usr/bin/bahub with custom entrypoint
+# this allows us to easily replace Bahub with volume-mounted version in tests
+# and also to inject Bahub parameters defined in BAHUB_ARGS
+RUN mv /usr/bin/bahub /usr/bin/bahub-origin \
     && cp /bahub/.infrastructure/docker_bahub.sh /usr/bin/bahub \
     && chmod +x /usr/bin/bahub
 
-#VOLUME "/bahub.conf.yaml"
-#VOLUME "/cron"
+RUN addgroup -g 1000 -S riotkit \
+    && adduser -u 1000 -S riotkit -G riotkit \
+    && mkdir -p /var/log/bahub \
+    && chown riotkit:riotkit /bahub /var/log/bahub -R \
+    && cp /bahub/.infrastructure/container-files/home/riotkit/.bashrc /home/riotkit/.bashrc \
+    && chmod +x /bahub/.infrastructure/docker_entrypoint.sh
 
+USER "root"
 ENTRYPOINT ["/bahub/.infrastructure/docker_entrypoint.sh"]

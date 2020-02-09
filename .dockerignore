@@ -2,7 +2,7 @@
 /server/var/log
 /server/var/uploads
 /server/var/data.db
-/server/.infrastructure/*/Dockerfile.x86_64
+/server/.infrastructure/Dockerfile.x86_64
 /server/README.md
 /server/.env
 /server/.web-server-pid

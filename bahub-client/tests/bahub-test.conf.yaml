@@ -1,8 +1,8 @@
 
 accesses:
     backup_one:
-        url: http://10.5.0.4
-        token: "${ADMIN_TOKEN}"
+        url: http://filerepository
+        token: "${SECURITY_ADMIN_TOKEN}"
 
 encryption:
     none:
@@ -11,23 +11,22 @@ encryption:
 
 
 backups:
-
     docker_hot_volumes_example:
         type: docker_hot_volumes
-        container: "test_www"
+        container: "fr_tests_bahub_test_www_1"
         access: backup_one
         encryption: none
-        collection_id: "${COLLECTION_ID}"
+        collection_id: "${COLLECTIONS_WWW_FILES_ID}"
         paths:
             - /var/www
             - /var/log
 
     www_docker_offline:
         type: docker_volumes
-        container: "test_www"
+        container: "fr_tests_bahub_test_www_1"
         access: backup_one
         encryption: none
-        collection_id: "${COLLECTION_ID}"
+        collection_id: "${COLLECTIONS_WWW_FILES_ID}"
         paths:
             - /var/log
 
@@ -40,25 +39,25 @@ backups:
 
     mysql_native_single_database:
         type: mysql
-        host: "test_database"
+        host: "fr_tests_bahub_test_mariadb_1"
         port: 3306
         user: root
         password: root
         database: "test_www_db"
         access: backup_one
         encryption: none
-        collection_id: "${COLLECTION_ID}"
+        collection_id: "${COLLECTIONS_MYSQL_ID}"
 
     mysql_all_databases:
         type: mysql
-        host: "test_database"
+        host: "fr_tests_bahub_test_mariadb_1"
         port: 3306
         user: root
         password: root
         database: ""
         access: backup_one
         encryption: none
-        collection_id: "${COLLECTION_ID}"
+        collection_id: "${COLLECTIONS_MYSQL_ID}"
 
     mysql_docker_single_database:
         type: mysql
@@ -67,35 +66,37 @@ backups:
         user: root
         password: root
         database: "test_www_db"
-        container: "test_database"     # this one is required to use a docker container
+        container: "fr_tests_bahub_test_mariadb_1"     # this one is required to use a docker container
         access: backup_one
         encryption: none
-        collection_id: "${COLLECTION_ID}"
+        collection_id: "${COLLECTIONS_MYSQL_ID}"
 
     docker_command_output:
         type: docker_output
-        container: "test_www"
-        command: "cat /etc/resolv.conf"
-        restore_command: "cat - > /var/www/html/resolv.conf.txt"
+        container: "fr_tests_bahub_test_www_1"
+        command: "cat /etc/fstab"
+        restore_command: "cat - > /tmp/fstab.restored"
         access: backup_one
         encryption: none
-        collection_id: "${COLLECTION_ID}"
+        collection_id: "${COLLECTIONS_WWW_FILES_ID}"
 
+    # no container specified: operates on Bahub container or on host (depends on where Bahub is running)
     local_command_output:
         type: command_output
         command: "cat /etc/fstab"
         restore_command: "cat - > /tmp/fstab.restored"
         access: backup_one
         encryption: none
-        collection_id: "${COLLECTION_ID}"
+        collection_id: "${COLLECTIONS_WWW_FILES_ID}"
 
+    # no container specified: operates on Bahub container or on host (depends on where Bahub is running)
     some_local_logs:
         type: directory
         paths:
             - "/tmp/temp-backup"
         access: backup_one
         encryption: none
-        collection_id: "${COLLECTION_ID}"
+        collection_id: "${COLLECTIONS_WWW_FILES_ID}"
 
     postgresql_docker_single:
         type: postgres
@@ -104,10 +105,10 @@ backups:
         port: 5432
         password: "cooperative-economy"
         database: "for_the_people"
-        container: "test_postgres"
+        container: "fr_tests_bahub_test_postgres_1"
         access: backup_one
         encryption: none
-        collection_id: "${COLLECTION_ID}"
+        collection_id: "${COLLECTIONS_POSTGRES_SINGLE_DB_ID}"
 
 recoveries:
     default:

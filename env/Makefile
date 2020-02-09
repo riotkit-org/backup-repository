@@ -34,6 +34,9 @@ print: ## Print the docker-compose.yaml file (params: VARIANT)
 sh: ## Get a shell, where Symfony console is present
 	${SUDO} ${COMPOSE_ARGS} $$(make _build_variant_list VARIANT="${VARIANT}") exec --user www-data filerepository bash
 
+sh@bahub: ## Get a shell, where Symfony console is present
+	${SUDO} ${COMPOSE_ARGS} $$(make _build_variant_list VARIANT="${VARIANT}") exec --user root bahub bash
+
 wait_for_app: ## Wait for application to be ready
 	${SUDO} ${COMPOSE_ARGS} ps
 	echo " >> Waiting for the application to start..."

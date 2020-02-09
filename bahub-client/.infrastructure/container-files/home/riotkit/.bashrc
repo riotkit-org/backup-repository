@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+
+echo ""
+echo " >> Example of usage:"
+echo " >>   bahub backup service_name"
+echo " >>   bahub --debug backup service_name"
+echo " >>   bahub restore service_name v2"
+echo ""
+echo " >> Non-standard usage:"
+echo " >>   bahub-origin --config=/path/to/custom/config.yaml backup some_service"
+echo ""
+echo " ** It is expected that you add Bahub config file at '/bahub.conf.yaml'**"
+echo ""
+echo " >> A good practice is to put your backup definitions in a crontab-like format in '/cron' file"
+echo "    it will be automatically added to cron. You can run commands as 'riotkit' or as 'root'"
+echo ""

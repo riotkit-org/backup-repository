@@ -1,0 +1,3 @@
+.infrastructure/Dockerfile_bahub.x86_64
+src/bahub.egg-info
+.eggs

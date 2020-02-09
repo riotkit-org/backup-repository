@@ -178,14 +178,16 @@ class AbstractDockerAwareHandler(BackupHandler):
         )
 
         code = response.process.wait()
+        out = response.stdout.read().decode('utf-8') + response.stderr.read().decode('utf-8')
 
-        if int(code) > 0:
-            raise ReadWriteException('Non-zero exit code from command, check if the container name is valid')
-
-        if "does-not-exist" in response.stdout.read().decode('utf-8'):
+        if "does-not-exist" in out:
             raise ReadWriteException(
                 'Path "' + path + '" does not exist in container "' + self.get_container_name() + '"'
             )
+
+        if int(code) > 0:
+            raise ReadWriteException('Non-zero exit code from command, check if the container name is valid. Out: ' +
+                                     out)
 
     def assert_container_running(self, docker_bin: str, container: str):
         """ Checks if a docker container is running """

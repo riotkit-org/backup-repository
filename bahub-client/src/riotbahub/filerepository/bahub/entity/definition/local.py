@@ -31,7 +31,7 @@ class CommandOutputDefinition(ContainerizedDefinition):
 
     @staticmethod
     def from_config(config: dict, name: str):
-        return CommandOutputDefinition(
+        definition = CommandOutputDefinition(
             access=config['access'],
             _type=config['type'],
             collection_id=config['collection_id'],
@@ -42,6 +42,11 @@ class CommandOutputDefinition(ContainerizedDefinition):
             restore_command=config.get('restore_command', ''),
             name=name
         )
+
+        definition._container = config.get('container', '')
+        definition._docker_bin = config.get('docker_bin', 'docker')
+
+        return definition
 
 
 class PathBackupDefinition(ContainerizedDefinition):
