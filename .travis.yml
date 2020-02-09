@@ -21,6 +21,8 @@
     after_failure:
         - bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [FAILURE] Bahub unit tests are failing."
 
+language: php
+os: linux
 
 jobs:
   include:
