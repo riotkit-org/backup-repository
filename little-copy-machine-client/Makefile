@@ -2,6 +2,7 @@
 TAG=dev
 PYTHON=python3
 SUDO=sudo
+ARCH=x86_64
 
 help: ## Help
 	@grep -E '^[a-zA-Z\-\_0-9\.@]+:.*?## .*$$' Makefile | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
@@ -20,5 +21,13 @@ install: ## Install in the system
 user_install: ## Install in user home directory
 	${PYTHON} setup.py install --user
 
-docker_x86_64: ## Build a x86_64 docker image (params: TAG)
-	${SUDO} docker build ../ -f .infrastructure/Dockerfile.x86_64 -t quay.io/riotkit/little-copy-machine:${TAG}
+docker_image: ## Build a docker image (params: TAG=dev, ARCH=x86_64)
+	${SUDO} pip install shyaml
+	${SUDO} docker build ../ -f .infrastructure/Dockerfile.${ARCH} \
+		--build-arg BUILD_DATE=$$(date --iso-8601=seconds) \
+		--build-arg VERSION=$$(make get_version) \
+		--build-arg VCS_REF=$$(git rev-parse --verify HEAD) \
+		-t quay.io/riotkit/little-copy-machine:${TAG}
+
+get_version:
+	cat ../server/config/version.yaml  | shyaml get-value version

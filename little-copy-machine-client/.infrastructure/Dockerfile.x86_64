@@ -13,7 +13,8 @@ LABEL org.opencontainers.image.created="$BUILD_DATE" \
       org.opencontainers.image.source="https://github.com/riotkit-org/filerepository" \
       org.opencontainers.image.url="https://github.com/riotkit-org/filerepository" \
       org.opencontainers.image.revision="$VCS_REF" \
-      org.opencontainers.image.authors="RiotKit technical collective"
+      org.opencontainers.image.authors="RiotKit technical collective" \
+      org.riotkit.filerepository.version="$VERSION"
 
 ADD little-copy-machine-client /build
 ADD server/config/version.yaml /build/version.yaml
