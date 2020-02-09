@@ -41,7 +41,7 @@ wait_for_app: ## Wait for application to be ready
 	${SUDO} ${COMPOSE_ARGS} ps
 	echo " >> Waiting for the application to start..."
 	counter=60; \
-	while ! ${SUDO} ${COMPOSE_ARGS} exec filerepository /healthcheck.sh > /dev/null; do \
+	while ! ${SUDO} ${COMPOSE_ARGS} exec -T filerepository /healthcheck.sh > /dev/null; do \
 		counter=$$((counter-1)); \
 		if [[ "$${counter}" == "0" ]]; then \
 			echo " >> Application didn't get up, showing logs and continuing to be able to run tests, so the tests could show what could potentially be the cause"; \

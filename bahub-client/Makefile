@@ -3,6 +3,7 @@
 PIP=sudo pip3
 SUDO=sudo -E
 PY_BIN=python3
+SHELL=/bin/bash
 PIP_ARGS=
 
 help: ## Help
@@ -22,7 +23,7 @@ install: build_package ## Install
 	make clean
 
 build_container: ## Build a docker container (parameters: TAG)
-	${SUDO} pip install shyaml
+	${SUDO} ${PIP} install ${PIP_ARGS} shyaml
 	${SUDO} docker build .. -f ./.infrastructure/Dockerfile_bahub.x86_64 \
 		--build-arg BUILD_DATE=$$(date --iso-8601=seconds) \
 		--build-arg VERSION=$$(make get_version) \
@@ -50,16 +51,18 @@ kill_test_containers: ## Stop and remove all containers
 test: unit_test functional_test ## Run all tests
 
 functional_test: ## Run functional tests (params: SERVER_DOCKER_TAG, TAG)
+	export $$(grep -v '^#' ../env/.env | xargs); \
 	cd src && ${PY_BIN} -m unittest discover -s ../tests/functional
 
 unit_test: ## Run unit tests
+	export $$(grep -v '^#' ../env/.env | xargs); \
 	cd src && ${PY_BIN} -m unittest discover -s ../tests/unit
 
 coverage: ## Generate code coverage
 	cd src && coverage run --source . -m unittest discover -s ../tests/unit
 
 run_dev: ## Run a development package
-	cd src && python -m riotkit.filerepository.bahub ${ARGS}
+	cd src && ${PY_BIN} -m riotkit.filerepository.bahub ${ARGS}
 
 get_version:
 	cat ../server/config/version.yaml  | shyaml get-value version

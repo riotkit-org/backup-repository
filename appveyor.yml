@@ -1,19 +1,28 @@
 image: Ubuntu
 stack: docker, python 3.8
+version: "{branch} {build}"
+build: off
 
-install_script:
-  - cd bahub-client && make build_container TAG=dev
-  - cd server && make build_container TAG=dev
-  - cd env && make up VARIANT="test postgres bahub-test"
+install:
+  # prepare the CI
+  - sudo apt-get update
+  - sudo apt-get install -y gnutls-dev libcurl4-openssl-dev python3-pip
+  - sudo curl -L "https://github.com/docker/compose/releases/download/1.25.3/docker-compose-$(uname -s)-$(uname -m)" -o /usr/bin/docker-compose
+  - sudo chmod +x /usr/bin/docker-compose
+  - docker-compose -v
+  - docker info
 
-for:
-  - matrix:
-      only:
-        - job_name: Bahub tests
-    test_script:
-      - cd bahub-client && make test
-  - matrix:
-      only:
-        - job_name: LittleCopyMachine tests
-    test_script:
-      - uname -a
+  # build Bahub container from current GIT revision, install required Python packages
+  - cd bahub-client
+  - make install_requirements PIP="python3 -m pip" SUDO=""
+  - make build_container TAG=dev PIP="pip3"
+  # build File Repository server from current GIT revision
+  - cd ../server && make build_container TAG=dev
+  # get up the docker environment in testing configuration
+  - cd ../env && make up wait_for_app VARIANT="test postgres bahub-test"
+
+test_script:
+  - cd ../bahub-client && make test
+  - uname -a
+
+#artifacts:
