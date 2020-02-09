@@ -42,8 +42,8 @@ export default function Footer(props) {
               </a>
             </ListItem>
             <ListItem className={classes.inlineBlock}>
-              <a href="#blog" className={classes.block}>
-                Blog
+              <a href="https://www.facebook.com/riotkit.org" className={classes.block}>
+                Facebook
               </a>
             </ListItem>
           </List>
@@ -52,11 +52,11 @@ export default function Footer(props) {
           <span>
             &copy; {1900 + new Date().getYear()}{" "}
             <a
-              href="https://www.creative-tim.com?ref=mdr-footer"
+              href="https://github.com/riotkit-org"
               target="_blank"
               className={classes.a}
             >
-              Creative Tim
+              RiotKit
             </a>
             , made with love for a better web
           </span>

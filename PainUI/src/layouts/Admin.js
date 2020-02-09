@@ -4,7 +4,7 @@ import { Switch, Route, Redirect } from "react-router-dom";
 import PerfectScrollbar from "perfect-scrollbar";
 import "perfect-scrollbar/css/perfect-scrollbar.css";
 // @material-ui/core components
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles, createMuiTheme, ThemeProvider } from "@material-ui/core/styles";
 // core components
 import Navbar from "components/Navbars/Navbar.js";
 import Footer from "components/Footer/Footer.js";
@@ -19,6 +19,19 @@ import bgImage from "assets/img/sidebar-2.jpg";
 import logo from "assets/img/reactlogo.png";
 
 let ps;
+
+
+const painTheme = createMuiTheme({
+    overrides: {
+        MuiTableCell: {
+          body: {
+              // color: 'white',
+              color: 'rgb(116, 195, 225)'
+          },
+      },
+
+    },
+});
 
 const switchRoutes = (
   <Switch>
@@ -40,26 +53,12 @@ const useStyles = makeStyles(styles);
 export default function Admin({ ...rest }) {
   // styles
   const classes = useStyles();
-  // ref to help us initialize PerfectScrollbar on windows devices
   const mainPanel = React.createRef();
   // states and functions
   const [image] = React.useState(bgImage);
   const [color] = React.useState("blue");
-  // const [fixedClasses, s] = React.useState("dropdown show");
   const [mobileOpen, setMobileOpen] = React.useState(false);
-  // const handleImageClick = image => {
-  //   setImage(image);
-  // };
-  // const handleColorClick = color => {
-  //   setColor(color);
-  // };
-  // const handleFixedClick = () => {
-  //   if (fixedClasses === "dropdown") {
-  //     setFixedClasses("dropdown show");
-  //   } else {
-  //     setFixedClasses("dropdown");
-  //   }
-  // };
+
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
@@ -90,7 +89,8 @@ export default function Admin({ ...rest }) {
     };
   }, [mainPanel]);
   return (
-    <div className={classes.wrapper}>
+    <ThemeProvider theme={painTheme}>
+    <div className={classes.wrapper} >
       <Sidebar
         routes={routes}
         logoText={"File Repository"}
@@ -116,15 +116,8 @@ export default function Admin({ ...rest }) {
           <div className={classes.map}>{switchRoutes}</div>
         )}
         {getRoute() ? <Footer /> : null}
-        {/* <FixedPlugin
-          handleImageClick={handleImageClick}
-          handleColorClick={handleColorClick}
-          bgColor={color}
-          bgImage={image}
-          handleFixedClick={handleFixedClick}
-          fixedClasses={fixedClasses}
-        /> */}
       </div>
     </div>
+    </ThemeProvider>
   );
 }
