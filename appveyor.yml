@@ -1,0 +1,19 @@
+image: Ubuntu
+stack: docker, python 3.8
+
+install_script:
+  - cd bahub-client && make build_container TAG=dev
+  - cd server && make build_container TAG=dev
+  - cd env && make up VARIANT="test postgres bahub-test"
+
+for:
+  - matrix:
+      only:
+        - job_name: Bahub tests
+    test_script:
+      - cd bahub-client && make test
+  - matrix:
+      only:
+        - job_name: LittleCopyMachine tests
+    test_script:
+      - uname -a
