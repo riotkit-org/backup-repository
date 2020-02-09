@@ -9,8 +9,8 @@ ADD server/package-lock.json /var/www/html/
 
 RUN rm -rf /var/lib/apt/lists/* \
     && apt-get update \
-    && curl -sL https://deb.nodesource.com/setup_9.x | bash - \
-    && apt-get install -y nodejs npm make gcc g++ \
+    && curl -sL https://deb.nodesource.com/setup_12.x | bash - \
+    && apt-get install -y nodejs make gcc g++ \
     && chown -R www-data:www-data /var/www \
     && cd /var/www/html \
     && su www-data -s /bin/bash -c "make install_frontend" \

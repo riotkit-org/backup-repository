@@ -16,8 +16,9 @@ class DefinitionFactoryTest(unittest.TestCase):
         return os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 
     def test_constructs_everything(self):
-        riotbahub.filerepository.bahub.service.configurationfactory.os.environ['COLLECTION_ID'] = 'i-w-a_a-i-t'
-        riotbahub.filerepository.bahub.service.configurationfactory.os.environ['ADMIN_TOKEN'] = 'test-token'
+        riotbahub.filerepository.bahub.service.configurationfactory.os.environ['COLLECTIONS_WWW_FILES_ID'] = 'i-w-a_a-i-t'
+        riotbahub.filerepository.bahub.service.configurationfactory.os.environ['SECURITY_ADMIN_TOKEN'] = 'test-token'
+
         factory = riotbahub.filerepository.bahub.service.configurationfactory.ConfigurationFactory(
             self.get_current_path() + '/../bahub-test.conf.yaml', debug=True)
 
@@ -33,8 +34,8 @@ class DefinitionFactoryTest(unittest.TestCase):
     def test_missing_env_variables(self):
         """ COLLECTION_ID and ADMIN_TOKEN should be required by bahub-test.conf.yaml """
 
-        del riotbahub.filerepository.bahub.service.configurationfactory.os.environ['COLLECTION_ID']
-        del riotbahub.filerepository.bahub.service.configurationfactory.os.environ['ADMIN_TOKEN']
+        del riotbahub.filerepository.bahub.service.configurationfactory.os.environ['SECURITY_ADMIN_TOKEN']
+        del riotbahub.filerepository.bahub.service.configurationfactory.os.environ['COLLECTIONS_WWW_FILES_ID']
 
         try:
             riotbahub.filerepository.bahub.service.configurationfactory.ConfigurationFactory(
