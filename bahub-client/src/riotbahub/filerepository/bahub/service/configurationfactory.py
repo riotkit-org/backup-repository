@@ -159,7 +159,7 @@ class ConfigurationFactory:
 
         return self._recovery_plans[name]
 
-    def get_all_sensitive_data(self):
+    def get_all_sensitive_data(self) -> list:
         sensitive_data = []
 
         for access in self._accesses:

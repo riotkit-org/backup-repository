@@ -20,6 +20,7 @@ class Bahub:
     _options = {}     # type: dict
     _logger = None    # type: Logger
     _handlers = None  # type: HandlersMapping
+    notifier: NotifierInterface
 
     def __init__(self, factory: ConfigurationFactory, options: dict, uncensored: bool, logger: Logger,
                  notifier: NotifierInterface):
@@ -27,8 +28,8 @@ class Bahub:
         self._options = options
         self._logger = logger
         self._handlers = HandlersMapping()
-        self.init_logger(uncensored)
         self.notifier = notifier
+        self.init_logger(uncensored)
 
     def run_controller(self, action_name: str, param: str, debug: bool, params: list):
         self._logger.info('Performing ' + action_name)
@@ -115,3 +116,4 @@ class Bahub:
     def init_logger(self, uncensored: bool):
         if not uncensored:
             self._logger.addFilter(PasswordsProtectedFilter(self._factory.get_all_sensitive_data()))
+            self.notifier.set_sensitive_data_to_strip_out(self._factory.get_all_sensitive_data())

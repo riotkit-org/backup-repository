@@ -7,6 +7,7 @@ from ..entity.definition import BackupDefinition
 
 class NotifierInterface:
     config = {}
+    sensitive_data: list
 
     def __init__(self, config: dict):
         self._set_config(config)
@@ -34,6 +35,15 @@ class NotifierInterface:
 
     def exception_occurred(self, exception: BaseException):
         pass
+
+    def set_sensitive_data_to_strip_out(self, sensitive_data: list):
+        self.sensitive_data = sensitive_data
+
+    def filter_out_sensitive_data(self, input_str: str) -> str:
+        for keyword in self.sensitive_data:
+            input_str = input_str.replace(keyword, '****')
+
+        return input_str
 
 
 class Notifier:
@@ -92,6 +102,8 @@ class SlackNotifier(NotifierInterface):
         self._send(':bangbang: ' + str(exception))
 
     def _send(self, msg: str, retry_num: int = 0):
+        msg = self.filter_out_sensitive_data(msg)
+
         try:
             response = requests.post(
                 self._url, data=json.dumps({'text': msg}),
