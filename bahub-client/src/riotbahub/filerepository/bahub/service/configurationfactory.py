@@ -170,6 +170,7 @@ class ConfigurationFactory:
                 sensitive_data.append(self._backups[backup].get_encryption().get_passphrase())
 
             sensitive_data.append(self._backups[backup].get_collection_id())
+            sensitive_data += self._backups[backup].get_sensitive_information()
 
         return sensitive_data
 

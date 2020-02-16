@@ -66,6 +66,9 @@ class BackupDefinition:
     def get_collection_id(self) -> str:
         return self._collection_id
 
+    def get_sensitive_information(self) -> list:
+        return []
+
     def __repr__(self):
         return 'Definition<name=' + self._name + ',collection_id=' + str(self.get_collection_id()) + '>'
 

@@ -41,6 +41,9 @@ class AbstractSQLDefinition(ABC, ContainerizedDefinition):
             .replace('%database%', self.get_database()) \
             .replace('%password%', self._password)
 
+    def get_sensitive_information(self):
+        return [self._password]
+
 
 class AbstractDumpAndRestoreDefinition(AbstractSQLDefinition):
     """ Common model for dump & restore workflow when working with databases """
