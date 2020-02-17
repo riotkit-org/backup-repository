@@ -22,20 +22,20 @@ help:
 
 up: _write_current_env down ## Bring up the development environment (params: VARIANT). Example: up VARIANT="s3 postgres"
 	VARIANT_ARGS=""; \
-	set -x; ${SUDO} ${COMPOSE_ARGS} $$(make _build_variant_list VARIANT="${VARIANT}") up --remove-orphans -d --force-recreate
+	set -x; ${SUDO} ${COMPOSE_ARGS} $$(make -s _build_variant_list VARIANT="${VARIANT}") up --remove-orphans -d --force-recreate
 
 down: ## Delete the development environment
-	${SUDO} ${COMPOSE_ARGS} $$(make _build_variant_list VARIANT="${VARIANT}") down -v --remove-orphans
-	${SUDO} ${COMPOSE_ARGS} $$(make _build_variant_list VARIANT="${VARIANT}") rm -f -s -v
+	${SUDO} ${COMPOSE_ARGS} $$(make -s _build_variant_list VARIANT="${VARIANT}") down -v --remove-orphans
+	${SUDO} ${COMPOSE_ARGS} $$(make -s _build_variant_list VARIANT="${VARIANT}") rm -f -s -v
 
 print: ## Print the docker-compose.yaml file (params: VARIANT)
-	${SUDO} ${COMPOSE_ARGS} $$(make _build_variant_list VARIANT="${VARIANT}") config
+	${SUDO} ${COMPOSE_ARGS} $$(make -s _build_variant_list VARIANT="${VARIANT}") config
 
 sh: ## Get a shell, where Symfony console is present
-	${SUDO} ${COMPOSE_ARGS} $$(make _build_variant_list VARIANT="${VARIANT}") exec --user www-data filerepository bash
+	${SUDO} ${COMPOSE_ARGS} $$(make -s _build_variant_list VARIANT="${VARIANT}") exec --user www-data filerepository bash
 
 sh@bahub: ## Get a shell, where Symfony console is present
-	${SUDO} ${COMPOSE_ARGS} $$(make _build_variant_list VARIANT="${VARIANT}") exec --user root bahub bash
+	${SUDO} ${COMPOSE_ARGS} $$(make -s _build_variant_list VARIANT="${VARIANT}") exec --user root bahub bash
 
 wait_for_app: ## Wait for application to be ready
 	${SUDO} ${COMPOSE_ARGS} ps
@@ -68,13 +68,13 @@ _write_current_env:
 
 server@test_api@ci: wait_for_app ## Run API tests in a docker container (params: CODECEPT_ARGS)
 	${SUDO} ${COMPOSE_ARGS} exec --user www-data filerepository composer install
-	make server@test_api CODECEPT_ARGS="${CODECEPT_ARGS}"
+	make -s server@test_api CODECEPT_ARGS="${CODECEPT_ARGS}"
 
 server@test_api: ## Run API tests in a docker container (params: CODECEPT_ARGS)
-	${SUDO} ${COMPOSE_ARGS} exec --user www-data filerepository ./vendor/bin/codecept -vv -c codeception.local-docker.yml run --html ${CODECEPT_ARGS}
+	${SUDO} ${COMPOSE_ARGS} exec --user www-data filerepository /bin/bash -c 'SYMFONY_DEPRECATIONS_HELPER=max[direct]=0 ./vendor/bin/codecept -v -c codeception.local-docker.yml run --html ${CODECEPT_ARGS}'
 
 server@test_unit: ## Run unit tests in a docker container (params PHPUNIT_ARGS)
-	${SUDO} ${COMPOSE_ARGS} exec --user www-data filerepository ./bin/phpunit ${PHPUNIT_ARGS}
+	${SUDO} ${COMPOSE_ARGS} exec --user www-data filerepository /bin/bash -c 'SYMFONY_DEPRECATIONS_HELPER=max[direct]=0 ./bin/phpunit ${PHPUNIT_ARGS}'
 
 
 #### Bahub tests
