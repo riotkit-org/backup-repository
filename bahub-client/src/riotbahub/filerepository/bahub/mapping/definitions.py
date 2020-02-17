@@ -4,22 +4,29 @@ from ..entity.definition import BackupDefinition
 from ..entity.definition.sql import MySQLDefinition, PostgreSQLDefinition, PostgreSQLBaseBackupDefinition
 from ..entity.definition.local import PathBackupDefinition, CommandOutputDefinition
 from ..entity.definition.docker import DockerVolumesDefinition, DockerOfflineVolumesDefinition
+from ..entity.definition.kv import RedisDefinition
 
 
 class DefinitionsMapping:
     _mapping = {
-        'docker_hot_volumes': DockerVolumesDefinition,
-        'docker_volumes': DockerOfflineVolumesDefinition,
+        # databases
         'mysql': MySQLDefinition,
         'postgres': PostgreSQLDefinition,
         'postgres_base': PostgreSQLBaseBackupDefinition,
 
+        # commands
         'docker_output': CommandOutputDefinition,
         'command_output': CommandOutputDefinition,
+        'docker_hot_volumes': DockerVolumesDefinition,
+        'docker_volumes': DockerOfflineVolumesDefinition,
 
+        # files
         'directory': PathBackupDefinition,
         'file': PathBackupDefinition,
-        'path': PathBackupDefinition
+        'path': PathBackupDefinition,
+
+        # kv
+        'redis': RedisDefinition
     }
 
     @staticmethod
