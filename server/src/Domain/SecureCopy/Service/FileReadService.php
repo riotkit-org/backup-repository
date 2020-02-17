@@ -20,6 +20,8 @@ use App\Domain\SecureCopy\ValueObject\EncryptionPassphrase;
  */
 class FileReadService
 {
+    protected string $consoleBinPath = 'php ./bin/console';
+
     /**
      * @param string $filename
      * @param resource $output
@@ -82,7 +84,7 @@ class FileReadService
         EncryptionPassphrase $passphrase,
         string $iv,
         $output
-    ): callable{
+    ): callable {
 
         return function () use ($filename, $algorithm, $passphrase, $iv, $output) {
             $pipeCommand = '';
@@ -91,7 +93,7 @@ class FileReadService
                 $pipeCommand = ' | ' . $this->generateShellCryptoCommand($algorithm, $passphrase, $iv, false);
             }
 
-            $command = 'bash -c \'set -e; set -o pipefail; php ./bin/console ' . ReadFileCommand::NAME . ' ' . $filename . $pipeCommand . '\'';
+            $command = 'bash -c \'set -e; set -o pipefail; ' . $this->consoleBinPath . ' ' . ReadFileCommand::NAME . ' ' . $filename . $pipeCommand . '\'';
 
             $descriptorSpec = [
                 0 => ["pipe", "r"],  // stdin is a pipe that the child will read from
@@ -99,7 +101,7 @@ class FileReadService
                 2 => ["pipe", "w"]   // stderr is a file to write to
             ];
 
-            $process = proc_open($command, $descriptorSpec, $pipes, __DIR__ . '/../../../../', $_SERVER);
+            $process = proc_open($command, $descriptorSpec, $pipes, __DIR__ . '/../../../../', $this->getEnv());
 
             if (!is_resource($process)) {
                 throw new \Exception('Cannot spawn console process to read the file');
@@ -121,5 +123,20 @@ class FileReadService
                 throw new \Exception('The file read process - console, returned error: ' . $stdErr);
             }
         };
+    }
+
+    protected function getEnv(): array
+    {
+        $env = [];
+
+        foreach ($_SERVER as $key => $value) {
+            if (is_array($value)) {
+                continue;
+            }
+
+            $env[$key] = (string) $value;
+        }
+
+        return $env;
     }
 }
