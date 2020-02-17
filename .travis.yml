@@ -11,10 +11,6 @@
         - make install_requirements PIP="pip" PIP_ARGS=" --ignore-installed " SUDO=""
     script:
         - make install_requirements install unit_test SUDO="" PIP="pip" PY_BIN="python"
-    before_deploy:
-        - sudo mv /usr/bin/{python.backup,python}
-        - sudo mv /usr/bin/{python3.backup,python3}
-        - cp -pr ./* ../
     after_success:
         - bash <(curl -s https://codecov.io/bash) -cF python
         - bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [OK] Bahub unit tests passed."
@@ -30,10 +26,7 @@ jobs:
       language: php
       php: '7.4'
       before_script:
-          - cd server
-          - composer install
-          - make migrate
-          - mkdir -p ./var && chmod 777 ./var -R
+          - cd server && make install migrate
       script:
           - make coverage
       after_success:
@@ -43,8 +36,7 @@ jobs:
 
     - stage: File Repository API tests (Min.io + PostgreSQL)
       language: php
-      services:
-          - docker
+      services: docker
       php: '7.4'
       before_script: cd server
       script: make test_api@ci SUDO="" TAG=${TRAVIS_TAG:-dev} VARIANT="s3 postgres"
@@ -80,8 +72,7 @@ jobs:
 
     - stage: File Repository API tests (local storage + SQLite3)
       language: php
-      services:
-          - docker
+      services: docker
       php: '7.4'
       before_script: cd server
       script: make test_api@ci SUDO="" TAG=${TRAVIS_TAG:-dev} VARIANT=""
@@ -90,14 +81,16 @@ jobs:
 
     - stage: File Repository API tests (Min.io + MariaDB)
       language: php
-      services:
-          - docker
+      services: docker
       php: '7.4'
       before_script: cd server
       script: make test_api@ci SUDO="" TAG=${TRAVIS_TAG:-dev} VARIANT="s3 mariadb"
       after_success: bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [OK] File repository API tests on MariaDB."
       after_failure: bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [FAILURE] File repository API tests on MariaDB are failing."
 
+    # ================
+    #  Release: Docker
+    # ================
     - stage: "Server: Publish docker image"
       language: python
       python: 3.6
@@ -112,6 +105,10 @@ jobs:
           - echo "$QUAY_PASSWORD" | sudo docker login -u "$QUAY_USERNAME" --password-stdin quay.io
       script: cd bahub-client && make build_container push_container TAG=${TRAVIS_TAG:-dev}
 
+
+    # ==============
+    #  Release: PyPI
+    # ==============
     - stage: "Bahub Client: Deploy to PyPI"
       language: python
       python: 3.6
