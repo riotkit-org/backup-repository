@@ -57,7 +57,8 @@ class FileReadService
         bool $decrypt
     ): string {
 
-        $template = 'openssl enc %opts% -%algorithm_name% -K "%passphrase%" -iv "%iv%"';
+        $ivStr = $iv ? ' -iv "%iv%" ' : ' '; // not all algorithms requires IV
+        $template = 'openssl enc %opts% -%algorithm_name% -K "%passphrase%" ' . $ivStr . ' ';
 
         return str_replace(
             ['%algorithm_name%', '%passphrase%', '%iv%', '%opts%'],

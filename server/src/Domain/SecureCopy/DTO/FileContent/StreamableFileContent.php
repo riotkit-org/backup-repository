@@ -2,6 +2,9 @@
 
 namespace App\Domain\SecureCopy\DTO\FileContent;
 
+/**
+ * @codeCoverageIgnore No logic, no test
+ */
 class StreamableFileContent
 {
     /**

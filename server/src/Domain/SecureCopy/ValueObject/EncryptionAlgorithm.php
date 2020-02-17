@@ -19,6 +19,13 @@ class EncryptionAlgorithm extends BaseChoiceValueObject
 
     public function generateInitializationVector(): string
     {
-        return \bin2hex(\random_bytes(\openssl_cipher_iv_length($this->getValue())));
+        $length = \openssl_cipher_iv_length($this->getValue());
+
+        // OpenSSL tells us that the cipher does not need IV
+        if (!$length) {
+            return '';
+        }
+
+        return \bin2hex(\random_bytes($length));
     }
 }

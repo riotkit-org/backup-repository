@@ -11,6 +11,13 @@ class RepositoryLegend implements \JsonSerializable
     private string $fetchUrlTemplate;
     private int $remainingSince;
 
+    /**
+     * @codeCoverageIgnore No logic, no test
+     *
+     * @param string $metadataUrlTemplate
+     * @param string $fetchUrlTemplate
+     * @param int $remainingSince
+     */
     public function __construct(string $metadataUrlTemplate, string $fetchUrlTemplate, int $remainingSince)
     {
         $this->metadataUrlTemplate = $metadataUrlTemplate;
@@ -18,6 +25,11 @@ class RepositoryLegend implements \JsonSerializable
         $this->remainingSince      = $remainingSince;
     }
 
+    /**
+     * @codeCoverageIgnore No logic, no test
+     *
+     * @return array|mixed
+     */
     public function jsonSerialize()
     {
         return [

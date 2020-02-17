@@ -5,6 +5,9 @@ namespace App\Domain\SecureCopy\DTO\FileContent;
 use App\Domain\SecureCopy\ValueObject\EncryptionAlgorithm;
 use App\Domain\SecureCopy\ValueObject\EncryptionPassphrase;
 
+/**
+ * @codeCoverageIgnore No logic, no test
+ */
 class StreamableFileContentWithEncryptionInformation extends StreamableFileContent
 {
     private string $initializationVector;
