@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace Tests\Domain\Replication\ActionHandler;
+namespace Tests\Domain\SecureCopy\ActionHandler;
 
 use App\Domain\Common\DTO\SubmitData;
 use App\Domain\SecureCopy\Collection\TimelinePartial;
