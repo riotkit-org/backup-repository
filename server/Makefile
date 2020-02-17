@@ -15,7 +15,7 @@ install: ## Install the backend application
 	else \
 		composer install; \
 	fi
-	make migrate
+	make -s migrate
 
 install_frontend: ## Install MinimumUi dependencies
 	npm install
@@ -27,7 +27,7 @@ migrate: ## Upgrade database to the recent version of the structure
 	./bin/console doctrine:migrations:migrate --no-interaction -vv
 
 run_dev: ## Run a developer web server (do not use on production)
-	cd env && make up VARIANT="test"
+	cd env && make -s up VARIANT="test"
 
 deploy: install install_frontend ## Deploy the application
 
@@ -43,8 +43,8 @@ run_container: ## Run docker image (params: TAG)
 	${SUDO} docker run --rm --name file-repository -p 80:80 quay.io/riotkit/file-repository:${TAG}
 
 _configure_ci_environment:
-	make _set_env NAME=APP_ENV VALUE=test
-	make _set_env NAME=ANTI_HOTLINK_SECRET_METHOD VALUE='"\\$$$$http_x_expiration_time\\$$$$http_test_header MY-AWESOME-SUFFIX"'
+	make -s_set_env NAME=APP_ENV VALUE=test
+	make -s _set_env NAME=ANTI_HOTLINK_SECRET_METHOD VALUE='"\\$$$$http_x_expiration_time\\$$$$http_test_header MY-AWESOME-SUFFIX"'
 	cp ./config/ids_mapping.yaml.example ./config/ids_mapping.yaml
 	./bin/console cache:clear --env=test
 
@@ -67,7 +67,7 @@ coverage: ## Generate code coverage from unit testing
 	SYMFONY_DEPRECATIONS_HELPER=disabled=1 ./bin/phpunit --coverage-text
 
 test_api: build_container ## Run API tests in a docker container (params: CODECEPT_ARGS, VARIANT)
-	cd env && make up test_api CODECEPT_ARGS="${CODECEPT_ARGS}" VARIANT="test ${VARIANT}"
+	cd ../env && make -s up server@test_api CODECEPT_ARGS="${CODECEPT_ARGS}" VARIANT="test ${VARIANT}"
 
 test_api@ci: build_container ## Run API tests in a docker container (params: CODECEPT_ARGS, VARIANT)
-	cd env && make up test_api@ci CODECEPT_ARGS="${CODECEPT_ARGS}" VARIANT="test ${VARIANT}"
+	cd ../env && make -s up server@test_api@ci CODECEPT_ARGS="${CODECEPT_ARGS}" VARIANT="test ${VARIANT}"
