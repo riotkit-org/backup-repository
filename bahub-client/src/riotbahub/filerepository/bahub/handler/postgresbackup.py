@@ -43,9 +43,8 @@ On restore:
             copy_stdin=True
         )
 
-    def _finalize(self, action: str):
-        if action == 'restore':
-            self.set_connection_limit_on_databases(-1)
+    def _finalize_restore(self):
+        self.set_connection_limit_on_databases(-1)
 
     def set_connection_limit_on_databases(self, limit: int):
         cmd = self.execute_command_in_proper_context(self._get_definition().get_all_databases_command(), wait=300)
@@ -131,12 +130,10 @@ On restore:
     def on_failed_restore(self):
         self.shell(self._get_definition().get_rescue_command_on_failed_restore())
 
-    def _finalize(self, action: str):
-        if action == 'backup':
-            # clean up the temporary directory
-            self.shell(self._get_definition().get_temporary_directory_clean_up_command())
-            return
+    def _finalize_restore(self):
+        self._set_permissions()
+        self._start_the_database()
 
-        if action == 'restore':
-            self._set_permissions()
-            self._start_the_database()
+    def _finalize_backup(self):
+        # clean up the temporary directory
+        self.shell(self._get_definition().get_temporary_directory_clean_up_command())

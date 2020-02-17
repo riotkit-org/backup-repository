@@ -102,7 +102,11 @@ class BackupHandler:
 
     def close(self, action: str):
         self._logger.info('Finishing the process')
-        self._finalize(action=action)
+
+        if action == 'backup':
+            self._finalize_backup()
+        elif action == 'restore':
+            self._finalize_restore()
 
     def _get_definition(self) -> BackupDefinition:
         return self._definition
@@ -178,7 +182,10 @@ class BackupHandler:
         """ When restore is failed. Allows to specify a recovery procedure """
         pass
 
-    def _finalize(self, action: str):
+    def _finalize_backup(self):
+        pass
+
+    def _finalize_restore(self):
         pass
 
     @staticmethod

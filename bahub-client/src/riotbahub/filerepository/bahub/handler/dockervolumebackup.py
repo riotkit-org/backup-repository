@@ -77,7 +77,7 @@ Notice: Your applications will have a downtime. Be careful about dependent servi
 
     """
 
-    _container_id = ""
+    _temp_container_id = ""
 
     def _get_definition(self) -> DockerOfflineVolumesDefinition:
         return self._definition
@@ -88,13 +88,21 @@ Notice: Your applications will have a downtime. Be careful about dependent servi
 
     def receive_backup_stream(self, container: str = None):
         self._logger.info('Performing backup of origin container in offline mode')
-        temporary_container_id = self._stop_origin_and_start_temporary_containers()
+
+        temporary_container_id = self._stop_origin_and_start_temporary_containers(
+            image=self._get_definition().get_temp_image_name(),
+            cmd=self._get_definition().get_temp_cmd()
+        )
 
         return super().receive_backup_stream(container=temporary_container_id)
 
     def restore_backup_from_stream(self, stream, container: str = None) -> CommandExecutionResult:
         self._logger.info('Restoring backup to the temporary container through mounted volumes of origin container')
-        temporary_container_id = self._stop_origin_and_start_temporary_containers()
+
+        temporary_container_id = self._stop_origin_and_start_temporary_containers(
+            image=self._get_definition().get_temp_image_name(),
+            cmd=self._get_definition().get_temp_cmd()
+        )
 
         return super().restore_backup_from_stream(stream, container=temporary_container_id)
 
@@ -108,37 +116,8 @@ Notice: Your applications will have a downtime. Be careful about dependent servi
             definition
         )
 
-    def _stop_origin_and_start_temporary_containers(self) -> str:
-        """ Stop origin container and start a temporary container """
+    def _finalize_backup(self):
+        self._stop_temporary_and_start_origin_container()
 
-        # @todo: Support linked/dependent containers
-
-        definition = self._get_definition()
-
-        self._logger.info('Stopping origin container')
-        self._stop_container(definition.get_docker_bin(), definition.get_container())
-
-        self._logger.info('Spawning temporary container with volumes from origin container')
-        self._container_id = self._spawn_temporary_container(
-            definition.get_docker_bin(),
-            definition.get_container(),
-            definition.get_temp_image_name(),
-            definition.get_temp_cmd()
-        )
-
-        return self._container_id
-
-    def _finalize(self, action: str):
-        definition = self._get_definition()
-
-        try:
-            self._logger.info('Killing temporary container')
-            self._kill_container(definition.get_docker_bin(), self._container_id)
-
-        except Exception:
-            self._logger.warning('Cannot kill temporary container "' + self._container_id + '"')
-
-        # @todo: Support linked/dependent containers
-
-        self._logger.info('Starting origin container')
-        self._start_container(definition.get_docker_bin(), definition.get_container())
+    def _finalize_restore(self):
+        self._stop_temporary_and_start_origin_container()

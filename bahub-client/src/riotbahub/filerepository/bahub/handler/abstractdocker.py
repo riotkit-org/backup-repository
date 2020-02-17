@@ -14,6 +14,8 @@ class AbstractDockerAwareHandler(BackupHandler):
         :author: RiotKit Team, Andrew Johnson
     """
 
+    _temp_container_id: str
+
     def _get_definition(self) -> ContainerizedDefinition:
         return self._definition
 
@@ -126,9 +128,18 @@ class AbstractDockerAwareHandler(BackupHandler):
 
     def _spawn_temporary_container(self, docker_bin: str, origin_container: str, temp_image_name: str,
                                    temp_container_cmd: str):
-        """ Runs a temporary container that has mounted volumes from other container """
+        """
+            Runs a temporary container that has mounted volumes from other container
+
+            Notice: Empty "temp_image_name" parameter will mean to run same image as origin container
+        """
+
+        self._logger.info('Bringing up temporary container')
 
         temp_container_name = origin_container + '_backup_' + self.generate_id()
+
+        if temp_image_name == '':
+            temp_image_name = self._inspect_docker_container_image(docker_bin, origin_container)
 
         run_command = docker_bin + ' run -d --rm --volumes-from ' + origin_container + \
                                    ' --name ' + temp_container_name + \
@@ -152,6 +163,9 @@ class AbstractDockerAwareHandler(BackupHandler):
                                      + container_id)
 
         return container_id
+
+    def _inspect_docker_container_image(self, docker_bin: str, container_name: str) -> str:
+        return self.shell(docker_bin + ' inspect --format="{{.Image}}" ' + container_name).stdout.read().decode('utf-8').strip()
 
     def _assert_all_paths_exists(self, docker_bin: str, container: str, paths: list,
                                  definition: ContainerizedDefinition):
@@ -226,15 +240,55 @@ class AbstractDockerAwareHandler(BackupHandler):
         if not stdout == container_name:
             raise ReadWriteException('Cannot ' + operation_name + ' container "' + container_name + '". ' + stdout)
 
-    def _kill_container(self, docker_bin: str, container_name: str):
+    def _kill_container(self, container_name: str):
+        docker_bin = self._get_definition().get_docker_bin()
+
         out = self._execute_command(docker_bin + ' kill ' + container_name, wait=300)
         self._assert_container_name_present(out, container_name, 'kill')
 
-    def _stop_container(self, docker_bin: str, container_name: str):
+    def _stop_container(self, container_name: str):
+        docker_bin = self._get_definition().get_docker_bin()
+
         out = self._execute_command(docker_bin + ' stop ' + container_name, wait=300)
         self._assert_container_name_present(out, container_name, 'stop')
 
-    def _start_container(self, docker_bin: str, container_name: str):
+    def _start_container(self, container_name: str):
+        docker_bin = self._get_definition().get_docker_bin()
+
         out = self._execute_command(docker_bin + ' start ' + container_name, wait=300)
         self._assert_container_name_present(out, container_name, 'start')
 
+    def _stop_origin_and_start_temporary_containers(self, image: str, cmd: str) -> str:
+        """ Stop origin container and start a temporary container """
+
+        # @todo: Support linked/dependent containers
+
+        definition = self._get_definition()
+
+        self._logger.info('Stopping origin container')
+        self._stop_container(definition.get_container())
+
+        self._logger.info('Spawning temporary container with volumes from origin container')
+        self._temp_container_id = self._spawn_temporary_container(
+            definition.get_docker_bin(),
+            definition.get_container(),
+            image,
+            cmd
+        )
+
+        return self._temp_container_id
+
+    def _stop_temporary_and_start_origin_container(self):
+        definition = self._get_definition()
+
+        try:
+            self._logger.info('Killing temporary container')
+            self._kill_container(self._temp_container_id)
+
+        except Exception:
+            self._logger.warning('Cannot kill temporary container "' + self._temp_container_id + '"')
+
+        # @todo: Support linked/dependent containers
+
+        self._logger.info('Starting origin container')
+        self._start_container(definition.get_container())
