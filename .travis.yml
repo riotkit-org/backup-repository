@@ -40,7 +40,7 @@ jobs:
     #
     # Bahub (Backups API client)
     #
-    - stage: Bahub Unit test @ Python 3.6
+    - stage: Bahub tests @ Python 3.6
       language: python
       dist: bionic
       services: docker
@@ -51,6 +51,7 @@ jobs:
         - cd bahub-client && make build_container TAG=${TRAVIS_TAG:-dev} PIP="pip" PIP_ARGS=" --ignore-installed " SUDO="" && cd ..
         - cd server && make build_container TAG=${TRAVIS_TAG:-dev} && cd ..
       script:
+          - cd env && make up VARIANT="test postgres bahub-test" && cd ..
           - cd bahub-client && make install test PIP="pip" PIP_ARGS=" --ignore-installed " SUDO=""
       after_success:
           - bash <(curl -s https://codecov.io/bash) -cF python
