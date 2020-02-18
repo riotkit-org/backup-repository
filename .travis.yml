@@ -51,7 +51,7 @@ jobs:
         - cd bahub-client && make build_container TAG=${TRAVIS_TAG:-dev} PIP="pip" PIP_ARGS=" --ignore-installed " SUDO="" && cd ..
         - cd server && make build_container TAG=${TRAVIS_TAG:-dev} && cd ..
       script:
-          - make install test PIP="pip" PIP_ARGS=" --ignore-installed " SUDO=""
+          - cd bahub-client && make install test PIP="pip" PIP_ARGS=" --ignore-installed " SUDO=""
       after_success:
           - bash <(curl -s https://codecov.io/bash) -cF python
           - bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [OK] Bahub tests passed."
