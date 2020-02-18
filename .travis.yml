@@ -1,21 +1,16 @@
-.bahub_unit_tests_template: &bahub_unit_tests_template
+bahub_template: &bahub_template
     before_install:
         - sudo apt-get update
         - sudo apt-get install -y openssl gnutls-dev libcurl4-gnutls-dev
+
         # fix for the Python PIP that cannot locate lsb-release
         - sudo ln -s /usr/bin/lsb_release /usr/bin/lsb-release
-        - lsb_release -a
-    before_script:
+
         - cd bahub-client
-        - lsb-release
         - make install_requirements PIP="pip" PIP_ARGS=" --ignore-installed " SUDO=""
-    script:
-        - make install_requirements install unit_test SUDO="" PIP="pip" PY_BIN="python"
-    after_success:
-        - bash <(curl -s https://codecov.io/bash) -cF python
-        - bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [OK] Bahub unit tests passed."
-    after_failure:
-        - bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [FAILURE] Bahub unit tests are failing."
+
+        - # change docker-compose to a version that contains this fix: https://github.com/docker/compose/pull/6377/files
+        - sudo curl -L "https://github.com/docker/compose/releases/download/1.24.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/bin/docker-compose
 
 language: php
 os: linux
@@ -48,22 +43,26 @@ jobs:
     #
     - stage: Bahub Unit test @ Python 3.6
       language: python
-      python: 3.6
       dist: bionic
-      <<: *bahub_unit_tests_template
+      services: docker
+      python: 3.6
+      <<: *bahub_template
+      script:
+          - make install unit_test
+      after_success:
+          - bash <(curl -s https://codecov.io/bash) -cF python
+          - bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [OK] Bahub unit tests passed."
+      after_failure:
+          - bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [FAILURE] Bahub unit tests are failing."
 
     - stage: Bahub functional test
       language: python
       dist: bionic
       services: docker
       python: 3.6
-      before_install:
-          - sudo apt-get update
-          - sudo apt-get install -y openssl
-          - cd server && make build_container TAG=${TRAVIS_TAG:-dev} && cd ..
+      <<: *bahub_template
       before_script:
-          # change docker-compose to a version that contains this fix: https://github.com/docker/compose/pull/6377/files
-          - sudo curl -L "https://github.com/docker/compose/releases/download/1.24.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/bin/docker-compose
+          - cd server && make build_container TAG=${TRAVIS_TAG:-dev} && cd ..
           - cd bahub-client && make build_container TAG=${TRAVIS_TAG:-dev} && cd ..
           - cd server && make build_container TAG=${TRAVIS_TAG:-dev} && cd ..
       script: cd bahub-client && make test SERVER_DOCKER_TAG=${TRAVIS_TAG:-dev} TAG=${TRAVIS_TAG:-dev}
@@ -75,7 +74,7 @@ jobs:
       services: docker
       php: '7.4'
       before_script: cd server
-      script: make test_api@ci SUDO="" TAG=${TRAVIS_TAG:-dev} VARIANT=""
+      script: make server@test_api@ci SUDO="" TAG=${TRAVIS_TAG:-dev} VARIANT=""
       after_success: bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [OK] File repository API tests on local storage passed."
       after_failure: bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [FAILURE] File repository API tests on local storage are failing."
 
@@ -84,7 +83,7 @@ jobs:
       services: docker
       php: '7.4'
       before_script: cd server
-      script: make test_api@ci SUDO="" TAG=${TRAVIS_TAG:-dev} VARIANT="s3 mariadb"
+      script: make server@test_api@ci SUDO="" TAG=${TRAVIS_TAG:-dev} VARIANT="s3 mariadb"
       after_success: bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [OK] File repository API tests on MariaDB."
       after_failure: bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [FAILURE] File repository API tests on MariaDB are failing."
 
