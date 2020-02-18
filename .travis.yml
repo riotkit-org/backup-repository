@@ -48,7 +48,7 @@ jobs:
       <<: *bahub_template
       before_script:
         - cd server && make build_container TAG=${TRAVIS_TAG:-dev} && cd ..
-        - cd bahub-client && make build_container TAG=${TRAVIS_TAG:-dev} && cd ..
+        - cd bahub-client && make build_container TAG=${TRAVIS_TAG:-dev} PIP="pip" PIP_ARGS=" --ignore-installed " SUDO="" && cd ..
         - cd server && make build_container TAG=${TRAVIS_TAG:-dev} && cd ..
       script:
           - make install test PIP="pip" PIP_ARGS=" --ignore-installed " SUDO=""
