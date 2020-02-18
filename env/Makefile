@@ -56,13 +56,15 @@ wait_for_app: ## Wait for application to be ready
 wait_for_containers:
 	IFS=' ' read -r -a containers <<< "${CONTAINERS}"; \
 	for container in "$${containers[@]}"; do \
-		echo " >> Waiting for container $${container} to get up..."; \
+		echo " >> Waiting for container '$${container}' to get up..."; \
 		max_sleep=300; \
-		until [ "`docker inspect -f {{.State.Running}} ${COMPOSE_ENV_NAME}_$${container}_1`" == "true" ]; do \
+		out="$$(${SUDO} ${COMPOSE_ARGS} $$(make -s _build_variant_list VARIANT="${VARIANT}") ps)"; \
+		until [[ "$${out}" == *"$${container}"* ]]; do \
 			sleep 0.5; \
 			max_sleep=$$((max_sleep-1)); \
 			if [[ "$${max_sleep}" == "0" ]]; then \
-				break; \
+				echo " !! Container $${container} didnt get up."; \
+				exit 1; \
 			fi; \
 		done; \
 	done
