@@ -1,19 +1,20 @@
 First steps
 ===========
 
-To start using the application you need to install PHP 7.3 with extensions listed in `composer.json` file (see entries ext-{name}),
-composer.
+To start using the application you need to install PHP 7.4 with extensions listed below.
+The dependencies are managed by Composer - it will also validate your environment for required extensions and PHP version.
 
 You can also use a ready-to-use docker container instead of using host installation of PHP, **if you have a possibility always use a docker container**.
 
-Summary of application requirements:
+**Application requirements:**
 
-- PHP 7.3 or newer
+- PHP 7.4 or newer (with extensions: ctype, fileinfo, curl, json, openssl, pdo, pdo_mysql, pdo_pgsql, iconv)
+- NodeJS 12.x + NPM (for building simple frontend at installation time)
 - SQLite3, MySQL 5.7+ or PostgreSQL 10+
 - Composer (PHP package manager, see packagist.org)
-- make (GNU Make)
+- make (GNU Make, we use it for build scripts)
 
-Notice: For PostgreSQL configuration please check the configuration reference at :ref:`postgresql_support` page
+*Notice: For PostgreSQL configuration please check the configuration reference at :ref:`postgresql_support` page*
 
 Manual installation
 ===================
@@ -21,8 +22,8 @@ Manual installation
 At first you need to create your own customized `.env` file with application configuration.
 You can create it from a template `.env.dist`.
 
-Make sure the **APP_ENV** is set to **prod**, and that the database settings are correct.
-On default settings the application should be connecting to a SQLite3 database placed in local file, but this is
+Make sure the **APP_ENV** is set to **prod**, and that the database connection settings are valid.
+On default settings the application should be connecting to a SQLite3 database placed in local file, but please keep in mind, that this is
 not optimal for production usage.
 
 .. code:: shell
@@ -43,10 +44,11 @@ Now set up an NGINX + PHP-FPM or Apache to redirect all traffic to point at /pub
 
 For more help please visit: https://symfony.com/doc/current/setup/web_server_configuration.html
 
-When you have the web server up and running, you check the health check endpoint.
+When you have the web server up and running, you can check the health check endpoint.
 
 .. code:: bash
 
+    # "test" is defined in "HEALTH_CHECK_CODE" environment variable
     curl http://localhost/health?code=test
 
 
@@ -56,18 +58,20 @@ Installation with docker
 
 There are at least four choices:
 
-- Use `quay.io/riotkit/file-repository` container by your own (advanced) and follow the configuration reference
-- Generate a docker-compose.yaml using `make print VARIANT="gateway s3 postgres postgres-persistent"` in `server/env` directory, and create your own environment basing on it
-- Copy the `server/env` environment from this repository and adjust to your needs
-- Take a look at our compose in `server/env` and at configuration reference and create a Kubernetes or other deployment
+- Use `quay.io/riotkit/file-repository` container by your own and follow the configuration reference
+- Generate a docker-compose.yaml using `make print VARIANT="gateway s3 postgres postgres-persistent"` in env_ directory, and create your own environment basing on it
+- Copy the env_ environment from this repository and adjust to your needs
+- Take a look at our compose in env_ directory and at configuration reference, then create a Kubernetes or other type deployment
 
-Proposed way to choose is the prepared docker-compose environment that is placed in `server/env` directory.
+Proposed way to choose is the prepared docker-compose environment that is placed in env_ directory.
+
+.. _env: https://github.com/riotkit-org/file-repository/tree/master/env
 
 **Starting the example environment:**
 
 .. code:: bash
 
-    cd ./server/env
+    cd ./env
     make up VARIANT="gateway s3 postgres persistent"
 
 
@@ -75,7 +79,7 @@ Proposed way to choose is the prepared docker-compose environment that is placed
 
 .. code:: bash
 
-    cd ./server/env
+    cd ./env
     make print VARIANT="gateway s3 postgres persistent"
 
 
@@ -91,14 +95,14 @@ Proposed way to choose is the prepared docker-compose environment that is placed
 Development environment setup
 =============================
 
-For development purposes use the "test" configuration, which mounts the application into the docker container, in effect
-the all changes are present in the application.
+For development purposes use the "test" configuration, which mounts the application into the docker container,
+in effect all changes are present in the application immediately without a rebuild.
 
 You can also run the application with PostgreSQL and/or with S3 as a storage.
 
 .. code:: bash
 
-    cd server/env
+    cd env
     make up VARIANT="test"
 
     # with PostgreSQL as a database
@@ -116,8 +120,14 @@ You can also run the application with PostgreSQL and/or with S3 as a storage.
     # to have a production type configuration, that can be behind reverse proxy (do not expose ports itself to host)
     make up VARIANT="s3 postgres postgres-persistent"
 
+    # to have server + Bahub client container and it's test containers
+    make up VARIANT="test postgres bahub-test"
+    make sh@bahub # here you can perform test backups upload/restore
 
-Please check out the detailed instruction in the **./server/env/README.md** file.
+
+Please check out the detailed instruction in the README_ file.
+
+.. _README: ./env/README.md
 
 Post-installation
 =================
