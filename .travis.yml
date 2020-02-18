@@ -6,8 +6,7 @@ bahub_template: &bahub_template
         # fix for the Python PIP that cannot locate lsb-release
         - sudo ln -s /usr/bin/lsb_release /usr/bin/lsb-release
 
-        - cd bahub-client
-        - make install_requirements PIP="pip" PIP_ARGS=" --ignore-installed " SUDO=""
+        - cd bahub-client && make install_requirements PIP="pip" PIP_ARGS=" --ignore-installed " SUDO="" && cd ..
 
         - # change docker-compose to a version that contains this fix: https://github.com/docker/compose/pull/6377/files
         - sudo curl -L "https://github.com/docker/compose/releases/download/1.24.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/bin/docker-compose
