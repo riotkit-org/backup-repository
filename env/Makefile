@@ -13,7 +13,8 @@ endif
 
 SHELL=/bin/bash
 SUDO=sudo
-COMPOSE_ARGS=docker-compose -p fr_tests -f docker-compose.yaml
+COMPOSE_ENV_NAME=fr_tests
+COMPOSE_ARGS=docker-compose -p ${COMPOSE_ENV_NAME} -f docker-compose.yaml
 BAHUB_PATH=$(shell pwd)/../../bahub-client/
 BAHUB_CONFIG_PATH=$(shell pwd)/bahub.conf.yaml
 
@@ -52,6 +53,20 @@ wait_for_app: ## Wait for application to be ready
 	done; \
 	sleep 5
 
+wait_for_containers:
+	IFS=' ' read -r -a containers <<< "${CONTAINERS}"; \
+	for container in "$${containers[@]}"; do \
+		echo " >> Waiting for container $${container} to get up..."; \
+		max_sleep=300; \
+		until [ "`docker inspect -f {{.State.Running}} ${COMPOSE_ENV_NAME}_$${container}_1`" == "true" ]; do \
+			sleep 0.5; \
+			max_sleep=$$((max_sleep-1)); \
+			if [[ "$${max_sleep}" == "0" ]]; then \
+				break; \
+			fi; \
+		done; \
+	done
+
 _build_variant_list:
 	VARIANT_ARGS=""; \
 	lstr="${VARIANT}"; \
@@ -80,7 +95,7 @@ server@test_unit: ## Run unit tests in a docker container (params PHPUNIT_ARGS)
 #### Bahub tests
 
 
-#### LittleCopyMachine tests
+#### KropotCLI tests
 
 
 #### Bahub Client related tasks
