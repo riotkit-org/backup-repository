@@ -11,14 +11,24 @@ bahub_template: &bahub_template
         - # change docker-compose to a version that contains this fix: https://github.com/docker/compose/pull/6377/files
         - sudo curl -L "https://github.com/docker/compose/releases/download/1.24.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/bin/docker-compose
 
+main_python_version: &main_python_version
+    language: python
+    dist: bionic
+    services: docker
+    python: 3.6
+
+main_php_version: &main_php_version
+    language: php
+    services: docker
+    php: '7.4'
+
 language: php
 os: linux
 
 jobs:
   include:
     - stage: File Repository unit tests @ PHP 7.4
-      language: php
-      php: '7.4'
+      <<: *main_php_version
       before_script:
           - cd server && make install migrate
       script:
@@ -29,11 +39,8 @@ jobs:
       after_failure: bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [FAILURE] File repository unit tests are failing."
 
     - stage: File Repository API tests (Min.io + PostgreSQL)
-      language: php
-      services: docker
-      php: '7.4'
-      before_script: cd server
-      script: make test_api@ci SUDO="" TAG=${TRAVIS_TAG:-dev} VARIANT="s3 postgres"
+      <<: *main_php_version
+      script: cd server && make test_api@ci SUDO="" TAG=${TRAVIS_TAG:-dev} VARIANT="s3 postgres"
       after_success: bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [OK] File repository API tests on Min.io passed."
       after_failure: bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [FAILURE] File repository API tests on Min.io are failing."
 
@@ -41,17 +48,14 @@ jobs:
     # Bahub (Backups API client)
     #
     - stage: Bahub tests @ Python 3.6
-      language: python
-      dist: bionic
-      services: docker
-      python: 3.6
+      <<: *main_python_version
       <<: *bahub_template
       before_script:
-        - cd server && make build_container TAG=${TRAVIS_TAG:-dev} && cd ..
-        - cd bahub-client && make build_container TAG=${TRAVIS_TAG:-dev} PIP="pip" PIP_ARGS=" --ignore-installed " SUDO="" && cd ..
-        - cd server && make build_container TAG=${TRAVIS_TAG:-dev} && cd ..
+          - cd server && make build_container TAG=${TRAVIS_TAG:-dev} && cd ..
+          - cd bahub-client && make build_container TAG=${TRAVIS_TAG:-dev} PIP="pip" PIP_ARGS=" --ignore-installed " SUDO="" && cd ..
+          - cd server && make build_container TAG=${TRAVIS_TAG:-dev} && cd ..
       script:
-          - cd env && make up VARIANT="test postgres bahub-test" && cd ..
+          - cd env && make up wait_for_app VARIANT="test postgres bahub-test" && cd ..
           - cd bahub-client && make install test PIP="pip" PIP_ARGS=" --ignore-installed " SUDO=""
       after_success:
           - bash <(curl -s https://codecov.io/bash) -cF python
@@ -60,20 +64,14 @@ jobs:
           - bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [FAILURE] Bahub tests are failing."
 
     - stage: File Repository API tests (local storage + SQLite3)
-      language: php
-      services: docker
-      php: '7.4'
-      before_script: cd server
-      script: make server@test_api@ci SUDO="" TAG=${TRAVIS_TAG:-dev} VARIANT=""
+      <<: *main_php_version
+      script: cd server && make server@test_api@ci SUDO="" TAG=${TRAVIS_TAG:-dev} VARIANT=""
       after_success: bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [OK] File repository API tests on local storage passed."
       after_failure: bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [FAILURE] File repository API tests on local storage are failing."
 
     - stage: File Repository API tests (Min.io + MariaDB)
-      language: php
-      services: docker
-      php: '7.4'
-      before_script: cd server
-      script: make server@test_api@ci SUDO="" TAG=${TRAVIS_TAG:-dev} VARIANT="s3 mariadb"
+      <<: *main_php_version
+      script: cd server && make server@test_api@ci SUDO="" TAG=${TRAVIS_TAG:-dev} VARIANT="s3 mariadb"
       after_success: bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [OK] File repository API tests on MariaDB."
       after_failure: bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [FAILURE] File repository API tests on MariaDB are failing."
 
@@ -81,15 +79,13 @@ jobs:
     #  Release: Docker
     # ================
     - stage: "Server: Publish docker image"
-      language: python
-      python: 3.6
+      <<: *main_python_version
       before_script:
           - echo "$QUAY_PASSWORD" | sudo docker login -u "$QUAY_USERNAME" --password-stdin quay.io
       script: cd server && make build_container push_container TAG=${TRAVIS_TAG:-dev}
 
     - stage: "Bahub Client: Publish docker image"
-      language: python
-      python: 3.6
+      <<: *main_python_version
       before_script:
           - echo "$QUAY_PASSWORD" | sudo docker login -u "$QUAY_USERNAME" --password-stdin quay.io
       script: cd bahub-client && make build_container push_container TAG=${TRAVIS_TAG:-dev}
@@ -99,8 +95,7 @@ jobs:
     #  Release: PyPI
     # ==============
     - stage: "Bahub Client: Deploy to PyPI"
-      language: python
-      python: 3.6
+      <<: *main_python_version
       script: cd bahub-client
       deploy:
           skip_cleanup: true
