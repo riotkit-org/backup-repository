@@ -67,6 +67,24 @@ Proposed way to choose is the prepared docker-compose environment that is placed
 
 .. _env: https://github.com/riotkit-org/file-repository/tree/master/env
 
+
+**Preparing configuration of the environment:**
+
+Before you will run the environment we suggest to take a look at few configuration variables possibly most important
+for you at the beginning.
+
+
+- SECURITY_ADMIN_TOKEN: Will create an admin token for you automatically during container startup
+- BASE_URL: Application URL (in web browser)
+
+
+.. code:: bash
+
+    edit ./env/.env
+
+.. literalinclude:: ../../env/.env
+
+
 **Starting the example environment:**
 
 .. code:: bash
