@@ -22,6 +22,7 @@ install:
   - cd ../env && make up wait_for_app VARIANT="test postgres bahub-test"
 
 test_script:
+  - sleep 10
   - cd ../bahub-client && make test
   - uname -a
 
