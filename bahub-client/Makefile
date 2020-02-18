@@ -38,15 +38,14 @@ push_container: ## Push docker container
 clean: ## Clean up the local build directory
 	set -x; ${SUDO} rm -rf ./build ./src/bahub.egg-info ./.eggs
 
-run_test_containers: ## Run testing containers and fork to the background (params: SERVER_DOCKER_TAG, TAG)
-	cd tests && SERVER_DOCKER_TAG=${SERVER_DOCKER_TAG} TAG=${TAG} ${SUDO} docker-compose up -d
-	${SUDO} docker ps
+run_test_containers: ## Run testing containers and fork to the background
+	cd ../env && make -s up VARIANT="test postgres bahub-test"
 
 bahub_shell: ## Go into Bahub container
-	cd tests && SERVER_DOCKER_TAG=${SERVER_DOCKER_TAG} TAG=${TAG} ${SUDO} docker-compose exec bahub bash
+	cd ../env && make -s sh@bahub
 
 kill_test_containers: ## Stop and remove all containers
-	cd tests && ${SUDO} docker-compose down
+	cd ../env && make -s down
 
 test: unit_test functional_test ## Run all tests
 
