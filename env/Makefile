@@ -13,7 +13,6 @@ endif
 
 SHELL=/bin/bash
 SUDO=sudo
-COMPOSE_ENV_NAME=fr_tests
 COMPOSE_ARGS=docker-compose -p ${COMPOSE_ENV_NAME} -f docker-compose.yaml
 BAHUB_PATH=$(shell pwd)/../../bahub-client/
 BAHUB_CONFIG_PATH=$(shell pwd)/bahub.conf.yaml

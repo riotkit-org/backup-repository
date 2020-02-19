@@ -9,11 +9,13 @@ services:
     # so any redirects should be generated properly for internal docker network for tests execution
     # For manual tests we would keep eg. http://localhost, on production https://api.storage.riotkit.org
     filerepository:
+        container_name: "${COMPOSE_ENV_NAME}_filerepository_1" # workaround for Compose bug that causes suffixes breaking CI builds
         environment:
             BASE_URL: http://filerepository
 
     bahub:
         image: quay.io/riotkit/bahub:dev
+        container_name: "${COMPOSE_ENV_NAME}_bahub_1" # workaround for Compose bug that causes suffixes breaking CI builds
         volumes:
             - "../bahub-client:/bahub"
             - "../bahub-client/tests/bahub-test.conf.yaml:/bahub.conf.yaml:ro"

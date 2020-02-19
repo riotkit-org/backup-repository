@@ -9,7 +9,7 @@ bahub_template: &bahub_template
         - cd bahub-client && make install_requirements PIP="pip" PIP_ARGS=" --ignore-installed " SUDO="" && cd ..
 
         - # change docker-compose to a version that contains this fix: https://github.com/docker/compose/pull/6377/files
-        - sudo curl -L "https://github.com/docker/compose/releases/download/1.24.1/docker-compose-$(uname -s)-$(uname -m)" -o /usr/bin/docker-compose
+        - sudo curl -L "https://github.com/docker/compose/releases/download/1.25.4/docker-compose-$(uname -s)-$(uname -m)" -o /usr/bin/docker-compose
 
 main_python_version: &main_python_version
     language: python

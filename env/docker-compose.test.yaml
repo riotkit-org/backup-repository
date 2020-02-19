@@ -10,6 +10,7 @@ volumes:
 
 services:
     filerepository:
+        container_name: "${COMPOSE_ENV_NAME}_filerepository_1" # workaround for Compose bug that causes suffixes breaking CI builds
         volumes:
             - "../server:/var/www/html"
             - "./tests_output:/var/www/html/tests/Functional/_output"
