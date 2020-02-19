@@ -108,7 +108,7 @@ final class Roles
     /** Can use SecureCopy at all? */
     public const ROLE_SECURE_COPY_READ_DATA_STREAM = 'securecopy.stream';
 
-    /** Read SecureCopy secrets: Encryption method, password, initialization vector */
+    /** Read SecureCopy secrets: Encryption method, password, initialization vector. With following role can read secrets of any token in the system. */
     public const ROLE_READ_SECURE_COPY_SECRETS = 'securecopy.all_secrets_read';
 
     //
