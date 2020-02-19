@@ -54,6 +54,9 @@ wait_for_app: ## Wait for application to be ready
 	echo " >> Finished waiting"; \
 	sleep 5
 
+read_server_logs: ## Read logs from the server (by the container id)
+	${SUDO} docker logs $$(${SUDO} docker ps --format="{{ .Names }}" | grep fr_tests_filerepository)
+
 wait_for_containers:
 	IFS=' ' read -r -a containers <<< "${CONTAINERS}"; \
 	for container in "$${containers[@]}"; do \
@@ -84,8 +87,7 @@ _write_current_env:
 
 #### Server tests
 
-server@test_api@ci: wait_for_app ## Run API tests in a docker container (params: CODECEPT_ARGS)
-	${SUDO} docker ps
+server@test_api@ci: wait_for_app read_server_logs ## Run API tests in a docker container (params: CODECEPT_ARGS)
 	${SUDO} ${COMPOSE_ARGS} $$(make -s _build_variant_list VARIANT="${VARIANT}") exec --user www-data filerepository composer install
 	make -s server@test_api CODECEPT_ARGS="${CODECEPT_ARGS}"
 
