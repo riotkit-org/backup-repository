@@ -55,7 +55,7 @@ jobs:
           - cd bahub-client && make build_container TAG=${TRAVIS_TAG:-dev} PIP="pip" PIP_ARGS=" --ignore-installed " SUDO="" && cd ..
           - cd server && make build_container TAG=${TRAVIS_TAG:-dev} && cd ..
       script:
-          - cd env && make up wait_for_app wait_for_containers VARIANT="test postgres bahub-test" CONTAINERS="bahub postgresql" && cd ..
+          - cd env && make up wait_for_app wait_for_containers VARIANT="test postgres bahub-test" CONTAINERS="bahub postgres" && cd ..
           - cd bahub-client && make install test VARIANT="test postgres bahub-test" PIP="pip" PIP_ARGS=" --ignore-installed " SUDO=""
       after_success:
           - bash <(curl -s https://codecov.io/bash) -cF python
