@@ -29,6 +29,7 @@ Main functionality:
    domain/storage/index
    domain/backup/index
    domain/minimumui/index
+   domain/securecopy/index
    client/bahub.rst
    shell-access
    riotkit-guide

@@ -22,10 +22,6 @@ main_php_version: &main_php_version
     services: docker
     php: 7.4
 
-build_all_containers: &build_all_containers
-    - cd server && make build_container TAG=${TRAVIS_TAG:-dev} && cd ..
-    - cd bahub-client && make build_container TAG=${TRAVIS_TAG:-dev} PIP="pip" PIP_ARGS=" --ignore-installed " SUDO="" && cd ..
-
 language: php
 os: linux
 
@@ -58,7 +54,8 @@ jobs:
       <<: *main_python_version
       <<: *bahub_template
       before_script:
-          <<: *build_all_containers
+          - cd server && make build_container TAG=${TRAVIS_TAG:-dev} && cd ..
+          - cd bahub-client && make build_container TAG=${TRAVIS_TAG:-dev} PIP="pip" PIP_ARGS=" --ignore-installed " SUDO="" && cd ..
       script:
           - cd env && make up wait_for_app wait_for_containers VARIANT="test postgres postgres-test bahub-test" CONTAINERS="bahub postgres" && cd ..
           - cd bahub-client && make install test VARIANT="test postgres bahub-test" PIP="pip" PIP_ARGS=" --ignore-installed " SUDO=""
