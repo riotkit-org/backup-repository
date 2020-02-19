@@ -96,7 +96,7 @@ server@test_unit: ## Run unit tests in a docker container (params PHPUNIT_ARGS)
 	${SUDO} ${COMPOSE_ARGS} $$(make -s _build_variant_list VARIANT="${VARIANT}") exec --user www-data filerepository /bin/bash -c 'SYMFONY_DEPRECATIONS_HELPER=max[direct]=0 ./bin/phpunit ${PHPUNIT_ARGS}'
 
 
-#### Bahub tests
+#### Bahub  tests
 
 
 #### KropotCLI tests
