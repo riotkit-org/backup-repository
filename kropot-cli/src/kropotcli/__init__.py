@@ -29,7 +29,7 @@ def main():
     parsed = vars(parser.parse_args())
 
     try:
-        app = LittleCopyMachine(
+        app = KropotCLI(
             token=parsed['token'],
             server_url=parsed['server_url'],
             storage_path=parsed['storage_path'],

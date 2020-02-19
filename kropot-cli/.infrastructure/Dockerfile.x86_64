@@ -6,8 +6,8 @@ ARG VERSION=dev
 ARG VCS_REF=unknown
 
 LABEL org.opencontainers.image.created="$BUILD_DATE" \
-      org.opencontainers.image.ref.name="riotkit/little-copy-machine" \
-      org.opencontainers.image.title="LittleCopyMachine" \
+      org.opencontainers.image.ref.name="riotkit/kropotcli" \
+      org.opencontainers.image.title="KropotCLI" \
       org.opencontainers.image.description="File Repository client that makes a mirror/copy of the File Repository files and other objects for backup purpose. Supports zero-knowledge distributed backup." \
       org.opencontainers.image.documentation="https://riotkit.org" \
       org.opencontainers.image.source="https://github.com/riotkit-org/filerepository" \

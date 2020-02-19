@@ -43,7 +43,7 @@ class ColoredFormatter(logging.Formatter):
 def setup_logger(level: str):
     """ Creates a logger instance with proper handlers configured """
 
-    logger = logging.getLogger('LittleCopyMachine')
+    logger = logging.getLogger('KropotCLI')
     logger.setLevel(logging.INFO)
     formatter = ColoredFormatter("[%(asctime)s][%(name)s][%(levelname)s]: %(message)s")
 

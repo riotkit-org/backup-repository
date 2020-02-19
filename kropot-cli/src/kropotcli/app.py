@@ -8,7 +8,7 @@ from time import sleep
 import traceback
 
 
-class LittleCopyMachine:
+class KropotCLI:
     client: FileRepositorySession
     url: str
     storage_manager: StorageManager
@@ -35,7 +35,7 @@ class LittleCopyMachine:
         raise Exception('Invalid action selected')
 
     def collect_action(self):
-        Logger.info('Starting RiotKit\'s LittleCopyMachine...')
+        Logger.info('Starting RiotKit\'s KropotCLI...')
         Logger.info('>> https://riotkit.org | https://github.com/riotkit-org')
         Logger.info('Connecting to ' + self.url)
 
