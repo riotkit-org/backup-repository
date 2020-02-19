@@ -1,3 +1,3 @@
 #!/bin/bash
 
-exec ./bin/console health:check
+exec /bin/bash -c "./bin/console health:check && curl -f http://localhost"
