@@ -23,7 +23,7 @@ Features:
 =======================================================================  ===================================================================================
 
 
-.. image:: _static/diagrams/securecopy/architecture.png
+.. image:: ../../_static/diagrams/securecopy/architecture.png
 
 .. toctree::
    :maxdepth: 2

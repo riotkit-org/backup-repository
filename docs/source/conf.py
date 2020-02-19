@@ -18,9 +18,17 @@ language = None
 exclude_patterns = []
 pygments_style = None
 
-import sphinx_glpi_theme
-html_theme = 'glpi'
-html_theme_path = sphinx_glpi_theme.get_html_themes_path()
+html_theme = 'neo_rtd_theme'
+import sphinx_theme
+html_theme_path = [sphinx_theme.get_html_theme_path()]
+
+html_theme_options = {
+    'body_max_width': None
+}
+
+html_css_files = [
+    'css/riotkit.css',
+]
 
 html_static_path = ['_static']
 htmlhelp_basename = 'FileRepositorydoc'
