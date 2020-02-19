@@ -78,16 +78,12 @@ jobs:
     # =========================================================
     - stage: File Repository API tests (local storage + SQLite3)
       <<: *main_php_version
-      before_script:
-          <<: *build_server_container
       script: cd server && make test_api@ci SUDO="" TAG=${TRAVIS_TAG:-dev} VARIANT="test s3 postgres"
       after_success: bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [OK] File repository API tests on local storage passed."
       after_failure: bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [FAILURE] File repository API tests on local storage are failing."
 
     - stage: File Repository API tests (Min.io + MariaDB)
       <<: *main_php_version
-      before_script:
-          <<: *build_server_container
       script: cd server && make test_api@ci SUDO="" TAG=${TRAVIS_TAG:-dev} VARIANT="s3 mariadb"
       after_success: bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [OK] File repository API tests on MariaDB."
       after_failure: bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [FAILURE] File repository API tests on MariaDB are failing."
