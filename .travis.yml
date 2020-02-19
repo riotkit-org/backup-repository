@@ -22,11 +22,8 @@ main_php_version: &main_php_version
     services: docker
     php: 7.4
 
-build_server_container: &build_server_container
-    - cd server && make build_container TAG=${TRAVIS_TAG:-dev} && cd ..
-
 build_all_containers: &build_all_containers
-    <<: *build_server_container
+    - cd server && make build_container TAG=${TRAVIS_TAG:-dev} && cd ..
     - cd bahub-client && make build_container TAG=${TRAVIS_TAG:-dev} PIP="pip" PIP_ARGS=" --ignore-installed " SUDO="" && cd ..
 
 language: php
@@ -50,8 +47,6 @@ jobs:
 
     - stage: File Repository API tests (Min.io + PostgreSQL)
       <<: *main_php_version
-      before_script:
-          <<: *build_server_container
       script: cd server && make test_api@ci SUDO="" TAG=${TRAVIS_TAG:-dev} VARIANT="test s3 postgres"
       after_success: bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [OK] File repository API tests on Min.io passed."
       after_failure: bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [FAILURE] File repository API tests on Min.io are failing."
