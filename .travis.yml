@@ -27,22 +27,22 @@ os: linux
 
 jobs:
   include:
-#    - stage: File Repository unit tests @ PHP 7.4
-#      <<: *main_php_version
-#      before_script:
-#          - cd server && make install migrate
-#      script:
-#          - make coverage
-#      after_success:
-#          - bash <(curl -s https://codecov.io/bash) -cF php
-#          - bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [OK] File repository unit tests passed."
-#      after_failure: bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [FAILURE] File repository unit tests are failing."
+    - stage: File Repository unit tests @ PHP 7.4
+      <<: *main_php_version
+      before_script:
+          - cd server && make install migrate
+      script:
+          - make coverage
+      after_success:
+          - bash <(curl -s https://codecov.io/bash) -cF php
+          - bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [OK] File repository unit tests passed."
+      after_failure: bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [FAILURE] File repository unit tests are failing."
 #
-#    - stage: File Repository API tests (Min.io + PostgreSQL)
-#      <<: *main_php_version
-#      script: cd server && make test_api@ci SUDO="" TAG=${TRAVIS_TAG:-dev} VARIANT="s3 postgres"
-#      after_success: bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [OK] File repository API tests on Min.io passed."
-#      after_failure: bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [FAILURE] File repository API tests on Min.io are failing."
+    - stage: File Repository API tests (Min.io + PostgreSQL)
+      <<: *main_php_version
+      script: cd server && make test_api@ci SUDO="" TAG=${TRAVIS_TAG:-dev} VARIANT="s3 postgres"
+      after_success: bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [OK] File repository API tests on Min.io passed."
+      after_failure: bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [FAILURE] File repository API tests on Min.io are failing."
 
     #
     # Bahub (Backups API client)
@@ -65,13 +65,13 @@ jobs:
 
     - stage: File Repository API tests (local storage + SQLite3)
       <<: *main_php_version
-      script: cd server && make server@test_api@ci SUDO="" TAG=${TRAVIS_TAG:-dev} VARIANT=""
+      script: cd server && make test_api@ci SUDO="" TAG=${TRAVIS_TAG:-dev} VARIANT=""
       after_success: bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [OK] File repository API tests on local storage passed."
       after_failure: bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [FAILURE] File repository API tests on local storage are failing."
 
     - stage: File Repository API tests (Min.io + MariaDB)
       <<: *main_php_version
-      script: cd server && make server@test_api@ci SUDO="" TAG=${TRAVIS_TAG:-dev} VARIANT="s3 mariadb"
+      script: cd server && make test_api@ci SUDO="" TAG=${TRAVIS_TAG:-dev} VARIANT="s3 mariadb"
       after_success: bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [OK] File repository API tests on MariaDB."
       after_failure: bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [FAILURE] File repository API tests on MariaDB are failing."
 
