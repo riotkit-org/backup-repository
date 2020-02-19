@@ -55,7 +55,7 @@ wait_for_app: ## Wait for application to be ready
 	sleep 5
 
 read_server_logs: ## Read logs from the server (by the container id)
-	${SUDO} docker logs $$(${SUDO} docker ps --format="{{ .Names }}" | grep fr_tests_filerepository)
+	${SUDO} docker logs $$(${SUDO} docker ps -a --format="{{ .Names }}" | grep fr_tests_filerepository)
 
 wait_for_containers:
 	IFS=' ' read -r -a containers <<< "${CONTAINERS}"; \
