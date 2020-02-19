@@ -51,6 +51,7 @@ wait_for_app: ## Wait for application to be ready
 		fi; \
 		sleep 1; \
 	done; \
+	echo " >> Finished waiting"; \
 	sleep 5
 
 wait_for_containers:
@@ -84,14 +85,14 @@ _write_current_env:
 #### Server tests
 
 server@test_api@ci: wait_for_app ## Run API tests in a docker container (params: CODECEPT_ARGS)
-	${SUDO} ${COMPOSE_ARGS} exec --user www-data filerepository composer install
+	${SUDO} ${COMPOSE_ARGS} $$(make -s _build_variant_list VARIANT="${VARIANT}") exec --user www-data filerepository composer install
 	make -s server@test_api CODECEPT_ARGS="${CODECEPT_ARGS}"
 
 server@test_api: ## Run API tests in a docker container (params: CODECEPT_ARGS)
-	${SUDO} ${COMPOSE_ARGS} exec --user www-data filerepository /bin/bash -c 'SYMFONY_DEPRECATIONS_HELPER=max[direct]=0 ./vendor/bin/codecept -v -c codeception.local-docker.yml run --html ${CODECEPT_ARGS}'
+	${SUDO} ${COMPOSE_ARGS} $$(make -s _build_variant_list VARIANT="${VARIANT}") exec --user www-data filerepository /bin/bash -c 'SYMFONY_DEPRECATIONS_HELPER=max[direct]=0 ./vendor/bin/codecept -v -c codeception.local-docker.yml run --html ${CODECEPT_ARGS}'
 
 server@test_unit: ## Run unit tests in a docker container (params PHPUNIT_ARGS)
-	${SUDO} ${COMPOSE_ARGS} exec --user www-data filerepository /bin/bash -c 'SYMFONY_DEPRECATIONS_HELPER=max[direct]=0 ./bin/phpunit ${PHPUNIT_ARGS}'
+	${SUDO} ${COMPOSE_ARGS} $$(make -s _build_variant_list VARIANT="${VARIANT}") exec --user www-data filerepository /bin/bash -c 'SYMFONY_DEPRECATIONS_HELPER=max[direct]=0 ./bin/phpunit ${PHPUNIT_ARGS}'
 
 
 #### Bahub tests
