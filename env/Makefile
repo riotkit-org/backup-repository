@@ -43,6 +43,7 @@ wait_for_app: ## Wait for application to be ready
 	counter=60; \
 	while ! ${SUDO} ${COMPOSE_ARGS} exec filerepository /healthcheck.sh > /dev/null; do \
 		counter=$$((counter-1)); \
+		echo -n "."; \
 		if [[ "$${counter}" == "0" ]]; then \
 			echo " >> Application didn't get up, showing logs and continuing to be able to run tests, so the tests could show what could potentially be the cause"; \
 			${SUDO} ${COMPOSE_ARGS} logs; \
