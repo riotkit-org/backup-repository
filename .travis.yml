@@ -22,11 +22,21 @@ main_php_version: &main_php_version
     services: docker
     php: 7.4
 
+build_server_container: &build_server_container
+    - cd server && make build_container TAG=${TRAVIS_TAG:-dev} && cd ..
+
+build_all_containers: &build_all_containers
+    <<: *build_server_container
+    - cd bahub-client && make build_container TAG=${TRAVIS_TAG:-dev} PIP="pip" PIP_ARGS=" --ignore-installed " SUDO="" && cd ..
+
 language: php
 os: linux
 
 jobs:
   include:
+    # =====================
+    #  Server's main tests
+    # =====================
     - stage: File Repository unit tests @ PHP 7.4
       <<: *main_php_version
       before_script:
@@ -37,23 +47,23 @@ jobs:
           - bash <(curl -s https://codecov.io/bash) -cF php
           - bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [OK] File repository unit tests passed."
       after_failure: bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [FAILURE] File repository unit tests are failing."
-#
+
     - stage: File Repository API tests (Min.io + PostgreSQL)
       <<: *main_php_version
-      script: cd server && make test_api@ci SUDO="" TAG=${TRAVIS_TAG:-dev} VARIANT="s3 postgres"
+      before_script:
+          <<: *build_server_container
+      script: cd server && make test_api@ci SUDO="" TAG=${TRAVIS_TAG:-dev} VARIANT="test s3 postgres"
       after_success: bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [OK] File repository API tests on Min.io passed."
       after_failure: bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [FAILURE] File repository API tests on Min.io are failing."
 
-    #
+    # ===========================
     # Bahub (Backups API client)
-    #
+    #============================
     - stage: Bahub tests @ Python 3.6
       <<: *main_python_version
       <<: *bahub_template
       before_script:
-          - cd server && make build_container TAG=${TRAVIS_TAG:-dev} && cd ..
-          - cd bahub-client && make build_container TAG=${TRAVIS_TAG:-dev} PIP="pip" PIP_ARGS=" --ignore-installed " SUDO="" && cd ..
-          - cd server && make build_container TAG=${TRAVIS_TAG:-dev} && cd ..
+          <<: *build_all_containers
       script:
           - cd env && make up wait_for_app wait_for_containers VARIANT="test postgres postgres-test bahub-test" CONTAINERS="bahub postgres" && cd ..
           - cd bahub-client && make install test VARIANT="test postgres bahub-test" PIP="pip" PIP_ARGS=" --ignore-installed " SUDO=""
@@ -63,14 +73,21 @@ jobs:
       after_failure:
           - bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [FAILURE] Bahub tests are failing."
 
+    # =========================================================
+    #  Server API tests on different databases and/or storages
+    # =========================================================
     - stage: File Repository API tests (local storage + SQLite3)
       <<: *main_php_version
-      script: cd server && make test_api@ci SUDO="" TAG=${TRAVIS_TAG:-dev} VARIANT=""
+      before_script:
+          <<: *build_server_container
+      script: cd server && make test_api@ci SUDO="" TAG=${TRAVIS_TAG:-dev} VARIANT="test"
       after_success: bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [OK] File repository API tests on local storage passed."
       after_failure: bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [FAILURE] File repository API tests on local storage are failing."
 
     - stage: File Repository API tests (Min.io + MariaDB)
       <<: *main_php_version
+      before_script:
+          <<: *build_server_container
       script: cd server && make test_api@ci SUDO="" TAG=${TRAVIS_TAG:-dev} VARIANT="s3 mariadb"
       after_success: bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [OK] File repository API tests on MariaDB."
       after_failure: bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [FAILURE] File repository API tests on MariaDB are failing."
