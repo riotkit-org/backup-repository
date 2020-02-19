@@ -70,4 +70,4 @@ test_api: build_container ## Run API tests in a docker container (params: CODECE
 	cd ../env && make -s up server@test_api CODECEPT_ARGS="${CODECEPT_ARGS}" VARIANT="test ${VARIANT}"
 
 test_api@ci: build_container ## Run API tests in a docker container (params: CODECEPT_ARGS, VARIANT)
-	cd ../env && make -s up server@test_api@ci CODECEPT_ARGS="${CODECEPT_ARGS}" VARIANT="test ${VARIANT}"
+	cd ../env && make -s up server@test_api@ci CODECEPT_ARGS="${CODECEPT_ARGS}" VARIANT="ci ${VARIANT}"

@@ -6,21 +6,11 @@ version: "3.5"
 
 services:
     filerepository:
-        container_name: "${COMPOSE_ENV_NAME}_filerepository_1" # workaround for Compose bug that causes suffixes breaking CI builds
         volumes:
+            - "../server:/var/www/html"
             - "./tests_output:/var/www/html/tests/Functional/_output"
         environment:
             APP_ENV: "test"
             BASE_URL: "http://localhost"
         ports:
             - "8000:80"
-
-    #
-    # Serves static files used in tests
-    #
-    test-webserver:
-        image: nginx:1
-        expose:
-            - "80"
-        volumes:
-            - "../examples:/usr/share/nginx/html"
