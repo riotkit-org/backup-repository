@@ -78,7 +78,6 @@
     },
     "scripts": {
         "update-scripts": [
-            "rm -rf ./var/cache/* || true",
             "./bin/console cache:clear",
             "./bin/console assets:install"
         ],

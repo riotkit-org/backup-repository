@@ -88,7 +88,7 @@ _write_current_env:
 #### Server tests
 
 server@test_api@ci: wait_for_app read_server_logs ## Run API tests in a docker container (params: CODECEPT_ARGS)
-	${SUDO} ${COMPOSE_ARGS} $$(make -s _build_variant_list VARIANT="${VARIANT}") exec --user www-data filerepository composer install
+	${SUDO} ${COMPOSE_ARGS} $$(make -s _build_variant_list VARIANT="${VARIANT}") exec --user www-data filerepository composer install || true
 	make -s server@test_api CODECEPT_ARGS="${CODECEPT_ARGS}"
 
 server@test_api: ## Run API tests in a docker container (params: CODECEPT_ARGS)
