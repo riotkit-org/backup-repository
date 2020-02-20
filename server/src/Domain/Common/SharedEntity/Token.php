@@ -19,15 +19,8 @@ class Token
      */
     protected $id;
 
-    /**
-     * @var array $roles
-     */
-    protected $roles = [];
-
-    /**
-     * @var bool
-     */
-    private $alreadyGrantedAdminAccess = false;
+    protected array $roles = [];
+    private bool $alreadyGrantedAdminAccess = false;
 
     /**
      * @return string

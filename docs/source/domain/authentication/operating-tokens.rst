@@ -3,20 +3,22 @@ Creating a token
 
 Check out the :ref:`permissions_reference` for a complete list of permissions.
 
-========================  ===================================================================================================
+================================  ===========================================================================================================================================
    Parameters
-------------------------  ---------------------------------------------------------------------------------------------------
- name                      description
-========================  ===================================================================================================
-roles                      A list of roles allowed for user. See permissions/configuration reference page
-data.tags                  List of allowed tags to use in upload endpoints (OPTIONAL)
-data.allowedMimeTypes      List of allowed mime types (OPTIONAL)
-data.maxAllowedFileSize    Number of bytes of maximum file size (OPTIONAL)
-data.allowedUserAgents     List of allowed User-Agent header values (ex. to restrict token to single browser) (OPTIONAL)
-data.allowedIpAddresses    List of allowed IP addresses (ex. to restrict one-time-token to single person/session) (OPTIONAL)
-expires                    Expiration date, or "auto", "automatic", "never". Empty value means same as "auto"
-id                         Custom UUIDv4 (requires: *security.create_predictable_token_ids* role or to be an admin)
-========================  ===================================================================================================
+--------------------------------  -------------------------------------------------------------------------------------------------------------------------------------------
+ name                               description
+================================  ===========================================================================================================================================
+roles                               A list of roles allowed for user. See permissions/configuration reference page
+data.tags                           List of allowed tags to use in upload endpoints (OPTIONAL)
+data.allowedMimeTypes               List of allowed mime types (OPTIONAL)
+data.maxAllowedFileSize             Number of bytes of maximum file size (OPTIONAL)
+data.allowedUserAgents              List of allowed User-Agent header values (ex. to restrict token to single browser) (OPTIONAL)
+data.allowedIpAddresses             List of allowed IP addresses (ex. to restrict one-time-token to single person/session) (OPTIONAL)
+data.secureCopyEncryptionMethod     Encryption method in SecureCopy mechanism (if using)
+data.secureCopyEncryptionKey        Encryption key in SecureCopy component. If active, then client using this token will be downloading encrypted files (zero-knowledge)
+expires                             Expiration date, or "auto", "automatic", "never". Empty value means same as "auto"
+id                                  Custom UUIDv4 (requires: *security.create_predictable_token_ids* role or to be an admin)
+================================  ============================================================================================================================================
 
 .. code:: json
 
