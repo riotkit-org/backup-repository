@@ -10,7 +10,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class WaitForInstanceToGetUpCommand extends Command
 {
-    public const NAME = 'health:wait-for';
+    public const NAME = 'health:wait-for:instance';
 
     private WaitForInstanceHandler $handler;
 

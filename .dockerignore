@@ -2,6 +2,7 @@
 /server/var/log
 /server/var/uploads
 /server/var/data.db
+/server/vendor
 /server/.infrastructure/Dockerfile.x86_64
 /server/README.md
 /server/.env

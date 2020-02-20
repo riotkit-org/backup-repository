@@ -14,13 +14,15 @@ services:
         environment:
             DATABASE_DRIVER: "pdo_mysql"
             DATABASE_VERSION: "5.8"
-            DATABASE_URL: "pdo-mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@localhost/${MYSQL_DB}?unix_socket=/var/run/mysqld/mysqld.sock"
+            DATABASE_URL: "mysql://${MYSQL_USER}:${MYSQL_PASSWORD}@localhost/${MYSQL_DB}?unix_socket=/var/run/mysqld/mysqld.sock"
 
             DATABASE_HOST: "/var/run/mysqld/mysqld.sock"
             DATABASE_NAME: "${MYSQL_DB}"
             DATABASE_PASSWORD: "${MYSQL_PASSWORD}"
             DATABASE_USER: "${MYSQL_USER}"
             DATABASE_PORT: "3306"
+        depends_on:
+            - mariadb
 
     mariadb:
         image: mariadb:10.4

@@ -24,6 +24,7 @@ install_frontend: ## Install MinimumUi dependencies
 	mv node_modules ./public/minimumui/components
 
 migrate: ## Upgrade database to the recent version of the structure
+	./bin/console health:wait-for:database --timeout=300
 	./bin/console doctrine:migrations:migrate --no-interaction -vv
 
 run_dev: ## Run a developer web server (do not use on production)
