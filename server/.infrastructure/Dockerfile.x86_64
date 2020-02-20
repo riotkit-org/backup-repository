@@ -99,7 +99,9 @@ RUN cd /var/www/html \
     && chown www-data:www-data /var/www -R \
     && su www-data -s /bin/bash -c "composer install --no-dev" \
     && chown www-data:www-data /var/www -R \
-    && chmod +x /healthcheck.sh
+    && chmod +x /healthcheck.sh \
+    && apt-get update \
+    && apt-get install -y mariadb-client
 
 WORKDIR "/var/www/html"
 

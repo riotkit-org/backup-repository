@@ -3,6 +3,7 @@
 namespace App\Infrastructure\Common\Test\Database;
 
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Driver\AbstractMySQLDriver;
 use Doctrine\DBAL\Driver\AbstractPostgreSQLDriver;
 use Doctrine\DBAL\Driver\AbstractSQLiteDriver;
 use Exception;
@@ -51,7 +52,11 @@ class StateManager implements RestoreDBInterface
             return $this->adapter = new PostgresRestoreDB($this->connection);
         }
 
-        throw new Exception('Currently only SQLite3 and PostgreSQL databases are supported in tests');
+        if ($this->connection->getDriver() instanceof AbstractMySQLDriver) {
+            return $this->adapter = new MariaDBRestoreDB($this->connection);
+        }
+
+        throw new Exception('Currently only SQLite3, MariaDB/MySQL and PostgreSQL databases are supported in tests');
     }
 
     public function canRestore(): bool
