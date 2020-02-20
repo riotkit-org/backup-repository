@@ -9,7 +9,7 @@ It is very helpful to create initially all required tokens and collections, so y
 Introduction
 ------------
 
-Application is using *Symfony Console*, which is accessible in the main directory under **./bin/console**
+*Symfony Console* is accessible in the main directory under **./bin/console**
 When using docker you need to get into the container shell to execute it, in our example server environment you need to execute **make sh** to get into the server's shell.
 
 .. code:: shell
@@ -21,7 +21,8 @@ If something is not working as expected, there is an error and you would like to
 Docker container concept
 ------------------------
 
-File Repository server container allows to execute commands during startup. With this feature you can create expected tokens, collections on application startup
+Our container allows to execute commands during startup to help you with the application setup.
+With this feature you can create expected tokens, collections on application startup
 without need to send any HTTP requests or even log in to the shell. It's an automation you will love.
 
 **Example in docker-compose syntax**
@@ -53,3 +54,5 @@ without need to send any HTTP requests or even log in to the shell. It's an auto
 
    domain/backup/shell-access
    domain/authentication/shell-access
+   domain/technical/shell-access
+

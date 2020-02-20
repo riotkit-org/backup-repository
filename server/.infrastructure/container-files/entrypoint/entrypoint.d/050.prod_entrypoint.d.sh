@@ -27,7 +27,7 @@ setup_admin_user() {
 
     if [[ "${SECURITY_ADMIN_TOKEN}" ]]; then
         echo " >> Setting up default admin token provided with SECURITY_ADMIN_TOKEN environment variable"
-        su www-data -s /bin/bash -c "cd /var/www/html/ && ./bin/console auth:generate-admin-token --ignore-error-if-token-exists --id=${SECURITY_ADMIN_TOKEN} " > /dev/null
+        su www-data -s /bin/bash -c "cd /var/www/html/ && ./bin/console auth:generate-admin-token --ignore-error-if-token-exists --id=${SECURITY_ADMIN_TOKEN} --expires='+10 years' " > /dev/null
     fi
 }
 
