@@ -1,1 +1,1 @@
-sphinx-theme
+sphinx-glpi-theme
