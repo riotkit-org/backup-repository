@@ -10,15 +10,8 @@ use Symfony\Component\HttpFoundation\Response;
 
 class RolesListingController extends BaseController
 {
-    /**
-     * @var RolesListingHandler
-     */
-    private $handler;
-
-    /**
-     * @var SecurityContextFactory
-     */
-    private $authFactory;
+    private RolesListingHandler $handler;
+    private SecurityContextFactory $authFactory;
 
     public function __construct(RolesListingHandler $handler, SecurityContextFactory $authFactory)
     {

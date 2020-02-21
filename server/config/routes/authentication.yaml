@@ -29,6 +29,12 @@ authentication.lookup:
     defaults:
         _secured: true
 
+authentication.search:
+    path: /auth/search
+    controller: '\App\Controller\Authentication\TokenSearchController::searchAction'
+    methods: ['GET']
+    defaults:
+        _secured: true
 
 authentication.delete:
     path: /auth/token/{token}
@@ -36,4 +42,3 @@ authentication.delete:
     methods: ['DELETE']
     defaults:
         _secured: true
-

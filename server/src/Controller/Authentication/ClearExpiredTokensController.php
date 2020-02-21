@@ -11,15 +11,8 @@ use Swagger\Annotations as SWG;
 
 class ClearExpiredTokensController extends BaseController
 {
-    /**
-     * @var ClearExpiredTokensController
-     */
-    private $handler;
-
-    /**
-     * @var SecurityContextFactory
-     */
-    private $authFactory;
+    private ClearExpiredTokensHandler $handler;
+    private SecurityContextFactory $authFactory;
 
     public function __construct(ClearExpiredTokensHandler $handler, SecurityContextFactory $authFactory)
     {

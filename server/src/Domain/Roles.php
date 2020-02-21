@@ -57,6 +57,9 @@ final class Roles
     /** User can check information about ANY token */
     public const ROLE_LOOKUP_TOKENS                = 'security.authentication_lookup';
 
+    /** User can browse/search for tokens */
+    public const ROLE_SEARCH_FOR_TOKENS            = 'security.search_for_tokens';
+
     /** User can overwrite files */
     public const ROLE_ALLOW_OVERWRITE_FILES        = 'security.overwrite';
 
@@ -173,6 +176,7 @@ final class Roles
         self::ROLE_UPLOAD_BACKUP,
         self::ROLE_UPLOAD,
         self::ROLE_LOOKUP_TOKENS,
+        self::ROLE_SEARCH_FOR_TOKENS,
         self::ROLE_ALLOW_OVERWRITE_FILES,
         self::ROLE_GENERATE_TOKENS,
         self::ROLE_USE_TECHNICAL_ENDPOINTS,

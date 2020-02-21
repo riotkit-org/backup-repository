@@ -14,15 +14,8 @@ use Symfony\Component\HttpFoundation\Response;
 
 class GenerateTokenController extends BaseController
 {
-    /**
-     * @var TokenGenerationHandler
-     */
-    private $handler;
-
-    /**
-     * @var SecurityContextFactory
-     */
-    private $authFactory;
+    private TokenGenerationHandler $handler;
+    private SecurityContextFactory $authFactory;
 
     public function __construct(TokenGenerationHandler $handler, SecurityContextFactory $authFactory)
     {

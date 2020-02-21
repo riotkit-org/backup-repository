@@ -2,7 +2,7 @@
 
 namespace App\Domain\Authentication\Entity;
 
-class Token extends \App\Domain\Common\SharedEntity\Token
+class Token extends \App\Domain\Common\SharedEntity\Token implements \JsonSerializable
 {
     /**
      * @var \DateTimeImmutable $creationDate
@@ -159,5 +159,15 @@ class Token extends \App\Domain\Common\SharedEntity\Token
         }
 
         return \in_array($userAgent, $this->getAllowedUserAgents(), true);
+    }
+
+    public function jsonSerialize()
+    {
+        return [
+            'id'     => $this->getId(),
+            'active' => $this->active,
+            'data'   => $this->data,
+            'roles'  => $this->getRoles()
+        ];
     }
 }

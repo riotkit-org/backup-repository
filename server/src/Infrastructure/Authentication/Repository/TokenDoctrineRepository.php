@@ -8,6 +8,7 @@ use App\Domain\Authentication\Repository\TokenRepository;
 use App\Infrastructure\Common\Repository\TokenDoctrineRepository as CommonTokenRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 
 /**
  * @codeCoverageIgnore
@@ -51,5 +52,41 @@ class TokenDoctrineRepository extends CommonTokenRepository implements TokenRepo
             ->setParameter('now', (new \DateTime())->format('Y-m-d H:i:s'));
 
         return $qb->getQuery()->getResult();
+    }
+
+    public function findTokensBy(string $pattern, int $page = 1, int $count = 50): array
+    {
+        $qb = $this->createQueryFindTokensBy($pattern);
+
+        return $this->paginate($qb, $page, $count)->getQuery()->getResult();
+    }
+
+    public function findMaxPagesTokensBy(string $pattern, int $limit = 50): int
+    {
+        $qb = $this->createQueryFindTokensBy($pattern);
+        $qb->select('COUNT(token)');
+
+        return (int) ceil($qb->getQuery()->getSingleScalarResult() / $limit);
+    }
+
+    private function createQueryFindTokensBy(string $pattern)
+    {
+        $qb = $this->createQueryBuilder('token');
+        $qb->where('token.id LIKE :pattern OR CAST(token.roles as STRING) LIKE :pattern');
+        $qb->setParameters(['pattern' => '%' . $pattern . '%']);
+
+        return $qb;
+    }
+
+    private function paginate($dql, $page = 1, $limit = 3): Paginator
+    {
+        $paginator = new Paginator($dql);
+        $paginator->setUseOutputWalkers(false);
+
+        $paginator->getQuery()
+            ->setFirstResult($limit * ($page - 1)) // Offset
+            ->setMaxResults($limit); // Limit
+
+        return $paginator;
     }
 }

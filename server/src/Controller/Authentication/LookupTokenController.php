@@ -11,15 +11,8 @@ use Symfony\Component\HttpFoundation\Response;
 
 class LookupTokenController extends BaseController
 {
-    /**
-     * @var TokenLookupHandler
-     */
-    private $handler;
-
-    /**
-     * @var SecurityContextFactory
-     */
-    private $authFactory;
+    private TokenLookupHandler $handler;
+    private SecurityContextFactory $authFactory;
 
     public function __construct(TokenLookupHandler $handler, SecurityContextFactory $authFactory)
     {

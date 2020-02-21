@@ -242,6 +242,11 @@ $container->loadFromExtension('doctrine', [
         'auto_generate_proxy_classes' => '%kernel.debug%',
         'naming_strategy'             => 'doctrine.orm.naming_strategy.underscore_number_aware',
         'auto_mapping'                => true,
-        'mappings' => sortByLongestKey(generateDoctrineMappings())
+        'mappings' => sortByLongestKey(generateDoctrineMappings()),
+        'dql'      => [
+            'string_functions' => [
+                'cast' => Oro\ORM\Query\AST\Functions\Cast::class
+            ]
+        ]
     ]
 ]);

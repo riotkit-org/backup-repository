@@ -10,10 +10,7 @@ use App\Domain\Authentication\Security\Context\AuthenticationManagementContext;
 
 class TokenLookupHandler
 {
-    /**
-     * @var TokenRepository
-     */
-    private $repository;
+    private TokenRepository $repository;
 
     public function __construct(TokenRepository $repository)
     {

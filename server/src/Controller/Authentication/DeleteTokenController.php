@@ -11,15 +11,8 @@ use Symfony\Component\HttpFoundation\Response;
 
 class DeleteTokenController extends BaseController
 {
-    /**
-     * @var TokenDeleteHandler
-     */
-    private $handler;
-
-    /**
-     * @var SecurityContextFactory
-     */
-    private $authFactory;
+    private TokenDeleteHandler $handler;
+    private SecurityContextFactory $authFactory;
 
     public function __construct(TokenDeleteHandler $handler, SecurityContextFactory $authFactory)
     {

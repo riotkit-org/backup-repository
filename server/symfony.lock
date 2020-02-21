@@ -219,6 +219,9 @@
             "ref": "0eb87bba411c227da027fe5f7c1dc7954b02f242"
         }
     },
+    "oro/doctrine-extensions": {
+        "version": "1.3.0"
+    },
     "phar-io/manifest": {
         "version": "1.0.3"
     },
