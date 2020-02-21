@@ -94,7 +94,7 @@ class TokenSubscriber implements EventSubscriberInterface
         $userAgent = $request->headers->get('User-Agent');
         $ip        = $request->getClientIp();
 
-        if ($token instanceof Token && !$token->isValid($userAgent, $ip)) {
+        if (($token instanceof Token && !$token->isValid($userAgent, $ip)) || !$token instanceof Token) {
             $this->tokenStorage->setToken(
                 new TokenTransport('anonymous', new Token())
             );
