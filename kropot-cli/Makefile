@@ -28,7 +28,13 @@ docker_image: ## Build a docker image (params: TAG=dev, ARCH=x86_64)
 		--build-arg BUILD_DATE=$$(date --iso-8601=seconds) \
 		--build-arg VERSION=$$(make get_version) \
 		--build-arg VCS_REF=$$(git rev-parse --verify HEAD) \
-		-t quay.io/riotkit/kropotcli:${TAG}
+		-t quay.io/riotkit/kropotcli:latest-build
+
+	${SUDO} docker tag quay.io/riotkit/kropotcli:latest-build quay.io/riotkit/kropotcli:${TAG}
+
+push_container: ## Push docker container
+	${SUDO} docker push quay.io/riotkit/kropot-cli:${TAG}
+	${SUDO} docker push quay.io/riotkit/kropot-cli:latest-build
 
 get_version:
 	cat ../server/config/version.yaml  | shyaml get-value version

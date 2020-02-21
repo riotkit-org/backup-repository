@@ -101,6 +101,15 @@ jobs:
           - make build_container TAG=${TRAVIS_TAG:-dev} PIP="pip" PIP_ARGS=" --ignore-installed " SUDO=""
           - make push_container TAG=${TRAVIS_TAG:-dev}
 
+    - stage: "Kropot-CLI Client: Publish docker image"
+      <<: *main_python_version
+      before_script:
+          - echo "$QUAY_PASSWORD" | sudo docker login -u "$QUAY_USERNAME" --password-stdin quay.io
+      script:
+          - cd kropot-cli
+          - make build_container TAG=${TRAVIS_TAG:-dev} PIP="pip" PIP_ARGS=" --ignore-installed " SUDO=""
+          - make push_container TAG=${TRAVIS_TAG:-dev}
+
     # ==============
     #  Release: PyPI
     # ==============
