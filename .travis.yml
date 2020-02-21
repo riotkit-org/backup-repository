@@ -107,7 +107,7 @@ jobs:
           - echo "$QUAY_PASSWORD" | sudo docker login -u "$QUAY_USERNAME" --password-stdin quay.io
       script:
           - cd kropot-cli
-          - make build_container TAG=${TRAVIS_TAG:-dev} PIP="pip" PIP_ARGS=" --ignore-installed " SUDO=""
+          - make docker_image TAG=${TRAVIS_TAG:-dev} PIP="pip" PIP_ARGS=" --ignore-installed " SUDO=""
           - make push_container TAG=${TRAVIS_TAG:-dev}
 
     # ==============
