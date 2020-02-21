@@ -30,7 +30,7 @@ class ProcessedElementLog(Base):
     Model for a history of all processed/in-progress items
     """
 
-    __tablename__ = 'riotkit_lcm_processed_element_log'
+    __tablename__ = 'riotkit_kropotcli_processed_element_log'
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     element_id = Column(String, nullable=False)

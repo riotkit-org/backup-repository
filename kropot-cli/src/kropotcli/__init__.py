@@ -5,7 +5,7 @@
 __author__ = 'RiotKit Team'
 __email__ = 'noreply@riotkit.org'
 
-from .app import LittleCopyMachine
+from .app import KropotCLI
 import argparse
 import traceback
 import sys

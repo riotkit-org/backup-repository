@@ -35,9 +35,9 @@ class KropotCLI:
         raise Exception('Invalid action selected')
 
     def collect_action(self):
-        Logger.info('Starting RiotKit\'s KropotCLI...')
+        Logger.info('Starting RiotKit\'s KropotCLI, let\'s better redistribute bread!')
         Logger.info('>> https://riotkit.org | https://github.com/riotkit-org')
-        Logger.info('Connecting to ' + self.url)
+        Logger.info('Connecting to bakery at ' + self.url)
 
         processor = EventProcessor(self.client, self.storage_manager, self.log_repository)
         element_types = ['file']
@@ -46,8 +46,10 @@ class KropotCLI:
             for element_type in element_types:
                 try:
                     last_processed_element_timestamp = self.log_repository.find_last_processed_element_date(element_type)
-                    Logger.info('Last processed entry of type "' + element_type + '" is at ' +
-                                last_processed_element_timestamp.strftime('%Y-%m-%d %H:%M:%S'))
+
+                    if last_processed_element_timestamp:
+                        Logger.info('Last processed entry of type "' + element_type + '" is at ' +
+                                    last_processed_element_timestamp.strftime('%Y-%m-%d %H:%M:%S'))
 
                     events = self.client.request_event_stream(since=last_processed_element_timestamp, element_type=element_type)
                 except Exception:

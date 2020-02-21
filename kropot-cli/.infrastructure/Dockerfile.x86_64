@@ -1,6 +1,21 @@
 
 FROM python:3.8-alpine3.11
 
+#                                ██████████████
+#                        ████████▓▓▓▓██░░░░██▓▓████
+#                ████████░░░░░░░░██▓▓██░░░░██▓▓▓▓▓▓██
+#            ████░░██▓▓▓▓██░░░░░░██▓▓▓▓██░░██▓▓▓▓▓▓▓▓██
+#        ████░░░░░░░░██▓▓▓▓██░░░░██▓▓▓▓██░░██▓▓▓▓▓▓▓▓██
+#      ██▓▓▓▓██░░░░░░░░██▓▓▓▓██░░██▓▓▓▓██░░██▓▓▓▓▓▓██
+#    ██▓▓▓▓▓▓▓▓██░░░░░░██▓▓▓▓██░░██▓▓▓▓██░░██▓▓▓▓▓▓██
+#    ██▓▓▓▓▓▓▓▓▓▓██░░░░██▓▓▓▓██░░██▓▓▓▓▓▓██▓▓▓▓▓▓▓▓██
+#    ██▓▓▓▓▓▓▓▓▓▓▓▓██░░██▓▓▓▓▓▓██▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓██
+#    ██▓▓▓▓▓▓▓▓▓▓▓▓▓▓██▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓████
+#    ██▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓████
+#      ████▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓▓████
+#          ████████▓▓▓▓▓▓▓▓▓▓▓▓██████
+#                  ████████████
+
 ARG BUILD_DATE=unknown
 ARG VERSION=dev
 ARG VCS_REF=unknown
@@ -16,7 +31,7 @@ LABEL org.opencontainers.image.created="$BUILD_DATE" \
       org.opencontainers.image.authors="RiotKit technical collective" \
       org.riotkit.filerepository.version="$VERSION"
 
-ADD little-copy-machine-client /build
+ADD kropot-cli /build
 ADD server/config/version.yaml /build/version.yaml
 RUN apk --update add make \
     && cd /build \
@@ -30,4 +45,4 @@ RUN mkdir /app /storage \
 
 USER "riotkit"
 WORKDIR "/app"
-ENTRYPOINT ["rkt-lcm"]
+ENTRYPOINT ["kropot-cli"]
