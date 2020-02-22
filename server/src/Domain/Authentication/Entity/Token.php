@@ -2,36 +2,52 @@
 
 namespace App\Domain\Authentication\Entity;
 
+use DateTimeImmutable;
+use Swagger\Annotations as SWG;
+
 class Token extends \App\Domain\Common\SharedEntity\Token implements \JsonSerializable
 {
     /**
-     * @var \DateTimeImmutable $creationDate
+     * @SWG\Property(type="string", maxLength=32, example="2020-05-01 08:00:00")
+     *
+     * @var DateTimeImmutable $creationDate
      */
-    private $creationDate;
+    protected $creationDate;
 
     /**
-     * @var \DateTimeImmutable
+     * @SWG\Property(type="string", maxLength=32, example="2020-05-01 08:00:00")
+     *
+     * @var DateTimeImmutable
      */
-    private $expirationDate;
+    protected $expirationDate;
 
     /**
-     * @var array
+     * @SWG\Property(
+     *     type="array",
+     *     @SWG\Items(
+     *         type="object"
+     *     )
+     * )
+     *
+     * @var string[]
      */
-    private $data = [];
+    protected $data = [];
 
     /**
+     * @SWG\Property(type="boolean")
+     *
      * @var bool
      */
-    private bool $active;
+    protected bool $active;
 
     /**
      * @throws \Exception
      */
     public function __construct()
     {
-        $this->expirationDate = new \DateTimeImmutable();
-        $this->creationDate   = new \DateTimeImmutable();
-        $this->active         = true;
+        $this->expirationDate = new DateTimeImmutable();
+        $this->creationDate = new DateTimeImmutable();
+        $this->active = true;
     }
 
     public function setId(string $id): Token
@@ -40,32 +56,32 @@ class Token extends \App\Domain\Common\SharedEntity\Token implements \JsonSerial
         return $this;
     }
 
-    public function isNotExpired(\DateTimeImmutable $currentDate = null): bool
+    public function isNotExpired(DateTimeImmutable $currentDate = null): bool
     {
-        if (!$currentDate instanceof \DateTimeImmutable) {
-            $currentDate = new \DateTimeImmutable();
+        if (!$currentDate instanceof DateTimeImmutable) {
+            $currentDate = new DateTimeImmutable();
         }
 
         return $this->getExpirationDate()->getTimestamp() >= $currentDate->getTimestamp();
     }
 
-    public function getCreationDate(): \DateTimeImmutable
+    public function getCreationDate(): DateTimeImmutable
     {
         return $this->creationDate;
     }
 
-    public function getExpirationDate(): \DateTimeImmutable
+    public function getExpirationDate(): DateTimeImmutable
     {
         return $this->expirationDate;
     }
 
-    public function setCreationDate(\DateTimeImmutable $creationDate): Token
+    public function setCreationDate(DateTimeImmutable $creationDate): Token
     {
         $this->creationDate = $creationDate;
         return $this;
     }
 
-    public function setExpirationDate(\DateTimeImmutable $expirationDate): Token
+    public function setExpirationDate(DateTimeImmutable $expirationDate): Token
     {
         $this->expirationDate = $expirationDate;
         return $this;
@@ -120,7 +136,7 @@ class Token extends \App\Domain\Common\SharedEntity\Token implements \JsonSerial
 
     public function isValid(string $userAgent, string $ipAddress): bool
     {
-        if (!$this->isNotExpired(new \DateTimeImmutable())) {
+        if (!$this->isNotExpired(new DateTimeImmutable())) {
             return false;
         }
 

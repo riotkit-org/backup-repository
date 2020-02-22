@@ -81,6 +81,10 @@ if (!\function_exists('addDoctrineMappings')) {
         $subDirs = getDirSubDirs($domainPath . '/' . $dirName . '/');
 
         foreach ($subDirs as $subDir) {
+            if (basename($subDir) === 'Docs') {
+                continue;
+            }
+
             $split = explode('/' . $dirName . '/', $subDir);
             $subName = $split[1];
 

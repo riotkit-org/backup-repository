@@ -90,7 +90,7 @@ Example response:
     {
         "status": true,
         "error_code": null,
-        "http_code": null,
+        "http_code": 200,
         "errors": [],
         "context": {
             "pagination": {

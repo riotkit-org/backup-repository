@@ -40,7 +40,7 @@ class HelloController extends BaseController
      *     description="String response code with version, in JSON format",
      *     @SWG\Schema(
      *          type="string",
-     *          example="v2.1.0"
+     *          example="v3.0.0"
      *     )
      * )
      *

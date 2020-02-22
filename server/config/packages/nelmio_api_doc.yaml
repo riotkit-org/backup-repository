@@ -1,4 +1,5 @@
 nelmio_api_doc:
+    models: { use_jms: false }
     documentation:
         info:
             title: File Repository
@@ -9,8 +10,11 @@ nelmio_api_doc:
             Token:
                 type: apiKey
                 description: 'Value: {token}. example: "test-token-full-permissions" when application is set to APP_ENV=dev or APP_ENV=test'
-                name: _token
-                in: query
+                name: token
+                in: header
+
+        security:
+            - Token: []
 
     areas:
         path_patterns:

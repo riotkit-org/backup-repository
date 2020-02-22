@@ -6,8 +6,11 @@ use App\Controller\BaseController;
 use App\Domain\Authentication\ActionHandler\TokenSearchHandler;
 use App\Domain\Authentication\Factory\Context\SecurityContextFactory;
 use App\Infrastructure\Common\Http\JsonFormattedResponse;
+use Exception;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Nelmio\ApiDocBundle\Annotation\Model;
+use Swagger\Annotations as SWG;
 
 class TokenSearchController extends BaseController
 {
@@ -20,6 +23,90 @@ class TokenSearchController extends BaseController
         $this->authFactory = $authFactory;
     }
 
+    /**
+     * @SWG\Parameter(
+     *     type="string",
+     *     in="query",
+     *     name="q",
+     *     description="Query string, a search phrase"
+     * )
+     *
+     * @SWG\Parameter(
+     *     type="integer",
+     *     in="query",
+     *     name="limit",
+     *     description="Number of entries returned by the request"
+     * )
+     *
+     * @SWG\Parameter(
+     *     type="integer",
+     *     in="query",
+     *     name="page",
+     *     description="Currenty fetched page"
+     * )
+     *
+     * @SWG\Parameter(
+     *     type="string",
+     *     in="query",
+     *     name="q",
+     *     description="Query string, a search phrase"
+     * )
+     *
+     * @SWG\Response(
+     *     response="200",
+     *     description="Search tokens by id and associted fields",
+     *     @SWG\Schema(
+     *         type="object",
+     *         @SWG\Property(
+     *             property="status",
+     *             type="boolean",
+     *             example="true"
+     *         ),
+     *         @SWG\Property(
+     *             property="http_code",
+     *             type="integer",
+     *             example="200"
+     *         ),
+     *         @SWG\Property(
+     *             property="errors",
+     *             type="array",
+     *             @SWG\Items(
+     *                 type="string"
+     *             )
+     *         ),
+     *         @SWG\Property(
+     *             property="message",
+     *             type="string",
+     *             example="Matches found"
+     *         ),
+     *         @SWG\Property(
+     *             property="context",
+     *             type="array",
+     *             example={
+     *                 "pagination": {
+     *                     "page": 1,
+     *                     "perPageLimit": 5,
+     *                     "maxPages": 7
+     *                 }
+     *             },
+     *             @SWG\Items(
+     *                 type="string"
+     *             )
+     *         ),
+     *         @SWG\Property(
+     *             property="data",
+     *             type="array",
+     *             @SWG\Items(
+     *                 ref=@Model(type=\App\Domain\Authentication\Entity\Docs\TokenDoc::class)
+     *             )
+     *         )
+     *     )
+     * )
+     *
+     * @param Request $request
+     * @return JsonFormattedResponse
+     * @throws Exception
+     */
     public function searchAction(Request $request): Response
     {
         return $this->wrap(
