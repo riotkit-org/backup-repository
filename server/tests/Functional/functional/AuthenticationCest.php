@@ -261,4 +261,17 @@ class AuthenticationCest
         ], false);
         $I->canSeeResponseCodeIs(201);
     }
+
+    public function listAllAvailableRoles(FunctionalTester $I): void
+    {
+        $I->amAdmin();
+        $I->sendGET('/auth/roles');
+
+        $I->canSeeResponseContainsJson([
+            'data' => [
+                'upload.images',
+                'upload.images'
+            ]
+        ]);
+    }
 }
