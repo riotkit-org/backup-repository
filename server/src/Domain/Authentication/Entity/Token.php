@@ -164,10 +164,12 @@ class Token extends \App\Domain\Common\SharedEntity\Token implements \JsonSerial
     public function jsonSerialize()
     {
         return [
-            'id'     => $this->getId(),
-            'active' => $this->active,
-            'data'   => $this->data,
-            'roles'  => $this->getRoles()
+            'id'      => $this->getId(),
+            'active'  => $this->active,
+            'expired' => !$this->isNotExpired(),
+            'expires' => $this->getExpirationDate(),
+            'data'    => $this->data,
+            'roles'   => $this->getRoles()
         ];
     }
 }
