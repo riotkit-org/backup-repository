@@ -42,7 +42,7 @@ class TokenSearchHandler
         }
 
         if ($page <= 0) {
-            throw ValidationException::createFromFieldsList(['page' => ['invalid_page_value']]);
+            throw ValidationException::createFromFieldsList(['page' => ['invalid_page_value', (string) $page]]);
         }
 
         return TokenSearchResponse::createResultsResponse(

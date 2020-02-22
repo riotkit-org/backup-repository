@@ -35,6 +35,14 @@ class AuthenticationCest
         ]);
     }
 
+    public function verifyTokenCanBeFoundInSearchByOneOfItsRoles(FunctionalTester $I): void
+    {
+        $I->amAdmin();
+        $I->searchForTokens('upload.enforce_tags_selected_in_token', 1, 50);
+        $I->canSeeResponseContains($I->getPreviouslyStoredIdOf('BASIC_TOKEN'));
+        $I->canSeeResponseCodeIs(200);
+    }
+
     public function generateTokenWithLimitToSelectedTagsAndMimes(FunctionalTester $I): void
     {
         $I->amAdmin();

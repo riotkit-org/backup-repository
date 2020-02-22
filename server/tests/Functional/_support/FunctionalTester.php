@@ -73,6 +73,16 @@ class FunctionalTester extends \Codeception\Actor
         );
     }
 
+    public function searchForTokens(string $searchPhrase, int $page, int $limit): void
+    {
+        $this->sendGET(
+            $this->fill(
+                Urls::URL_TOKEN_SEARCH,
+                ['query' => $searchPhrase, 'page' => $page, 'limit' => $limit]
+            )
+        );
+    }
+
     public function createToken(array $data, bool $assert = true): string
     {
         $this->postJson(Urls::URL_TOKEN_GENERATE,
