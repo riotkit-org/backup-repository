@@ -20,7 +20,7 @@ class AuthenticationCest
                 'tags' => ['gallery']
             ]
         ], false);
-        $I->canSeeResponseCodeIs(202);
+        $I->canSeeResponseCodeIs(201);
         $I->storeIdAs('.token.id', 'BASIC_TOKEN');
     }
 
@@ -48,7 +48,7 @@ class AuthenticationCest
                 'maxAllowedFileSize' => 14579
             ]
         ], false);
-        $I->canSeeResponseCodeIs(202);
+        $I->canSeeResponseCodeIs(201);
         $I->storeIdAs('.token.id', 'LIMITED_TOKEN');
     }
 
@@ -158,7 +158,7 @@ class AuthenticationCest
             'data' => [],
             'id'   => '1c2c84f2-d488-4ea0-9c88-d25aab139ac4'
         ], false);
-        $I->canSeeResponseCodeIs(202);
+        $I->canSeeResponseCodeIs(201);
     }
 
     /**
@@ -251,6 +251,6 @@ class AuthenticationCest
             'data' => []
             // case: no "id" there
         ], false);
-        $I->canSeeResponseCodeIs(202);
+        $I->canSeeResponseCodeIs(201);
     }
 }
