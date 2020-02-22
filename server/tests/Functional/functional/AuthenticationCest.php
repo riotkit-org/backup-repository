@@ -269,8 +269,8 @@ class AuthenticationCest
 
         $I->canSeeResponseContainsJson([
             'data' => [
-                'upload.images',
-                'upload.images'
+                'upload.images' => 'Allows to upload images',
+                'upload.videos' => 'Allows to upload video files'
             ]
         ]);
     }
