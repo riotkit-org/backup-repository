@@ -32,6 +32,13 @@ class HealthController extends AbstractController
      *     description="Same response format as for 200 code. 503 is when at least one check from list failed"
      * )
      *
+     * @SWG\Parameter(
+     *     type="string",
+     *     name="code",
+     *     description="Secret code given to monitoring tool, so nobody else can access this specific endpoint",
+     *     in="query"
+     * )
+     *
      * @SWG\Response(
      *     response="200",
      *     description="Health report",
@@ -75,7 +82,7 @@ class HealthController extends AbstractController
      */
     public function healthAction(Request $request): JsonResponse
     {
-        $result = $this->handler->handle($request->get('code'));
+        $result = $this->handler->handle($request->get('code', ''));
 
         return new JsonFormattedResponse(
             $result['response'],
