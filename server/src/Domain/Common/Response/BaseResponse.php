@@ -4,7 +4,7 @@ namespace App\Domain\Common\Response;
 
 abstract class BaseResponse implements \JsonSerializable
 {
-    protected bool    $status    = false;
+    protected ?bool    $status   = null;
     protected ?string $errorCode = null;
     protected ?int    $exitCode  = null;
     protected ?array  $errors    = [];
@@ -14,7 +14,7 @@ abstract class BaseResponse implements \JsonSerializable
     public function jsonSerialize()
     {
         return [
-            'status'     => $this->status,
+            'status'     => $this->status !== null ? $this->status : ($this->exitCode <= 299),
             'error_code' => $this->errorCode,
             'http_code'  => $this->exitCode,
             'errors'     => $this->errors,

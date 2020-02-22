@@ -2,6 +2,7 @@
 
 namespace App\Domain\Authentication\Response;
 
+use App\Domain\Common\Http;
 use App\Domain\Common\Response\BaseSearchResponse;
 
 class RoleSearchResponse extends BaseSearchResponse
@@ -9,6 +10,8 @@ class RoleSearchResponse extends BaseSearchResponse
     public static function createResultsResponse(array $roles): RoleSearchResponse
     {
         $response = new RoleSearchResponse();
+        $response->status    = true;
+        $response->exitCode  = Http::HTTP_OK;
         $response->page      = 1;
         $response->pageLimit = 4096;
         $response->maxPages  = 1;

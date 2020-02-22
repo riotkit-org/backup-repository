@@ -3,6 +3,7 @@
 namespace App\Domain\Authentication\Response;
 
 use App\Domain\Authentication\Entity\Token;
+use App\Domain\Common\Http;
 use App\Domain\Common\Response\BaseResponse;
 
 class TokenCRUDResponse extends BaseResponse
@@ -13,7 +14,7 @@ class TokenCRUDResponse extends BaseResponse
     {
         $response = new TokenCRUDResponse();
         $response->status   = true;
-        $response->exitCode = 201;
+        $response->exitCode = Http::HTTP_ACCEPTED;
         $response->token    = $token;
         $response->message  = 'Token was deleted';
 
@@ -24,7 +25,7 @@ class TokenCRUDResponse extends BaseResponse
     {
         $response = new TokenCRUDResponse();
         $response->status   = true;
-        $response->exitCode = 201;
+        $response->exitCode = Http::HTTP_ACCEPTED;
         $response->token    = $token;
         $response->message  = 'Token created';
 
@@ -35,7 +36,7 @@ class TokenCRUDResponse extends BaseResponse
     {
         $response = new TokenCRUDResponse();
         $response->status   = true;
-        $response->exitCode = 200;
+        $response->exitCode = Http::HTTP_OK;
         $response->token    = $token;
         $response->message  = 'Token found';
 

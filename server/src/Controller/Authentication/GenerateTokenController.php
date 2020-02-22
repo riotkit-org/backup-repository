@@ -46,7 +46,7 @@ class GenerateTokenController extends BaseController
                         $form,
                         $this->authFactory->createFromToken($this->getLoggedUserToken())
                     ),
-                    JsonFormattedResponse::HTTP_ACCEPTED
+                    JsonFormattedResponse::HTTP_CREATED
                 );
             }
         );
