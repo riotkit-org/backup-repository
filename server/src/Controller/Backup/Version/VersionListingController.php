@@ -7,8 +7,8 @@ use App\Domain\Backup\ActionHandler\Version\VersionsListingHandler;
 use App\Domain\Backup\Factory\SecurityContextFactory;
 use App\Domain\Backup\Form\Version\VersionsListingForm;
 use App\Infrastructure\Backup\Form\Version\VersionListingFormType;
-use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
+use App\Infrastructure\Common\Http\JsonFormattedResponse;
+use Exception;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -16,15 +16,8 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class VersionListingController extends BaseController
 {
-    /**
-     * @var VersionsListingHandler
-     */
-    private $handler;
-
-    /**
-     * @var SecurityContextFactory
-     */
-    private $authFactory;
+    private VersionsListingHandler $handler;
+    private SecurityContextFactory $authFactory;
 
     public function __construct(VersionsListingHandler $handler, SecurityContextFactory $authFactory)
     {
@@ -33,12 +26,11 @@ class VersionListingController extends BaseController
     }
 
     /**
-     * @param Request $request
      * @param string $collectionId
      *
      * @return Response
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function handleAction(string $collectionId): Response
     {
@@ -59,7 +51,7 @@ class VersionListingController extends BaseController
                     $this->authFactory->createVersioningContext($this->getLoggedUserToken())
                 );
 
-                return new JsonResponse($response, $response->getExitCode());
+                return new JsonFormattedResponse($response, $response->getExitCode());
             }
         );
     }

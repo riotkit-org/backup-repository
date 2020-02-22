@@ -2,10 +2,10 @@
 
 namespace App\Domain\Authentication\ActionHandler;
 
-use App\Domain\Authentication\Entity\Token;
 use App\Domain\Authentication\Exception\AuthenticationException;
 use App\Domain\Authentication\Exception\ValidationException;
 use App\Domain\Authentication\Repository\TokenRepository;
+use App\Domain\Authentication\Response\TokenSearchResponse;
 use App\Domain\Authentication\Security\Context\AuthenticationManagementContext;
 
 class TokenSearchHandler
@@ -23,12 +23,12 @@ class TokenSearchHandler
      * @param int $limit
      * @param AuthenticationManagementContext $ctx
      *
-     * @return array
+     * @return TokenSearchResponse
      *
      * @throws AuthenticationException
      * @throws ValidationException
      */
-    public function handle(string $pattern, int $page, int $limit, AuthenticationManagementContext $ctx): array
+    public function handle(string $pattern, int $page, int $limit, AuthenticationManagementContext $ctx): TokenSearchResponse
     {
         $this->assertHasRights($ctx);
 
@@ -41,14 +41,12 @@ class TokenSearchHandler
             throw ValidationException::createFromFieldsList(['page' => ['invalid_page_value']]);
         }
 
-        return [
-            'pagination' => [
-                'page'           => $page,
-                'per-page-limit' => $limit,
-                'max-pages'      => $this->repository->findMaxPagesTokensBy($pattern, $limit)
-            ],
-            'data' => $this->repository->findTokensBy($pattern, $page, $limit)
-        ];
+        return TokenSearchResponse::createResultsResponse(
+            $this->repository->findTokensBy($pattern, $page, $limit),
+            $page,
+            $limit,
+            $this->repository->findMaxPagesTokensBy($pattern, $limit)
+        );
     }
 
     /**

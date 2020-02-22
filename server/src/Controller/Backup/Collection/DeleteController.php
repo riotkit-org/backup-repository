@@ -7,21 +7,14 @@ use App\Domain\Backup\ActionHandler\Collection\DeleteHandler;
 use App\Domain\Backup\Factory\SecurityContextFactory;
 use App\Domain\Backup\Form\Collection\DeleteForm;
 use App\Infrastructure\Backup\Form\Collection\DeleteFormType;
-use Symfony\Component\HttpFoundation\JsonResponse;
+use App\Infrastructure\Common\Http\JsonFormattedResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class DeleteController extends BaseController
 {
-    /**
-     * @var DeleteHandler
-     */
-    private $handler;
-
-    /**
-     * @var SecurityContextFactory
-     */
-    private $authFactory;
+    private DeleteHandler $handler;
+    private SecurityContextFactory $authFactory;
 
     public function __construct(
         DeleteHandler $editHandler,
@@ -63,7 +56,7 @@ class DeleteController extends BaseController
                     $this->handler->flush();
                 }
 
-                return new JsonResponse($response, $response->getHttpCode());
+                return new JsonFormattedResponse($response, $response->getHttpCode());
             }
         );
     }

@@ -12,26 +12,15 @@ use App\Domain\Backup\Form\Collection\EditForm;
 use App\Domain\Backup\Response\Collection\CrudResponse;
 use App\Infrastructure\Backup\Form\Collection\CreationFormType;
 use App\Infrastructure\Backup\Form\Collection\EditFormType;
-use Symfony\Component\HttpFoundation\JsonResponse;
+use App\Infrastructure\Common\Http\JsonFormattedResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class CreateEditController extends BaseController
 {
-    /**
-     * @var CreationHandler
-     */
-    private $createHandler;
-
-    /**
-     * @var EditHandler
-     */
-    private $editHandler;
-
-    /**
-     * @var SecurityContextFactory
-     */
-    private $authFactory;
+    private CreationHandler $createHandler;
+    private EditHandler $editHandler;
+    private SecurityContextFactory $authFactory;
 
     public function __construct(
         CreationHandler $handler,
@@ -77,7 +66,7 @@ class CreateEditController extends BaseController
                     $this->createHandler->flush();
                 }
 
-                return new JsonResponse($response, $response->getHttpCode());
+                return new JsonFormattedResponse($response, $response->getHttpCode());
             }
         );
     }

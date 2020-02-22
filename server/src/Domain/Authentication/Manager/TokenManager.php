@@ -8,24 +8,12 @@ use App\Domain\Authentication\Repository\TokenRepository;
 use App\Domain\Authentication\Service\CryptoService;
 use App\Domain\Authentication\Service\UuidValidator;
 use Exception;
-use Ramsey\Uuid\Uuid;
 
 class TokenManager
 {
-    /**
-     * @var TokenRepository
-     */
-    private $repository;
-
-    /**
-     * @var UuidValidator
-     */
-    private $uuidValidator;
-
-    /**
-     * @var CryptoService
-     */
-    private $cryptoService;
+    private TokenRepository $repository;
+    private UuidValidator $uuidValidator;
+    private CryptoService $cryptoService;
 
     public function __construct(TokenRepository $repository, UuidValidator $uuidValidator, CryptoService $crypto)
     {

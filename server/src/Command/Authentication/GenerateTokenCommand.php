@@ -16,15 +16,8 @@ class GenerateTokenCommand extends Command
 {
     public const NAME = 'auth:create-token';
 
-    /**
-     * @var TokenGenerationHandler
-     */
-    private $handler;
-
-    /**
-     * @var SecurityContextFactory
-     */
-    private $authFactory;
+    private TokenGenerationHandler $handler;
+    private SecurityContextFactory $authFactory;
 
     public function __construct(TokenGenerationHandler $handler, SecurityContextFactory $authFactory)
     {
@@ -118,7 +111,7 @@ class GenerateTokenCommand extends Command
         $this->debug(json_encode($response, JSON_PRETTY_PRINT), $output);
 
         if (!$output->isVerbose()) {
-            $output->writeln($response['tokenId'] ?? '');
+            $output->writeln($response->getTokenId() ?? '');
         }
 
         return 0;

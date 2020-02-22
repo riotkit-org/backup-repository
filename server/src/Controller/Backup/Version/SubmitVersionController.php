@@ -7,21 +7,15 @@ use App\Domain\Backup\ActionHandler\Version\BackupSubmitHandler;
 use App\Domain\Backup\Factory\SecurityContextFactory;
 use App\Domain\Backup\Form\BackupSubmitForm;
 use App\Infrastructure\Backup\Form\Version\BackupSubmitFormType;
-use Symfony\Component\HttpFoundation\JsonResponse;
+use App\Infrastructure\Common\Http\JsonFormattedResponse;
+use Exception;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class SubmitVersionController extends BaseController
 {
-    /**
-     * @var BackupSubmitHandler
-     */
-    private $handler;
-
-    /**
-     * @var SecurityContextFactory
-     */
-    private $authFactory;
+    private BackupSubmitHandler $handler;
+    private SecurityContextFactory $authFactory;
 
     public function __construct(BackupSubmitHandler $handler, SecurityContextFactory $authFactory)
     {
@@ -35,7 +29,7 @@ class SubmitVersionController extends BaseController
      *
      * @return Response
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function handleAction(Request $request, string $collectionId): Response
     {
@@ -52,7 +46,7 @@ class SubmitVersionController extends BaseController
      *
      * @return Response
      *
-     * @throws \Exception
+     * @throws Exception
      */
     private function handleInternally(Request $request, string $collectionId): Response
     {
@@ -74,7 +68,7 @@ class SubmitVersionController extends BaseController
                     $this->getLoggedUserToken()
                 );
 
-                return new JsonResponse($response, $response->getExitCode());
+                return new JsonFormattedResponse($response, $response->getExitCode());
             }
         );
     }

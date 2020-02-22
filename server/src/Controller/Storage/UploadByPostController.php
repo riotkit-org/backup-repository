@@ -6,9 +6,9 @@ use App\Controller\BaseController;
 use App\Domain\Storage\ActionHandler\UploadFileByPostHandler;
 use App\Domain\Storage\Form\UploadByPostForm;
 use App\Infrastructure\Authentication\Token\TokenTransport;
+use App\Infrastructure\Common\Http\JsonFormattedResponse;
 use App\Infrastructure\Storage\Form\UploadByPostFormType;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -53,7 +53,7 @@ class UploadByPostController extends BaseController
                     $tokenTransport->getToken()
                 );
 
-                return new JsonResponse(
+                return new JsonFormattedResponse(
                     $appResponse,
                     $appResponse->getExitCode()
                 );

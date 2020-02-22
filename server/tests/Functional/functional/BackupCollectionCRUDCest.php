@@ -87,7 +87,7 @@ class BackupCollectionCRUDCest
         ]);
 
         $I->fetchCollection($id);
-        $I->canSeeResponseContains('"filename":"solfed.org.uk_database.tar.gz"');
+        $I->canSeeResponseContains('"filename": "solfed.org.uk_database.tar.gz"');
     }
 
     public function testFetchNonExistingCollectionEndsWithNotFound(FunctionalTester $I): void

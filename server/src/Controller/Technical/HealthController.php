@@ -3,6 +3,7 @@
 namespace App\Controller\Technical;
 
 use App\Domain\Technical\ActionHandler\HealthCheckHandler;
+use App\Infrastructure\Common\Http\JsonFormattedResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -76,11 +77,10 @@ class HealthController extends AbstractController
     {
         $result = $this->handler->handle($request->get('code'));
 
-        return new JsonResponse(
-            json_encode($result['response'], JSON_PRETTY_PRINT),
+        return new JsonFormattedResponse(
+            $result['response'],
             $result['status'] ? JsonResponse::HTTP_OK : JsonResponse::HTTP_SERVICE_UNAVAILABLE,
-            [],
-            true
+            []
         );
     }
 }

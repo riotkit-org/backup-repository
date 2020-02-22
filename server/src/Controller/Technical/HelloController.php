@@ -4,6 +4,7 @@ namespace App\Controller\Technical;
 
 use App\Controller\BaseController;
 use App\Domain\Common\Service\Versioning;
+use App\Infrastructure\Common\Http\JsonFormattedResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Swagger\Annotations as SWG;
@@ -13,10 +14,7 @@ use Swagger\Annotations as SWG;
  */
 class HelloController extends BaseController
 {
-    /**
-     * @var Versioning
-     */
-    private $versioning;
+    private Versioning $versioning;
 
     public function __construct(Versioning $versioning)
     {
@@ -55,6 +53,6 @@ class HelloController extends BaseController
             throw new AccessDeniedHttpException();
         }
 
-        return new JsonResponse($this->versioning->getVersion());
+        return new JsonFormattedResponse($this->versioning->getVersion());
     }
 }

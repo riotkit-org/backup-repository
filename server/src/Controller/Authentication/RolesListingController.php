@@ -5,7 +5,8 @@ namespace App\Controller\Authentication;
 use App\Controller\BaseController;
 use App\Domain\Authentication\ActionHandler\RolesListingHandler;
 use App\Domain\Authentication\Factory\Context\SecurityContextFactory;
-use Symfony\Component\HttpFoundation\JsonResponse;
+use App\Infrastructure\Common\Http\JsonFormattedResponse;
+use Exception;
 use Symfony\Component\HttpFoundation\Response;
 
 class RolesListingController extends BaseController
@@ -20,16 +21,16 @@ class RolesListingController extends BaseController
     }
 
     /**
-     * @return Response
+     * @return JsonFormattedResponse
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function handle(): Response
     {
         return $this->wrap(function () {
             $securityContext = $this->authFactory->createFromToken($this->getLoggedUserToken());
 
-            return new JsonResponse($this->handler->handle($securityContext));
+            return new JsonFormattedResponse($this->handler->handle($securityContext));
         });
     }
 }

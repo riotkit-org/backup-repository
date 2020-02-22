@@ -91,7 +91,7 @@ class FunctionalTester extends \Codeception\Actor
             $this->assertNotSame('Validation error', $status);
         }
 
-        return $this->grabDataFromResponseByJsonPath('.tokenId')[0] ?? '';
+        return $this->grabDataFromResponseByJsonPath('.token.id')[0] ?? '';
     }
 
     public function deleteToken(string $tokenId): void

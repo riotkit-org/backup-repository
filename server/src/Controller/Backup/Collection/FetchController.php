@@ -7,21 +7,14 @@ use App\Domain\Backup\ActionHandler\Collection\FetchHandler;
 use App\Domain\Backup\Factory\SecurityContextFactory;
 use App\Domain\Backup\Form\Collection\DeleteForm;
 use App\Infrastructure\Backup\Form\Collection\DeleteFormType;
+use App\Infrastructure\Common\Http\JsonFormattedResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class FetchController extends BaseController
 {
-    /**
-     * @var FetchHandler
-     */
-    private $handler;
-
-    /**
-     * @var SecurityContextFactory
-     */
-    private $authFactory;
+    private FetchHandler $handler;
+    private SecurityContextFactory $authFactory;
 
     public function __construct(
         FetchHandler $handler,
@@ -58,7 +51,7 @@ class FetchController extends BaseController
 
                 $response = $this->handler->handle($form, $securityContext);
 
-                return new JsonResponse($response, $response->getHttpCode());
+                return new JsonFormattedResponse($response, $response->getHttpCode());
             }
         );
     }

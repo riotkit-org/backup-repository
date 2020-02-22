@@ -7,21 +7,15 @@ use App\Domain\Backup\ActionHandler\Version\BackupVersionDeleteHandler;
 use App\Domain\Backup\Factory\SecurityContextFactory;
 use App\Domain\Backup\Form\Version\VersionDeleteForm;
 use App\Infrastructure\Backup\Form\Version\VersionDeleteFormType;
-use Symfony\Component\HttpFoundation\JsonResponse;
+use App\Infrastructure\Common\Http\JsonFormattedResponse;
+use Exception;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class VersionDeleteController extends BaseController
 {
-    /**
-     * @var BackupVersionDeleteHandler
-     */
-    private $handler;
-
-    /**
-     * @var SecurityContextFactory
-     */
-    private $authFactory;
+    private BackupVersionDeleteHandler $handler;
+    private SecurityContextFactory $authFactory;
 
     public function __construct(BackupVersionDeleteHandler $handler, SecurityContextFactory $authFactory)
     {
@@ -36,7 +30,7 @@ class VersionDeleteController extends BaseController
      *
      * @return Response
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function handleAction(Request $request, string $collectionId, string $backupId): Response
     {
@@ -59,7 +53,7 @@ class VersionDeleteController extends BaseController
                     strtolower((string) $request->get('simulate')) !== 'true'
                 );
 
-                return new JsonResponse($response, $response->getExitCode());
+                return new JsonFormattedResponse($response, $response->getExitCode());
             }
         );
     }

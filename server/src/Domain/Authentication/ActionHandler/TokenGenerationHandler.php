@@ -8,23 +8,21 @@ use App\Domain\Authentication\Exception\TokenAlreadyExistsException;
 use App\Domain\Authentication\Exception\ValidationException;
 use App\Domain\Authentication\Form\AuthForm;
 use App\Domain\Authentication\Manager\TokenManager;
+use App\Domain\Authentication\Response\TokenCRUDResponse;
 use App\Domain\Authentication\Security\Context\AuthenticationManagementContext;
 use Exception;
 
 class TokenGenerationHandler
 {
-    private const DATE_MODIFIER_AUTO  = ['auto', 'automatic', null];
+    private const DATE_MODIFIER_AUTO  = ['auto', 'automatic', '', null];
     private const DATE_MODIFIER_NEVER = ['never'];
 
-    /**
-     * @var TokenManager
-     */
-    private $tokenManager;
+    private TokenManager $tokenManager;
 
     /**
      * @var string A modificator eg. "+30 minutes"
      */
-    private $expirationTimeModifier;
+    private string $expirationTimeModifier;
 
     public function __construct(TokenManager $manager, string $expirationTime)
     {
@@ -36,11 +34,11 @@ class TokenGenerationHandler
      * @param AuthForm $form
      * @param AuthenticationManagementContext $context
      *
-     * @return array
+     * @return TokenCRUDResponse
      *
      * @throws Exception
      */
-    public function handle(AuthForm $form, AuthenticationManagementContext $context): array
+    public function handle(AuthForm $form, AuthenticationManagementContext $context): TokenCRUDResponse
     {
         $this->assertHasRights($context, $form);
 
@@ -68,10 +66,7 @@ class TokenGenerationHandler
             ]);
         }
 
-        return [
-            'tokenId' => $token->getId(),
-            'expires' => $token->getExpirationDate()->format('Y-m-d H:i:s')
-        ];
+        return TokenCRUDResponse::createTokenCreatedResponse($token);
     }
 
     /**
@@ -88,7 +83,7 @@ class TokenGenerationHandler
         }
 
         if (\in_array($expires, static::DATE_MODIFIER_NEVER, true)) {
-            return (new \DateTimeImmutable())->modify('+20 years');
+            return (new \DateTimeImmutable())->modify('+40 years');
         }
 
         if (!\strtotime($expires)) {

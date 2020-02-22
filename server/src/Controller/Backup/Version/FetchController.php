@@ -7,22 +7,15 @@ use App\Domain\Backup\ActionHandler\Version\FetchHandler;
 use App\Domain\Backup\Factory\SecurityContextFactory;
 use App\Domain\Backup\Form\Version\FetchVersionForm;
 use App\Infrastructure\Backup\Form\Version\FetchVersionFormType;
-use Symfony\Component\HttpFoundation\JsonResponse;
+use App\Infrastructure\Common\Http\JsonFormattedResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class FetchController extends BaseController
 {
-    /**
-     * @var FetchHandler
-     */
-    private $handler;
-
-    /**
-     * @var SecurityContextFactory
-     */
-    private $authFactory;
+    private FetchHandler $handler;
+    private SecurityContextFactory $authFactory;
 
     public function __construct(FetchHandler $handler, SecurityContextFactory $authFactory)
     {
@@ -68,7 +61,7 @@ class FetchController extends BaseController
                     return new RedirectResponse($response->getUrl(), RedirectResponse::HTTP_FOUND);
                 }
 
-                return new JsonResponse($response, $response->getExitCode());
+                return new JsonFormattedResponse($response, $response->getExitCode());
             }
         );
     }

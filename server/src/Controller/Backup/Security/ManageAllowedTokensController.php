@@ -11,8 +11,9 @@ use App\Domain\Backup\Form\TokenFormAttachForm;
 use App\Domain\Backup\Form\TokenDeleteForm;
 use App\Infrastructure\Backup\Form\Collection\TokenAttachFormType;
 use App\Infrastructure\Backup\Form\Collection\TokenDeleteFormType;
+use App\Infrastructure\Common\Http\JsonFormattedResponse;
+use Exception;
 use Symfony\Component\Form\FormInterface;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -21,20 +22,9 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class ManageAllowedTokensController extends BaseController
 {
-    /**
-     * @var TokenAddHandler
-     */
-    private $attachingHandler;
-
-    /**
-     * @var DisallowTokenHandler
-     */
-    private $detachingHandler;
-
-    /**
-     * @var SecurityContextFactory
-     */
-    private $authFactory;
+    private TokenAddHandler $attachingHandler;
+    private DisallowTokenHandler $detachingHandler;
+    private SecurityContextFactory $authFactory;
 
     public function __construct(
         TokenAddHandler $attachingHandler,
@@ -52,7 +42,7 @@ class ManageAllowedTokensController extends BaseController
      *
      * @return Response
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function handleAction(Request $request, string $id): Response
     {
@@ -82,7 +72,7 @@ class ManageAllowedTokensController extends BaseController
                     $this->getHandler($request)->flush();
                 }
 
-                return new JsonResponse($response, $response->getHttpCode());
+                return new JsonFormattedResponse($response, $response->getHttpCode());
             }
         );
     }

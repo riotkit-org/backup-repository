@@ -7,8 +7,8 @@ use App\Domain\Authentication\ActionHandler\TokenGenerationHandler;
 use App\Domain\Authentication\Factory\Context\SecurityContextFactory;
 use App\Domain\Authentication\Form\AuthForm;
 use App\Infrastructure\Authentication\Form\AuthFormType;
+use App\Infrastructure\Common\Http\JsonFormattedResponse;
 use Exception;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -26,7 +26,7 @@ class GenerateTokenController extends BaseController
     /**
      * @param Request $request
      *
-     * @return JsonResponse
+     * @return JsonFormattedResponse
      *
      * @throws Exception
      */
@@ -41,12 +41,12 @@ class GenerateTokenController extends BaseController
 
         return $this->wrap(
             function () use ($form) {
-                return new JsonResponse(
+                return new JsonFormattedResponse(
                     $this->handler->handle(
                         $form,
                         $this->authFactory->createFromToken($this->getLoggedUserToken())
                     ),
-                    JsonResponse::HTTP_ACCEPTED
+                    JsonFormattedResponse::HTTP_ACCEPTED
                 );
             }
         );

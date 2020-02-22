@@ -3,16 +3,13 @@
 namespace App\Domain\Authentication\ActionHandler;
 
 use App\Domain\Authentication\Exception\AuthenticationException;
+use App\Domain\Authentication\Response\RoleSearchResponse;
 use App\Domain\Authentication\Security\Context\AuthenticationManagementContext;
 use App\Domain\Authentication\Service\Security\RolesInformationProvider;
-use App\Domain\Roles;
 
 class RolesListingHandler
 {
-    /**
-     * @var RolesInformationProvider
-     */
-    private $provider;
+    private RolesInformationProvider $provider;
 
     public function __construct(RolesInformationProvider $provider)
     {
@@ -22,11 +19,11 @@ class RolesListingHandler
     /**
      * @param AuthenticationManagementContext $context
      *
-     * @return array
+     * @return RoleSearchResponse
      *
      * @throws AuthenticationException
      */
-    public function handle(AuthenticationManagementContext $context): array
+    public function handle(AuthenticationManagementContext $context): RoleSearchResponse
     {
         if (!$context->canUseTechnicalEndpoints()) {
             throw new AuthenticationException(
@@ -35,8 +32,6 @@ class RolesListingHandler
             );
         }
 
-        return [
-            'roles' => $this->provider->findAllRolesWithTheirDescription()
-        ];
+        return RoleSearchResponse::createResultsResponse($this->provider->findAllRolesWithTheirDescription());
     }
 }

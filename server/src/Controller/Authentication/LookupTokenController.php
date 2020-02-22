@@ -5,8 +5,8 @@ namespace App\Controller\Authentication;
 use App\Controller\BaseController;
 use App\Domain\Authentication\ActionHandler\TokenLookupHandler;
 use App\Domain\Authentication\Factory\Context\SecurityContextFactory;
+use App\Infrastructure\Common\Http\JsonFormattedResponse;
 use Exception;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 
 class LookupTokenController extends BaseController
@@ -23,7 +23,7 @@ class LookupTokenController extends BaseController
     /**
      * @param string $token
      *
-     * @return JsonResponse
+     * @return JsonFormattedResponse
      *
      * @throws Exception
      */
@@ -40,7 +40,7 @@ class LookupTokenController extends BaseController
                     return $this->createNotFoundResponse();
                 }
 
-                return new JsonResponse($response, JsonResponse::HTTP_OK);
+                return new JsonFormattedResponse($response, JsonFormattedResponse::HTTP_OK);
             }
         );
     }

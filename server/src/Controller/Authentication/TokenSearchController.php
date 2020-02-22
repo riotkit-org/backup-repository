@@ -5,7 +5,7 @@ namespace App\Controller\Authentication;
 use App\Controller\BaseController;
 use App\Domain\Authentication\ActionHandler\TokenSearchHandler;
 use App\Domain\Authentication\Factory\Context\SecurityContextFactory;
-use Symfony\Component\HttpFoundation\JsonResponse;
+use App\Infrastructure\Common\Http\JsonFormattedResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -33,7 +33,7 @@ class TokenSearchController extends BaseController
                     $securityContext
                 );
 
-                return new JsonResponse($response, JsonResponse::HTTP_OK);
+                return new JsonFormattedResponse($response, JsonFormattedResponse::HTTP_OK);
             }
         );
     }
