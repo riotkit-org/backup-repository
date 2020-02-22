@@ -149,6 +149,11 @@ class TokenSubscriber implements EventSubscriberInterface
             return (string) $request->headers->get('x-auth-token');
         }
 
+        // allows to set a default viewer token on infrastructure level (eg. in fastcgi/proxy_pass)
+        if ($request->server->get('FILE_REPOSITORY_TOKEN')) {
+            return (string) $request->headers->get('FILE_REPOSITORY_TOKE');
+        }
+
         return '';
     }
 }
