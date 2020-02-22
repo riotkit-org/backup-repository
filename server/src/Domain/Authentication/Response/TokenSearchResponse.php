@@ -13,6 +13,7 @@ class TokenSearchResponse extends BaseSearchResponse
         $response->page      = $page;
         $response->pageLimit = $limit;
         $response->maxPages  = $maxPages;
+        $response->data      = $matches;
 
         return $response;
     }

@@ -37,6 +37,10 @@ class TokenSearchHandler
             throw ValidationException::createFromFieldsList(['limit' => ['query_limit_too_high_use_pagination']]);
         }
 
+        if ($limit < 1) {
+            throw ValidationException::createFromFieldsList(['limit' => ['value_cannot_be_negative']]);
+        }
+
         if ($page <= 0) {
             throw ValidationException::createFromFieldsList(['page' => ['invalid_page_value']]);
         }
