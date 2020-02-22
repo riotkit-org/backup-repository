@@ -1,17 +1,5 @@
 #!/bin/bash -e
 
-wait_for_db_to_get_up() {
-    if [[ ${WAIT_FOR_HOST} != "" ]]; then
-        IFS=':' read -ra ADDR <<< "${WAIT_FOR_HOST}"
-        host=${ADDR[0]}
-        port=${ADDR[1]}
-        counter=0
-
-        echo " >> Waiting for MySQL server at ${host}:${port} to be up..."
-        /opt/riotkit/utils/bin/wait-for-mysql-to-be-ready --host "${host}" --port="${port}" --timeout=300
-    fi
-}
-
 correct_permissions() {
     echo " >> Correcting permissions"
     mkdir -p /var/www/html/var/uploads /var/www/html/tests/Functional/_output/
@@ -44,7 +32,6 @@ execute_post_install_commands() {
     fi
 }
 
-wait_for_db_to_get_up
 correct_permissions
 install
 setup_admin_user
