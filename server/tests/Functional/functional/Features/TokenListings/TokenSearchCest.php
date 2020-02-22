@@ -83,4 +83,43 @@ class TokenSearchCest
         $I->searchForTokens('upload.enforce_tags_selected_in_token', 1, 10);
         $I->canSeeResponseCodeIs(403);
     }
+
+    public function shouldBeAbleToPerformSearchWithMinimumRequiredPermissions(FunctionalTester $I): void
+    {
+        $I->amAdmin();
+        $I->amToken(
+            $I->createToken([
+                'roles' => [
+                    'security.search_for_tokens',
+                    'security.authentication_lookup'
+                ]
+            ])
+        );
+        $I->searchForTokens('', 1, 50);
+        $I->canSeeResponseCodeIs(200);
+    }
+
+    public function validateCannotPerformTooBigSearch(FunctionalTester $I): void
+    {
+        $I->amAdmin();
+        $I->searchForTokens('', 1, 2000);
+        $I->canSeeResponseCodeIs(400);
+        $I->canSeeResponseContains('query_limit_too_high_use_pagination');
+    }
+
+    public function validateThePageParameter(FunctionalTester $I): void
+    {
+        $I->amAdmin();
+        $I->searchForTokens('', -5, 5);
+        $I->canSeeResponseCodeIs(400);
+        $I->canSeeResponseContains('invalid_page_value');
+    }
+
+    public function validateLimitCannotBeNegative(FunctionalTester $I): void
+    {
+        $I->amAdmin();
+        $I->searchForTokens('', 1, -10);
+        $I->canSeeResponseCodeIs(400);
+        $I->canSeeResponseContains('value_cannot_be_negative');
+    }
 }
