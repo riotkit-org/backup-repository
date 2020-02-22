@@ -25,7 +25,7 @@ id                                  Custom UUIDv4 (requires: *security.create_pr
     POST /auth/token/generate?_token=your-admin-token-there
 
     {
-        "roles": ["collections.create_new", "collections.add_tokens_to_allowed_collections"],
+        "roles": ["collections.create_new", "collections.manage_tokens_in_allowed_collections"],
         "data": {
             "tags": [],
             "allowedMimeTypes": ["image/jpeg", "image/png", "image/gif"],

@@ -183,7 +183,7 @@ class Token extends \App\Domain\Common\SharedEntity\Token implements \JsonSerial
             'id'      => $this->getId(),
             'active'  => $this->active,
             'expired' => !$this->isNotExpired(),
-            'expires' => $this->getExpirationDate(),
+            'expires' => $this->getExpirationDate()->format('Y-m-d H:i:s'),
             'data'    => $this->data,
             'roles'   => $this->getRoles()
         ];
