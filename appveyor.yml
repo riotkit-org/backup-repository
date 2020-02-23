@@ -15,9 +15,9 @@ install:
   # build Bahub container from current GIT revision, install required Python packages
   - cd bahub-client
   - make install_requirements PIP="python3 -m pip" SUDO=""
-  - make build_container TAG=dev PIP="pip3"
+  - make build_image TAG=dev PIP="pip3"
   # build File Repository server from current GIT revision
-  - cd ../server && make build_container TAG=dev
+  - cd ../server && make build_image TAG=dev
   # get up the docker environment in testing configuration
   - cd ../env && make up wait_for_app VARIANT="test postgres bahub-test"
 

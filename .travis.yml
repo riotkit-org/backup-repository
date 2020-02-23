@@ -54,8 +54,8 @@ jobs:
       <<: *main_python_version
       <<: *bahub_template
       before_script:
-          - cd server && make build_container TAG=${TRAVIS_TAG:-dev} && cd ..
-          - cd bahub-client && make build_container TAG=${TRAVIS_TAG:-dev} PIP="pip" PIP_ARGS=" --ignore-installed " SUDO="" && cd ..
+          - cd server && make build_image TAG=${TRAVIS_TAG:-dev} && cd ..
+          - cd bahub-client && make build_image TAG=${TRAVIS_TAG:-dev} PIP="pip" PIP_ARGS=" --ignore-installed " SUDO="" && cd ..
       script:
           - cd env && make up wait_for_app wait_for_containers VARIANT="test postgres postgres-test bahub-test" CONTAINERS="bahub postgres" && cd ..
           - cd bahub-client && make install test VARIANT="test postgres bahub-test" PIP="pip" PIP_ARGS=" --ignore-installed " SUDO=""
@@ -89,8 +89,8 @@ jobs:
           - echo "$QUAY_PASSWORD" | sudo docker login -u "$QUAY_USERNAME" --password-stdin quay.io
       script:
           - cd server
-          - make build_container TAG=${TRAVIS_TAG:-dev} PIP="pip" PIP_ARGS=" --ignore-installed " SUDO=""
-          - make push_container TAG=${TRAVIS_TAG:-dev}
+          - make build_image TAG=${TRAVIS_TAG:-dev} PIP="pip" PIP_ARGS=" --ignore-installed " SUDO=""
+          - make push_image TAG=${TRAVIS_TAG:-dev}
 
     - stage: "Bahub Client: Publish docker image"
       <<: *main_python_version
@@ -98,8 +98,8 @@ jobs:
           - echo "$QUAY_PASSWORD" | sudo docker login -u "$QUAY_USERNAME" --password-stdin quay.io
       script:
           - cd bahub-client
-          - make build_container TAG=${TRAVIS_TAG:-dev} PIP="pip" PIP_ARGS=" --ignore-installed " SUDO=""
-          - make push_container TAG=${TRAVIS_TAG:-dev}
+          - make build_image TAG=${TRAVIS_TAG:-dev} PIP="pip" PIP_ARGS=" --ignore-installed " SUDO=""
+          - make push_image TAG=${TRAVIS_TAG:-dev}
 
     - stage: "Kropot-CLI Client: Publish docker image"
       <<: *main_python_version
@@ -107,8 +107,8 @@ jobs:
           - echo "$QUAY_PASSWORD" | sudo docker login -u "$QUAY_USERNAME" --password-stdin quay.io
       script:
           - cd kropot-cli
-          - make docker_image TAG=${TRAVIS_TAG:-dev} PIP="pip" PIP_ARGS=" --ignore-installed " SUDO=""
-          - make push_container TAG=${TRAVIS_TAG:-dev}
+          - make build_image TAG=${TRAVIS_TAG:-dev} PIP="pip" PIP_ARGS=" --ignore-installed " SUDO=""
+          - make push_image TAG=${TRAVIS_TAG:-dev}
 
     # ==============
     #  Release: PyPI

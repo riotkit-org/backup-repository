@@ -32,11 +32,11 @@ run_dev: ## Run a developer web server (do not use on production)
 
 deploy: install install_frontend ## Deploy the application
 
-build_container: ## Build docker image (params: TAG)
+build_image: ## Build docker image (params: TAG)
 	${SUDO} docker build .. -f ./.infrastructure/Dockerfile.x86_64 -t quay.io/riotkit/file-repository:${TAG}
 	${SUDO} docker tag quay.io/riotkit/file-repository:${TAG} quay.io/riotkit/file-repository:latest-build
 
-push_container: ## Push docker container
+push_image: ## Push docker container
 	${SUDO} docker push quay.io/riotkit/file-repository:${TAG}
 	${SUDO} docker push quay.io/riotkit/file-repository:latest-build
 
@@ -67,8 +67,8 @@ _set_env:
 coverage: ## Generate code coverage from unit testing
 	SYMFONY_DEPRECATIONS_HELPER=disabled=1 ./bin/phpunit --coverage-text
 
-test_api: build_container ## Run API tests in a docker container (params: CODECEPT_ARGS, VARIANT)
+test_api: build_image ## Run API tests in a docker container (params: CODECEPT_ARGS, VARIANT)
 	cd ../env && make -s up server@test_api CODECEPT_ARGS="${CODECEPT_ARGS}" VARIANT="test ${VARIANT}"
 
-test_api@ci: build_container ## Run API tests in a docker container (params: CODECEPT_ARGS, VARIANT)
+test_api@ci: build_image ## Run API tests in a docker container (params: CODECEPT_ARGS, VARIANT)
 	cd ../env && make -s up server@test_api@ci CODECEPT_ARGS="${CODECEPT_ARGS}" VARIANT="test ${VARIANT}"

@@ -22,7 +22,7 @@ install: build_package ## Install
 	which bahub
 	make -s clean
 
-build_container: ## Build a docker container (parameters: TAG)
+build_image: ## Build a docker container (parameters: TAG)
 	${SUDO} ${PIP} install ${PIP_ARGS} shyaml
 	${SUDO} docker build .. -f ./.infrastructure/Dockerfile_bahub.x86_64 \
 		--build-arg BUILD_DATE=$$(date --iso-8601=seconds) \
@@ -31,7 +31,7 @@ build_container: ## Build a docker container (parameters: TAG)
 		-t quay.io/riotkit/bahub:${TAG}
 	${SUDO} docker tag quay.io/riotkit/bahub:${TAG} quay.io/riotkit/bahub:latest-build
 
-push_container: ## Push docker container
+push_image: ## Push docker container
 	${SUDO} docker push quay.io/riotkit/bahub:${TAG}
 	${SUDO} docker push quay.io/riotkit/bahub:latest-build
 
