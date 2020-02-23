@@ -25,9 +25,9 @@ user_install: ## Install in user home directory
 docker_image: ## Build a docker image (params: TAG=dev, ARCH=x86_64)
 	${SUDO} ${PIP_BIN} install shyaml
 	${SUDO} docker build ../ -f .infrastructure/Dockerfile.${ARCH} \
-		--build-arg BUILD_DATE=$$(date --iso-8601=seconds) \
-		--build-arg VERSION=$$(make get_version) \
-		--build-arg VCS_REF=$$(git rev-parse --verify HEAD) \
+		--build-arg BUILD_DATE="$$(date --iso-8601=seconds)" \
+		--build-arg VERSION="$$(make -s get_version)" \
+		--build-arg VCS_REF="$$(git rev-parse --verify HEAD)" \
 		-t quay.io/riotkit/kropotcli:latest-build
 
 	${SUDO} docker tag quay.io/riotkit/kropotcli:latest-build quay.io/riotkit/kropotcli:${TAG}

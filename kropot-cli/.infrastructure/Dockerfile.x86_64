@@ -33,7 +33,9 @@ LABEL org.opencontainers.image.created="$BUILD_DATE" \
 
 ADD kropot-cli /build
 ADD server/config/version.yaml /build/version.yaml
-RUN apk --update add make \
+ADD .git /build/.git
+
+RUN apk --update add make git \
     && cd /build \
     && pip install -r setuptools-requirements.txt \
     && make install
