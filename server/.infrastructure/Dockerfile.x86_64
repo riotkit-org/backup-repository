@@ -59,6 +59,7 @@ ENV DATABASE_URL=sqlite:///%kernel.project_dir%/var/data.db \
     TOKEN_EXPIRATION_TIME="+30 minutes" \
     TEMP_DIRECTORY=/tmp \
     ENC_TOKEN_PHRASE=test123 \
+    ENC_SALT=PPvZuAyC1OwuquzjCbknRw1tMLC \
     APP_DOMAIN= \
     API_TESTS=false \
     HTTP_TIMEOUT=30 \

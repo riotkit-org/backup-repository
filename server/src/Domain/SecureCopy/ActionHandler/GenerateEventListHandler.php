@@ -6,6 +6,8 @@ use App\Domain\SecureCopy\Collection\TimelinePartial;
 use App\Domain\SecureCopy\Exception\AuthenticationException;
 use App\Domain\SecureCopy\Exception\ValidationException;
 use App\Domain\SecureCopy\Factory\RepositoryLegendFactory;
+use App\Domain\SecureCopy\Manager\EncryptionManager;
+use App\Domain\SecureCopy\Repository\CryptoMapRepository;
 use App\Domain\SecureCopy\Repository\FileRepository;
 use App\Domain\SecureCopy\Security\MirroringContext;
 use App\Domain\SubmitDataTypes;
@@ -17,18 +19,22 @@ use DateTime;
  */
 class GenerateEventListHandler extends BaseSecureCopyHandler
 {
-    private FileRepository $repository;
+    private FileRepository          $repository;
     private RepositoryLegendFactory $repositoryLegendFactory;
+    private EncryptionManager       $encrypter;
 
-    public function __construct(FileRepository $repository, RepositoryLegendFactory $factory)
+    public function __construct(FileRepository $repository, RepositoryLegendFactory $factory, EncryptionManager $cryptoManager,
+                                CryptoMapRepository $idMappingRepository)
     {
         $this->repository              = $repository;
         $this->repositoryLegendFactory = $factory;
+        $this->encrypter               = $cryptoManager;
+        $this->idMappingRepository     = $idMappingRepository;
     }
 
     /**
      * @param DateTime|null      $since
-     * @param MirroringContext $context
+     * @param MirroringContext   $context
      * @param int                $limit
      * @param string             $type
      *
@@ -53,8 +59,11 @@ class GenerateEventListHandler extends BaseSecureCopyHandler
         $output = \json_encode($this->repositoryLegendFactory->createLegend($timeline->count())->jsonSerialize(), JSON_THROW_ON_ERROR, 512) . "\n\n";
 
         // then body
-        $output .= $timeline->toMultipleJsonDocuments();
+        $output .= $timeline->toMultipleJsonDocuments(
+            function (array $input) use ($context) { return $this->encrypter->encryptSubmitData($input, $context); }
+        );
 
+        $this->encrypter->flushAll();
         return $output;
     }
 

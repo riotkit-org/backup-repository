@@ -4,11 +4,9 @@ namespace App\Domain\Storage\DomainCommand;
 
 use App\Domain\Bus;
 use App\Domain\Common\Service\Bus\CommandHandler;
-use App\Domain\SecureCopy\CompatibilityNames;
 use App\Domain\Storage\DTO\SubmitData;
 use App\Domain\Storage\Form\UploadByPostForm;
 use App\Domain\SubmitDataTypes;
-use App\Domain\Storage\Form\UploadForm;
 use App\Domain\Storage\Repository\FileRepository;
 use App\Domain\Storage\ValueObject\Filename;
 
@@ -44,7 +42,7 @@ class GetFileSubmitDataCommand implements CommandHandler
             $file->getDateAdded(),
             $file->getTimezone(),
 
-            // we want to make possible to re-submit this form later by eg. a replica server
+            // we want to make possible to re-submit this form later by eg. a mirror server
             UploadByPostForm::createFromFile($file)->toArray()
         );
     }

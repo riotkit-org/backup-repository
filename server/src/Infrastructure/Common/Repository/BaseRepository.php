@@ -9,7 +9,7 @@ use Doctrine\ORM\EntityManager;
 
 abstract class BaseRepository extends ServiceEntityRepository
 {
-    private $readOnly = false;
+    private bool $readOnly = false;
 
     /**
      * @var EntityManager
@@ -37,15 +37,8 @@ abstract class BaseRepository extends ServiceEntityRepository
         return $this->emProxy = new class($em, $this->readOnly) {
             private const WRITE_METHODS = ['persist', 'flush', 'merge', 'remove'];
 
-            /**
-             * @var EntityManager
-             */
-            private $em;
-
-            /**
-             * @var bool
-             */
-            private $ro;
+            private EntityManager $em;
+            private bool $ro;
 
             public function __construct(EntityManager $em, bool $readOnly)
             {

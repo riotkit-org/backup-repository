@@ -5,7 +5,9 @@ namespace App\Domain\SecureCopy\Contract;
 interface MultiDocumentJsonSerializable
 {
     /**
+     * @param callable|null $postProcess
+     *
      * @return string
      */
-    public function toMultipleJsonDocuments(): string;
+    public function toMultipleJsonDocuments(callable $postProcess = null): string;
 }

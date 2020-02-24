@@ -2,6 +2,7 @@
 
 namespace App\Domain\SecureCopy\Response;
 
+use App\Domain\Common\Http;
 use App\Domain\SecureCopy\DTO\FileContent\StreamableFileContent;
 use App\Domain\SecureCopy\DTO\FileContent\StreamableFileContentWithEncryptionInformation;
 
@@ -31,7 +32,7 @@ class FileReadingResponse
     {
         $new = new static();
         $new->status      = 'OK';
-        $new->statusCode  = 200;
+        $new->statusCode  = Http::HTTP_OK;
         $new->callback    = $encryption->getStreamFlushingCallback();
         $new->headers     = [
             'Content-Type' => 'application/octet-stream',

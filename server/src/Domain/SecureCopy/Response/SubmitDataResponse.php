@@ -2,15 +2,14 @@
 
 namespace App\Domain\SecureCopy\Response;
 
-use App\Domain\SecureCopy\DTO\StreamList\SubmitData;
-
 class SubmitDataResponse implements \JsonSerializable
 {
     protected string $status;
     private int $statusCode;
-    private ?SubmitData $object;
 
-    public static function createSuccessfulResponse(SubmitData $submitData): SubmitDataResponse
+    private ?array $object;
+
+    public static function createSuccessfulResponse(?array $submitData): SubmitDataResponse
     {
         $response = new self();
         $response->status     = 'OK';
@@ -44,7 +43,7 @@ class SubmitDataResponse implements \JsonSerializable
         ];
     }
 
-    public function getObject(): ?SubmitData
+    public function getObject(): ?array
     {
         return $this->object;
     }

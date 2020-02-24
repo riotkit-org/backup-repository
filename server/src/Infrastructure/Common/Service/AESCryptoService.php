@@ -7,14 +7,13 @@ use App\Domain\Common\Service\CryptoService;
 
 abstract class AESCryptoService implements CryptoService
 {
-    /**
-     * @var string
-     */
-    private $secret;
+    private string $secret;
+    private string $salt;
 
-    public function __construct(string $secret)
+    public function __construct(string $secret, string $salt)
     {
         $this->secret = $secret;
+        $this->salt   = $salt;
     }
 
     public function decode(string $input): string
@@ -38,5 +37,10 @@ abstract class AESCryptoService implements CryptoService
         }
 
         return CryptoJSAES::encrypt($input, $this->secret);
+    }
+
+    public function hash(string $input): string
+    {
+        return hash('sha256', $this->salt . '_' . $input);
     }
 }

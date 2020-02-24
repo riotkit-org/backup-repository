@@ -18,6 +18,7 @@ parameters:
     env(REPLICATION_SECRET): ''
     env(REPLICATION_PRIMARY_URL): ''
     env(BASE_URL): ''
+    env(ENC_SALT): ''
 
 services:
     # default configuration for services in *this* file
@@ -58,6 +59,7 @@ services:
     App\Infrastructure\Authentication\Service\AESCryptoService:
         arguments:
             $secret: '%env(ENC_TOKEN_PHRASE)%'
+            $salt: '%env(ENC_SALT)%'
 
     App\Infrastructure\Authentication\Event\Subscriber\TokenSubscriber:
         autowire: true
@@ -123,6 +125,11 @@ services:
         arguments:
             $readOnly: '%env(bool:READ_ONLY)%'
 
+    App\Infrastructure\SecureCopy\Repository\CryptoMapDoctrineRepository:
+        autowire: true
+        arguments:
+            $readOnly: '%env(bool:READ_ONLY)%'
+
     App\Infrastructure\Backup\Repository\VersionDoctrineRepository:
         arguments:
             $registry: '@Doctrine\Common\Persistence\ManagerRegistry'
@@ -132,6 +139,7 @@ services:
     App\Infrastructure\SecureCopy\Service\AESCryptoService:
         arguments:
             $secret: '%env(ENC_TOKEN_PHRASE)%'
+            $salt: '%env(ENC_SALT)%'
 
     App\Domain\Authentication\Factory\IncomingTokenFactory:
         public: true
