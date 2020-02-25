@@ -72,7 +72,14 @@ class TokenDoctrineRepository extends CommonTokenRepository implements TokenRepo
     private function createQueryFindTokensBy(string $pattern)
     {
         $qb = $this->createQueryBuilder('token');
-        $qb->where('token.id LIKE :pattern OR CAST(token.roles as STRING) LIKE :pattern');
+
+        // @fixme: Normal support for all databases
+        if ($this->getDatabasePlatform() === 'sqlite') {
+            $qb->where('token.id LIKE :pattern OR token.roles LIKE :pattern');
+        } else {
+            $qb->where('token.id LIKE :pattern OR CAST(token.roles as STRING) LIKE :pattern');
+        }
+
         $qb->setParameters(['pattern' => '%' . $pattern . '%']);
 
         return $qb;

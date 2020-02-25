@@ -71,4 +71,9 @@ abstract class BaseRepository extends ServiceEntityRepository
             }
         };
     }
+
+    public function getDatabasePlatform(): string
+    {
+        return $this->getEntityManager()->getConnection()->getDatabasePlatform()->getName();
+    }
 }
