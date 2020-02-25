@@ -152,6 +152,11 @@ class FunctionalTester extends \Codeception\Actor
         $this->sendGET($this->fill(Urls::URL_SECURE_COPY, ['type' => $type]));
     }
 
+    public function retrieveFileMetadataFromSecureCopy(string $filename): void
+    {
+        $this->sendGET($this->fill(Urls::URL_SECURE_COPY_RETRIEVE_FILE_METADATA, ['file' => $filename]));
+    }
+
     public function listFiles(array $params = []): void
     {
         $this->sendGET(Urls::URL_REPOSITORY_LISTING, $params);

@@ -37,22 +37,21 @@ abstract class BaseSecureCopyHandler
         $this->logger->$severity($message);
     }
 
+    /**
+     * @param string $type
+     * @param string $id
+     * @param MirroringContext $context
+     *
+     * @return string
+     *
+     * @throws CryptoMapNotFoundError
+     */
     protected function decryptIdIfNecessary(string $type, string $id, MirroringContext $context): string
     {
         if (!$context->isEncryptionActive()) {
             return $id;
         }
 
-        try {
-            return $this->idMappingRepository->findPlainTextByHash($id, $type);
-
-        } catch (CryptoMapNotFoundError $error) {
-            throw new ValidationException(
-                'Invalid ID, not a valid hash',
-                'id',
-                $error->getCode(),
-                $error
-            );
-        }
+        return $this->idMappingRepository->findPlainTextByHash($id, $type);
     }
 }

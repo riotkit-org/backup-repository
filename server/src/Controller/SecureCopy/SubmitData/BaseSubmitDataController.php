@@ -7,6 +7,7 @@ use App\Domain\Common\Exception\BusException;
 use App\Domain\SecureCopy\ActionHandler\ServeSubmitDataHandler;
 use App\Domain\SecureCopy\Entity\Authentication\Token;
 use App\Domain\SecureCopy\Exception\AuthenticationException;
+use App\Domain\SecureCopy\Exception\ValidationException;
 use App\Domain\SecureCopy\Factory\SecurityContextFactory;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -32,6 +33,7 @@ abstract class BaseSubmitDataController extends BaseController
      *
      * @throws BusException
      * @throws AuthenticationException
+     * @throws ValidationException
      */
     public function dumpSubmitDataAction(Request $request, string $fileName): Response
     {

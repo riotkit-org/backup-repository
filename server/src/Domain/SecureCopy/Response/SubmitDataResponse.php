@@ -29,6 +29,17 @@ class SubmitDataResponse implements \JsonSerializable
         return $response;
     }
 
+    public static function createInvalidCryptoMapResponse(): SubmitDataResponse
+    {
+        $response = new self();
+        $response->status = 'Not found: Invalid element id, not found in CryptoMap, ' .
+            'you need to provide a valid one from the replication list endpoint';
+        $response->statusCode = 404;
+        $response->object = null;
+
+        return $response;
+    }
+
     public function getStatusCode(): int
     {
         return $this->statusCode;

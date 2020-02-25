@@ -7,6 +7,7 @@ use App\Domain\Common\Exception\BusException;
 use App\Domain\Common\Service\Bus\DomainBus;
 use App\Domain\SecureCopy\DTO\StreamList\SubmitData;
 use App\Domain\SecureCopy\Exception\AuthenticationException;
+use App\Domain\SecureCopy\Exception\CryptoMapNotFoundError;
 use App\Domain\SecureCopy\Exception\ValidationException;
 use App\Domain\SecureCopy\Manager\EncryptionManager;
 use App\Domain\SecureCopy\Repository\CryptoMapRepository;
@@ -50,7 +51,12 @@ class ServeSubmitDataHandler extends BaseSecureCopyHandler
     {
         $this->assertHasRights($context);
 
-        $id         = $this->decryptIdIfNecessary($type, $encryptedId, $context);
+        try {
+            $id = $this->decryptIdIfNecessary($type, $encryptedId, $context);
+        } catch (CryptoMapNotFoundError $error) {
+            return SubmitDataResponse::createInvalidCryptoMapResponse();
+        }
+
         $submitData = $this->getSubmitData($type, $id);
 
         if (!$submitData) {

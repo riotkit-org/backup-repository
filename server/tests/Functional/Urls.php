@@ -30,4 +30,5 @@ class Urls
     public const URL_COLLECTION_REVOKE_TOKEN = '/repository/collection/{{ collectionId }}/token/{{ tokenId }}';
 
     public const URL_SECURE_COPY = '/secure-copy/{{ type }}/list';
+    public const URL_SECURE_COPY_RETRIEVE_FILE_METADATA = '/secure-copy/file/{{ file }}/submitdata';
 }
