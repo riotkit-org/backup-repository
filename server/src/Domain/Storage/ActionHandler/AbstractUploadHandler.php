@@ -4,7 +4,6 @@ namespace App\Domain\Storage\ActionHandler;
 
 use App\Domain\Authentication\Entity\Token;
 use App\Domain\Common\Exception\ValueObjectException;
-use App\Domain\Common\ValueObject\BaseUrl;
 use App\Domain\Storage\Entity\StoredFile;
 use App\Domain\Storage\Exception\DuplicatedContentException;
 use App\Domain\Storage\Exception\FileRetrievalError;
@@ -29,35 +28,12 @@ use App\Domain\Storage\ValueObject\Url;
  */
 abstract class AbstractUploadHandler
 {
-    /**
-     * @var StorageManager
-     */
-    private $storageManager;
-
-    /**
-     * @var FileNameFactory
-     */
-    protected $nameFactory;
-
-    /**
-     * @var PublicUrlFactory
-     */
-    private $publicUrlFactory;
-
-    /**
-     * @var SecurityContextFactory
-     */
-    private $securityFactory;
-
-    /**
-     * @var StagingAreaRepository
-     */
-    private $staging;
-
-    /**
-     * @var Notifier
-     */
-    private $notifier;
+    private StorageManager $storageManager;
+    protected FileNameFactory $nameFactory;
+    private PublicUrlFactory $publicUrlFactory;
+    private SecurityContextFactory $securityFactory;
+    private StagingAreaRepository $staging;
+    private Notifier $notifier;
 
     public function __construct(
         StorageManager         $storageManager,
@@ -75,7 +51,7 @@ abstract class AbstractUploadHandler
         $this->notifier         = $notifier;
     }
 
-    public function handle(UploadForm $form, BaseUrl $baseUrl, Token $token): FileUploadedResponse
+    public function handle(UploadForm $form, Token $token): FileUploadedResponse
     {
         $context = $this->securityFactory->createUploadContextFromToken($token);
 
@@ -91,7 +67,7 @@ abstract class AbstractUploadHandler
 
         try {
             $uploadedFile = $this->storeFile($form, $context);
-            $publicUrl = $this->publicUrlFactory->fromStoredFile($uploadedFile, $baseUrl);
+            $publicUrl = $this->publicUrlFactory->fromStoredFile($uploadedFile);
 
             return $this->finalize(
                 FileUploadedResponse::createWithMeaningFileWasUploaded(
@@ -107,7 +83,7 @@ abstract class AbstractUploadHandler
         } catch (DuplicatedContentException $exception) {
             return $this->finalize(
                 FileUploadedResponse::createWithMeaningFileWasAlreadyUploadedUnderOtherName(
-                    $this->publicUrlFactory->fromStoredFile($exception->getAlreadyExistingFile(), $baseUrl),
+                    $this->publicUrlFactory->fromStoredFile($exception->getAlreadyExistingFile()),
                     $exception->getAlreadyExistingFile()->getId(),
                     $exception->getAlreadyExistingFile()->getFilename(),
                     $this->getRequestedFilename($form)
@@ -118,7 +94,7 @@ abstract class AbstractUploadHandler
         } catch (FileUploadedTwiceException $exception) {
             return $this->finalize(
                 FileUploadedResponse::createWithMeaningFileWasAlreadyUploaded(
-                    $this->publicUrlFactory->fromStoredFile($exception->getAlreadyExistingFile(), $baseUrl),
+                    $this->publicUrlFactory->fromStoredFile($exception->getAlreadyExistingFile()),
                     $exception->getAlreadyExistingFile()->getId(),
                     $exception->getAlreadyExistingFile()->getFilename(),
                     $this->getRequestedFilename($form)
@@ -202,6 +178,15 @@ abstract class AbstractUploadHandler
         );
     }
 
+    protected function createStream(UploadForm $form): Stream
+    {
+        if ($form->stream) {
+            return new Stream($form->stream);
+        }
+
+        return $this->createStreamFromRequest($form);
+    }
+
     /**
      * @param object $form
      *
@@ -225,5 +210,5 @@ abstract class AbstractUploadHandler
      *
      * @return Stream
      */
-    abstract protected function createStream($form): Stream;
+    abstract protected function createStreamFromRequest($form): Stream;
 }

@@ -5,6 +5,7 @@ minimumui.upload_image:
     defaults:
         _secured: true
 
+
 minimumui.upload_file:
     path: /upload/file
     controller: 'App\Controller\MinimumUi\UploadFileController::handle'
@@ -12,9 +13,11 @@ minimumui.upload_file:
     defaults:
         _secured: true
 
+
 minimumui.watch_video:
     path: /watch/video/{fileId}
     controller: 'App\Controller\MinimumUi\WatchVideoController::handle'
     methods: ['GET']
     defaults:
         _secured: true
+

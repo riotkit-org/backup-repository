@@ -1,18 +1,13 @@
 import unittest
-import sys
-import os
-import inspect
 import logging
 import subprocess
 from unittest_data_provider import data_provider
 
-sys.path.append(os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe()))) + '/../')
-
-from bahub.bahubapp.entity.access import ServerAccess
-from bahub.bahubapp.entity.encryption import Encryption
-from bahub.bahubapp.handler import FileRepositoryClient, PipeFactory
-from bahub.bahubapp.handler.fileordirectorybackup import FileOrDirectoryBackup, PathBackupDefinition
-from bahub.bahubapp.handler.commandoutputbackup import CommandOutputBackup, CommandOutputDefinition
+from riotbahub.filerepository.bahub.entity.access import ServerAccess
+from riotbahub.filerepository.bahub.entity.encryption import Encryption
+from riotbahub.filerepository.bahub.handler import FileRepositoryClient, PipeFactory
+from riotbahub.filerepository.bahub.handler.fileordirectorybackup import FileOrDirectoryBackup, PathBackupDefinition
+from riotbahub.filerepository.bahub.handler.commandoutputbackup import CommandOutputBackup, CommandOutputDefinition
 
 
 class HandlersTest(unittest.TestCase):

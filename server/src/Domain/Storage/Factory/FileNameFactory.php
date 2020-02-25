@@ -21,6 +21,10 @@ class FileNameFactory
 
     public function fromForm(UploadByPostForm $form): Filename
     {
+        if ($form->isFinalFilename) {
+            return new Filename($form->fileName);
+        }
+
         return new Filename(
             $this->generateRandomName() . basename($form->fileName)
         );
@@ -28,6 +32,6 @@ class FileNameFactory
 
     private function generateRandomName(): string
     {
-        return \bin2hex(\openssl_random_pseudo_bytes(5));
+        return \bin2hex(\random_bytes(5));
     }
 }

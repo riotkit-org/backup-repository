@@ -5,12 +5,14 @@ technical.routing_map:
     defaults:
         _secured: false
 
+
 technical.hello:
     path: /
     controller: 'App\Controller\Technical\HelloController::sayHelloAction'
     methods: ['GET']
     defaults:
         _secured: false
+
 
 technical.version:
     path: /version
@@ -19,9 +21,11 @@ technical.version:
     defaults:
         _secured: true
 
+
 technical.healthcheck:
     path: /health
     controller: 'App\Controller\Technical\HealthController::healthAction'
     methods: ['GET']
     defaults:
         _secured: false
+

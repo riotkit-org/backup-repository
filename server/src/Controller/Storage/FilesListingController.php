@@ -6,22 +6,15 @@ use App\Controller\BaseController;
 use App\Domain\Storage\ActionHandler\FilesListingHandler;
 use App\Domain\Storage\Factory\Context\SecurityContextFactory;
 use App\Domain\Storage\Form\FilesListingForm;
+use App\Infrastructure\Common\Http\JsonFormattedResponse;
 use App\Infrastructure\Storage\Form\FilesListingFormType;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class FilesListingController extends BaseController
 {
-    /**
-     * @var FilesListingHandler
-     */
-    private $handler;
-
-    /**
-     * @var SecurityContextFactory
-     */
-    private $authFactory;
+    private FilesListingHandler $handler;
+    private SecurityContextFactory $authFactory;
 
     public function __construct(FilesListingHandler $handler, SecurityContextFactory $authFactory)
     {
@@ -49,14 +42,13 @@ class FilesListingController extends BaseController
             ->createListingContextFromTokenAndForm($this->getLoggedUserToken(), $form);
 
         return $this->wrap(
-            function () use ($form, $securityContext, $request) {
-                return new JsonResponse(
+            function () use ($form, $securityContext) {
+                return new JsonFormattedResponse(
                     $this->handler->handle(
                         $form,
-                        $securityContext,
-                        $this->createBaseUrl($request)
+                        $securityContext
                     ),
-                    JsonResponse::HTTP_OK
+                    JsonFormattedResponse::HTTP_OK
                 );
             }
         );

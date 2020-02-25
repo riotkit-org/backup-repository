@@ -11,15 +11,8 @@ use Ramsey\Uuid\Uuid;
 
 class SeparatedReadWriteFilesystemManager implements FilesystemManager
 {
-    /**
-     * @var FilesystemManager
-     */
-    private $roFS;
-
-    /**
-     * @var FilesystemManager
-     */
-    private $rwFS;
+    private FilesystemManager $roFS;
+    private FilesystemManager $rwFS;
 
     public function __construct(FilesystemManager $readFS, FilesystemManager $writeFS)
     {

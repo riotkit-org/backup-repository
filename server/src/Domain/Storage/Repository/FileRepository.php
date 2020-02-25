@@ -55,4 +55,6 @@ interface FileRepository
      * @return int
      */
     public function getMultipleByPagesCount(FindByParameters $parameters): int;
+
+    public function findExampleFile(): StoredFile;
 }

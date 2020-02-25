@@ -35,7 +35,7 @@ class FunctionalTester extends \Codeception\Actor
         $this->haveHttpHeader('token', $token);
     }
 
-    public function haveRoles(array $roles, array $params = []): string
+    public function haveRoles(array $roles, array $params = [], bool $assert = true): string
     {
         $this->amAdmin();
 
@@ -43,9 +43,9 @@ class FunctionalTester extends \Codeception\Actor
             array_merge(
                 ['roles' => $roles],
                 $params
-            )
+            ),
+            $assert
         );
-
         $this->amToken($token);
 
         return $token;
@@ -73,7 +73,17 @@ class FunctionalTester extends \Codeception\Actor
         );
     }
 
-    public function createToken(array $data): string
+    public function searchForTokens(string $searchPhrase, int $page, int $limit): void
+    {
+        $this->sendGET(
+            $this->fill(
+                Urls::URL_TOKEN_SEARCH,
+                ['query' => $searchPhrase, 'page' => $page, 'limit' => $limit]
+            )
+        );
+    }
+
+    public function createToken(array $data, bool $assert = true): string
     {
         $this->postJson(Urls::URL_TOKEN_GENERATE,
             \array_merge(
@@ -85,7 +95,13 @@ class FunctionalTester extends \Codeception\Actor
             )
         );
 
-        return $this->grabDataFromResponseByJsonPath('.tokenId')[0] ?? '';
+        $status = $this->grabDataFromResponseByJsonPath('.status')[0] ?? '';
+
+        if ($assert) {
+            $this->assertNotSame('Validation error', $status);
+        }
+
+        return $this->grabDataFromResponseByJsonPath('.token.id')[0] ?? '';
     }
 
     public function deleteToken(string $tokenId): void
@@ -129,6 +145,16 @@ class FunctionalTester extends \Codeception\Actor
             ),
             $params
         );
+    }
+
+    public function receiveListOfElementsFromSecureCopy(string $type): void
+    {
+        $this->sendGET($this->fill(Urls::URL_SECURE_COPY, ['type' => $type]));
+    }
+
+    public function retrieveFileMetadataFromSecureCopy(string $filename): void
+    {
+        $this->sendGET($this->fill(Urls::URL_SECURE_COPY_RETRIEVE_FILE_METADATA, ['file' => $filename]));
     }
 
     public function listFiles(array $params = []): void

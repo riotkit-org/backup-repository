@@ -7,15 +7,9 @@ use App\Domain\Storage\ValueObject\Stream;
 
 class FileRetrievedFromStorage
 {
-    /**
-     * @var StoredFile
-     */
-    private $storedFile;
+    private StoredFile $storedFile;
 
-    /**
-     * @var Stream
-     */
-    private $stream;
+    private Stream $stream;
 
     public function __construct(StoredFile $storedFile, Stream $stream)
     {

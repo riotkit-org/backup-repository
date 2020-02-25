@@ -106,8 +106,8 @@ class StorageManager
         }
 
         // case: somehow file was lost in the repository, entry will be rewritten
-        //       possibly eg. a replication may be delayed on database level
-        //       if there is any replication set up outside of the application (eg. MySQL + NFS)
+        //       possibly eg. a securecopy may be delayed on database level
+        //       if there is any securecopy set up outside of the application (eg. MySQL + NFS)
         if (!$existingFromRepository && $existsOnDisk) {
             return $this->writeManager->submitFileLostInRepositoryButExistingInStorage($name, $form, $encoding);
         }

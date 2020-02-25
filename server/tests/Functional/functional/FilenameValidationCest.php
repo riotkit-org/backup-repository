@@ -23,6 +23,6 @@ class FilenameValidationCest
         $I->sendPOST(Urls::URL_REPOSITORY_FILE_UPLOAD . '?fileName=1235Cdwqe3_anarchista_z_przypadku.mp4', null, [
             'test' => __FILE__
         ]);
-        $I->canSeeResponseContains('"status":"OK"');
+        $I->canSeeResponseContains('"status": "OK"');
     }
 }

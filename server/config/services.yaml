@@ -10,11 +10,15 @@ parameters:
     locale: 'en'
     env(READ_ONLY): false
     env(HEALTH_CHECK_CODE): ''
-    env(HTTP_TIMEOUT): 30
+    env(HTTP_TIMEOUT): "30"
     env(TEMP_DIRECTORY): /tmp
-    env(LONG_EXECUTION_TIME): 300
+    env(LONG_EXECUTION_TIME): "300"
     env(TOKEN_EXPIRATION_TIME): "+30 minutes"
     env(ENC_TOKEN_PHRASE): "test123"
+    env(REPLICATION_SECRET): ''
+    env(REPLICATION_PRIMARY_URL): ''
+    env(BASE_URL): ''
+    env(ENC_SALT): ''
 
 services:
     # default configuration for services in *this* file
@@ -29,7 +33,7 @@ services:
     # this creates a service per class whose id is the fully-qualified class name
     App\:
         resource: '../src/*'
-        exclude: '../src/{Kernel.php,Domain/*/Entity,Domain/*/ValueObject,Migrations,Domain/Common/Service/Bus/*,Domain/*/Context,Domain/*/Exception,Domain/*/Form,Domain/*/Parameters,Domain/*/Response,Domain/*/Security}'
+        exclude: '../src/{Kernel.php,Domain/*/Entity,Domain/*/SharedEntity,Domain/*/ValueObject,Migrations,Domain/Common/Service/Bus/*,Domain/*/Context,Domain/*/Exception,Domain/*/Form,Domain/*/Parameters,Domain/*/Response,Domain/*/Security}'
 
     # controllers are imported separately to make sure services can be injected
     # as action arguments even if you don't extend any base controller class
@@ -37,10 +41,9 @@ services:
         resource: '../src/Controller'
         tags: ['controller.service_arguments']
 
-    App\Controller\Technical\HealthController:
+    App\Domain\Technical\ActionHandler\HealthCheckHandler:
+        autowire: true
         arguments:
-            $fs: '@App\Domain\Storage\Manager\FilesystemManager'
-            $ORMConnectionCheck: '@App\Infrastructure\Common\Service\ORMConnectionCheck'
             $secretCode: '%env(HEALTH_CHECK_CODE)%'
 
     App\Domain\Authentication\ActionHandler\TokenGenerationHandler:
@@ -53,15 +56,15 @@ services:
         arguments:
             $basePath: '%env(TEMP_DIRECTORY)%'
 
-    App\Infrastructure\Authentication\Service\AESDecryptionService:
+    App\Infrastructure\Authentication\Service\AESCryptoService:
         arguments:
             $secret: '%env(ENC_TOKEN_PHRASE)%'
+            $salt: '%env(ENC_SALT)%'
 
     App\Infrastructure\Authentication\Event\Subscriber\TokenSubscriber:
-        class: App\Infrastructure\Authentication\Event\Subscriber\TokenSubscriber
+        autowire: true
+        autoconfigure: true
         arguments:
-            $factory: '@App\Domain\Authentication\Factory\IncomingTokenFactory'
-            $tokenStorage: '@security.token_storage'
             $isDev: '%kernel.debug%'
 
     App\Domain\Storage\Repository\StagingAreaRepository:
@@ -88,33 +91,43 @@ services:
             $maxWholeCollectionSize: '%env(BACKUP_COLLECTION_MAX_SIZE)%'
 
     App\Infrastructure\Backup\Repository\CollectionDoctrineRepository:
+        autowire: true
         arguments:
-            $registry: '@Doctrine\Common\Persistence\ManagerRegistry'
             $readOnly: '%env(bool:READ_ONLY)%'
 
     App\Infrastructure\Storage\Repository\FileDoctrineRepository:
+        autowire: true
         arguments:
-            $registry: '@Doctrine\Common\Persistence\ManagerRegistry'
             $readOnly: '%env(bool:READ_ONLY)%'
 
     App\Infrastructure\Backup\Repository\StorageDoctrineRepository:
+        autowire: true
         arguments:
-            $registry: '@Doctrine\Common\Persistence\ManagerRegistry'
             $readOnly: '%env(bool:READ_ONLY)%'
 
     App\Infrastructure\Storage\Repository\TagsDoctrineRepository:
+        autowire: true
         arguments:
-            $registry: '@Doctrine\Common\Persistence\ManagerRegistry'
             $readOnly: '%env(bool:READ_ONLY)%'
 
     App\Infrastructure\Authentication\Repository\TokenDoctrineRepository:
+        autowire: true
         arguments:
-            $registry: '@Doctrine\Common\Persistence\ManagerRegistry'
+            $readOnly: '%env(bool:READ_ONLY)%'
+
+    App\Infrastructure\SecureCopy\Repository\TokenDoctrineRepository:
+        autowire: true
+        arguments:
             $readOnly: '%env(bool:READ_ONLY)%'
 
     App\Infrastructure\Backup\Repository\TokenDoctrineRepository:
+        autowire: true
         arguments:
-            $registry: '@Doctrine\Common\Persistence\ManagerRegistry'
+            $readOnly: '%env(bool:READ_ONLY)%'
+
+    App\Infrastructure\SecureCopy\Repository\CryptoMapDoctrineRepository:
+        autowire: true
+        arguments:
             $readOnly: '%env(bool:READ_ONLY)%'
 
     App\Infrastructure\Backup\Repository\VersionDoctrineRepository:
@@ -122,6 +135,30 @@ services:
             $registry: '@Doctrine\Common\Persistence\ManagerRegistry'
             $fs: '@App\Domain\Backup\Service\Filesystem'
             $readOnly: '%env(bool:READ_ONLY)%'
+
+    App\Infrastructure\SecureCopy\Service\AESCryptoService:
+        arguments:
+            $secret: '%env(ENC_TOKEN_PHRASE)%'
+            $salt: '%env(ENC_SALT)%'
+
+    App\Domain\Authentication\Factory\IncomingTokenFactory:
+        public: true
+        autowire: true
+
+    App\Domain\Storage\Factory\PublicUrlFactory:
+        autowire: true
+        arguments:
+            $baseUrl: '%env(BASE_URL)%'
+
+    App\Domain\SecureCopy\Factory\RepositoryLegendFactory:
+        autowire: true
+        arguments:
+            $baseUrl: '%env(BASE_URL)%'
+
+    App\Domain\Replication\Provider\ConfigurationProvider:
+        arguments:
+            $token: '%env(REPLICATION_SECRET)%'
+            $primaryUrl: '%env(REPLICATION_PRIMARY_URL)%'
 
     ro_fs:
         class: App\Infrastructure\Storage\Manager\FlysystemFilesystemManager
@@ -159,3 +196,15 @@ services:
               credentials:
                   key: "%env(FS_AWSS3V3_KEY)%"
                   secret: "%env(FS_AWSS3V3_SECRET)%"
+
+    replication_primary_httpclient:
+        class: App\Infrastructure\Replication\Service\HttpClient
+        autowire: true
+        factory: ['\App\Infrastructure\Replication\Factory\Http\PrimaryGuzzleClientFactory', 'createClient']
+        arguments:
+            $primaryServerUrl: '%env(REPLICATION_PRIMARY_URL)%'
+            $token: '%env(REPLICATION_SECRET)%'
+
+    App\Infrastructure\Replication\Provider\GuzzlePrimaryServerVersionProvider:
+        arguments:
+            $client: '@replication_primary_httpclient'

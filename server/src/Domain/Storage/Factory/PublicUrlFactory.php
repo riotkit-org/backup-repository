@@ -11,63 +11,37 @@ use App\Domain\Storage\ValueObject\Url;
 class PublicUrlFactory
 {
     /**
-     * @var FileNameFactory
-     */
-    private $fileNameFactory;
-
-    /**
      * @var UrlFactory
      */
-    private $urlFactory;
+    private UrlFactory $urlFactory;
 
-    public function __construct(FileNameFactory $fileNameFactory, UrlFactory $urlFactory)
-    {
-        $this->fileNameFactory = $fileNameFactory;
-        $this->urlFactory      = $urlFactory;
-    }
+    private BaseUrl $baseUrl;
 
-    /**
-     * Returns a new URL (public URL pointing to this service)
-     *
-     * @param Url $url Input file that was downloaded or is to be downloaded
-     *
-     * @return Url
-     */
-    public function fromExternalUrl(Url $url): Url
+    public function __construct(UrlFactory $urlFactory, string $baseUrl)
     {
-        return new Url(
-            $this->urlFactory->generate('storage.get_file', [
-                'filename' => $this->fileNameFactory->fromUrl($url)->getValue()
-            ])
-        );
+        $this->urlFactory = $urlFactory;
+        $this->baseUrl    = new BaseUrl($baseUrl);
     }
 
     /**
      * Return a public URL pointing to a $file
      *
      * @param StoredFile $file
-     * @param BaseUrl $baseUrl
      *
      * @return Url
      */
-    public function fromStoredFile(StoredFile $file, BaseUrl $baseUrl): Url
+    public function fromStoredFile(StoredFile $file): Url
     {
-        return $this->fromFilename($file->getFilename(), $baseUrl);
+        return $this->fromFilename($file->getFilename());
     }
 
-    /**
-     * @param Filename $filename
-     * @param BaseUrl $baseUrl
-     *
-     * @return Url
-     */
-    public function fromFilename(Filename $filename, BaseUrl $baseUrl): Url
+    public function fromFilename(Filename $filename): Url
     {
         return new Url(
             $this->urlFactory->generate('storage.get_file', [
                 'filename' => $filename->getValue()
             ]),
-            $baseUrl
+            $this->baseUrl
         );
     }
 }

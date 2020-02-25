@@ -19,12 +19,12 @@ class CreateCollectionCommand extends Command
     /**
      * @var CreationHandler
      */
-    private $handler;
+    private CreationHandler $handler;
 
     /**
      * @var SecurityContextFactory
      */
-    private $authFactory;
+    private SecurityContextFactory $authFactory;
 
     public function __construct(CreationHandler $handler, SecurityContextFactory $authFactory)
     {
@@ -34,7 +34,7 @@ class CreateCollectionCommand extends Command
         parent::__construct();
     }
 
-    protected function configure()
+    protected function configure(): void
     {
         $this->setName(self::NAME)
             ->setDescription('Creates a backup collection, where the versions could be uploaded')

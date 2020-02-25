@@ -16,7 +16,8 @@ class SecurityContextFactory
             $token->hasRole(Roles::ROLE_USE_TECHNICAL_ENDPOINTS),
             $token->hasRole(Roles::ROLE_ADMINISTRATOR),
             $token->hasRole(Roles::ROLE_REVOKE_TOKENS),
-            $token->hasRole(Roles::ROLE_CREATE_PREDICTABLE_TOKEN_IDS)
+            $token->hasRole(Roles::ROLE_CREATE_PREDICTABLE_TOKEN_IDS),
+            $token->hasRole(Roles::ROLE_SEARCH_FOR_TOKENS)
         );
     }
 
@@ -25,7 +26,8 @@ class SecurityContextFactory
         return new AuthenticationManagementContext(
             true, true,
             true, true,
-            true, true
+            true, true,
+            true
         );
     }
 }

@@ -2,30 +2,49 @@
 
 namespace App\Controller;
 
-use App\Domain\Authentication\Entity\Token;
+use App\Domain\Authentication\Factory\IncomingTokenFactory;
 use App\Domain\Common\Exception\AuthenticationException;
 use App\Domain\Common\Exception\CommonValidationException;
 use App\Domain\Common\Exception\ReadOnlyException;
 use App\Domain\Common\Exception\RequestException;
-use App\Domain\Common\ValueObject\BaseUrl;
 use App\Domain\Storage\Exception\StorageException;
 use App\Infrastructure\Authentication\Token\TokenTransport;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use App\Infrastructure\Common\Http\JsonFormattedResponse;
+use Symfony\Bundle\FrameworkBundle\Controller\ControllerTrait;
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Symfony\Component\Form\FormInterface;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
-abstract class BaseController extends AbstractController
+abstract class BaseController implements ContainerAwareInterface
 {
-    protected function getLoggedUserToken(): Token
+    use ContainerAwareTrait;
+    use ControllerTrait;
+
+    protected function getParameter(string $name)
+    {
+        return $this->container->getParameter($name);
+    }
+
+    protected function getLoggedUserToken(?string $className = null)
     {
         /**
          * @var TokenTransport $sessionToken
          */
         $sessionToken = $this->get('security.token_storage')->getToken();
+        $token = $sessionToken->getToken();
 
-        return $sessionToken->getToken();
+        if (!$token->getId()) {
+            throw new AccessDeniedHttpException('No active token found');
+        }
+
+        if ($className) {
+            return $this->get(IncomingTokenFactory::class)->createFromString($token->getId(), $className);
+        }
+
+        return $token;
     }
 
     protected function submitFormFromJsonRequest(Request $request, $formObject, string $formType): FormInterface
@@ -52,64 +71,64 @@ abstract class BaseController extends AbstractController
         return $infrastructureForm;
     }
 
-    protected function createValidationErrorResponse(FormInterface $form): JsonResponse
+    protected function createValidationErrorResponse(FormInterface $form): JsonFormattedResponse
     {
-        return new JsonResponse(
+        return new JsonFormattedResponse(
             [
                 'status' => 'Validation error',
                 'http_code' => 400,
                 'exit_code' => 400,
                 'fields' => $this->collectErrorsForForm($form, 'form', [])
             ],
-            JsonResponse::HTTP_BAD_REQUEST
+            JsonFormattedResponse::HTTP_BAD_REQUEST
         );
     }
 
-    protected function createAccessDeniedResponse($message = 'Forbidden'): JsonResponse
+    protected function createAccessDeniedResponse($message = 'Forbidden'): JsonFormattedResponse
     {
-        return new JsonResponse(
+        return new JsonFormattedResponse(
             [
                 'status'     => $message,
                 'error_code' => 403,
                 'http_code'  => 403
             ],
-            JsonResponse::HTTP_FORBIDDEN
+            JsonFormattedResponse::HTTP_FORBIDDEN
         );
     }
 
-    protected function createNotFoundResponse(string $message = 'Not found'): JsonResponse
+    protected function createNotFoundResponse(string $message = 'Not found'): JsonFormattedResponse
     {
-        return new JsonResponse(
+        return new JsonFormattedResponse(
             [
                 'status'     => $message,
                 'error_code' => 404,
                 'http_code'  => 404
             ],
-            JsonResponse::HTTP_NOT_FOUND
+            JsonFormattedResponse::HTTP_NOT_FOUND
         );
     }
 
-    public function createAPIReadOnlyResponse(): JsonResponse
+    public function createAPIReadOnlyResponse(): JsonFormattedResponse
     {
-        return new JsonResponse(
+        return new JsonFormattedResponse(
             [
                 'status'     => 'The API is read-only. Possibly due to primary-replica configuration.',
                 'error_code' => 5000001,
                 'http_code'  => 500
             ],
-            JsonResponse::HTTP_INTERNAL_SERVER_ERROR
+            JsonFormattedResponse::HTTP_INTERNAL_SERVER_ERROR
         );
     }
 
-    public function createRequestExceptionResponse(RequestException $requestException): JsonResponse
+    public function createRequestExceptionResponse(RequestException $requestException): JsonFormattedResponse
     {
-        return new JsonResponse(
+        return new JsonFormattedResponse(
             [
                 'status' => $requestException->getMessage(),
                 'error_code' => 400,
                 'http_code'  => 400
             ],
-            JsonResponse::HTTP_BAD_REQUEST
+            JsonFormattedResponse::HTTP_BAD_REQUEST
         );
     }
 
@@ -146,14 +165,14 @@ abstract class BaseController extends AbstractController
             return $this->createAccessDeniedResponse($exception->getMessage());
 
         } catch (CommonValidationException $exception) {
-            return new JsonResponse(
+            return new JsonFormattedResponse(
                 [
                     'status' => 'Validation error',
                     'http_code' => 400,
                     'exit_code' => 400,
                     'fields' => $exception->getFields()
                 ],
-                JsonResponse::HTTP_BAD_REQUEST
+                JsonFormattedResponse::HTTP_BAD_REQUEST
             );
 
         } catch (StorageException $storageException) {
@@ -191,13 +210,6 @@ abstract class BaseController extends AbstractController
         }
 
         throw new \InvalidArgumentException('Invalid data type "' . \gettype($value) . '" specified, cannot parse boolean');
-    }
-
-    protected function createBaseUrl(Request $request): BaseUrl
-    {
-        $fixedDomain = $_ENV['APP_DOMAIN'] ?? '';
-
-        return new BaseUrl($request->isSecure(), $fixedDomain ?: $request->getHttpHost());
     }
 
     private function collectErrorsForForm(FormInterface $form, string $inputName, array $errors = []): array

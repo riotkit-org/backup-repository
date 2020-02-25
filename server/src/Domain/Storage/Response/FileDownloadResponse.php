@@ -26,7 +26,7 @@ class FileDownloadResponse implements \JsonSerializable
         $this->callback = $downloadCallback;
     }
 
-    public function getResponseCallback(): callable
+    public function getResponseCallback(): ?callable
     {
         return $this->callback;
     }

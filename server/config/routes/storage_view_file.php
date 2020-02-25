@@ -46,8 +46,9 @@ $routes->add('storage.get_file',
     new Route(
         '/public/download/{filename}',
         [
-            '_controller' => App\Controller\Storage\ViewFileController::class . '::handle',
-            '_secured' => $securedFromRawAccess
+            '_controller'             => App\Controller\Storage\ViewFileController::class . '::handle',
+            '_secured'                => $securedFromRawAccess,
+            '_access_in_replica_mode' => 'native'
         ],
         [],
         [],
@@ -62,7 +63,8 @@ $routes->add('storage.get_file',
         '/repository/file/{filename}',
         [
             '_controller' => App\Controller\Storage\ViewFileController::class . '::handle',
-            '_secured' => $securedFromRawAccess
+            '_secured' => $securedFromRawAccess,
+            '_access_in_replica_mode' => 'native'
         ],
         [],
         [],
@@ -80,7 +82,8 @@ $routes->add('storage.antihotlink_get_file',
         $antiHotlinkRoute,
         [
             '_controller' => App\Controller\Storage\AntiHotlinkViewFileController::class . '::handleAntiHotlinkUrl',
-            '_secured' => false
+            '_secured' => false,
+            '_access_in_replica_mode' => 'native'
         ],
         [],
         [],

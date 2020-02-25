@@ -5,7 +5,7 @@ namespace App\Controller\Storage;
 use App\Domain\Storage\ActionHandler\AntiHotlinkViewFileHandler;
 use App\Domain\Storage\ActionHandler\ViewFileHandler;
 use App\Domain\Storage\Factory\Context\SecurityContextFactory;
-use Symfony\Component\HttpFoundation\JsonResponse;
+use App\Infrastructure\Common\Http\JsonFormattedResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -17,10 +17,7 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class AntiHotlinkViewFileController extends ViewFileController
 {
-    /**
-     * @var AntiHotlinkViewFileHandler
-     */
-    private $antiHotlinkViewFileHandler;
+    private AntiHotlinkViewFileHandler $antiHotlinkViewFileHandler;
 
     public function __construct(
         ViewFileHandler $handler,
@@ -50,6 +47,6 @@ class AntiHotlinkViewFileController extends ViewFileController
             return $this->handle($request, $response->getFilename()->getValue());
         }
 
-        return new JsonResponse($response, $response->getHttpCode());
+        return new JsonFormattedResponse($response, $response->getHttpCode());
     }
 }

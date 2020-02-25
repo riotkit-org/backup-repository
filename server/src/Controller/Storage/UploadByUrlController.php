@@ -7,17 +7,14 @@ use App\Domain\Common\Exception\RequestException;
 use App\Domain\Storage\ActionHandler\UploadFileByUrlHandler;
 use App\Domain\Storage\Form\UploadByUrlForm;
 use App\Infrastructure\Authentication\Token\TokenTransport;
+use App\Infrastructure\Common\Http\JsonFormattedResponse;
 use App\Infrastructure\Storage\Form\UploadByUrlFormType;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class UploadByUrlController extends BaseController
 {
-    /**
-     * @var UploadFileByUrlHandler
-     */
-    private $handler;
+    private UploadFileByUrlHandler $handler;
 
     public function __construct(UploadFileByUrlHandler $handler)
     {
@@ -50,9 +47,9 @@ class UploadByUrlController extends BaseController
 
         return $this->wrap(
             function () use ($form, $tokenTransport, $request) {
-                $appResponse = $this->handler->handle($form, $this->createBaseUrl($request), $tokenTransport->getToken());
+                $appResponse = $this->handler->handle($form, $tokenTransport->getToken());
 
-                return new JsonResponse(
+                return new JsonFormattedResponse(
                     $appResponse,
                     $appResponse->getExitCode()
                 );

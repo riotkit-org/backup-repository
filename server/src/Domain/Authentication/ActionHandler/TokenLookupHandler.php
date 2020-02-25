@@ -4,16 +4,13 @@ namespace App\Domain\Authentication\ActionHandler;
 
 use App\Domain\Authentication\Entity\Token;
 use App\Domain\Authentication\Exception\AuthenticationException;
-use App\Domain\Authentication\Factory\Context\SecurityContextFactory;
 use App\Domain\Authentication\Repository\TokenRepository;
+use App\Domain\Authentication\Response\TokenCRUDResponse;
 use App\Domain\Authentication\Security\Context\AuthenticationManagementContext;
 
 class TokenLookupHandler
 {
-    /**
-     * @var TokenRepository
-     */
-    private $repository;
+    private TokenRepository $repository;
 
     public function __construct(TokenRepository $repository)
     {
@@ -24,11 +21,11 @@ class TokenLookupHandler
      * @param string $tokenStringToLookup
      * @param AuthenticationManagementContext $context
      *
-     * @return null|array
+     * @return null|TokenCRUDResponse
      *
      * @throws AuthenticationException
      */
-    public function handle(string $tokenStringToLookup, AuthenticationManagementContext $context): ?array
+    public function handle(string $tokenStringToLookup, AuthenticationManagementContext $context): ?TokenCRUDResponse
     {
         $token = $this->repository->findTokenById($tokenStringToLookup);
         $this->assertHasRights($context);
@@ -37,14 +34,7 @@ class TokenLookupHandler
             return null;
         }
 
-        return [
-            'tokenId'       => $token->getId(),
-            'expires'       => $token->getExpirationDate()->format('Y-m-d H:i:s'),
-            'roles'         => $token->getRoles(),
-            'tags'          => $token->getTags(),
-            'mimes'         => $token->getAllowedMimeTypes(),
-            'max_file_size' => $token->getMaxAllowedFileSize()
-        ];
+        return TokenCRUDResponse::createTokenFoundResponse($token);
     }
 
     /**

@@ -6,9 +6,11 @@ database_backup:
     defaults:
         _secured: false
 
+
 database_restore:
     path: /db/restore
     controller: 'App\Controller\Technical\RestoreDBController::restoreAction'
     methods: ['GET']
     defaults:
         _secured: false
+

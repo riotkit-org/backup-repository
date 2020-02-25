@@ -7,21 +7,16 @@ use App\Domain\Backup\ActionHandler\Collection\ListingHandler;
 use App\Domain\Backup\Factory\SecurityContextFactory;
 use App\Domain\Backup\Form\Collection\ListingForm;
 use App\Infrastructure\Backup\Form\Collection\ListingFormType;
-use Symfony\Component\HttpFoundation\JsonResponse;
+use App\Infrastructure\Common\Http\JsonFormattedResponse;
+use Exception;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class ListingController extends BaseController
 {
-    /**
-     * @var ListingHandler
-     */
-    private $handler;
 
-    /**
-     * @var SecurityContextFactory
-     */
-    private $authFactory;
+    private ListingHandler $handler;
+    private SecurityContextFactory $authFactory;
 
     public function __construct(
         ListingHandler         $handler,
@@ -32,11 +27,11 @@ class ListingController extends BaseController
     }
 
     /**
-     * @param string  $id
+     * @param Request $request
      *
      * @return Response
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function handleAction(Request $request): Response
     {
@@ -55,7 +50,7 @@ class ListingController extends BaseController
 
                 $response = $this->handler->handle($form, $securityContext);
 
-                return new JsonResponse($response, $response->getHttpCode());
+                return new JsonFormattedResponse($response, $response->getHttpCode());
             }
         );
     }

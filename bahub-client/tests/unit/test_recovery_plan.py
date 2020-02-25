@@ -1,11 +1,7 @@
 import unittest
-import sys
-import os
-import inspect
 
-sys.path.append(os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe()))) + '/../')
-from bahub.bahubapp.entity.recovery import RecoveryPlan
-from bahub.bahubapp.exceptions import ConfigurationFactoryException
+from riotbahub.filerepository.bahub.entity.recovery import RecoveryPlan
+from riotbahub.filerepository.bahub.exceptions import ConfigurationFactoryException
 
 
 class RecoveryPlanTest(unittest.TestCase):

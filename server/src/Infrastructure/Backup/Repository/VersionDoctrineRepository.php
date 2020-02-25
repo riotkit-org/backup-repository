@@ -7,7 +7,7 @@ use App\Domain\Backup\Entity\BackupCollection;
 use App\Domain\Backup\Entity\StoredVersion;
 use App\Domain\Backup\Repository\VersionRepository;
 use App\Domain\Backup\Service\Filesystem;
-use App\Domain\Common\Repository\BaseRepository;
+use App\Infrastructure\Common\Repository\BaseRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
 use Doctrine\ORM\OptimisticLockException;
 use Doctrine\ORM\ORMException;

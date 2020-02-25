@@ -4,16 +4,18 @@ namespace App\Domain\Authentication\Repository;
 
 use App\Domain\Authentication\Entity\Token;
 
-interface TokenRepository
+interface TokenRepository extends \App\Domain\Common\Repository\TokenRepository
 {
     public function persist(Token $token): void;
     public function remove(Token $token): void;
     public function flush(Token $token = null): void;
 
-    public function findTokenById(string $id): ?Token;
-
     /**
      * @return Token[]
      */
     public function getExpiredTokens(): array;
+
+    public function findTokensBy(string $pattern, int $page = 1, int $count = 50): array;
+
+    public function findMaxPagesTokensBy(string $pattern, int $limit = 50): int;
 }

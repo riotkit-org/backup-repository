@@ -6,19 +6,13 @@ use App\Domain\Authentication\Entity\Token;
 use App\Domain\Authentication\Exception\AuthenticationException;
 use App\Domain\Authentication\Manager\TokenManager;
 use App\Domain\Authentication\Repository\TokenRepository;
+use App\Domain\Authentication\Response\TokenCRUDResponse;
 use App\Domain\Authentication\Security\Context\AuthenticationManagementContext;
 
 class TokenDeleteHandler
 {
-    /**
-     * @var TokenRepository
-     */
-    private $repository;
-
-    /**
-     * @var TokenManager
-     */
-    private $manager;
+    private TokenRepository $repository;
+    private TokenManager $manager;
 
     public function __construct(TokenRepository $repository, TokenManager $manager)
     {
@@ -30,11 +24,11 @@ class TokenDeleteHandler
      * @param string $tokenToDelete
      * @param AuthenticationManagementContext $context
      *
-     * @return null|array
+     * @return null|TokenCRUDResponse
      *
      * @throws AuthenticationException
      */
-    public function handle(string $tokenToDelete, AuthenticationManagementContext $context): ?array
+    public function handle(string $tokenToDelete, AuthenticationManagementContext $context): TokenCRUDResponse
     {
         $token = $this->repository->findTokenById($tokenToDelete);
 
@@ -47,9 +41,7 @@ class TokenDeleteHandler
         $this->manager->revokeToken($token);
         $this->manager->flushAll();
 
-        return [
-            'status'  => 'OK'
-        ];
+        return TokenCRUDResponse::createTokenDeletedResponse($token);
     }
 
     /**

@@ -1,0 +1,57 @@
+version: "3.5"
+
+#
+# File Repository compose deployment
+# This is a main file, other files docker-compose.*.yaml are joined if you choose a different variant
+#
+# Example: make up VARIANT="s3 persistent"
+#   Will load: docker-compose.yaml + docker-compose.s3.yaml + docker-compose.persistent.yaml
+#
+
+services:
+    filerepository:
+        image: quay.io/riotkit/file-repository:${FILE_REPOSITORY_VERSION}
+        environment:
+            # Pre-configured administrative token, with this token you can do everything
+            SECURITY_ADMIN_TOKEN: "${SECURITY_ADMIN_TOKEN}"
+            BASE_URL: "${BASE_URL}"
+            APP_ENV: "prod"
+
+            # A secret phase your monitoring software will know to access the health status of the application
+            # http://localhost:8000/health?code=${HEALTH_CHECK_CODE}
+            HEALTH_CHECK_CODE: "${HEALTH_CHECK_CODE}"
+
+            # By default we use SQLite3, but see examples for PostgreSQL and MariaDB in
+            # same directory
+            DATABASE_HOST: "./var/data.db"
+            DATABASE_NAME: ""
+            DATABASE_PASSWORD: ""
+            DATABASE_USER: ""
+            DATABASE_DRIVER: "pdo_sqlite"
+            DATABASE_PORT: ""
+
+            # On each container get up you can configure your instance
+            # eg. create authentication tokens, create backup collections
+            # that's very handy, as it automates everything for you
+            #
+            # Check out ./bin/console in the running container for more commands you can use
+            POST_INSTALL_CMD:
+                ./bin/console backup:create-collection --ignore-error-if-exists --max-backups-count=5
+                    --max-one-version-size=10mib --max-collection-size=2gib --strategy=delete_oldest_when_adding_new
+                    --filename=postgres.sql.gz --id=${COLLECTIONS_POSTGRES_ID};
+
+                ./bin/console backup:create-collection --ignore-error-if-exists --max-backups-count=5
+                    --max-one-version-size=5kib --max-collection-size=50kib --strategy=delete_oldest_when_adding_new
+                    --filename=postgres-single-db.sql.gz --id=${COLLECTIONS_POSTGRES_SINGLE_DB_ID};
+
+                ./bin/console backup:create-collection --ignore-error-if-exists --max-backups-count=2
+                    --max-one-version-size=250mib --max-collection-size=510mib --strategy=delete_oldest_when_adding_new
+                    --filename=postgres-basebackup-db.sql.gz --id=${COLLECTIONS_POSTGRES_BASE_ID};
+
+                ./bin/console backup:create-collection --ignore-error-if-exists --max-backups-count=2
+                    --max-one-version-size=250mib --max-collection-size=510mib --strategy=delete_oldest_when_adding_new
+                    --filename=www-data.tar.gz --id=${COLLECTIONS_WWW_FILES_ID};
+
+                ./bin/console backup:create-collection --ignore-error-if-exists --max-backups-count=2
+                    --max-one-version-size=250mib --max-collection-size=510mib --strategy=delete_oldest_when_adding_new
+                    --filename=mysqldump-db.sql.gz --id=${COLLECTIONS_MYSQL_ID};

@@ -14,10 +14,7 @@ use App\Domain\Storage\Security\UploadSecurityContext;
 
 class SecurityContextFactory
 {
-    /**
-     * @var MimeTypeProvider
-     */
-    private $mimeProvider;
+    private MimeTypeProvider $mimeProvider;
 
     public function __construct(MimeTypeProvider $mimeTypeProvider)
     {
@@ -62,6 +59,13 @@ class SecurityContextFactory
             $token->hasRole(Roles::ROLE_ACCESS_LISTING_ENDPOINT),
             $form->password ?? '',
             $token->getTags()
+        );
+    }
+
+    public function createReadContextInShell(): ReadSecurityContext
+    {
+        return new ReadSecurityContext(
+            true, true, true, '', []
         );
     }
 

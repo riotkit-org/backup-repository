@@ -1,0 +1,8 @@
+# version in semver format eg. 3.0.0-dev, 3.0.0-alpha, 3.0.0-RC1, 3.0.0
+version: 3.0.0-dev
+
+# release name
+name: Young Baker
+
+# development, testing, stable
+status: development

@@ -16,15 +16,8 @@ class GenerateTokenCommand extends Command
 {
     public const NAME = 'auth:create-token';
 
-    /**
-     * @var TokenGenerationHandler
-     */
-    private $handler;
-
-    /**
-     * @var SecurityContextFactory
-     */
-    private $authFactory;
+    private TokenGenerationHandler $handler;
+    private SecurityContextFactory $authFactory;
 
     public function __construct(TokenGenerationHandler $handler, SecurityContextFactory $authFactory)
     {
@@ -42,6 +35,8 @@ class GenerateTokenCommand extends Command
             ->addOption('tags', null, InputOption::VALUE_REQUIRED)
             ->addOption('mimes', null, InputOption::VALUE_REQUIRED)
             ->addOption('max-file-size', null, InputOption::VALUE_REQUIRED)
+            ->addOption('securecopy-encryption-method', null, InputOption::VALUE_OPTIONAL)
+            ->addOption('securecopy-passphrase', null, InputOption::VALUE_OPTIONAL)
             ->addOption('id', 'i', InputOption::VALUE_OPTIONAL)
             ->addOption('expires', null, InputOption::VALUE_REQUIRED, 'Example: 2020-05-01 or +10 years')
             ->addOption('ignore-error-if-token-exists', null, InputOption::VALUE_NONE,
@@ -57,16 +52,18 @@ class GenerateTokenCommand extends Command
      *
      * @throws \Exception
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $form = new AuthForm();
         $form->data = new TokenDetailsForm();
-        $form->data->tags               = $this->getMultipleValueOption($input, 'tags');
-        $form->data->allowedMimeTypes   = $this->getMultipleValueOption($input, 'mimes');
-        $form->data->maxAllowedFileSize = (int) $input->getOption('max-file-size');
-        $form->expires                  = $input->getOption('expires');
-        $form->roles                    = $this->getMultipleValueOption($input, 'roles');
-        $form->id                       = $input->getOption('id');
+        $form->data->tags                       = $this->getMultipleValueOption($input, 'tags');
+        $form->data->allowedMimeTypes           = $this->getMultipleValueOption($input, 'mimes');
+        $form->data->maxAllowedFileSize         = (int) $input->getOption('max-file-size');
+        $form->data->secureCopyEncryptionKey    = (string) $input->getOption('securecopy-passphrase');
+        $form->data->secureCopyEncryptionMethod = (string) $input->getOption('securecopy-encryption-method');
+        $form->expires                          = $input->getOption('expires');
+        $form->roles                            = $this->getMultipleValueOption($input, 'roles');
+        $form->id                               = $input->getOption('id');
 
         $this->debug('Form:', $output);
 
@@ -114,8 +111,10 @@ class GenerateTokenCommand extends Command
         $this->debug(json_encode($response, JSON_PRETTY_PRINT), $output);
 
         if (!$output->isVerbose()) {
-            $output->writeln($response['tokenId'] ?? '');
+            $output->writeln($response->getTokenId() ?? '');
         }
+
+        return 0;
     }
 
     private function debug(string $message, OutputInterface $output): void

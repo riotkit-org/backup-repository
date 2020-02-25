@@ -6,22 +6,15 @@ use App\Controller\BaseController;
 use App\Domain\Storage\ActionHandler\DeleteFileHandler;
 use App\Domain\Storage\Factory\Context\SecurityContextFactory;
 use App\Domain\Storage\Form\DeleteFileForm;
+use App\Infrastructure\Common\Http\JsonFormattedResponse;
 use App\Infrastructure\Storage\Form\DeleteFileFormType;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class DeleteFileController extends BaseController
 {
-    /**
-     * @var DeleteFileHandler
-     */
-    private $handler;
-
-    /**
-     * @var SecurityContextFactory
-     */
-    private $authFactory;
+    private DeleteFileHandler $handler;
+    private SecurityContextFactory $authFactory;
 
     public function __construct(DeleteFileHandler $handler, SecurityContextFactory $authFactory)
     {
@@ -46,7 +39,7 @@ class DeleteFileController extends BaseController
                     $this->authFactory->createDeleteContextFromTokenAndForm($this->getLoggedUserToken(), $form)
                 );
 
-                return new JsonResponse(
+                return new JsonFormattedResponse(
                     ['success' => $response],
                     $response ? Response::HTTP_OK : Response::HTTP_INTERNAL_SERVER_ERROR
                 );

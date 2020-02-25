@@ -1,10 +1,12 @@
 <?php declare(strict_types=1);
 
+use App\Infrastructure\Common\Service\ConfigParser;
 use League\Flysystem\Filesystem;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 require_once __DIR__ . '/../../src/Infrastructure/Common/Service/ConfigParser.php';
 
-$configParser = new \App\Infrastructure\Common\Service\ConfigParser([
+$configParser = new ConfigParser([
     'local' => [
         'directory'    => ['%kernel.root_dir%/uploads', 'string'],
         'lazy'         => [null, 'bool'],
@@ -54,6 +56,9 @@ $filesystems = [
     ]
 ];
 
+/**
+ * @var ContainerInterface $container
+ */
 $container->loadFromExtension('oneup_flysystem', [
     'adapters' => $adapters,
     'filesystems' => $filesystems

@@ -10,14 +10,11 @@ use App\Domain\Backup\Repository\VersionRepository;
 use App\Domain\Backup\Response\Version\VersionListingResponse;
 use App\Domain\Backup\Factory\PublicUrlFactory;
 use App\Domain\Backup\Security\VersioningContext;
-use App\Domain\Common\ValueObject\BaseUrl;
 
 class VersionsListingHandler
 {
-    /**
-     * @var VersionRepository
-     */
-    private $versionsRepository;
+    private VersionRepository $versionsRepository;
+    private PublicUrlFactory $factory;
 
     public function __construct(VersionRepository $versionRepository, PublicUrlFactory $factory)
     {
@@ -28,18 +25,13 @@ class VersionsListingHandler
     /**
      * @param VersionsListingForm $form
      * @param VersioningContext $securityContext
-     * @param BaseUrl $baseUrl
      *
      * @return VersionListingResponse
      *
      * @throws AuthenticationException
      */
-    public function handle(
-        VersionsListingForm $form,
-        VersioningContext $securityContext,
-        BaseUrl $baseUrl
-    ): VersionListingResponse {
-
+    public function handle(VersionsListingForm $form, VersioningContext $securityContext): VersionListingResponse
+    {
         if (!$form->collection) {
             return VersionListingResponse::createWithNotFoundError();
         }
@@ -48,7 +40,7 @@ class VersionsListingHandler
 
         return VersionListingResponse::fromCollection(
             $this->versionsRepository->findCollectionVersions($form->collection),
-            function (StoredVersion $version) use ($baseUrl) { return $this->factory->getUrlForVersion($version, $baseUrl); }
+            function (StoredVersion $version) { return $this->factory->getUrlForVersion($version); }
         );
     }
 

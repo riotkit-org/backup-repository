@@ -9,7 +9,9 @@ use App\Domain\Storage\Context\CachingContext;
 use App\Domain\Storage\Factory\Context\SecurityContextFactory;
 use App\Domain\Storage\Form\ViewFileForm;
 use App\Domain\Storage\Security\ReadSecurityContext;
+use App\Infrastructure\Common\Http\JsonFormattedResponse;
 use App\Infrastructure\Storage\Form\ViewFileFormType;
+use Exception;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -18,19 +20,12 @@ use Swagger\Annotations as SWG;
 
 class ViewFileController extends BaseController
 {
-    /**
-     * @var ViewFileHandler
-     */
-    private $handler;
-
-    /**
-     * @var SecurityContextFactory
-     */
-    private $authFactory;
+    private ViewFileHandler $handler;
+    private SecurityContextFactory $authFactory;
 
     public function __construct(ViewFileHandler $handler, SecurityContextFactory $authFactory)
     {
-        $this->handler = $handler;
+        $this->handler     = $handler;
         $this->authFactory = $authFactory;
     }
 
@@ -45,7 +40,7 @@ class ViewFileController extends BaseController
      *
      * @return Response
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function handle(Request $request, string $filename): Response
     {
@@ -70,7 +65,7 @@ class ViewFileController extends BaseController
                     return new StreamedResponse($response->getResponseCallback(), $response->getCode());
                 }
 
-                return new JsonResponse($response, $response->getCode());
+                return new JsonFormattedResponse($response, $response->getCode());
             }
         );
     }
@@ -80,7 +75,7 @@ class ViewFileController extends BaseController
      *
      * @return CachingContext
      *
-     * @throws \Exception
+     * @throws Exception
      */
     private function createCachingContext(Request $request): CachingContext
     {

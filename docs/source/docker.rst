@@ -1,19 +1,15 @@
 Docker, releases and versioning
 ===============================
 
-Images are hosted on both hub.docker.com and quay.io
+Images are hosted quay.io
 
-The versions are created from tags, when a code is considered stable, then it is tagged.
+The versions are created from tags, when a code is considered stable, then it is tagged and released as stable.
+There are also ALPHA and RC (release candidate) versions tagged for testing purposes, often close to the stable release date.
 
 Please see https://semver.org/ for how we version the application.
 
 .. code:: yaml
 
-    # quay.io/riotkit
-    quay.io/riotkit/file-repository
-    quay.io/riotkit/bahub
-    quay.io/riotkit/file-repository-sentry
-
-    # https://hub.docker.com/r/wolnosciowiec/file-repository
-    wolnosciowiec/file-repository
-
+    quay.io/riotkit/file-repository:version
+    quay.io/riotkit/bahub:version
+    quay.io/riotkit/kropot-cli

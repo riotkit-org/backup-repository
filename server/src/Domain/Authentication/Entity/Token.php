@@ -2,64 +2,52 @@
 
 namespace App\Domain\Authentication\Entity;
 
-use App\Domain\Roles;
+use DateTimeImmutable;
+use Swagger\Annotations as SWG;
 
-class Token
+class Token extends \App\Domain\Common\SharedEntity\Token implements \JsonSerializable
 {
-    public const REQUIRED_FIELDS = [
-        'roles'          => 'array',
-        'expirationDate' => 'string',
-        'data'           => 'array'
-    ];
-
     /**
-     * @var string $id
+     * @SWG\Property(type="string", maxLength=32, example="2020-05-01 08:00:00")
+     *
+     * @var DateTimeImmutable $creationDate
      */
-    private $id;
+    protected $creationDate;
 
     /**
-     * @var array $roles
+     * @SWG\Property(type="string", maxLength=32, example="2020-05-01 08:00:00")
+     *
+     * @var DateTimeImmutable
      */
-    private $roles = [];
+    protected $expirationDate;
 
     /**
+     * @SWG\Property(
+     *     type="array",
+     *     @SWG\Items(
+     *         type="object"
+     *     )
+     * )
+     *
+     * @var string[]
+     */
+    protected $data = [];
+
+    /**
+     * @SWG\Property(type="boolean")
+     *
      * @var bool
      */
-    private $alreadyGrantedAdminAccess = false;
-
-    /**
-     * @var \DateTimeImmutable $creationDate
-     */
-    private $creationDate;
-
-    /**
-     * @var \DateTimeImmutable
-     */
-    private $expirationDate;
-
-    /**
-     * @var array
-     */
-    private $data = [];
-
-    /**
-     * @var bool
-     */
-    private $active;
+    protected bool $active;
 
     /**
      * @throws \Exception
      */
     public function __construct()
     {
-        $this->expirationDate = new \DateTimeImmutable();
-        $this->creationDate   = new \DateTimeImmutable();
-        $this->active         = true;
-    }
-
-    public function getId(): string
-    {
-        return $this->id;
+        $this->expirationDate = new DateTimeImmutable();
+        $this->creationDate = new DateTimeImmutable();
+        $this->active = true;
     }
 
     public function setId(string $id): Token
@@ -68,53 +56,32 @@ class Token
         return $this;
     }
 
-    public function getRoles(): array
+    public function isNotExpired(DateTimeImmutable $currentDate = null): bool
     {
-        if (!$this->alreadyGrantedAdminAccess && \in_array(Roles::ROLE_ADMINISTRATOR, $this->roles, true)) {
-            $this->roles = \array_merge($this->roles, Roles::GRANTS_LIST);
-            $this->alreadyGrantedAdminAccess = true;
-        }
-
-        return $this->roles;
-    }
-
-    public function hasRole(string $roleName): bool
-    {
-        return \in_array($roleName, $this->getRoles(), true);
-    }
-
-    public function isNotExpired(\DateTimeImmutable $currentDate = null): bool
-    {
-        if (!$currentDate instanceof \DateTimeImmutable) {
-            $currentDate = new \DateTimeImmutable();
+        if (!$currentDate instanceof DateTimeImmutable) {
+            $currentDate = new DateTimeImmutable();
         }
 
         return $this->getExpirationDate()->getTimestamp() >= $currentDate->getTimestamp();
     }
 
-    public function getCreationDate(): \DateTimeImmutable
+    public function getCreationDate(): DateTimeImmutable
     {
         return $this->creationDate;
     }
 
-    public function getExpirationDate(): \DateTimeImmutable
+    public function getExpirationDate(): DateTimeImmutable
     {
         return $this->expirationDate;
     }
 
-    public function setRoles(array $roles): Token
-    {
-        $this->roles = $roles;
-        return $this;
-    }
-
-    public function setCreationDate(\DateTimeImmutable $creationDate): Token
+    public function setCreationDate(DateTimeImmutable $creationDate): Token
     {
         $this->creationDate = $creationDate;
         return $this;
     }
 
-    public function setExpirationDate(\DateTimeImmutable $expirationDate): Token
+    public function setExpirationDate(DateTimeImmutable $expirationDate): Token
     {
         $this->expirationDate = $expirationDate;
         return $this;
@@ -148,7 +115,8 @@ class Token
      */
     public function getTags(): array
     {
-        return isset($this->data['tags']) && \is_array($this->data['tags']) ? $this->data['tags'] : [];
+        return isset($this->data[self::FIELD_TAGS]) && \is_array($this->data[self::FIELD_TAGS])
+            ? $this->data[self::FIELD_TAGS] : [];
     }
 
     /**
@@ -156,17 +124,19 @@ class Token
      */
     public function getAllowedMimeTypes(): array
     {
-        return isset($this->data['allowedMimeTypes']) && \is_array($this->data['allowedMimeTypes']) ? $this->data['allowedMimeTypes'] : [];
+        return isset($this->data[self::FIELD_ALLOWED_MIME_TYPES]) && \is_array($this->data[self::FIELD_ALLOWED_MIME_TYPES])
+            ? $this->data[self::FIELD_ALLOWED_MIME_TYPES] : [];
     }
 
     public function getMaxAllowedFileSize(): int
     {
-        return isset($this->data['maxAllowedFileSize']) && \is_int($this->data['maxAllowedFileSize']) ? $this->data['maxAllowedFileSize'] : 0;
+        return isset($this->data[self::FIELD_MAX_ALLOWED_FILE_SIZE]) && \is_int($this->data[self::FIELD_MAX_ALLOWED_FILE_SIZE])
+            ? $this->data[self::FIELD_MAX_ALLOWED_FILE_SIZE] : 0;
     }
 
     public function isValid(string $userAgent, string $ipAddress): bool
     {
-        if (!$this->isNotExpired(new \DateTimeImmutable())) {
+        if (!$this->isNotExpired(new DateTimeImmutable())) {
             return false;
         }
 
@@ -181,12 +151,12 @@ class Token
 
     public function getAllowedUserAgents(): array
     {
-        return $this->data['allowedUserAgents'] ?? [];
+        return $this->data[self::FIELD_ALLOWED_UAS] ?? [];
     }
 
     public function getAllowedIpAddresses(): array
     {
-        return $this->data['allowedIpAddresses'] ?? [];
+        return $this->data[self::FIELD_ALLOWED_IPS] ?? [];
     }
 
     private function canBeUsedByIpAddress(string $address): bool
@@ -205,5 +175,17 @@ class Token
         }
 
         return \in_array($userAgent, $this->getAllowedUserAgents(), true);
+    }
+
+    public function jsonSerialize()
+    {
+        return [
+            'id'      => $this->getId(),
+            'active'  => $this->active,
+            'expired' => !$this->isNotExpired(),
+            'expires' => $this->getExpirationDate()->format('Y-m-d H:i:s'),
+            'data'    => $this->data,
+            'roles'   => $this->getRoles()
+        ];
     }
 }

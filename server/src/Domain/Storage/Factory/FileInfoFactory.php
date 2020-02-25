@@ -17,38 +17,38 @@ class FileInfoFactory
     /**
      * @var string Checksum tool (a shell command)
      */
-    private $checksumTool = 'sha256sum';
+    private string $checksumTool = 'sha256sum';
 
     /**
      * @var int Length of the checksum for validation
      */
-    private $checksumLength = 64;
+    private int $checksumLength = 64;
 
     /**
      * @var array Simple in-memory cache
      */
-    private $cache = [];
+    private array $cache = [];
 
-    public function generateForStagedFile(StagedFile $stagedFile): FileInfo
+    public function generateForStagedFile(StagedFile $stagedFile, string $contentIdent = ''): FileInfo
     {
         if ($this->isInCache($stagedFile)) {
             return $this->getFromCache($stagedFile);
         }
 
-        $info = $this->generateForPath($stagedFile->getFilePath());
+        $info = $this->generateForPath($stagedFile->getFilePath(), $contentIdent);
         $this->storeToCache($stagedFile, $info);
 
         return $info;
     }
 
-    private function generateForPath(Path $path): FileInfo
+    private function generateForPath(Path $path, string $contentIdent): FileInfo
     {
         if (!$path->isFile()) {
             throw new \LogicException('"' . $path->getValue() . '" does not exist');
         }
 
         return new FileInfo(
-            new Checksum($this->doCheckSum($path), $this->checksumTool),
+            new Checksum($this->doCheckSum($path), $this->checksumTool, $contentIdent),
             new Mime($this->getMimeForFile($path)),
             new Filesize(\filesize($path->getValue()))
         );

@@ -34,6 +34,11 @@ class GetSizeCommand implements CommandHandler
         return FileSize::fromBytes($this->fs->getFileSize(Filename::createFromBasicForm($filename)));
     }
 
+    public function supportsInput($input, string $path): bool
+    {
+        return true;
+    }
+
     /**
      * @return array
      */

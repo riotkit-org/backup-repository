@@ -2,13 +2,11 @@
 
 namespace App\Controller\Technical;
 
-use App\Domain\Storage\Exception\StorageException;
-use App\Domain\Storage\Manager\FilesystemManager;
-use App\Infrastructure\Common\Service\ORMConnectionCheck;
+use App\Domain\Technical\ActionHandler\HealthCheckHandler;
+use App\Infrastructure\Common\Http\JsonFormattedResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Swagger\Annotations as SWG;
 
 /**
@@ -16,26 +14,11 @@ use Swagger\Annotations as SWG;
  */
 class HealthController extends AbstractController
 {
-    /**
-     * @var FilesystemManager
-     */
-    private $fs;
+    private HealthCheckHandler $handler;
 
-    /**
-     * @var ORMConnectionCheck
-     */
-    private $ormConnectionCheck;
-
-    /**
-     * @var string
-     */
-    private $secretCode;
-
-    public function __construct(FilesystemManager $fs, ORMConnectionCheck $ORMConnectionCheck, string $secretCode)
+    public function __construct(HealthCheckHandler $handler)
     {
-        $this->fs                 = $fs;
-        $this->ormConnectionCheck = $ORMConnectionCheck;
-        $this->secretCode         = $secretCode;
+        $this->handler = $handler;
     }
 
     /**
@@ -47,6 +30,13 @@ class HealthController extends AbstractController
      * @SWG\Response(
      *     response="503",
      *     description="Same response format as for 200 code. 503 is when at least one check from list failed"
+     * )
+     *
+     * @SWG\Parameter(
+     *     type="string",
+     *     name="code",
+     *     description="Secret code given to monitoring tool, so nobody else can access this specific endpoint",
+     *     in="query"
      * )
      *
      * @SWG\Response(
@@ -92,60 +82,12 @@ class HealthController extends AbstractController
      */
     public function healthAction(Request $request): JsonResponse
     {
-        if ($request->get('code') !== $this->secretCode || !$request->get('code')) {
-            throw new AccessDeniedHttpException();
-        }
+        $result = $this->handler->handle($request->get('code', ''));
 
-        $storageIsOk = false;
-        $dbIsOk      = false;
-        $messages = ['database' => [], 'storage' => []];
-
-        try {
-            $dbIsOk = $this->ormConnectionCheck->test();
-
-        } catch (\Exception $exception) {
-            $messages['database'][] = $exception->getMessage();
-        }
-
-        try {
-            $this->fs->test();
-            $storageIsOk = true;
-
-        } catch (StorageException $exception) {
-            $messages['storage'][] = $exception->getMessage();
-
-            if ($exception->getPrevious()) {
-                $messages['storage'][] = $exception->getPrevious()->getMessage();
-            }
-        }
-
-        $globalStatus = $storageIsOk && $dbIsOk;
-
-        return new JsonResponse(
-            json_encode(
-                [
-                    'status' => [
-                        'storage'  => $storageIsOk,
-                        'database' => $dbIsOk
-                    ],
-                    'messages'      => $messages,
-                    'global_status' => $globalStatus,
-                    'ident'         => [
-                        'global_status=' . $this->boolToStr($globalStatus),
-                        'storage=' . $this->boolToStr($storageIsOk),
-                        'database=' . $this->boolToStr($dbIsOk)
-                    ]
-                ],
-                JSON_PRETTY_PRINT
-            ),
-            $globalStatus ? JsonResponse::HTTP_OK : JsonResponse::HTTP_SERVICE_UNAVAILABLE,
-            [],
-            true
+        return new JsonFormattedResponse(
+            $result['response'],
+            $result['status'] ? JsonResponse::HTTP_OK : JsonResponse::HTTP_SERVICE_UNAVAILABLE,
+            []
         );
-    }
-
-    private function boolToStr(bool $value): string
-    {
-        return $value ? 'True' : 'False';
     }
 }

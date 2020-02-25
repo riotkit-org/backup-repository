@@ -42,5 +42,7 @@ class ClearExpiredTokensCommand extends Command
                 $output->writeln($notification);
             }
         );
+
+        return 0;
     }
 }

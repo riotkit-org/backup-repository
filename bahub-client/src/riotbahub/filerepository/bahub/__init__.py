@@ -1,0 +1,95 @@
+#!/usr/bin/env python3
+
+import sys
+import os
+import argparse
+
+from .service.configurationfactory import ConfigurationFactory
+from .app import Bahub
+from .service.logger import LoggerFactory
+from .service.errorhandler import ErrorHandlerService
+from .service.notifier import Notifier
+
+
+def main():
+    #
+    # Arguments parsing
+    #
+    parser = argparse.ArgumentParser()
+    parser.add_argument('options', metavar='options', type=str, nargs='+',
+                        help='[backup/restore/list/recover/snapshot] [backup or recovery plan name]')
+
+    parser.add_argument('--debug', help='Prints debugging messages', default=False, action="store_true")
+    parser.add_argument('--uncensored', help='Do not remove credentials from logs', default=False, action="store_true")
+
+    parser.add_argument('--config',
+                        help='Path to the configuration file',
+                        default=os.path.expanduser('~/.bahub.yaml'))
+
+    parser.add_argument('--logs-path',
+                        help='Logs path',
+                        default=os.path.expanduser('/tmp'))
+
+    parser.add_argument('--logs-file',
+                        help='Log to a single file, instead of creating files by date',
+                        default='')
+
+    parser.description = 'Bahub - backup automation client for File Repository API'
+
+    parsed = parser.parse_args()
+
+    if 0 < len(parsed.options) < 2:
+        print(' You need to specify two options eg. "backup some-name"')
+        print('')
+        print('Example usage:')
+        print('  backup my_db_1')
+        print('  restore my_db_1 latest')
+        print('  restore my_db_1 v2')
+        print('  list my_db_1')
+        print('  recover my_recovery_plan_name')
+        print('  snapshot my_recovery_plan_name')
+        print('')
+        sys.exit(1)
+
+    if not os.path.isfile(parsed.config):
+        print(' Configuration file "' + str(parsed.config) + '" does not exist')
+        sys.exit(1)
+
+    error_handler = None
+    notifier = None
+
+    try:
+        config_factory = ConfigurationFactory(parsed.config, parsed.debug)
+        notifier = Notifier(config_factory.get_notifiers())
+        error_handler = ErrorHandlerService(config_factory.get_error_handlers())
+
+        app = Bahub(
+            factory=config_factory,
+            options={
+                'options': parsed.options,
+                'debug': parsed.debug,
+                'config': parsed.config
+            },
+            uncensored=parsed.uncensored,
+            logger=LoggerFactory.create(parsed.debug, parsed.logs_path, parsed.logs_file),
+            notifier=notifier
+        )
+
+        app.run_controller(parsed.options[0], parsed.options[1], parsed.debug, parsed.options)
+
+    except Exception as e:
+        if parsed.debug:
+            raise e
+
+        if error_handler:
+            error_handler.record_exception(e)
+
+        if notifier:
+            notifier.exception_occurred(e)
+
+        print(e)
+        sys.exit(1)
+
+
+if __name__ == "__main__":
+    main()

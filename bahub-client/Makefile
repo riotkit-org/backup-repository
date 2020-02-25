@@ -3,6 +3,7 @@
 PIP=sudo pip3
 SUDO=sudo -E
 PY_BIN=python3
+SHELL=/bin/bash
 PIP_ARGS=
 
 help: ## Help
@@ -14,39 +15,53 @@ build_package: install_requirements ## Build the package
 
 install_requirements: ## Install requirements
 	echo " >> Installing requirements"
-	${SUDO} ${PIP} install ${PIP_ARGS} -r ./requirements.txt
+	${SUDO} ${PIP} install --no-cache-dir ${PIP_ARGS} -r ./requirements.txt
 
 install: build_package ## Install
 	${SUDO} ${PY_BIN} ./setup.py install
 	which bahub
-	make clean
+	make -s clean
 
-build_container: ## Build a docker container (parameters: TAG)
-	${SUDO} docker build .. -f ./.infrastructure/Dockerfile_bahub.x86_64 -t quay.io/riotkit/bahub:${TAG}
+build_image: ## Build a docker container (parameters: TAG)
+	${SUDO} ${PIP} install ${PIP_ARGS} shyaml
+	${SUDO} docker build .. -f ./.infrastructure/Dockerfile_bahub.x86_64 \
+		--build-arg BUILD_DATE=$$(date --iso-8601=seconds) \
+		--build-arg VERSION=$$(make -s get_version) \
+		--build-arg VCS_REF=$$(git rev-parse --verify HEAD) \
+		-t quay.io/riotkit/bahub:${TAG}
 	${SUDO} docker tag quay.io/riotkit/bahub:${TAG} quay.io/riotkit/bahub:latest-build
 
-push_container: ## Push docker container
+push_image: ## Push docker container
 	${SUDO} docker push quay.io/riotkit/bahub:${TAG}
 	${SUDO} docker push quay.io/riotkit/bahub:latest-build
 
 clean: ## Clean up the local build directory
-	${SUDO} rm -rf ./build ./bahub.egg-info
+	set -x; ${SUDO} rm -rf ./build ./src/bahub.egg-info ./.eggs
 
-run_test_containers: ## Run testing containers and fork to the background (params: SERVER_DOCKER_TAG, TAG)
-	cd tests && SERVER_DOCKER_TAG=${SERVER_DOCKER_TAG} TAG=${TAG} ${SUDO} docker-compose up -d
-	${SUDO} docker ps
+run_test_containers: ## Run testing containers and fork to the background
+	cd ../env && make -s up VARIANT="test postgres bahub-test"
 
 bahub_shell: ## Go into Bahub container
-	cd tests && SERVER_DOCKER_TAG=${SERVER_DOCKER_TAG} TAG=${TAG} ${SUDO} docker-compose exec bahub bash
+	cd ../env && make -s sh@bahub
 
 kill_test_containers: ## Stop and remove all containers
-	cd tests && ${SUDO} docker-compose down
+	cd ../env && make -s down
 
-test: ## Run tests (params: SERVER_DOCKER_TAG, TAG)
-	SERVER_TAG=${SERVER_DOCKER_TAG} TAG=${TAG} ./tests/run.sh
+test: unit_test functional_test ## Run all tests
+
+functional_test: ## Run functional tests (params: SERVER_DOCKER_TAG, TAG)
+	export $$(grep -v '^#' ../env/.env | xargs); \
+	cd src && ${PY_BIN} -m unittest discover -s ../tests/functional
 
 unit_test: ## Run unit tests
-	${PY_BIN} -m unittest discover -s ./tests/unit
+	export $$(grep -v '^#' ../env/.env | xargs); \
+	cd src && ${PY_BIN} -m unittest discover -s ../tests/unit
 
 coverage: ## Generate code coverage
-	coverage run --source . -m unittest discover -s ./tests/unit
+	cd src && coverage run --source . -m unittest discover -s ../tests/unit
+
+run_dev: ## Run a development package
+	cd src && ${PY_BIN} -m riotkit.filerepository.bahub ${ARGS}
+
+get_version:
+	cat ../server/config/version.yaml  | shyaml get-value version

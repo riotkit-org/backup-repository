@@ -1,7 +1,7 @@
 #
 ## Build stage container: Build frontend
 #
-FROM quay.io/riotkit/php-app:7.3-x86_64 as builder
+FROM quay.io/riotkit/php-app:7.4-x86_64 as builder
 
 ADD server/Makefile /var/www/html/
 ADD server/package.json /var/www/html/
@@ -9,8 +9,8 @@ ADD server/package-lock.json /var/www/html/
 
 RUN rm -rf /var/lib/apt/lists/* \
     && apt-get update \
-    && curl -sL https://deb.nodesource.com/setup_8.x | bash - \
-    && apt-get install -y nodejs npm make gcc g++ \
+    && curl -sL https://deb.nodesource.com/setup_12.x | bash - \
+    && apt-get install -y nodejs make gcc g++ \
     && chown -R www-data:www-data /var/www \
     && cd /var/www/html \
     && su www-data -s /bin/bash -c "make install_frontend" \
@@ -23,7 +23,7 @@ RUN rm -rf /var/lib/apt/lists/* \
 #
 ## Destination container: Backend + built container from previous stage
 #
-FROM quay.io/riotkit/php-app:7.3-x86_64
+FROM quay.io/riotkit/php-app:7.4-x86_64
 
 RUN rm -rf /var/lib/apt/lists/* \
     && apt-get update \
@@ -56,10 +56,10 @@ ENV DATABASE_URL=sqlite:///%kernel.project_dir%/var/data.db \
     FS_FTP_PERMPRIVATE= \
     FS_FTP_PERMPUBLIC= \
     FS_FTP_PASSIVE=0 \
-    WAIT_FOR_HOST= \
     TOKEN_EXPIRATION_TIME="+30 minutes" \
     TEMP_DIRECTORY=/tmp \
     ENC_TOKEN_PHRASE=test123 \
+    ENC_SALT=PPvZuAyC1OwuquzjCbknRw1tMLC \
     APP_DOMAIN= \
     API_TESTS=false \
     HTTP_TIMEOUT=30 \
@@ -76,12 +76,14 @@ ENV DATABASE_URL=sqlite:///%kernel.project_dir%/var/data.db \
     PHP_UPLOAD_MAX_FILESIZE=15G \
     PHP_POST_MAX_SIZE=15G \
     # Executes on each container run, after install/upgrade of the application
+    POST_INSTALL_CMD="" \
+    TZ="UTC" \
     POST_INSTALL_CMD=""
 
 COPY server /var/www/html
 COPY --from=builder /var/www/html/public /var/www/html/
-ADD server/.infrastructure/entrypoint/entrypoint.d/*.sh /entrypoint.d/
-ADD server/.infrastructure/healthcheck.sh /
+ADD server/.infrastructure/container-files/entrypoint/entrypoint.d/*.sh /entrypoint.d/
+ADD server/.infrastructure/container-files/healthcheck.sh /
 
 RUN cd /var/www/html \
     && rm -rf var/cache/* \
@@ -91,12 +93,15 @@ RUN cd /var/www/html \
     && cp .env.dist .env \
     \
     # NGINX configuration
-    && cp /var/www/html/.infrastructure/nginx/nginx.conf /etc/nginx/nginx.conf \
+    && cp /var/www/html/.infrastructure/container-files/nginx/nginx.conf /etc/nginx/nginx.conf \
     \
     # Application permissions and general scripts setup
     && chown www-data:www-data /var/www -R \
     && su www-data -s /bin/bash -c "composer install --no-dev" \
-    && chown www-data:www-data /var/www -R
+    && chown www-data:www-data /var/www -R \
+    && chmod +x /healthcheck.sh \
+    && apt-get update \
+    && apt-get install -y mariadb-client
 
 WORKDIR "/var/www/html"
 

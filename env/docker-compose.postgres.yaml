@@ -1,0 +1,37 @@
+version: "3.5"
+
+#
+# This file extends docker-compose.yaml by adding additional services and environment variables to existing services
+#
+
+volumes:
+    postgresql_run:
+
+services:
+    filerepository:
+        volumes:
+            - postgresql_run:/var/run/postgresql
+        environment:
+            DATABASE_CHARSET: "UTF8"
+            DATABASE_COLLATE: "pl_PL.UTF8"
+            DATABASE_DRIVER: "pdo_pgsql"
+            DATABASE_VERSION: "11"
+            DATABASE_URL: ""
+
+            DATABASE_HOST: "/var/run/postgresql"
+            DATABASE_NAME: "${POSTGRES_DB}"
+            DATABASE_PASSWORD: "${POSTGRES_PASSWORD}"
+            DATABASE_USER: "${POSTGRES_USER}"
+            DATABASE_PORT: "5432"
+
+    postgresql:
+        image: postgres:12.1-alpine
+        volumes:
+            - postgresql_run:/var/run/postgresql
+            - ./postgres/docker-entrypoint-initdb.d/extensions.sh:/docker-entrypoint-initdb.d/extensions.sh:ro
+        environment:
+            POSTGRES_USER: "${POSTGRES_USER}"
+            POSTGRES_DB: "${POSTGRES_DB}"
+            POSTGRES_PASSWORD: "${POSTGRES_PASSWORD}"
+        ports:
+            - "127.0.0.1:5432:5432"

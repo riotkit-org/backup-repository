@@ -10,7 +10,7 @@ class UserUploadProvider
     /**
      * @var array
      */
-    private $requestHeaders;
+    private array $requestHeaders;
 
     public function __construct()
     {

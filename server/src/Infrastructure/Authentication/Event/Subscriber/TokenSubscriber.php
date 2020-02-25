@@ -10,27 +10,16 @@ use App\Infrastructure\Authentication\Token\TokenTransport;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpKernel\Event\GetResponseEvent;
+use Symfony\Component\HttpKernel\Event\RequestEvent;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class TokenSubscriber implements EventSubscriberInterface
 {
     public const EVENT_PRIORITY = 0;
 
-    /**
-     * @var IncomingTokenFactory
-     */
-    private $factory;
-
-    /**
-     * @var TokenStorageInterface
-     */
-    private $tokenStorage;
-
-    /**
-     * @var bool
-     */
-    private $isDev;
+    private IncomingTokenFactory $factory;
+    private TokenStorageInterface $tokenStorage;
+    private bool $isDev;
 
     public function __construct(IncomingTokenFactory $factory, TokenStorageInterface $tokenStorage, bool $isDev)
     {
@@ -49,11 +38,11 @@ class TokenSubscriber implements EventSubscriberInterface
     }
 
     /**
-     * @param GetResponseEvent $event
+     * @param RequestEvent $event
      *
      * @throws \Exception
      */
-    public function handleIncomingToken(GetResponseEvent $event): void
+    public function handleIncomingToken(RequestEvent $event): void
     {
         $request = $event->getRequest();
 
@@ -63,43 +52,49 @@ class TokenSubscriber implements EventSubscriberInterface
         }
 
         $tokenString = $this->getTokenStringFromRequest($event->getRequest());
+        $token       = null;
 
         // Development token
-        if ($this->isDev && ($tokenString === Roles::TEST_TOKEN || $this->isProfilerRoute($event->getRequest()))) {
+        if ($this->isDev && (Roles::isTestToken($tokenString) || $this->isProfilerRoute($event->getRequest()))) {
             $this->handleTestToken();
             return;
         }
 
+        if ($tokenString) {
+            try {
+                /**
+                 * @var Token $token
+                 */
+                $token = $this->factory->createFromString($tokenString);
+
+            } catch (AuthenticationException $exception) {
+                $event->setResponse(
+                    new JsonResponse(
+                        [
+                            'status' => 'Invalid authorization. Details: ' . $exception->getMessage(),
+                            'error_code' => 403,
+                            'http_code' => 403
+                        ],
+                        JsonResponse::HTTP_FORBIDDEN
+                    )
+                );
+
+                return;
+            }
+        }
+
         // Guest at public endpoints
-        if ($this->isPublicEndpoint($event->getRequest())) {
+        if (!$tokenString && $this->isPublicEndpoint($event->getRequest())) {
             $this->tokenStorage->setToken(
                 new TokenTransport('anonymous', new Token())
             );
             return;
         }
 
-        try {
-            $token = $this->factory->createFromEncodedString($tokenString);
-
-        } catch (AuthenticationException $exception) {
-            $event->setResponse(
-                new JsonResponse(
-                    [
-                        'status'     => 'Invalid authorization. Details: ' . $exception->getMessage(),
-                        'error_code' => 403,
-                        'http_code'  => 403
-                    ],
-                    JsonResponse::HTTP_FORBIDDEN
-                )
-            );
-
-            return;
-        }
-
         $userAgent = $request->headers->get('User-Agent');
-        $ip = $request->getClientIp();
+        $ip        = $request->getClientIp();
 
-        if ($token instanceof Token && !$token->isValid($userAgent, $ip)) {
+        if (($token instanceof Token && !$token->isValid($userAgent, $ip)) || !$token instanceof Token) {
             $this->tokenStorage->setToken(
                 new TokenTransport('anonymous', new Token())
             );
@@ -152,6 +147,11 @@ class TokenSubscriber implements EventSubscriberInterface
 
         if ($request->headers->get('x-auth-token')) {
             return (string) $request->headers->get('x-auth-token');
+        }
+
+        // allows to set a default viewer token on infrastructure level (eg. in fastcgi/proxy_pass)
+        if ($request->server->get('FILE_REPOSITORY_TOKEN')) {
+            return (string) $request->headers->get('FILE_REPOSITORY_TOKE');
         }
 
         return '';

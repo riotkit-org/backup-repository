@@ -2,8 +2,17 @@
 
 namespace App\Infrastructure\Common\Test\Database;
 
+use Doctrine\DBAL\Connection;
+
 class SQLiteRestoreDB implements RestoreDBInterface
 {
+    private Connection $connection;
+
+    public function __construct(Connection $connection)
+    {
+        $this->connection = $connection;
+    }
+
     public function backup(): bool
     {
         $path = $this->getDbPath();
@@ -17,20 +26,28 @@ class SQLiteRestoreDB implements RestoreDBInterface
     public function restore(): bool
     {
         $path = $this->getDbPath();
+        $backupPath = $this->getBackupDbPath();
 
-        if (\is_file($path . '.bak')) {
-            copy($path . '.bak', $path);
+        if (\is_file($backupPath)) {
+            copy($backupPath, $path);
             return true;
         }
 
         return false;
     }
 
+    public function canRestore(): bool
+    {
+        return is_file($this->getBackupDbPath());
+    }
+
     private function getDbPath(): string
     {
-        $path = $_SERVER['DATABASE_PATH'] ?? '';
-        $path = \str_replace('%kernel.project_dir%', '../', $path);
+        return $this->connection->getParams()['path'] ?? '';
+    }
 
-        return \trim($path, '/');
+    private function getBackupDbPath(): string
+    {
+        return $this->getDbPath() . '.bak';
     }
 }

@@ -2,7 +2,7 @@
 
 namespace App\Infrastructure\Storage\Repository;
 
-use App\Domain\Common\Repository\BaseRepository;
+use App\Infrastructure\Common\Repository\BaseRepository;
 use App\Domain\Storage\Entity\StoredFile;
 use App\Domain\Storage\Parameters\Repository\FindByParameters;
 use App\Domain\Storage\Repository\FileRepository;
@@ -107,11 +107,17 @@ class FileDoctrineRepository extends BaseRepository implements FileRepository
         return $qb->getQuery()->getResult();
     }
 
+    public function findExampleFile(): StoredFile
+    {
+        return StoredFile::newFromFilename(new Filename('example'));
+    }
+
     /**
      * @param FindByParameters $parameters
      * @return int
      *
      * @throws \Doctrine\ORM\NonUniqueResultException
+     * @throws NoResultException
      */
     public function getMultipleByPagesCount(FindByParameters $parameters): int
     {

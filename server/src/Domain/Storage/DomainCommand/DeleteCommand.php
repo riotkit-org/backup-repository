@@ -52,6 +52,11 @@ class DeleteCommand implements CommandHandler
         return (bool) $this->handler->handle($form, $securityContext);
     }
 
+    public function supportsInput($input, string $path): bool
+    {
+        return true;
+    }
+
     /**
      * @return array
      */

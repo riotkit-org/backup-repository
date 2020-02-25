@@ -4,7 +4,7 @@ namespace App\Infrastructure\Backup\Repository;
 
 use App\Domain\Backup\Entity\Authentication\Token;
 use App\Domain\Backup\Repository\TokenRepository;
-use App\Domain\Common\Repository\BaseRepository;
+use App\Infrastructure\Common\Repository\BaseRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
 
 class TokenDoctrineRepository extends BaseRepository implements TokenRepository

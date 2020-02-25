@@ -4,14 +4,11 @@ namespace App\Domain\Common\ValueObject;
 
 class BaseUrl
 {
-    /**
-     * @var string
-     */
-    private $value;
+    private string $value;
 
-    public function __construct(bool $isSSL, string $fullDomainWithTLD)
+    public function __construct(string $fullDomainWithTLD)
     {
-        $this->value = ($isSSL ? 'https' : 'http') . '://' . $fullDomainWithTLD;
+        $this->value = $fullDomainWithTLD;
     }
 
     public function getValue(): string

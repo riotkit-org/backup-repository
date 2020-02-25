@@ -5,12 +5,14 @@ storage.list_files:
     defaults:
         _secured: true
 
+
 storage.upload_by_url:
     path: /repository/{type}/add-by-url
     controller: 'App\Controller\Storage\UploadByUrlController::handle'
     methods: ['POST']
     defaults:
         _secured: true
+
         type: image
 
 storage.upload_by_post:
@@ -19,6 +21,7 @@ storage.upload_by_post:
     methods: ['POST']
     defaults:
         _secured: true
+
         type: image
 
 # REST
@@ -29,9 +32,11 @@ storage.rest_delete:
     defaults:
         _secured: true
 
+
 storage.rest_upload_by_post:
     path: /repository/file/{filename}
     controller: 'App\Controller\Storage\UploadByPostController::handle'
     methods: ['POST']
     defaults:
         _secured: true
+

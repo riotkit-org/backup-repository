@@ -16,7 +16,8 @@ namespace App\Domain;
  */
 final class Roles
 {
-    public const TEST_TOKEN = 'test-token-full-permissions';
+    public const TEST_TOKEN             = 'test-token-full-permissions';
+    public const INTERNAL_CONSOLE_TOKEN = 'internal-console-token';
 
     //
     //
@@ -55,6 +56,9 @@ final class Roles
 
     /** User can check information about ANY token */
     public const ROLE_LOOKUP_TOKENS                = 'security.authentication_lookup';
+
+    /** User can browse/search for tokens */
+    public const ROLE_SEARCH_FOR_TOKENS            = 'security.search_for_tokens';
 
     /** User can overwrite files */
     public const ROLE_ALLOW_OVERWRITE_FILES        = 'security.overwrite';
@@ -97,6 +101,18 @@ final class Roles
 
     /** Define that the user can use the listing endpoint (basic usage) */
     public const ROLE_ACCESS_LISTING_ENDPOINT = 'view.can_use_listing_endpoint_at_all';
+
+    //
+    //
+    // SecureCopy domain
+    //
+    //
+
+    /** Can use SecureCopy at all? */
+    public const ROLE_SECURE_COPY_READ_DATA_STREAM = 'securecopy.stream';
+
+    /** Read SecureCopy secrets: Encryption method, password, initialization vector. With following role can read secrets of any token in the system. */
+    public const ROLE_READ_SECURE_COPY_SECRETS = 'securecopy.all_secrets_read';
 
     //
     //
@@ -160,6 +176,7 @@ final class Roles
         self::ROLE_UPLOAD_BACKUP,
         self::ROLE_UPLOAD,
         self::ROLE_LOOKUP_TOKENS,
+        self::ROLE_SEARCH_FOR_TOKENS,
         self::ROLE_ALLOW_OVERWRITE_FILES,
         self::ROLE_GENERATE_TOKENS,
         self::ROLE_USE_TECHNICAL_ENDPOINTS,
@@ -170,6 +187,7 @@ final class Roles
         self::ROLE_REVOKE_TOKENS,
         self::ROLE_ADMINISTRATOR,
 
+        // collections
         self::ROLE_COLLECTION_ADD,
         self::ROLE_COLLECTION_CUSTOM_ID,
         self::ROLE_COLLECTION_ADD_WITH_INFINITE_LIMITS,
@@ -181,7 +199,11 @@ final class Roles
         self::ROLE_CAN_MANAGE_TOKENS_IN_ALLOWED_COLLECTIONS,
         self::ROLE_CAN_UPLOAD_TO_ALLOWED_COLLECTIONS,
         self::ROLE_LIST_VERSIONS_FOR_ALLOWED_COLLECTIONS,
-        self::ROLE_DELETE_VERSIONS_IN_ALLOWED_COLLECTIONS
+        self::ROLE_DELETE_VERSIONS_IN_ALLOWED_COLLECTIONS,
+
+        // securecopy
+        self::ROLE_SECURE_COPY_READ_DATA_STREAM,
+        self::ROLE_READ_SECURE_COPY_SECRETS
     ];
 
     public const RESTRICTIONS_LIST = [
@@ -204,5 +226,17 @@ final class Roles
     public static function isTestToken(?string $tokenId): bool
     {
         return $tokenId === static::TEST_TOKEN;
+    }
+
+    /**
+     * Internal token is used only in CLI commands
+     * Cannot be used within any remote access (eg. via HTTP)
+     *
+     * @param string|null $tokenId
+     * @return bool
+     */
+    public static function isInternalApplicationToken(?string $tokenId): bool
+    {
+        return $tokenId === static::INTERNAL_CONSOLE_TOKEN;
     }
 }

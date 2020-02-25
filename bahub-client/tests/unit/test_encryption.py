@@ -1,11 +1,6 @@
 import unittest
-import sys
-import os
-import inspect
-
-sys.path.append(os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe()))) + '/../')
-from bahub.bahubapp.entity.encryption import Encryption
-from bahub.bahubapp.exceptions import ConfigurationFactoryException
+from riotbahub.filerepository.bahub.entity.encryption import Encryption
+from riotbahub.filerepository.bahub.exceptions import ConfigurationFactoryException
 
 
 class EncryptionTest(unittest.TestCase):

@@ -1,0 +1,16 @@
+version: "3.5"
+
+#
+# This file extends docker-compose.yaml by adding additional services and environment variables to existing services
+#
+
+services:
+    filerepository:
+        volumes:
+            - "../server:/var/www/html"
+            - "./tests_output:/var/www/html/tests/Functional/_output"
+        environment:
+            APP_ENV: "test"
+            BASE_URL: "http://localhost"
+        ports:
+            - "8000:80"

@@ -7,7 +7,7 @@ class Urls
     public const URL_TOKEN_GENERATE = '/auth/token/generate';
     public const URL_TOKEN_LOOKUP = '/auth/token/{{ token }}';
     public const URL_TOKEN_DELETE = '/auth/token/{{ token }}';
-    public const JOB_CLEAR_EXPIRED_TOKENS = '/jobs/token/expired/clear';
+    public const URL_TOKEN_SEARCH = '/auth/search?page={{ page }}&limit={{ limit }}&q={{ query }}';
     public const ROLES_LISTING = '/auth/roles';
 
     public const URL_REPOSITORY_FILE_UPLOAD = '/repository/file/upload';
@@ -28,4 +28,7 @@ class Urls
 
     public const URL_COLLECTION_GRANT_TOKEN = '/repository/collection/{{ collectionId }}/token';
     public const URL_COLLECTION_REVOKE_TOKEN = '/repository/collection/{{ collectionId }}/token/{{ tokenId }}';
+
+    public const URL_SECURE_COPY = '/secure-copy/{{ type }}/list';
+    public const URL_SECURE_COPY_RETRIEVE_FILE_METADATA = '/secure-copy/file/{{ file }}/submitdata';
 }

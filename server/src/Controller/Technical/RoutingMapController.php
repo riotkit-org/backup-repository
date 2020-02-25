@@ -2,8 +2,8 @@
 
 namespace App\Controller\Technical;
 
+use App\Infrastructure\Common\Http\JsonFormattedResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Route;
 use Symfony\Component\Routing\RouteCollection;
@@ -14,10 +14,7 @@ use Symfony\Component\Routing\RouterInterface;
  */
 class RoutingMapController extends AbstractController
 {
-    /**
-     * @var RouterInterface
-     */
-    private $router;
+    private RouterInterface $router;
 
     public function __construct(RouterInterface $router)
     {
@@ -28,12 +25,12 @@ class RoutingMapController extends AbstractController
     {
         $allRoutes = $this->router->getRouteCollection();
 
-        return new JsonResponse(
+        return new JsonFormattedResponse(
             [
-                'code' => JsonResponse::HTTP_OK,
+                'code' => JsonFormattedResponse::HTTP_OK,
                 'data' => $this->serialize($this->findRepositoryRoutes($allRoutes))
             ],
-            JsonResponse::HTTP_OK
+            JsonFormattedResponse::HTTP_OK
         );
     }
 

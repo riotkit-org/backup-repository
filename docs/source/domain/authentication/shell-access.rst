@@ -74,8 +74,7 @@ Example of generating a token with specified roles:
 
 .. code:: bash
 
-    ✗ ./bin/console auth:create-token --roles upload.images,upload.enforce_no_password --expires="+30 minutes" --id="A757A8CB-964F-4F7B-BB70-9DB2CF524BB9"
-    ========================
+    ✗ ./bin/console auth:create-token --roles upload.images,upload.enforce_no_password --expires="+30 minutes" --id="A757A8CB-964F-4F7B-BB70-9DB2CF524BBA"
     Form:
      [Role] -> upload.images
      [Role] -> upload.enforce_no_password
@@ -83,8 +82,35 @@ Example of generating a token with specified roles:
     Response:
     ========================
     {
-        "tokenId": "A757A8CB-964F-4F7B-BB70-9DB2CF524BB9",
-        "expires": "2019-02-11 08:01:00"
+        "status": true,
+        "error_code": null,
+        "http_code": 201,
+        "errors": [],
+        "context": [],
+        "message": "Token created",
+        "token": {
+            "id": "A757A8CB-964F-4F7B-BB70-9DB2CF524BBA",
+            "active": true,
+            "expired": false,
+            "expires": {
+                "date": "2020-02-22 11:19:57.604976",
+                "timezone_type": 3,
+                "timezone": "UTC"
+            },
+            "data": {
+                "tags": [],
+                "allowedMimeTypes": [],
+                "maxAllowedFileSize": 0,
+                "allowedIpAddresses": [],
+                "allowedUserAgents": [],
+                "secureCopyEncryptionKey": "",
+                "secureCopyEncryptionMethod": ""
+            },
+            "roles": [
+                "upload.images",
+                "upload.enforce_no_password"
+            ]
+        }
     }
 
 *Note: When you not specify the --id, then the id will be generated automatically*
@@ -94,7 +120,8 @@ Example of generating a token with specified roles:
 Deleting expired tokens
 -----------------------
 
-This should be a scheduled periodic job in a cronjob, that would delete tokens that already are expired.
+Delete expired tokens to clean up the database out of bloat.
+This should be a scheduled periodic job in a cronjob.
 
 .. code:: bash
 

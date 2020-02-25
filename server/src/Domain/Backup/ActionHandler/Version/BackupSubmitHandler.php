@@ -12,19 +12,11 @@ use App\Domain\Backup\Manager\BackupManager;
 use App\Domain\Backup\Security\VersioningContext;
 use App\Domain\Backup\Service\FileUploader;
 use App\Domain\Backup\Response\Version\BackupSubmitResponse;
-use App\Domain\Common\ValueObject\BaseUrl;
 
 class BackupSubmitHandler
 {
-    /**
-     * @var BackupManager
-     */
-    private $backupManager;
-
-    /**
-     * @var \App\Domain\Backup\Service\FileUploader
-     */
-    private $fileUploader;
+    private BackupManager $backupManager;
+    private FileUploader $fileUploader;
 
     public function __construct(FileUploader $fileUploader, BackupManager $collectionManager)
     {
@@ -35,19 +27,14 @@ class BackupSubmitHandler
     /**
      * @param BackupSubmitForm $form
      * @param VersioningContext $securityContext
-     * @param BaseUrl $baseUrl
      * @param Token $token
      *
      * @return BackupSubmitResponse
      *
      * @throws AuthenticationException
      */
-    public function handle(
-        BackupSubmitForm $form,
-        VersioningContext $securityContext,
-        BaseUrl $baseUrl,
-        Token $token
-    ): BackupSubmitResponse {
+    public function handle(BackupSubmitForm $form, VersioningContext $securityContext, Token $token): BackupSubmitResponse
+    {
 
         $this->assertHasPermissions($securityContext, $form->collection);
         $result = null;
@@ -60,7 +47,7 @@ class BackupSubmitHandler
         //
 
         try {
-            $result = $this->fileUploader->upload($form->collection, $baseUrl, $token);
+            $result = $this->fileUploader->upload($form->collection, $token);
 
             if ($result->isSuccess()) {
                 $backup = $this->backupManager->submitNewVersion($form->collection, $result->getFileId());

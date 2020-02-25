@@ -14,7 +14,6 @@ use App\Domain\Storage\Manager\StorageManager;
 use App\Domain\Storage\Security\ReadSecurityContext;
 use App\Domain\Storage\Service\AlternativeFilenameResolver;
 use App\Domain\Storage\ValueObject\Stream;
-use Mockery\MockInterface;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 

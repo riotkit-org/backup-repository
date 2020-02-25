@@ -19,18 +19,28 @@ class AuthenticationCest
             'data' => [
                 'tags' => ['gallery']
             ]
-        ]);
-        $I->canSeeResponseCodeIs(202);
-        $I->storeIdAs('.tokenId', 'BASIC_TOKEN');
+        ], false);
+        $I->canSeeResponseCodeIs(201);
+        $I->storeIdAs('.token.id', 'BASIC_TOKEN');
     }
 
-    public function verifyTokenWasGeneratedByDoingLookup(FunctionalTester $I): void
+    public function verifyTokenWasGeneratedTodoSoUseLookupEndpoint(FunctionalTester $I): void
     {
         $I->amAdmin();
         $I->lookupToken($I->getPreviouslyStoredIdOf('BASIC_TOKEN'));
         $I->canSeeResponseContainsJson([
-            'tokenId' => $I->getPreviouslyStoredIdOf('BASIC_TOKEN')
+            'token' => [
+                'id' => $I->getPreviouslyStoredIdOf('BASIC_TOKEN')
+            ]
         ]);
+    }
+
+    public function verifyTokenCanBeFoundInSearchByOneOfItsRoles(FunctionalTester $I): void
+    {
+        $I->amAdmin();
+        $I->searchForTokens('upload.enforce_tags_selected_in_token', 1, 50);
+        $I->canSeeResponseContains($I->getPreviouslyStoredIdOf('BASIC_TOKEN'));
+        $I->canSeeResponseCodeIs(200);
     }
 
     public function generateTokenWithLimitToSelectedTagsAndMimes(FunctionalTester $I): void
@@ -45,9 +55,9 @@ class AuthenticationCest
                 'allowedMimeTypes'   => ['image/jpeg', 'image/png', 'image/gif'],
                 'maxAllowedFileSize' => 14579
             ]
-        ]);
-        $I->canSeeResponseCodeIs(202);
-        $I->storeIdAs('.tokenId', 'LIMITED_TOKEN');
+        ], false);
+        $I->canSeeResponseCodeIs(201);
+        $I->storeIdAs('.token.id', 'LIMITED_TOKEN');
     }
 
     public function verifyTheLimitedToken(FunctionalTester $I): void
@@ -55,19 +65,17 @@ class AuthenticationCest
         $I->amAdmin();
         $I->lookupToken($I->getPreviouslyStoredIdOf('LIMITED_TOKEN'));
         $I->canSeeResponseContainsJson([
-            'tokenId'       => $I->getPreviouslyStoredIdOf('LIMITED_TOKEN'),
-            'roles'         => ['upload.images'],
-            'tags'          => ['user_uploads.u123', 'user_uploads'],
-            'mimes'         => ['image/jpeg', 'image/png', 'image/gif'],
-            'max_file_size' => 14579
+            'token' => [
+                'id' => $I->getPreviouslyStoredIdOf('LIMITED_TOKEN'),
+                'active' => true,
+                'roles'  => ['upload.images'],
+                'data'   => [
+                    'tags'               => ['user_uploads.u123', 'user_uploads'],
+                    'allowedMimeTypes'   => ['image/jpeg', 'image/png', 'image/gif'],
+                    'maxAllowedFileSize' => 14579
+                ]
+            ]
         ]);
-    }
-
-    public function testJobClearExpiredTokensRuns(FunctionalTester $I): void
-    {
-        $I->amAdmin();
-        $I->sendGET(Urls::JOB_CLEAR_EXPIRED_TOKENS);
-        $I->canSeeResponseCodeIs(200);
     }
 
     public function testValidationContainsInvalidRoleName(FunctionalTester $I): void
@@ -80,7 +88,7 @@ class AuthenticationCest
                 'allowedMimeTypes'   => ['image/jpeg', 'image/png', 'image/gif'],
                 'maxAllowedFileSize' => 100
             ]
-        ]);
+        ], false);
         $I->canSeeResponseCodeIs(400);
         $I->canSeeResponseContains('Please select valid roles');
     }
@@ -95,7 +103,7 @@ class AuthenticationCest
                 'allowedMimeTypes'   => ['image/jpeg', 'image/png', 'image/gif'],
                 'maxAllowedFileSize' => 100
             ]
-        ]);
+        ], false);
         $I->canSeeResponseCodeIs(403);
         $I->canSeeResponseContains('Current token does not allow to generate tokens');
     }
@@ -104,13 +112,6 @@ class AuthenticationCest
     {
         $I->amToken($I->getPreviouslyStoredIdOf('LIMITED_TOKEN'));
         $I->lookupToken($I->getPreviouslyStoredIdOf('BASIC_TOKEN'));
-        $I->canSeeResponseCodeIs(403);
-    }
-
-    public function testCannotRunCleanUpJobWhenHasNoPermissions(FunctionalTester $I): void
-    {
-        $I->amToken($I->getPreviouslyStoredIdOf('LIMITED_TOKEN'));
-        $I->sendGET(Urls::JOB_CLEAR_EXPIRED_TOKENS);
         $I->canSeeResponseCodeIs(403);
     }
 
@@ -164,8 +165,8 @@ class AuthenticationCest
             ],
             'data' => [],
             'id'   => '1c2c84f2-d488-4ea0-9c88-d25aab139ac4'
-        ]);
-        $I->canSeeResponseCodeIs(202);
+        ], false);
+        $I->canSeeResponseCodeIs(201);
     }
 
     /**
@@ -184,7 +185,7 @@ class AuthenticationCest
             ],
             'data' => [],
             'id'   => '1c2c84f2-d488-4ea0-9c88-d25aab139ac4'
-        ]);
+        ], false);
 
         $I->createToken([
             'roles' => [
@@ -192,7 +193,7 @@ class AuthenticationCest
             ],
             'data' => [],
             'id'   => '1c2c84f2-d488-4ea0-9c88-d25aab139ac4'
-        ]);
+        ], false);
 
         $I->canSeeResponseContains('id_already_exists_please_select_other_one');
         $I->canSeeResponseCodeIs(400);
@@ -214,7 +215,7 @@ class AuthenticationCest
             ],
             'data' => [],
             'id'   => 'international-workers-association'
-        ]);
+        ], false);
 
         $I->canSeeResponseContains('id_expects_to_be_uuidv4_format');
         $I->canSeeResponseCodeIs(400);
@@ -236,7 +237,7 @@ class AuthenticationCest
             ],
             'data' => []
         ]);
-        $I->storeIdAs('.tokenId', 'LIMITED_TOKEN_NO_PREDICTABLE_IDS');
+        $I->storeIdAs('.token.id', 'LIMITED_TOKEN_NO_PREDICTABLE_IDS');
 
         // then use such token to test "access denied"
         $I->amToken($I->getPreviouslyStoredIdOf('LIMITED_TOKEN_NO_PREDICTABLE_IDS'));
@@ -246,7 +247,7 @@ class AuthenticationCest
             ],
             'data' => [],
             'id'   => 'international-workers-association'
-        ]);
+        ], false);
         $I->canSeeResponseCodeIs(403);
 
         // then check that has permissions to create tokens at all, but without specifying "id"
@@ -257,7 +258,20 @@ class AuthenticationCest
             ],
             'data' => []
             // case: no "id" there
+        ], false);
+        $I->canSeeResponseCodeIs(201);
+    }
+
+    public function listAllAvailableRoles(FunctionalTester $I): void
+    {
+        $I->amAdmin();
+        $I->sendGET('/auth/roles');
+
+        $I->canSeeResponseContainsJson([
+            'data' => [
+                'upload.images' => 'Allows to upload images',
+                'upload.videos' => 'Allows to upload video files'
+            ]
         ]);
-        $I->canSeeResponseCodeIs(202);
     }
 }

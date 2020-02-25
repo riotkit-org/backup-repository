@@ -1,17 +1,21 @@
 nelmio_api_doc:
+    models: { use_jms: false }
     documentation:
         info:
             title: File Repository
             description: Scalable Storage API, maintained by anarchist organization
-            version: 1.0.0
+            version: '%APP_VERSION%'
 
         securityDefinitions:
             Token:
                 type: apiKey
-                description: 'Value: {token}. ex. "test-token-full-permissions" for APP_ENV=dev and APP_ENV=test'
-                name: Token
+                description: 'Value: {token}. example: "test-token-full-permissions" when application is set to APP_ENV=dev or APP_ENV=test'
+                name: token
                 in: header
+
+        security:
+            - Token: []
 
     areas:
         path_patterns:
-            - ^/(?!\{_locale\})
+            - ^/(?!\{_locale\}|_profiler|_error|_wdt)

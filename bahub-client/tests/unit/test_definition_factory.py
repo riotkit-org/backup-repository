@@ -1,26 +1,26 @@
 import unittest
-import sys
 import os
 import inspect
 
-sys.path.append(os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe()))) + '/../')
-from bahub.bahubapp.entity.definition.local import CommandOutputDefinition
-from bahub.bahubapp.entity.recovery import RecoveryPlan
-from bahub.bahubapp.exceptions import ConfigurationFactoryException
-import bahub.bahubapp.service.configurationfactory
+from riotbahub.filerepository.bahub.entity.definition.local import CommandOutputDefinition
+from riotbahub.filerepository.bahub.entity.recovery import RecoveryPlan
+from riotbahub.filerepository.bahub.exceptions import ConfigurationFactoryException
+import riotbahub.filerepository.bahub.service.configurationfactory
 
 
 class DefinitionFactoryTest(unittest.TestCase):
     """ Definition factory tests depends on the without_crypto.conf.yaml file """
 
-    def get_app_path(self):
-        return os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe()))) + '/../../'
+    @staticmethod
+    def get_current_path():
+        return os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 
     def test_constructs_everything(self):
-        bahub.bahubapp.service.configurationfactory.os.environ['COLLECTION_ID'] = 'i-w-a_a-i-t'
-        bahub.bahubapp.service.configurationfactory.os.environ['ADMIN_TOKEN'] = 'test-token'
-        factory = bahub.bahubapp.service.configurationfactory.ConfigurationFactory(
-            self.get_app_path() + '/tests/conf/without_crypto.conf.yaml', debug=True)
+        riotbahub.filerepository.bahub.service.configurationfactory.os.environ['COLLECTIONS_WWW_FILES_ID'] = 'i-w-a_a-i-t'
+        riotbahub.filerepository.bahub.service.configurationfactory.os.environ['SECURITY_ADMIN_TOKEN'] = 'test-token'
+
+        factory = riotbahub.filerepository.bahub.service.configurationfactory.ConfigurationFactory(
+            self.get_current_path() + '/../bahub-test.conf.yaml', debug=True)
 
         self.assertEqual(CommandOutputDefinition, type(factory.get_definition('local_command_output')),
                          'Expected that local_command_output will be of CommandOutputDefinition type, ' +
@@ -32,14 +32,14 @@ class DefinitionFactoryTest(unittest.TestCase):
                          )
 
     def test_missing_env_variables(self):
-        """ COLLECTION_ID and ADMIN_TOKEN should be required by without_crypto.conf.yaml """
+        """ COLLECTION_ID and ADMIN_TOKEN should be required by bahub-test.conf.yaml """
 
-        del bahub.bahubapp.service.configurationfactory.os.environ['COLLECTION_ID']
-        del bahub.bahubapp.service.configurationfactory.os.environ['ADMIN_TOKEN']
+        del riotbahub.filerepository.bahub.service.configurationfactory.os.environ['SECURITY_ADMIN_TOKEN']
+        del riotbahub.filerepository.bahub.service.configurationfactory.os.environ['COLLECTIONS_WWW_FILES_ID']
 
         try:
-            bahub.bahubapp.service.configurationfactory.ConfigurationFactory(
-                self.get_app_path() + '/tests/conf/without_crypto.conf.yaml', debug=True)
+            riotbahub.filerepository.bahub.service.configurationfactory.ConfigurationFactory(
+                self.get_current_path() + '/../bahub-test.conf.yaml', debug=True)
 
         except ConfigurationFactoryException:
             return False

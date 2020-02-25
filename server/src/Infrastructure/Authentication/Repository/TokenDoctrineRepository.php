@@ -5,15 +5,15 @@ namespace App\Infrastructure\Authentication\Repository;
 use App\Domain\Authentication\Entity\Token;
 use App\Domain\Authentication\Exception\TokenAlreadyExistsException;
 use App\Domain\Authentication\Repository\TokenRepository;
-use App\Domain\Common\Repository\BaseRepository;
-use App\Domain\Roles;
+use App\Infrastructure\Common\Repository\TokenDoctrineRepository as CommonTokenRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
+use Doctrine\ORM\Tools\Pagination\Paginator;
 
 /**
  * @codeCoverageIgnore
  */
-class TokenDoctrineRepository extends BaseRepository implements TokenRepository
+class TokenDoctrineRepository extends CommonTokenRepository implements TokenRepository
 {
     public function __construct(ManagerRegistry $registry, bool $readOnly)
     {
@@ -34,19 +34,6 @@ class TokenDoctrineRepository extends BaseRepository implements TokenRepository
         }
     }
 
-    public function findTokenById(string $id): ?Token
-    {
-        if (Roles::isTestToken($id)) {
-            $token = new Token();
-            $token->setId(Roles::TEST_TOKEN);
-            $token->setRoles([Roles::ROLE_ADMINISTRATOR]);
-
-            return $token;
-        }
-
-        return $this->find($id);
-    }
-
     public function remove(Token $token): void
     {
         $this->_em->remove($token);
@@ -65,5 +52,41 @@ class TokenDoctrineRepository extends BaseRepository implements TokenRepository
             ->setParameter('now', (new \DateTime())->format('Y-m-d H:i:s'));
 
         return $qb->getQuery()->getResult();
+    }
+
+    public function findTokensBy(string $pattern, int $page = 1, int $count = 50): array
+    {
+        $qb = $this->createQueryFindTokensBy($pattern);
+
+        return $this->paginate($qb, $page, $count)->getQuery()->getResult();
+    }
+
+    public function findMaxPagesTokensBy(string $pattern, int $limit = 50): int
+    {
+        $qb = $this->createQueryFindTokensBy($pattern);
+        $qb->select('COUNT(token)');
+
+        return (int) ceil($qb->getQuery()->getSingleScalarResult() / $limit);
+    }
+
+    private function createQueryFindTokensBy(string $pattern)
+    {
+        $qb = $this->createQueryBuilder('token');
+        $qb->where('token.id LIKE :pattern OR CAST(token.roles as STRING) LIKE :pattern');
+        $qb->setParameters(['pattern' => '%' . $pattern . '%']);
+
+        return $qb;
+    }
+
+    private function paginate($dql, $page = 1, $limit = 3): Paginator
+    {
+        $paginator = new Paginator($dql);
+        $paginator->setUseOutputWalkers(false);
+
+        $paginator->getQuery()
+            ->setFirstResult($limit * ($page - 1)) // Offset
+            ->setMaxResults($limit); // Limit
+
+        return $paginator;
     }
 }
