@@ -35,12 +35,18 @@ class MariaDBRestoreDB implements RestoreDBInterface
             return false;
         }
 
+        $params = $this->connection->getParams();
+        $user   = $params['user'] ?? '';
+        $password = $params['password'] ?? '';
         $database = $this->connection->getDatabase();
+        $host     = $params['host'] ?? '';
 
         $this->connection->exec('DROP DATABASE ' . $database);
         $this->connection->exec('CREATE DATABASE ' . $database);
 
-        return $this->connection->exec(file_get_contents($this->getDumpPath())) > 0;
+        shell_exec('mysql -u ' . $user . ' -h ' . $host . ' -p' . $password . ' ' . $database . ' < ' . $this->getDumpPath());
+
+        return true;
     }
 
     public function canRestore(): bool

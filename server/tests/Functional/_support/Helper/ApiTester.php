@@ -28,6 +28,11 @@ class ApiTester extends Module\REST
         }
     }
 
+    public function _beforeSuite($settings = [])
+    {
+        parent::_beforeSuite($settings);
+        $this->backupDatabase();
+    }
 
     public function _afterSuite()
     {
