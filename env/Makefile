@@ -92,7 +92,7 @@ server@test_api@ci: wait_for_app read_server_logs ## Run API tests in a docker c
 	make -s server@test_api CODECEPT_ARGS="${CODECEPT_ARGS}"
 
 server@test_api: ## Run API tests in a docker container (params: CODECEPT_ARGS)
-	${SUDO} ${COMPOSE_ARGS} $$(make -s _build_variant_list VARIANT="${VARIANT}") exec --user www-data filerepository /bin/bash -c 'SYMFONY_DEPRECATIONS_HELPER=max[direct]=0 ./vendor/bin/codecept -v -c codeception.local-docker.yml run --html ${CODECEPT_ARGS}'
+	${SUDO} ${COMPOSE_ARGS} $$(make -s _build_variant_list VARIANT="${VARIANT}") exec --user www-data filerepository /bin/bash -c 'SYMFONY_DEPRECATIONS_HELPER=max[direct]=0 ./vendor/bin/codecept -v -c codeception.local-docker.yml run ${CODECEPT_ARGS} --html'
 
 server@test_unit: ## Run unit tests in a docker container (params PHPUNIT_ARGS)
 	${SUDO} ${COMPOSE_ARGS} $$(make -s _build_variant_list VARIANT="${VARIANT}") exec --user www-data filerepository /bin/bash -c 'SYMFONY_DEPRECATIONS_HELPER=max[direct]=0 ./bin/phpunit ${PHPUNIT_ARGS}'
