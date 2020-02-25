@@ -3,29 +3,56 @@
 namespace Helper;
 
 use Codeception\Module;
+use Codeception\TestInterface;
+use GuzzleHttp\Client;
 
 class ApiTester extends Module\REST
 {
     use StoreTrait;
     use TemplatingTrait;
 
-    public function _beforeSuite($settings = []): void
-    {
-        $this->restoreDatabase();
-        $this->backupDatabase();
+    private static string $lastFileName = '';
 
-        $this->clearTheStore();
+    public function _before(TestInterface $test)
+    {
+        $current = $test->getMetadata()->getFilename();
+        $last    = self::$lastFileName;
+
+        parent::_before($test);
+
+        if ($current !== $last) {
+            self::$lastFileName = $current;
+            $this->restoreDatabase();
+            $this->backupDatabase();
+            $this->clearTheStore();
+        }
+    }
+
+
+    public function _afterSuite()
+    {
+        parent::_afterSuite();
+        $this->restoreDatabase();
     }
 
     private function backupDatabase(): void
     {
-        $this->sendGET('/db/backup');
-        $this->assertContains('OK, ', $this->grabResponse(), 'Cannot backup database');
+        $this->sendGETUsingGuzzle('/db/backup');
     }
 
     private function restoreDatabase(): void
     {
-        $this->sendGET('/db/restore');
-        $this->assertContains('OK, ', $this->grabResponse(), 'Cannot restore database');
+        $this->sendGETUsingGuzzle('/db/restore');
+    }
+
+    /**
+     * Does not use internal HTTP client, as the internal one needs to be initialized first
+     *
+     * @param string $path
+     */
+    private function sendGETUsingGuzzle(string $path)
+    {
+        $client = new Client();
+        $client->get('http://localhost' . $path, ['headers' => ['Token' => 'test-token-full-permissions']]);
     }
 }
