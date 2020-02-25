@@ -31,7 +31,7 @@ build_image: ## Build a docker image (params: TAG=dev, ARCH=x86_64)
 		--build-arg VCS_REF="$$(git rev-parse --verify HEAD)" \
 		-t quay.io/riotkit/kropot-cli:latest-build
 
-	${SUDO} docker tag quay.io/riotkit/kropot-cli:latest-build quay.io/riotkit/kropotcli:${TAG}
+	${SUDO} docker tag quay.io/riotkit/kropot-cli:latest-build quay.io/riotkit/kropot-cli:${TAG}
 
 push_image: ## Push docker image
 	${SUDO} docker push quay.io/riotkit/kropot-cli:${TAG}
