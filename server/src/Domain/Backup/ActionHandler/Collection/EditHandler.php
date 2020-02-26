@@ -63,7 +63,7 @@ class EditHandler
             );
         }
 
-        return CrudResponse::createSuccessfullResponse($collection);
+        return CrudResponse::createSuccessfulResponse($collection);
     }
 
     /**

@@ -81,16 +81,10 @@ class TokenSearchController extends BaseController
      *         ),
      *         @SWG\Property(
      *             property="context",
-     *             type="array",
-     *             example={
-     *                 "pagination": {
-     *                     "page": 1,
-     *                     "perPageLimit": 5,
-     *                     "maxPages": 7
-     *                 }
-     *             },
-     *             @SWG\Items(
-     *                 type="string"
+     *             type="object",
+     *             @SWG\Property(
+     *                 property="pagination",
+     *                 ref=@Model(type=\App\Domain\Common\Entity\Docs\PaginationDoc::class)
      *             )
      *         ),
      *         @SWG\Property(

@@ -11,6 +11,7 @@ use App\Infrastructure\Common\Http\JsonFormattedResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Swagger\Annotations as SWG;
 
 class FetchController extends BaseController
 {
@@ -24,6 +25,67 @@ class FetchController extends BaseController
     }
 
     /**
+     * @SWG\Parameter(
+     *     type="string",
+     *     in="path",
+     *     name="collectionId",
+     *     description="Id of a collection"
+     * )
+     *
+     * @SWG\Parameter(
+     *     type="string",
+     *     in="path",
+     *     name="backupId",
+     *     description="Id of a backup, or a version name eg. v1, v2, latest"
+     * )
+     *
+     * @SWG\Parameter(
+     *     type="boolean",
+     *     in="query",
+     *     name="redirect",
+     *     description="Should immediately redirect to the backup download URL that points at storage?"
+     * )
+     *
+     * @SWG\Parameter(
+     *     type="string",
+     *     in="query",
+     *     name="password",
+     *     description="If the file is password protected, then a password needs to be entered there"
+     * )
+     *
+     * @SWG\Response(
+     *     response="302",
+     *     description="Returns a HTTP redirection to storage if ?redirect=true"
+     * )
+     *
+     * @SWG\Response(
+     *     response="200",
+     *     description="Returns JSON with url to the file download",
+     *     @SWG\Schema(
+     *         type="object",
+     *         @SWG\Property(
+     *             property="status",
+     *             type="boolean",
+     *             example=true
+     *         ),
+     *         @SWG\Property(
+     *             property="http_code",
+     *             type="integer",
+     *             example="200"
+     *         ),
+     *         @SWG\Property(
+     *             property="exit_code",
+     *             type="integer",
+     *             example="0"
+     *         ),
+     *         @SWG\Property(
+     *             property="url",
+     *             type="string",
+     *             example="https://api.storage.iwa-ait.org/repository/file/class-struggle.pdf"
+     *         )
+     *     )
+     * )
+     *
      * @param Request $request
      * @param string  $collectionId
      * @param string  $backupId

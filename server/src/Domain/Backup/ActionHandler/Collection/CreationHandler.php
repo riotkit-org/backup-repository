@@ -71,7 +71,7 @@ class CreationHandler
             );
         }
 
-        return CrudResponse::createSuccessfullResponse($collection);
+        return CrudResponse::createSuccessfulResponse($collection);
     }
 
     /**

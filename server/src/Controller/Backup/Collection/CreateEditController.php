@@ -13,8 +13,11 @@ use App\Domain\Backup\Response\Collection\CrudResponse;
 use App\Infrastructure\Backup\Form\Collection\CreationFormType;
 use App\Infrastructure\Backup\Form\Collection\EditFormType;
 use App\Infrastructure\Common\Http\JsonFormattedResponse;
+use Exception;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Nelmio\ApiDocBundle\Annotation\Model;
+use Swagger\Annotations as SWG;
 
 class CreateEditController extends BaseController
 {
@@ -33,11 +36,102 @@ class CreateEditController extends BaseController
     }
 
     /**
+     * @SWG\Parameter(
+     *     type="boolean",
+     *     in="query",
+     *     name="simulate",
+     *     description="Set to true to only simulate request, without commiting the changes. Optional parameter."
+     * )
+     *
+     * @SWG\Response(
+     *     response="201",
+     *     description="Collection was successfuly created",
+     *     @SWG\Schema(
+     *         type="object",
+     *         @SWG\Property(
+     *             property="status",
+     *             type="boolean",
+     *             example="true"
+     *         ),
+     *         @SWG\Property(
+     *             property="http_code",
+     *             type="integer",
+     *             example="201"
+     *         ),
+     *         @SWG\Property(
+     *             property="error_code",
+     *             type="integer",
+     *             example="50091"
+     *         ),
+     *         @SWG\Property(
+     *             property="errors",
+     *             type="array",
+     *             @SWG\Items(type="string")
+     *         ),
+     *         @SWG\Property(
+     *             property="message",
+     *             type="string",
+     *             example="OK"
+     *         ),
+     *         @SWG\Property(
+     *             property="collection",
+     *             ref=@Model(type=\App\Domain\Backup\Entity\Docs\CollectionDoc::class)
+     *         ),
+     *          @SWG\Property(
+     *             property="context",
+     *             type="array",
+     *             @SWG\Items(type="string")
+     *         )
+     *     )
+     * )
+     *
+     * @SWG\Response(
+     *     response="200",
+     *     description="Collection was modified",
+     *     @SWG\Schema(
+     *         type="object",
+     *         @SWG\Property(
+     *             property="status",
+     *             type="boolean",
+     *             example="true"
+     *         ),
+     *         @SWG\Property(
+     *             property="http_code",
+     *             type="integer",
+     *             example="201"
+     *         ),
+     *         @SWG\Property(
+     *             property="error_code",
+     *             type="integer",
+     *             example="50091"
+     *         ),
+     *         @SWG\Property(
+     *             property="errors",
+     *             type="array",
+     *             @SWG\Items(type="string")
+     *         ),
+     *         @SWG\Property(
+     *             property="message",
+     *             type="string",
+     *             example="OK"
+     *         ),
+     *         @SWG\Property(
+     *             property="collection",
+     *             ref=@Model(type=\App\Domain\Backup\Entity\Docs\CollectionDoc::class)
+     *         ),
+     *          @SWG\Property(
+     *             property="context",
+     *             type="array",
+     *             @SWG\Items(type="string")
+     *         )
+     *     )
+     * )
+     *
      * @param Request $request
      *
      * @return Response
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function handleAction(Request $request): Response
     {

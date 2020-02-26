@@ -11,10 +11,7 @@ use App\Domain\Backup\Form\TokenFormAttachForm;
 
 class TokenAddHandler
 {
-    /**
-     * @var CollectionManager
-     */
-    private $manager;
+    private CollectionManager $manager;
 
     public function __construct(CollectionManager $manager)
     {

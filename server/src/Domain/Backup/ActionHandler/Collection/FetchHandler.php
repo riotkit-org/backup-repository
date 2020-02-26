@@ -26,7 +26,7 @@ class FetchHandler
 
         $this->assertHasRights($securityContext, $form);
 
-        return CrudResponse::createSuccessfullResponse($form->collection, 200);
+        return CrudResponse::createSuccessfulResponse($form->collection, 200);
     }
 
     /**
