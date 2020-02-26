@@ -91,7 +91,7 @@ class BackupCollectionCustomIdsCest
         ]);
 
         $I->canSeeResponseContainsJson(['collection' => ['id' => $expectedId]]);
-        $I->canSeeResponseCodeIs(202);
+        $I->canSeeResponseCodeIs(201);
     }
 
     public function testCannotCreateSameCollectionTwice(FunctionalTester $I): void
