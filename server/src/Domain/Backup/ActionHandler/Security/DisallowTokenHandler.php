@@ -11,10 +11,7 @@ use App\Domain\Backup\Security\CollectionManagementContext;
 
 class DisallowTokenHandler
 {
-    /**
-     * @var CollectionManager
-     */
-    private $manager;
+    private CollectionManager $manager;
 
     public function __construct(CollectionManager $manager)
     {

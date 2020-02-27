@@ -17,15 +17,8 @@ use App\Domain\Backup\Validation\CollectionValidator;
  */
 class CollectionManager
 {
-    /**
-     * @var CollectionValidator
-     */
-    private $validator;
-
-    /**
-     * @var CollectionRepository
-     */
-    private $repository;
+    private CollectionValidator $validator;
+    private CollectionRepository $repository;
 
     public function __construct(
         CollectionValidator $validator,
@@ -41,7 +34,6 @@ class CollectionManager
      *
      * @return BackupCollection
      *
-     * @throws CollectionMappingError
      * @throws ValidationException
      * @throws \Exception
      */

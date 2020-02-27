@@ -9,7 +9,8 @@ class Token extends TokenFromCommon implements \JsonSerializable
     public function jsonSerialize()
     {
         return [
-            'id' => $this->getId()
+            'id'    => $this->getId(),
+            'roles' => $this->getRoles()
         ];
     }
 }

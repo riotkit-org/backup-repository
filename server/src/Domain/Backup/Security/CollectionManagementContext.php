@@ -9,55 +9,17 @@ use App\Domain\Backup\Form\Collection\EditForm;
 
 class CollectionManagementContext
 {
-    /**
-     * @var bool
-     */
-    private $canCreateCollections;
-
-    /**
-     * @var bool
-     */
-    private $canAssignCustomIdInNewCollection;
-
-    /**
-     * @var bool
-     */
-    private $canCreateCollectionsWithoutLimit;
-
-    /**
-     * @var bool
-     */
-    private $canModifyAllowedCollections;
-
-    /**
-     * @var bool
-     */
-    private $canModifyAnyCollection;
-
-    /**
-     * @var bool
-     */
-    private $canUseListingEndpointToFindCollections;
-
-    /**
-     * @var bool
-     */
-    private $canAccessAnyCollection;
-
-    /**
-     * @var bool
-     */
-    private $canManageTokensInAllowedCollections;
-
-    /**
-     * @var bool
-     */
-    private $canDeleteAllowedCollections;
-
-    /**
-     * @var string|null
-     */
-    private $tokenId;
+    private bool $canCreateCollections;
+    private bool $canAssignCustomIdInNewCollection;
+    private bool $canCreateCollectionsWithoutLimit;
+    private bool $canModifyAllowedCollections;
+    private bool $canModifyAnyCollection;
+    private bool $canUseListingEndpointToFindCollections;
+    private bool $canAccessAnyCollection;
+    private bool $canManageTokensInAllowedCollections;
+    private bool $canDeleteAllowedCollections;
+    private bool $canSeeTokensInCollection;
+    private ?string $tokenId;
 
     public function __construct(
         bool $canCreateCollections,
@@ -69,6 +31,7 @@ class CollectionManagementContext
         bool $canUseListingEndpoint,
         bool $canManageTokensInAllowedCollections,
         bool $canDeleteAllowedCollections,
+        bool $canSeeTokensInCollection,
         ?string $tokenId
     ) {
         $this->canCreateCollections             = $canCreateCollections;
@@ -80,6 +43,7 @@ class CollectionManagementContext
         $this->canUseListingEndpointToFindCollections = $canUseListingEndpoint;
         $this->canManageTokensInAllowedCollections    = $canManageTokensInAllowedCollections;
         $this->canDeleteAllowedCollections            = $canDeleteAllowedCollections;
+        $this->canSeeTokensInCollection         = $canSeeTokensInCollection;
         $this->tokenId                          = $tokenId;
     }
 
@@ -214,6 +178,15 @@ class CollectionManagementContext
 
         if ($this->canModifyAnyCollection) {
             return true;
+        }
+
+        return $collection->isTokenIdAllowed($this->tokenId);
+    }
+
+    public function canListCollectionTokens(BackupCollection $collection): bool
+    {
+        if (!$this->canSeeTokensInCollection) {
+            return false;
         }
 
         return $collection->isTokenIdAllowed($this->tokenId);

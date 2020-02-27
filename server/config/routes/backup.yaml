@@ -29,8 +29,12 @@ backup.collection_listing:
     defaults:
         _secured: true
 
-
-# @todo: Add listing of allowed tokens for given collection (required for frontend admin panel implementation)
+backup.collection_list_tokens:
+    path: /repository/collection/{id}/token
+    controller: 'App\Controller\Backup\Security\ListAllowedTokensForCollectionController::listTokensAction'
+    methods: ['GET']
+    defaults:
+        _secured: true
 
 backup.collection_add_token:
     path: /repository/collection/{id}/token

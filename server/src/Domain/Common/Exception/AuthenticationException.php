@@ -13,6 +13,7 @@ class AuthenticationException extends \Exception
         'auth_cannot_delete_file'            => 4031,
         'no_permission_to_assign_custom_id'  => 4032,
         'token_invalid'                      => 40000001,
-        'no_permissions_for_predictable_ids' => 40000002
+        'no_permissions_for_predictable_ids' => 40000002,
+        'no_permissions_to_see_other_tokens' => 40000003
     ];
 }

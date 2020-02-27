@@ -147,6 +147,9 @@ final class Roles
     /** Delete collections where token is added as allowed */
     public const ROLE_CAN_DELETE_ALLOWED_COLLECTIONS = 'collections.delete_allowed_collections';
 
+    /** Can list tokens in all collections, where our token is added */
+    public const ROLE_CAN_LIST_TOKENS_IN_COLLECTION = 'collections.can_list_tokens_in_allowed_collections';
+
     /** Upload to allowed collections */
     public const ROLE_CAN_UPLOAD_TO_ALLOWED_COLLECTIONS = 'collections.upload_to_allowed_collections';
 
@@ -192,6 +195,7 @@ final class Roles
         self::ROLE_COLLECTION_CUSTOM_ID,
         self::ROLE_COLLECTION_ADD_WITH_INFINITE_LIMITS,
         self::ROLE_CAN_DELETE_ALLOWED_COLLECTIONS,
+        self::ROLE_CAN_LIST_TOKENS_IN_COLLECTION,
         self::ROLE_COLLECTION_MODIFY_ANY_COLLECTION,
         self::ROLE_MODIFY_ALLOWED_COLLECTIONS,
         self::ROLE_COLLECTION_VIEW_ANY_COLLECTION,

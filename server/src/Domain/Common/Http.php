@@ -10,4 +10,5 @@ final class Http
 
     public const HTTP_STREAM_PARTIAL_CONTENT = 206;
     public const HTTP_INVALID_STREAM_RANGE   = 416;
+    public const HTT_NOT_FOUND               = 404;
 }

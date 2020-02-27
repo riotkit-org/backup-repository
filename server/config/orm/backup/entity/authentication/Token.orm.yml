@@ -12,3 +12,7 @@ App\Domain\Backup\Entity\Authentication\Token:
             length: 36
             generator:
                 strategy: UUID
+
+    fields:
+        roles:
+            type: json
