@@ -177,15 +177,16 @@ class Token extends \App\Domain\Common\SharedEntity\Token implements \JsonSerial
         return \in_array($userAgent, $this->getAllowedUserAgents(), true);
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(bool $censorId = false)
     {
         return [
-            'id'      => $this->getId(),
-            'active'  => $this->active,
-            'expired' => !$this->isNotExpired(),
-            'expires' => $this->getExpirationDate()->format('Y-m-d H:i:s'),
-            'data'    => $this->data,
-            'roles'   => $this->getRoles()
+            'id'           => $censorId ? $this->getCensoredId() : $this->getId(),
+            'active'       => $this->active,
+            'expired'      => !$this->isNotExpired(),
+            'expires'      => $this->getExpirationDate()->format('Y-m-d H:i:s'),
+            'data'         => $this->data,
+            'roles'        => $this->getRoles(),
+            'idIsCensored' => $censorId
         ];
     }
 }

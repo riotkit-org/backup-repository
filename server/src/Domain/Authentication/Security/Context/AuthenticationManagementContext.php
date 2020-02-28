@@ -8,18 +8,13 @@ use App\Domain\Roles;
 class AuthenticationManagementContext
 {
     private bool $canLookup;
-
     private bool $canGenerateTokens;
-
     private bool $canUseTechnicalEndpoints;
-
     private bool $isAdministrator;
-
     private bool $canRevokeTokens;
-
     private bool $canCreateTokensWithPredictableIds;
-
     private bool $canSearchForTokens;
+    private bool $cannotSeeFullTokenIds;
 
     public function __construct(
         bool $canLookup,
@@ -28,15 +23,17 @@ class AuthenticationManagementContext
         bool $isAdministrator,
         bool $canRevokeTokens,
         bool $canCreateTokensWithPredictableIds,
-        bool $canSearchForTokens
+        bool $canSearchForTokens,
+        bool $cannotSeeFullTokenIds
     ) {
-        $this->canLookup                = $canLookup;
-        $this->canGenerateTokens        = $canGenerate;
-        $this->canUseTechnicalEndpoints = $canUseTechnicalEndpoints;
-        $this->isAdministrator          = $isAdministrator;
-        $this->canRevokeTokens          = $canRevokeTokens;
+        $this->canLookup                         = $canLookup;
+        $this->canGenerateTokens                 = $canGenerate;
+        $this->canUseTechnicalEndpoints          = $canUseTechnicalEndpoints;
+        $this->isAdministrator                   = $isAdministrator;
+        $this->canRevokeTokens                   = $canRevokeTokens;
         $this->canCreateTokensWithPredictableIds = $canCreateTokensWithPredictableIds;
-        $this->canSearchForTokens       = $canSearchForTokens;
+        $this->canSearchForTokens                = $canSearchForTokens;
+        $this->cannotSeeFullTokenIds             = $cannotSeeFullTokenIds;
     }
 
     public function canLookupAnyToken(): bool
@@ -96,5 +93,10 @@ class AuthenticationManagementContext
         }
 
         return $this->canCreateTokensWithPredictableIds;
+    }
+
+    public function cannotSeeFullTokenIds(): bool
+    {
+        return $this->cannotSeeFullTokenIds;
     }
 }

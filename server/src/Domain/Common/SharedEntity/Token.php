@@ -14,12 +14,11 @@ class Token
     public const FIELD_SECURE_COPY_ENC_METHOD = 'secureCopyEncryptionMethod';
     public const FIELD_SECURE_COPY_ENC_KEY    = 'secureCopyEncryptionKey';
 
-    /**
-     * @var string $id
-     */
-    protected $id;
+    // Entity properties
+    protected ?string $id    = null;
+    protected array   $roles = [];
 
-    protected array $roles = [];
+    // internal
     private bool $alreadyGrantedAdminAccess = false;
 
     /**
@@ -28,6 +27,26 @@ class Token
     public function getId(): ?string
     {
         return $this->id;
+    }
+
+    public function getCensoredId(): ?string
+    {
+        if ($this->getId()) {
+            $parts = explode('-', $this->getId());
+            $ranges = [5, 2, 2, 2, 8];
+
+            foreach ($parts as $num => $value) {
+                $parts[$num] = str_replace(
+                    substr($parts[$num], 0, $ranges[$num]),
+                    str_repeat('*', $ranges[$num]),
+                    $parts[$num]
+                );
+            }
+
+            return implode('-', $parts);
+        }
+
+        return null;
     }
 
     public function isSameAs(Token $token): bool

@@ -6,11 +6,12 @@ use App\Domain\Common\SharedEntity\Token as TokenFromCommon;
 
 class Token extends TokenFromCommon implements \JsonSerializable
 {
-    public function jsonSerialize()
+    public function jsonSerialize(bool $censorId = false)
     {
         return [
-            'id'    => $this->getId(),
-            'roles' => $this->getRoles()
+            'id'           => $censorId ? $this->getCensoredId() : $this->getId(),
+            'roles'        => $this->getRoles(),
+            'idIsCensored' => $censorId
         ];
     }
 }

@@ -156,6 +156,9 @@ final class Roles
     /** List versions for collections where the token was added as allowed */
     public const ROLE_LIST_VERSIONS_FOR_ALLOWED_COLLECTIONS = 'collections.list_versions_for_allowed_collections';
 
+    /** Prevent token user from seeing other tokens in listings */
+    public const ROLE_CANNOT_SEE_FULL_TOKEN_ID = 'security.cannot_see_full_token_ids';
+
     /** Delete versions only from collections where the token was added as allowed */
     public const ROLE_DELETE_VERSIONS_IN_ALLOWED_COLLECTIONS = 'collections.delete_versions_for_allowed_collections';
 
@@ -213,7 +216,8 @@ final class Roles
     public const RESTRICTIONS_LIST = [
         self::ROLE_UPLOAD_ENFORCE_NO_PASSWORD,
         self::ROLE_UPLOAD_ENFORCE_TOKEN_TAGS,
-        self::ROLE_UPLOAD_ONLY_ONCE_SUCCESSFUL
+        self::ROLE_UPLOAD_ONLY_ONCE_SUCCESSFUL,
+        self::ROLE_CANNOT_SEE_FULL_TOKEN_ID
     ];
 
     public static function getRolesList(): array

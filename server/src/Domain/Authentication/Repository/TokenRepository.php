@@ -15,6 +15,13 @@ interface TokenRepository extends \App\Domain\Common\Repository\TokenRepository
      */
     public function getExpiredTokens(): array;
 
+    /**
+     * @param string $pattern
+     * @param int $page
+     * @param int $count
+     *
+     * @return Token[]
+     */
     public function findTokensBy(string $pattern, int $page = 1, int $count = 50): array;
 
     public function findMaxPagesTokensBy(string $pattern, int $limit = 50): int;

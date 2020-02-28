@@ -22,6 +22,8 @@ class SecurityContextFactory
             $token->hasRole(Roles::ROLE_CAN_MANAGE_TOKENS_IN_ALLOWED_COLLECTIONS),
             $token->hasRole(Roles::ROLE_CAN_DELETE_ALLOWED_COLLECTIONS),
             $token->hasRole(Roles::ROLE_CAN_LIST_TOKENS_IN_COLLECTION),
+            $token->hasRole(Roles::ROLE_CANNOT_SEE_FULL_TOKEN_ID),
+            $token->hasRole(Roles::ROLE_ADMINISTRATOR),
             $token->getId()
         );
     }
@@ -44,7 +46,7 @@ class SecurityContextFactory
             true, true,
             true, true,
             true, true,
-            true, true, null
+            true, true, false, true, null
         );
     }
 }

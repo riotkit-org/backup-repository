@@ -2,6 +2,7 @@
 
 namespace App\Domain\Backup\Response\Collection;
 
+use App\Domain\Backup\Entity\Authentication\Token;
 use App\Domain\Common\Http;
 
 class AllowedTokensResponse implements \JsonSerializable
@@ -12,7 +13,14 @@ class AllowedTokensResponse implements \JsonSerializable
     private ?array $errors;
     private array  $tokens;
 
-    public static function createSuccessfulResponse(array $tokens, int $status = 201): AllowedTokensResponse
+    /**
+     * @param Token[] $tokens
+     * @param bool    $maskIds
+     * @param int     $status
+     *
+     * @return AllowedTokensResponse
+     */
+    public static function createSuccessfulResponse(array $tokens, bool $maskIds, int $status = 201): AllowedTokensResponse
     {
         $new = new static();
         $new->status     = 'OK';
@@ -20,6 +28,15 @@ class AllowedTokensResponse implements \JsonSerializable
         $new->exitCode   = $status;
         $new->errors     = [];
         $new->tokens     = $tokens;
+
+        if ($maskIds) {
+            $new->tokens = array_map(
+                function (Token $token) {
+                    return $token->jsonSerialize(true);
+                },
+                $new->tokens
+            );
+        }
 
         return $new;
     }

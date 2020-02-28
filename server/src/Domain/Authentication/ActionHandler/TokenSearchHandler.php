@@ -49,7 +49,8 @@ class TokenSearchHandler
             $this->repository->findTokensBy($pattern, $page, $limit),
             $page,
             $limit,
-            $this->repository->findMaxPagesTokensBy($pattern, $limit)
+            $this->repository->findMaxPagesTokensBy($pattern, $limit),
+            $ctx->cannotSeeFullTokenIds()
         );
     }
 

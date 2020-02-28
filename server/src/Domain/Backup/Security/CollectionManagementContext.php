@@ -19,6 +19,8 @@ class CollectionManagementContext
     private bool $canManageTokensInAllowedCollections;
     private bool $canDeleteAllowedCollections;
     private bool $canSeeTokensInCollection;
+    private bool $cannotSeeFullTokenIds;
+    private bool $isSystemAdmin;
     private ?string $tokenId;
 
     public function __construct(
@@ -32,6 +34,8 @@ class CollectionManagementContext
         bool $canManageTokensInAllowedCollections,
         bool $canDeleteAllowedCollections,
         bool $canSeeTokensInCollection,
+        bool $cannotSeeFullTokenIds,
+        bool $isSystemAdmin,
         ?string $tokenId
     ) {
         $this->canCreateCollections             = $canCreateCollections;
@@ -44,6 +48,8 @@ class CollectionManagementContext
         $this->canManageTokensInAllowedCollections    = $canManageTokensInAllowedCollections;
         $this->canDeleteAllowedCollections            = $canDeleteAllowedCollections;
         $this->canSeeTokensInCollection         = $canSeeTokensInCollection;
+        $this->cannotSeeFullTokenIds            = $cannotSeeFullTokenIds;
+        $this->isSystemAdmin                    = $isSystemAdmin;
         $this->tokenId                          = $tokenId;
     }
 
@@ -185,10 +191,19 @@ class CollectionManagementContext
 
     public function canListCollectionTokens(BackupCollection $collection): bool
     {
+        if ($this->isSystemAdmin) {
+            return true;
+        }
+
         if (!$this->canSeeTokensInCollection) {
             return false;
         }
 
         return $collection->isTokenIdAllowed($this->tokenId);
+    }
+
+    public function cannotSeeFullTokenIds(): bool
+    {
+        return $this->cannotSeeFullTokenIds;
     }
 }
