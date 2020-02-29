@@ -6,9 +6,9 @@ File Repository
 [![Maintainability](https://api.codeclimate.com/v1/badges/4ed37b276f5379c3dc52/maintainability)](https://codeclimate.com/github/riotkit-org/file-repository/maintainability)
 [![codecov](https://codecov.io/gh/riotkit-org/file-repository/branch/master/graph/badge.svg)](https://codecov.io/gh/riotkit-org/file-repository)
 
-File Repository is a modern API application dedicated for storing files.
-It is able to use various storage backends including AWS S3, Dropbox, Google Drive and just filesystem.
-Lightweight, requires just PHP7 and at least SQLite3 or MySQL (other databases can be also supported in future due to using ORM).
+File Repository is a modern API application dedicated for storing files. 
+Can use any type of backend supported by Flysystem library, officialy we support S3 and local filesystem.
+Lightweight, requires just PHP 7.4+ and at least SQLite3 or MySQL (other databases can be also supported in future due to using ORM).
 
 #### For installation, guides and more information please check he documentation: https://file-repository.readthedocs.io/en/latest/index.html
 
@@ -22,7 +22,7 @@ Lightweight, requires just PHP7 and at least SQLite3 or MySQL (other databases c
 - Ready to integrate upload forms for your applications. Only generate token and redirect a user to an url
 
 **Requirements for the server:**
-- PHP 7.2+ with bcmath, openssl, iconv, ctype, fileinfo
+- PHP 7.4+ with bcmath, openssl, iconv, ctype, fileinfo, json, pdo, pdo_sqlite, pdo_pgsql, pdo_mysql
 - Composer (PHP package manager)
 - "file" standard unix shell command
 - "sha256sum" unix shell command
@@ -31,6 +31,8 @@ Lightweight, requires just PHP7 and at least SQLite3 or MySQL (other databases c
 **Requirements for the backup client "Bahub":**
 - Python 3.5+
 - For a list of required pip packages check: [requirements.txt](bahub-client/requirements.txt)
+- PostgreSQL client tools (for PostgreSQL support)
+- MySQL client tools (for MySQL support)
 
 **Requirements to manually build documentation:**
 - sphinx-glpi-theme
