@@ -29,6 +29,8 @@ class ListingController extends BaseController
     }
 
     /**
+     * Search for collections
+     *
      * @SWG\Parameter(
      *     type="string",
      *     in="query",

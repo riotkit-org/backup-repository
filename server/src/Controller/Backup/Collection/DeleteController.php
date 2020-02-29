@@ -27,6 +27,8 @@ class DeleteController extends BaseController
     }
 
     /**
+     * Delete a collection
+     *
      * @SWG\Parameter(
      *     type="string",
      *     in="path",

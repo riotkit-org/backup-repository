@@ -21,6 +21,15 @@ class RestoreDBController extends AbstractController
         $this->dbStateManager = $dbStateManager;
     }
 
+    /**
+     * Restore a database (only in test/dev mode)
+     *
+     * @param ContainerInterface $container
+     *
+     * @return JsonResponse
+     *
+     * @throws \Exception
+     */
     public function restoreAction(ContainerInterface $container): JsonResponse
     {
         $this->assertInDebugMode($container);
@@ -32,6 +41,15 @@ class RestoreDBController extends AbstractController
         return new JsonFormattedResponse('OK, but nothing restored');
     }
 
+    /**
+     * Backup a database (only in test/dev mode)
+     *
+     * @param ContainerInterface $container
+     *
+     * @return JsonResponse
+     *
+     * @throws \Exception
+     */
     public function backupAction(ContainerInterface $container): JsonResponse
     {
         $this->assertInDebugMode($container);

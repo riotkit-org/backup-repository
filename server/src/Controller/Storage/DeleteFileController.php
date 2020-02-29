@@ -22,6 +22,16 @@ class DeleteFileController extends BaseController
         $this->authFactory = $authFactory;
     }
 
+    /**
+     * Delete a file from storage
+     *
+     * @param Request $request
+     * @param string $filename
+     *
+     * @return Response
+     *
+     * @throws \Exception
+     */
     public function handle(Request $request, string $filename): Response
     {
         $form = new DeleteFileForm();

@@ -26,6 +26,8 @@ class FetchController extends BaseController
     }
 
     /**
+     * Fetch information about collection
+     *
      * @SWG\Parameter(
      *     type="string",
      *     in="path",

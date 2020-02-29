@@ -24,6 +24,8 @@ class VersionDeleteController extends BaseController
     }
 
     /**
+     * Delete a version
+     *
      * @param Request $request
      * @param string  $collectionId
      * @param string  $backupId

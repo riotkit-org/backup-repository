@@ -26,6 +26,8 @@ class VersionListingController extends BaseController
     }
 
     /**
+     * List versions in a collection
+     *
      * @param string $collectionId
      *
      * @return Response

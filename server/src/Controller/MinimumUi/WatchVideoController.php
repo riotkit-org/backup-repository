@@ -8,6 +8,14 @@ use Symfony\Component\HttpFoundation\Response;
 
 class WatchVideoController extends BaseController
 {
+    /**
+     * Display a video player
+     *
+     * @param Request $request
+     * @param string $fileId
+     *
+     * @return Response
+     */
     public function handle(Request $request, string $fileId): Response
     {
         return $this->render('minimumui/WatchVideo.html.twig', [

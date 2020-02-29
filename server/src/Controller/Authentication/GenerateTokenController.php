@@ -26,6 +26,8 @@ class GenerateTokenController extends BaseController
     }
 
     /**
+     * Create a new token, assign roles, set expiration, upload policy
+     *
      * @SWG\Post(
      *     description="Request to create a new access token",
      *     consumes={"application/json"},

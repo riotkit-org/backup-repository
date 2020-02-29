@@ -23,9 +23,11 @@ class RolesListingController extends BaseController
     }
 
     /**
+     * List available roles
+     *
      * @SWG\Response(
      *     response="200",
-     *     description="Search tokens by id and associted fields",
+     *     description="Lists avaialble roles",
      *     @SWG\Schema(
      *         type="object",
      *         @SWG\Property(

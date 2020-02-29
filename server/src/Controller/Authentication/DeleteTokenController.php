@@ -23,6 +23,8 @@ class DeleteTokenController extends BaseController
     }
 
     /**
+     * Revoke a token
+     *
      * @SWG\Parameter(
      *     type="string",
      *     in="path",

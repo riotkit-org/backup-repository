@@ -12,6 +12,8 @@ use Swagger\Annotations as SWG;
 class ServeSubmitDataController extends BaseSubmitDataController
 {
     /**
+     * Serve specific file metadata for SecureCopy operation
+     *
      * @SWG\Parameter(
      *     name="fileName",
      *     type="string",
@@ -96,6 +98,7 @@ class ServeSubmitDataController extends BaseSubmitDataController
      *
      * @throws BusException
      * @throws AuthenticationException
+     * @throws \App\Domain\SecureCopy\Exception\ValidationException
      */
     public function dumpSubmitDataAction(Request $request, string $fileName): Response
     {

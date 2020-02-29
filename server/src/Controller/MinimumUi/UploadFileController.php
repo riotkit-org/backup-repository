@@ -10,6 +10,12 @@ use Symfony\Component\HttpFoundation\Response;
 
 class UploadFileController extends BaseController
 {
+    /**
+     * Display a generic uploading form
+     *
+     * @param Request $request
+     * @return Response
+     */
     public function handle(Request $request): Response
     {
         $token = $this->getLoggedUserToken();

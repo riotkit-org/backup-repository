@@ -33,6 +33,8 @@ class HelloController extends BaseController
     }
 
     /**
+     * Front page
+     *
      * @SWG\Response(
      *     response="400",
      *     description="When not authorized with any token"

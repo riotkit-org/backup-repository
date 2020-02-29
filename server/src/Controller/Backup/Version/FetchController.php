@@ -25,6 +25,8 @@ class FetchController extends BaseController
     }
 
     /**
+     * Download selected version of file in the collection
+     *
      * @SWG\Parameter(
      *     type="string",
      *     in="path",

@@ -6,6 +6,7 @@ use App\Controller\BaseController;
 use App\Domain\SecureCopy\ActionHandler\ServeFileContentHandler;
 use App\Domain\SecureCopy\Entity\Authentication\Token;
 use App\Domain\SecureCopy\Exception\AuthenticationException;
+use App\Domain\SecureCopy\Exception\ValidationException;
 use App\Domain\SecureCopy\Factory\SecurityContextFactory;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -23,6 +24,8 @@ class ServeFileController extends BaseController
     }
 
     /**
+     * Serve a file content through SecureCopy protocol
+     *
      * @SWG\Response(
      *     response="200",
      *     description="Binary file content.
@@ -39,6 +42,7 @@ class ServeFileController extends BaseController
      *
      * @return Response
      * @throws AuthenticationException
+     * @throws ValidationException
      */
     public function fetchAction(string $fileName): Response
     {

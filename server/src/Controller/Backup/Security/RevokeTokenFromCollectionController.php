@@ -11,6 +11,8 @@ use Swagger\Annotations as SWG;
 class RevokeTokenFromCollectionController extends ManageAllowedTokensController
 {
     /**
+     * Revoke a token from access to collection
+     *
      * @SWG\Delete(
      *     description="Request revoke access to the token for given collection",
      *     consumes={"application/json"},

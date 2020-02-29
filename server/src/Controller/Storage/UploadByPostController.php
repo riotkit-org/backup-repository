@@ -21,6 +21,15 @@ class UploadByPostController extends BaseController
         $this->handler = $handler;
     }
 
+    /**
+     * Upload a file by POST
+     *
+     * @param Request $request
+     * @param TokenTransport $tokenTransport
+     * @param string $filename
+     *
+     * @return Response
+     */
     public function handle(Request $request, TokenTransport $tokenTransport, string $filename = ''): Response
     {
         return $this->withLongExecutionTimeAllowed(

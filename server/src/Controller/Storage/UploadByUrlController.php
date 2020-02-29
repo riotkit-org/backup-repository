@@ -21,6 +21,14 @@ class UploadByUrlController extends BaseController
         $this->handler = $handler;
     }
 
+    /**
+     * Upload a file from external URL address
+     *
+     * @param Request $request
+     * @param TokenTransport $tokenTransport
+     *
+     * @return Response
+     */
     public function handle(Request $request, TokenTransport $tokenTransport): Response
     {
         return $this->withLongExecutionTimeAllowed(

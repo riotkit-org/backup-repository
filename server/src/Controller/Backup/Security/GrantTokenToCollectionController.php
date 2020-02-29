@@ -11,6 +11,8 @@ use Swagger\Annotations as SWG;
 class GrantTokenToCollectionController extends ManageAllowedTokensController
 {
     /**
+     * Grant token to be able to operate on a collection
+     *
      * @SWG\Post(
      *     description="Request to grant access to collection for given token",
      *     consumes={"application/json"},

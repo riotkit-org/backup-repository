@@ -23,6 +23,8 @@ class LookupTokenController extends BaseController
     }
 
     /**
+     * Retrieve details for specific token
+     *
      * @SWG\Parameter(
      *     type="string",
      *     in="path",

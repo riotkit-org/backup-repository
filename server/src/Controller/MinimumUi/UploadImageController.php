@@ -9,6 +9,12 @@ use Symfony\Component\HttpFoundation\Response;
 
 class UploadImageController extends BaseController
 {
+    /**
+     * Display a image uploader
+     *
+     * @param Request $request
+     * @return Response
+     */
     public function handle(Request $request): Response
     {
         $backUrl = $request->get('back');

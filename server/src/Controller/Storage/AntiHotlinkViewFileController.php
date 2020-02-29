@@ -29,6 +29,18 @@ class AntiHotlinkViewFileController extends ViewFileController
         parent::__construct($handler, $authFactory);
     }
 
+    /**
+     * Serve files with Anti-Hotlink protection
+     *
+     * @param Request $request
+     * @param string $accessToken
+     * @param string $fileId
+     * @param int|null $expirationTime
+     *
+     * @return Response
+     *
+     * @throws \Exception
+     */
     public function handleAntiHotlinkUrl(Request $request, string $accessToken, string $fileId, ?int $expirationTime = null): Response
     {
         $response = $this->antiHotlinkViewFileHandler->handle(

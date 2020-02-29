@@ -37,6 +37,8 @@ class ManageAllowedTokensController extends BaseController
     }
 
     /**
+     * Manage allowed tokens in a collection
+     *
      * @param Request $request
      * @param string  $id
      *

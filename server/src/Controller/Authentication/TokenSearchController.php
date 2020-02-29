@@ -24,6 +24,8 @@ class TokenSearchController extends BaseController
     }
 
     /**
+     * Search for tokens
+     *
      * @SWG\Parameter(
      *     type="string",
      *     in="query",
@@ -113,6 +115,8 @@ class TokenSearchController extends BaseController
                     (int) $request->get('limit', 50),
                     $securityContext
                 );
+
+                // @todo: Disable searching by id, when id censorship is turned on
 
                 return new JsonFormattedResponse($response, JsonFormattedResponse::HTTP_OK);
             }

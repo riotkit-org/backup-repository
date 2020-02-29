@@ -22,6 +22,8 @@ class HealthController extends AbstractController
     }
 
     /**
+     * Show application status
+     *
      * @SWG\Response(
      *     response="400",
      *     description="When the 'code' parameter does not match the 'HEALTH_CHECK_CODE' setting"

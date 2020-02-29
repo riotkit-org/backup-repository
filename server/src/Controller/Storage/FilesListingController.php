@@ -23,6 +23,8 @@ class FilesListingController extends BaseController
     }
 
     /**
+     * Search for files in the storage
+     *
      * @param Request $request
      *
      * @return Response

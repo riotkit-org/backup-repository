@@ -26,6 +26,8 @@ class GenerateEventListController extends BaseController
     }
 
     /**
+     * Generate a list of objects for SecureCopy operation
+     *
      * @SWG\Parameter(
      *     name="type",
      *     type="string",

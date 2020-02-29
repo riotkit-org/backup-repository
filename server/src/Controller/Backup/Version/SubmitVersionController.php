@@ -24,6 +24,8 @@ class SubmitVersionController extends BaseController
     }
 
     /**
+     * Send a new version to the collection
+     *
      * @param Request $request
      * @param string $collectionId
      *

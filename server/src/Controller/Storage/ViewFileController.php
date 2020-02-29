@@ -30,6 +30,8 @@ class ViewFileController extends BaseController
     }
 
     /**
+     * Download a file
+     *
      * @SWG\Response(
      *     response="200",
      *     description="Returns file contents"
