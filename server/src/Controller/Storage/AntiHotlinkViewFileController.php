@@ -8,6 +8,7 @@ use App\Domain\Storage\Factory\Context\SecurityContextFactory;
 use App\Infrastructure\Common\Http\JsonFormattedResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Swagger\Annotations as SWG;
 
 /**
  * Anti-Hotlink protection for ViewFileController
@@ -31,6 +32,40 @@ class AntiHotlinkViewFileController extends ViewFileController
 
     /**
      * Serve files with Anti-Hotlink protection
+     *
+     * @SWG\Parameter(
+     *     name="fileId",
+     *     in="path",
+     *     type="string",
+     *     description="Filename"
+     * )
+     *
+     * @SWG\Parameter(
+     *     name="accessToken",
+     *     in="path",
+     *     type="string",
+     *     description="Access token dynamically generated for current viewer"
+     * )
+     *
+     * @SWG\Parameter(
+     *     name="expirationTime",
+     *     in="path",
+     *     type="string",
+     *     required=true,
+     *     description="Access token expiration time, used for verification"
+     * )
+     *
+     * @SWG\Parameter(
+     *     name="Range",
+     *     type="string",
+     *     in="header",
+     *     description="HTTP Byte-Range support"
+     * )
+     *
+     * @SWG\Response(
+     *     response="200",
+     *     description="Returns file contents"
+     * )
      *
      * @param Request $request
      * @param string $accessToken

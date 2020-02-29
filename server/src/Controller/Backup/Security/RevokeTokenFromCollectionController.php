@@ -16,7 +16,7 @@ class RevokeTokenFromCollectionController extends ManageAllowedTokensController
      * @SWG\Delete(
      *     description="Request revoke access to the token for given collection",
      *     consumes={"application/json"},
-     *     produces={"applicattion/json"},
+     *     produces={"application/json"},
      *
      *     @SWG\Parameter(
      *         type="boolean",

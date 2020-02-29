@@ -12,7 +12,6 @@ use App\Domain\Storage\Security\ReadSecurityContext;
 use App\Infrastructure\Common\Http\JsonFormattedResponse;
 use App\Infrastructure\Storage\Form\ViewFileFormType;
 use Exception;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -31,6 +30,28 @@ class ViewFileController extends BaseController
 
     /**
      * Download a file
+     *
+     * @SWG\Parameter(
+     *     name="filename",
+     *     in="path",
+     *     type="string",
+     *     description="Filename"
+     * )
+     *
+     * @SWG\Parameter(
+     *     name="password",
+     *     in="query",
+     *     type="string",
+     *     required=false,
+     *     description="Optionally a password if file is password protected"
+     * )
+     *
+     * @SWG\Parameter(
+     *     name="Range",
+     *     type="string",
+     *     in="header",
+     *     description="HTTP Byte-Range support"
+     * )
      *
      * @SWG\Response(
      *     response="200",

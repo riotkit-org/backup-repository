@@ -10,6 +10,7 @@ use App\Infrastructure\Common\Http\JsonFormattedResponse;
 use App\Infrastructure\Storage\Form\DeleteFileFormType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Swagger\Annotations as SWG;
 
 class DeleteFileController extends BaseController
 {
@@ -24,6 +25,33 @@ class DeleteFileController extends BaseController
 
     /**
      * Delete a file from storage
+     *
+     * @SWG\Parameter(
+     *     name="filename",
+     *     type="string",
+     *     in="path",
+     *     required=true
+     * )
+     *
+     * @SWG\Parameter(
+     *     name="password",
+     *     type="string",
+     *     required=false,
+     *     in="query",
+     *     description="Required, when the file is password protected"
+     * )
+     *
+     * @SWG\Response(
+     *     response="200",
+     *     description="Deletes a file from the storage",
+     *     @SWG\Schema(
+     *         type="object",
+     *         @SWG\Property(
+     *             property="result",
+     *             type="boolean"
+     *         )
+     *     )
+     * )
      *
      * @param Request $request
      * @param string $filename

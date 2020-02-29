@@ -11,6 +11,8 @@ use App\Infrastructure\Storage\Form\UploadByPostFormType;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Swagger\Annotations as SWG;
+use Nelmio\ApiDocBundle\Annotation\Model;
 
 class UploadByPostController extends BaseController
 {
@@ -23,6 +25,41 @@ class UploadByPostController extends BaseController
 
     /**
      * Upload a file by POST
+     *
+     * @SWG\Post(
+     *     description="Sends a raw file content or HTTP multipart form to the server to submit a file",
+     *     produces={"application/json"},
+     *
+     *     @SWG\Parameter(
+     *         name="type",
+     *         type="string",
+     *         in="path",
+     *         default="file"
+     *     ),
+     *
+     *     @SWG\Parameter(
+     *         name="fileName",
+     *         type="string",
+     *         in="query"
+     *     ),
+     *
+     *     @SWG\Parameter(
+     *         in="body",
+     *         name="body",
+     *         type="string",
+     *         description="Raw file content or HTTP multipart form",
+     *         @SWG\Schema()
+     *     )
+     * )
+     *
+     * @SWG\Response(
+     *     response="200",
+     *     description="Information about uploaded file",
+     *     @SWG\Schema(
+     *         type="object",
+     *         ref=@Model(type=\App\Domain\Storage\Response\Docs\FileUploadedResponse::class)
+     *     )
+     * )
      *
      * @param Request $request
      * @param TokenTransport $tokenTransport

@@ -16,7 +16,7 @@ class GrantTokenToCollectionController extends ManageAllowedTokensController
      * @SWG\Post(
      *     description="Request to grant access to collection for given token",
      *     consumes={"application/json"},
-     *     produces={"applicattion/json"},
+     *     produces={"application/json"},
      *
      *     @SWG\Parameter(
      *         type="boolean",

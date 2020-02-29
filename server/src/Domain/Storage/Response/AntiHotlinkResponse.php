@@ -27,6 +27,11 @@ class AntiHotlinkResponse implements \JsonSerializable
      */
     private $status;
 
+    /**
+     * @var null
+     */
+    private $form;
+
     public static function createValidResponse(Filename $filename)
     {
         $new = new static();

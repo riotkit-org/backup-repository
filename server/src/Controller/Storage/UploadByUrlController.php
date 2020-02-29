@@ -11,6 +11,8 @@ use App\Infrastructure\Common\Http\JsonFormattedResponse;
 use App\Infrastructure\Storage\Form\UploadByUrlFormType;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Swagger\Annotations as SWG;
+use Nelmio\ApiDocBundle\Annotation\Model;
 
 class UploadByUrlController extends BaseController
 {
@@ -23,6 +25,40 @@ class UploadByUrlController extends BaseController
 
     /**
      * Upload a file from external URL address
+     *
+     * @SWG\Post(
+     *     description="Tell the API to download external URL address as a file upload",
+     *     consumes={"application/json"},
+     *     produces={"application/json"},
+     *
+     *     @SWG\Parameter(
+     *         name="type",
+     *         type="string",
+     *         in="path",
+     *         default="file"
+     *     ),
+     *
+     *     @SWG\Parameter(
+     *         in="body",
+     *         name="body",
+     *         description="JSON payload",
+     *
+     *         @SWG\Schema(
+     *             type="object",
+     *             required={"fileUrl"},
+     *             @SWG\Property(property="fileUrl", example="https://iwa-ait.org/sites/default/files/iwaait_1.png", type="string"),
+     *         )
+     *     )
+     * )
+     *
+     * @SWG\Response(
+     *     response="200",
+     *     description="Information about file",
+     *     @SWG\Schema(
+     *         type="object",
+     *         ref=@Model(type=\App\Domain\Storage\Response\Docs\FileUploadedResponse::class)
+     *     )
+     * )
      *
      * @param Request $request
      * @param TokenTransport $tokenTransport

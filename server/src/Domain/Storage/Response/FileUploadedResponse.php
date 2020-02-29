@@ -167,15 +167,15 @@ class FileUploadedResponse implements \JsonSerializable
     public function jsonSerialize()
     {
         return [
-            'status'     => $this->status,
-            'error_code' => $this->errorCode,
-            'http_code'  => $this->exitCode,
-            'url'        => $this->url,
-            'back'       => $this->backUrl,
-            'id'         => $this->id,
-            'filename'   => $this->filename,
+            'status'             => $this->status,
+            'error_code'         => $this->errorCode,
+            'http_code'          => $this->exitCode,
+            'url'                => $this->url,
+            'back'               => $this->backUrl,
+            'id'                 => $this->id,
+            'filename'           => $this->filename,
             'requested_filename' => $this->requestedFilename,
-            'context'    => $this->context
+            'context'            => $this->context
        ];
     }
 

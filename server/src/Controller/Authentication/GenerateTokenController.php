@@ -31,7 +31,7 @@ class GenerateTokenController extends BaseController
      * @SWG\Post(
      *     description="Request to create a new access token",
      *     consumes={"application/json"},
-     *     produces={"applicattion/json"},
+     *     produces={"application/json"},
      *
      *     @SWG\Parameter(
      *         in="body",

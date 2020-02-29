@@ -23,8 +23,8 @@ Main functionality:
 
    first-steps
    configuration-reference
+   project-rules
    docker
-   postman
    domain/authentication/index
    domain/storage/index
    domain/backup/index
