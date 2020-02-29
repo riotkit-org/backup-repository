@@ -51,7 +51,7 @@ class ListingResponse implements \JsonSerializable
     {
         return [
             'status'     => $this->status,
-            'http_code'  => $this->exitCode,
+            'http_code'  => (int) $this->exitCode,
             'elements'   => $this->elements,
             'pagination' => [
                 'current' => $this->currentPage,

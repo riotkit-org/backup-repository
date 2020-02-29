@@ -4,7 +4,7 @@ namespace App\Domain\Backup\Entity\Docs;
 
 use Swagger\Annotations as SWG;
 
-abstract class CollectionDoc
+abstract class Collection
 {
     /**
      * @SWG\Property(type="string", example="d5aab8d7-64f3-42ce-bae4-59d7108294c3")

@@ -59,7 +59,7 @@ class DeleteTokenController extends BaseController
      *         ),
      *         @SWG\Property(
      *             property="token",
-     *             ref=@Model(type=\App\Domain\Authentication\Entity\Docs\TokenDoc::class)
+     *             ref=@Model(type=\App\Domain\Authentication\Entity\Docs\Token::class)
      *         ),
      *          @SWG\Property(
      *             property="context",

@@ -84,14 +84,14 @@ class TokenSearchController extends BaseController
      *             type="object",
      *             @SWG\Property(
      *                 property="pagination",
-     *                 ref=@Model(type=\App\Domain\Common\Entity\Docs\PaginationDoc::class)
+     *                 ref=@Model(type=\App\Domain\Common\Entity\Docs\Pagination::class)
      *             )
      *         ),
      *         @SWG\Property(
      *             property="data",
      *             type="array",
      *             @SWG\Items(
-     *                 ref=@Model(type=\App\Domain\Authentication\Entity\Docs\TokenDoc::class)
+     *                 ref=@Model(type=\App\Domain\Authentication\Entity\Docs\Token::class)
      *             )
      *         )
      *     )

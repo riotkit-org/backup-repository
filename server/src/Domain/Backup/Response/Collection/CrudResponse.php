@@ -97,8 +97,8 @@ class CrudResponse implements \JsonSerializable
     {
         return [
             'status'     => $this->status,
-            'error_code' => $this->errorCode,
-            'http_code'  => $this->exitCode,
+            'error_code' => (int) $this->errorCode,
+            'http_code'  => (int) $this->exitCode,
             'errors'     => $this->errors,
             'collection' => $this->collection,
             'context'    => $this->context

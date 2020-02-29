@@ -78,6 +78,9 @@ final class Roles
     /** Allow to specify token id when creating a token */
     public const ROLE_CREATE_PREDICTABLE_TOKEN_IDS = 'security.create_predictable_token_ids';
 
+    /** Prevent token user from seeing other tokens in listings */
+    public const ROLE_CANNOT_SEE_FULL_TOKEN_ID     = 'security.cannot_see_full_token_ids';
+
     //
     //
     // deletion
@@ -156,25 +159,8 @@ final class Roles
     /** List versions for collections where the token was added as allowed */
     public const ROLE_LIST_VERSIONS_FOR_ALLOWED_COLLECTIONS = 'collections.list_versions_for_allowed_collections';
 
-    /** Prevent token user from seeing other tokens in listings */
-    public const ROLE_CANNOT_SEE_FULL_TOKEN_ID = 'security.cannot_see_full_token_ids';
-
     /** Delete versions only from collections where the token was added as allowed */
     public const ROLE_DELETE_VERSIONS_IN_ALLOWED_COLLECTIONS = 'collections.delete_versions_for_allowed_collections';
-
-    /** Collection manager: Create, edit, delete collections */
-    public const GROUP_COLLECTION_MANAGER = [
-        self::ROLE_COLLECTION_ADD,
-        self::ROLE_COLLECTION_ADD_WITH_INFINITE_LIMITS,
-        self::ROLE_COLLECTION_MODIFY_ANY_COLLECTION,
-        self::ROLE_COLLECTION_VIEW_ANY_COLLECTION,
-        self::ROLE_CAN_USE_LISTING_COLLECTION_ENDPOINT,
-        self::ROLE_CAN_MANAGE_TOKENS_IN_ALLOWED_COLLECTIONS,
-        self::ROLE_MODIFY_ALLOWED_COLLECTIONS,
-        self::ROLE_CAN_UPLOAD_TO_ALLOWED_COLLECTIONS,
-        self::ROLE_LIST_VERSIONS_FOR_ALLOWED_COLLECTIONS,
-        self::ROLE_DELETE_VERSIONS_IN_ALLOWED_COLLECTIONS
-    ];
 
     public const GRANTS_LIST = [
         self::ROLE_UPLOAD_IMAGES,

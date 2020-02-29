@@ -54,8 +54,8 @@ class AllowedTokensResponse implements \JsonSerializable
     {
         return [
             'status'     => $this->status,
-            'error_code' => $this->errorCode,
-            'http_code'  => $this->exitCode,
+            'error_code' => (int) $this->errorCode,
+            'http_code'  => (int) $this->exitCode,
             'errors'     => $this->errors,
             'tokens'     => $this->tokens
         ];

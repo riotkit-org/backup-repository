@@ -2,7 +2,7 @@
 
 namespace App\Domain\Common\Entity\Docs;
 
-abstract class PaginationDoc
+abstract class Pagination
 {
     /**
      * @var int

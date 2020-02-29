@@ -4,7 +4,7 @@ namespace App\Domain\Authentication\Entity\Docs;
 
 use Swagger\Annotations as SWG;
 
-abstract class TokenDataDoc
+abstract class TokenData
 {
     /**
      * @SWG\Property(type="array", example={"international-workers-association", "iwa-ait.org"}, @SWG\Items(type="string"))

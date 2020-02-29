@@ -36,6 +36,8 @@ class CreateEditController extends BaseController
     }
 
     /**
+     * Create (POST), edit (PUT) a versioned file-collection that will keep historic versions of file, and rotate them.
+     *
      * @SWG\Parameter(
      *     type="boolean",
      *     in="query",
@@ -75,7 +77,7 @@ class CreateEditController extends BaseController
      *         ),
      *         @SWG\Property(
      *             property="collection",
-     *             ref=@Model(type=\App\Domain\Backup\Entity\Docs\CollectionDoc::class)
+     *             ref=@Model(type=\App\Domain\Backup\Entity\Docs\Collection::class)
      *         ),
      *          @SWG\Property(
      *             property="context",
@@ -117,7 +119,7 @@ class CreateEditController extends BaseController
      *         ),
      *         @SWG\Property(
      *             property="collection",
-     *             ref=@Model(type=\App\Domain\Backup\Entity\Docs\CollectionDoc::class)
+     *             ref=@Model(type=\App\Domain\Backup\Entity\Docs\Collection::class)
      *         ),
      *          @SWG\Property(
      *             property="context",

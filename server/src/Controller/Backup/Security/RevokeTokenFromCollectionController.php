@@ -58,12 +58,12 @@ class RevokeTokenFromCollectionController extends ManageAllowedTokensController
      *
      *                 @SWG\Property(
      *                     property="collection",
-     *                     ref=@Model(type=\App\Domain\Backup\Entity\Docs\CollectionDoc::class)
+     *                     ref=@Model(type=\App\Domain\Backup\Entity\Docs\Collection::class)
      *                 ),
      *
      *                 @SWG\Property(
      *                     property="token",
-     *                     ref=@Model(type=\App\Domain\Authentication\Entity\Docs\TokenDoc::class)
+     *                     ref=@Model(type=\App\Domain\Backup\Entity\Docs\Token::class)
      *                 ),
      *
      *                 @SWG\Property(

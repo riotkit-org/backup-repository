@@ -99,12 +99,12 @@ class ListingController extends BaseController
      *             property="elements",
      *             type="array",
      *             @SWG\Items(
-     *                 ref=@Model(type=\App\Domain\Backup\Entity\Docs\CollectionDoc::class)
+     *                 ref=@Model(type=\App\Domain\Backup\Entity\Docs\Collection::class)
      *             )
      *         ),
      *         @SWG\Property(
      *             property="pagination",
-     *             ref=@Model(type=\App\Domain\Common\Entity\Docs\PaginationDoc::class)
+     *             ref=@Model(type=\App\Domain\Common\Entity\Docs\Pagination::class)
      *         )
      *     )
      * )

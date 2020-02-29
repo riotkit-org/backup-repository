@@ -65,7 +65,7 @@ class FetchController extends BaseController
      *         ),
      *         @SWG\Property(
      *             property="collection",
-     *             ref=@Model(type=\App\Domain\Backup\Entity\Docs\CollectionDoc::class)
+     *             ref=@Model(type=\App\Domain\Backup\Entity\Docs\Collection::class)
      *         ),
      *          @SWG\Property(
      *             property="context",
