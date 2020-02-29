@@ -1,0 +1,39 @@
+
+{% extends "@!NelmioApiDoc/SwaggerUi/index.html.twig" %}
+
+{% block stylesheets %}
+    {%  set base_color = "#f34a4a" %}
+
+    {{ parent() }}
+    <style>
+        body, .swagger-ui, .info table, .info p {
+            color: black !important;
+        }
+
+        header:before {
+            background-color: {{ base_color }};
+        }
+
+        header #logo img {
+            background-color: transparent;
+        }
+
+        #swagger-ui.api-platform .info .title {
+            color: {{ base_color }};
+        }
+
+        .swagger-ui .btn.authorize {
+            color: {{ base_color }};
+            border-color: {{ base_color }};
+        }
+
+        .swagger-ui .btn.authorize svg {
+            fill: black;
+        }
+    </style>
+{% endblock %}
+
+{% block header %}
+    <a id="logo" href="https://github.com/riotkit-org"><img src="{{ asset('images/riotkit-logo.png') }}" target="_blank" alt="RiotKit"></a>
+{% endblock %}
+

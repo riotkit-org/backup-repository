@@ -3,7 +3,7 @@ nelmio_api_doc:
     documentation:
         info:
             title: File Repository
-            description: Scalable Storage API, maintained by anarchist organization
+            description: Scalable Storage API, maintained by RiotKit grassroot organization
             version: '%APP_VERSION%'
 
         securityDefinitions:
