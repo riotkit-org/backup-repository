@@ -4,6 +4,7 @@ namespace App\Infrastructure\Authentication\Repository;
 
 use App\Domain\Authentication\Entity\Token;
 use App\Domain\Authentication\Exception\TokenAlreadyExistsException;
+use App\Domain\Authentication\Helper\TokenSecrets;
 use App\Domain\Authentication\Repository\TokenRepository;
 use App\Infrastructure\Common\Repository\TokenDoctrineRepository as CommonTokenRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
@@ -54,14 +55,14 @@ class TokenDoctrineRepository extends CommonTokenRepository implements TokenRepo
         return $qb->getQuery()->getResult();
     }
 
-    public function findTokensBy(string $pattern, int $page = 1, int $count = 50): array
+    public function findTokensBy(string $pattern, int $page = 1, int $count = 50, bool $searchById = true): array
     {
-        $qb = $this->createQueryFindTokensBy($pattern);
+        $qb = $this->createQueryFindTokensBy($pattern, $searchById);
 
         return $this->paginate($qb, $page, $count)->getQuery()->getResult();
     }
 
-    public function findMaxPagesTokensBy(string $pattern, int $limit = 50): int
+    public function findMaxPagesTokensBy(string $pattern, int $limit = 50, bool $searchById = true): int
     {
         $qb = $this->createQueryFindTokensBy($pattern);
         $qb->select('COUNT(token)');
@@ -69,15 +70,23 @@ class TokenDoctrineRepository extends CommonTokenRepository implements TokenRepo
         return (int) ceil($qb->getQuery()->getSingleScalarResult() / $limit);
     }
 
-    private function createQueryFindTokensBy(string $pattern)
+    private function createQueryFindTokensBy(string $pattern, bool $searchById = true)
     {
         $qb = $this->createQueryBuilder('token');
 
+        // searching by parts of id could be forbidden for security reasons
+        if ($searchById) {
+            $qb->andWhere('token.id LIKE :pattern');
+        }
+
+        // search only in allowed parts of token "*****f40-**87-**7c-**bb-********e8c0" when user does not have permissions to see full tokens
+        $qb->andWhere(TokenSecrets::generateDQLConcatString('token.id') . ' OR token.id = :pattern');
+
         // @fixme: Normal support for all databases
         if ($this->getDatabasePlatform() === 'sqlite') {
-            $qb->where('token.id LIKE :pattern OR token.roles LIKE :pattern');
+            $qb->orWhere('token.roles LIKE :pattern');
         } else {
-            $qb->where('token.id LIKE :pattern OR CAST(token.roles as STRING) LIKE :pattern');
+            $qb->orWhere('CAST(token.roles as STRING) LIKE :pattern');
         }
 
         $qb->setParameters(['pattern' => '%' . $pattern . '%']);

@@ -2,6 +2,7 @@
 
 namespace App\Domain\Common\SharedEntity;
 
+use App\Domain\Authentication\Helper\TokenSecrets;
 use App\Domain\Roles;
 
 class Token
@@ -32,18 +33,7 @@ class Token
     public function getCensoredId(): ?string
     {
         if ($this->getId()) {
-            $parts = explode('-', $this->getId());
-            $ranges = [5, 2, 2, 2, 8];
-
-            foreach ($parts as $num => $value) {
-                $parts[$num] = str_replace(
-                    substr($parts[$num], 0, $ranges[$num]),
-                    str_repeat('*', $ranges[$num]),
-                    $parts[$num]
-                );
-            }
-
-            return implode('-', $parts);
+            return TokenSecrets::getStrippedOutToken($this->getId());
         }
 
         return null;

@@ -30,7 +30,7 @@ class TokenSearchController extends BaseController
      *     type="string",
      *     in="query",
      *     name="q",
-     *     description="Query string, a search phrase"
+     *     description="Query string, a search phrase. Notice: If 'security.cannot_see_full_token_ids' restriction is applied on current viewer token, then search phrase will only consider non-asterisk characters for safety"
      * )
      *
      * @SWG\Parameter(
@@ -47,16 +47,9 @@ class TokenSearchController extends BaseController
      *     description="Currenty fetched page"
      * )
      *
-     * @SWG\Parameter(
-     *     type="string",
-     *     in="query",
-     *     name="q",
-     *     description="Query string, a search phrase"
-     * )
-     *
      * @SWG\Response(
      *     response="200",
-     *     description="Search tokens by id and associted fields",
+     *     description="Search tokens by id and associted fields. Notice: When current token has restriction 'security.cannot_see_full_token_ids', then all tokens will be censored, and search phrase will apply only to non-asterisk characters, example: *****f40-**87-**7c-**bb-********e8c0",
      *     @SWG\Schema(
      *         type="object",
      *         @SWG\Property(
@@ -115,8 +108,6 @@ class TokenSearchController extends BaseController
                     (int) $request->get('limit', 50),
                     $securityContext
                 );
-
-                // @todo: Disable searching by id, when id censorship is turned on
 
                 return new JsonFormattedResponse($response, JsonFormattedResponse::HTTP_OK);
             }

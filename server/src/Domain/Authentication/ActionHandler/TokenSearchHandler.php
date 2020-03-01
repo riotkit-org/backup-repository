@@ -46,7 +46,7 @@ class TokenSearchHandler
         }
 
         return TokenSearchResponse::createResultsResponse(
-            $this->repository->findTokensBy($pattern, $page, $limit),
+            $this->repository->findTokensBy($pattern, $page, $limit, !$ctx->cannotSeeFullTokenIds()),
             $page,
             $limit,
             $this->repository->findMaxPagesTokensBy($pattern, $limit),
