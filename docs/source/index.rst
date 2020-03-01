@@ -24,6 +24,7 @@ Main functionality:
    first-steps
    configuration-reference
    project-rules
+   swagger-docs
    docker
    domain/authentication/index
    domain/storage/index
@@ -47,7 +48,7 @@ Project was started as a part of RiotKit initiative, for the needs of grassroot 
 Technical description:
 
 Project was created in *Domain Driven* like design in PHP 7, with Symfony 4 framework.
-There are API tests written in *Postman* and unit tests written in *PhpUnit*.
+There are API tests written in *Codeception* and unit tests written in *PhpUnit*.
 Feel free to submit pull requests, report issues, or join our team.
 The project is licensed with a MIT license.
 

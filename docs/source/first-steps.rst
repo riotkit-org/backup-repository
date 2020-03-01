@@ -164,7 +164,7 @@ To do so, check all available roles in the application:
 
     GET /auth/roles?_token=YOUR-ADMIN-TOKEN-HERE
 
-:ref:`Note: If you DO NOT KNOW HOW to perform a request, then please check the postman section <postman>`
+:ref:`Note: If you DO NOT KNOW HOW to perform a request, then go to the /api/doc endpoint, type your token and submit a form for given endpoint.
 
 You should see something like this:
 
