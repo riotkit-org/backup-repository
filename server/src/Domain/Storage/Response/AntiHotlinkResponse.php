@@ -27,11 +27,6 @@ class AntiHotlinkResponse implements \JsonSerializable
      */
     private $status;
 
-    /**
-     * @var null
-     */
-    private $form;
-
     public static function createValidResponse(Filename $filename)
     {
         $new = new static();
@@ -45,7 +40,6 @@ class AntiHotlinkResponse implements \JsonSerializable
     public static function createNoAccessResponse()
     {
         $new = new static();
-        $new->form      = null;
         $new->status    = 'No access';
         $new->errorCode = 403;
         $new->httpCode  = 403;
@@ -56,7 +50,6 @@ class AntiHotlinkResponse implements \JsonSerializable
     public static function createNotFoundResponse()
     {
         $new = new static();
-        $new->form      = null;
         $new->status    = 'Not found';
         $new->errorCode = 404;
         $new->httpCode  = 404;

@@ -67,6 +67,52 @@ class AntiHotlinkViewFileController extends ViewFileController
      *     description="Returns file contents"
      * )
      *
+     * @SWG\Response(
+     *     response="403",
+     *     description="Forbidden - when the viewer's token does not match",
+     *     @SWG\Schema(
+     *         type="object",
+     *         @SWG\Property(
+     *             property="status",
+     *             type="string",
+     *             example="No access"
+     *         ),
+     *         @SWG\Property(
+     *             property="http_code",
+     *             type="integer",
+     *             example=403
+     *         ),
+     *         @SWG\Property(
+     *             property="error_code",
+     *             type="integer",
+     *             example=403
+     *         )
+     *     )
+     * )
+     *
+     * @SWG\Response(
+     *     response="404",
+     *     description="Not found - when file was not found",
+     *     @SWG\Schema(
+     *         type="object",
+     *         @SWG\Property(
+     *             property="status",
+     *             type="string",
+     *             example="Not found"
+     *         ),
+     *         @SWG\Property(
+     *             property="http_code",
+     *             type="integer",
+     *             example=404
+     *         ),
+     *         @SWG\Property(
+     *             property="error_code",
+     *             type="integer",
+     *             example=404
+     *         )
+     *     )
+     * )
+     *
      * @param Request $request
      * @param string $accessToken
      * @param string $fileId

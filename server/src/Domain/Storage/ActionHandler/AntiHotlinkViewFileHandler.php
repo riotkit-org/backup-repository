@@ -2,7 +2,6 @@
 
 namespace App\Domain\Storage\ActionHandler;
 
-use App\Domain\Storage\Form\ViewFileForm;
 use App\Domain\Storage\Repository\FileRepository;
 use App\Domain\Storage\Response\AntiHotlinkResponse;
 use App\Domain\Storage\Service\AlternativeFilenameResolver;
@@ -11,20 +10,9 @@ use App\Domain\Storage\ValueObject\Filename;
 
 class AntiHotlinkViewFileHandler
 {
-    /**
-     * @var HotlinkPatternResolver
-     */
-    private $resolver;
-
-    /**
-     * @var FileRepository
-     */
-    private $repository;
-
-    /**
-     * @var AlternativeFilenameResolver
-     */
-    private $mappingResolver;
+    private HotlinkPatternResolver      $resolver;
+    private FileRepository              $repository;
+    private AlternativeFilenameResolver $mappingResolver;
 
     public function __construct(
         HotlinkPatternResolver $patternResolver,

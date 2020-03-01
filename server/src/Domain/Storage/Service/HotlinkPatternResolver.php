@@ -61,7 +61,7 @@ class HotlinkPatternResolver
         $toCompare = str_replace('$http_x_remote_addr', $_SERVER['REMOTE_ADDR'] ?? '', $toCompare);
 
         $hashed = \hash($this->algorithm, $toCompare);
-        $this->logger->info('[PatternResolver] Will compare requested "' . $accessToken . '" with raw="' . $toCompare . '", hashed="' . $hashed . '"');
+        $this->logger->info('[PatternResolver] Will compare requested "' . $accessToken . '" with "' . $hashed . '" (raw on server side: "' . $toCompare . '")');
 
         return $accessToken === $hashed;
     }
