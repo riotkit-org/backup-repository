@@ -51,10 +51,24 @@ There exists extra parameters that are implemented by the docker container itsel
 =============================  =====================================================================================
   SENTRY_DSN=url-here           (optional) Enables integration with sentry.io, so all failures will be logged there
   SECURITY_ADMIN_TOKEN=...      (optional) Create admin auth token of given UUIDv4 on container startup
+  CACHE_ADAPTER_TYPE            (optional) Defaults to cache.adapter.filesystem, see: Symfony cache_ documentation
+  CACHE_REDIS_URL               (optional) Defaults to redis://localhost
+  CACHE_MEMCACHED_PROVIDER      (optional) Defaults to memcached://localhost
 =============================  =====================================================================================
 
 
+.. _cache: https://symfony.com/doc/4.4/cache.html
 .. _postgresql_support:
+
+Redis/Memcached cache support
+-----------------------------
+
+Docker container defines CACHE_ADAPTER_TYPE, CACHE_REDIS_URL and CACHE_MEMCACHED_PROVIDER that should be set in order to use a distributed cache server.
+
+Without a docker container you need to fill up a file in **config/packages/cache.yaml** to point to your cache server.
+
+.. literalinclude:: ../../server/config/packages/cache.yaml
+   :language: yaml
 
 PostgreSQL support
 ------------------

@@ -1,0 +1,7 @@
+framework:
+    cache:
+        app: "cache.adapter.redis"
+
+        # providers
+        default_redis_provider: "redis://cache"
+        default_memcached_provider: "memcached://localhost"

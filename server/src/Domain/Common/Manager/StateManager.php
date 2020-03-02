@@ -36,13 +36,13 @@ class StateManager
      */
     public function follow(string $beginName, string $endName, callable $code)
     {
-        $this->logger->info($beginName);
+        $this->logger->debug($beginName);
         $this->tracker->start($beginName);
 
         $result = $code();
 
         $this->tracker->stop($beginName);
-        $this->logger->info($endName);
+        $this->logger->debug($endName);
 
         return $result;
     }

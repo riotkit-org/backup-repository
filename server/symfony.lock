@@ -294,6 +294,9 @@
             "tests/.gitignore"
         ]
     },
+    "predis/predis": {
+        "version": "v1.1.1"
+    },
     "psr/cache": {
         "version": "1.0.1"
     },

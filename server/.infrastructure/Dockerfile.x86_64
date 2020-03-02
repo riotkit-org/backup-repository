@@ -59,7 +59,7 @@ ENV DATABASE_URL=sqlite:///%kernel.project_dir%/var/data.db \
     TOKEN_EXPIRATION_TIME="+30 minutes" \
     TEMP_DIRECTORY=/tmp \
     ENC_TOKEN_PHRASE=test123 \
-    ENC_SALT=PPvZuAyC1OwuquzjCbknRw1tMLC \
+    ENC_SALT=default-change-me \
     APP_DOMAIN= \
     API_TESTS=false \
     HTTP_TIMEOUT=30 \
@@ -78,7 +78,10 @@ ENV DATABASE_URL=sqlite:///%kernel.project_dir%/var/data.db \
     # Executes on each container run, after install/upgrade of the application
     POST_INSTALL_CMD="" \
     TZ="UTC" \
-    POST_INSTALL_CMD=""
+    POST_INSTALL_CMD="" \
+    CACHE_ADAPTER_TYPE="cache.adapter.filesystem" \
+    CACHE_REDIS_URL="redis://localhost" \
+    CACHE_MEMCACHED_PROVIDER="memcached://localhost"
 
 COPY server /var/www/html
 COPY --from=builder /var/www/html/public /var/www/html/

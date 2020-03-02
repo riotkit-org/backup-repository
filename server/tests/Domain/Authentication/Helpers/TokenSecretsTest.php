@@ -5,6 +5,8 @@ namespace Tests\Domain\Authentication\Entity;
 use App\Domain\Authentication\Helper\TokenSecrets;
 use App\Infrastructure\Authentication\Repository\TokenDoctrineRepository;
 use Doctrine\ORM\AbstractQuery;
+use Doctrine\ORM\Cache;
+use Symfony\Component\Cache\Adapter\AdapterInterface;
 use Tests\BaseTestCase;
 
 class TokenSecretsTest extends BaseTestCase
@@ -22,6 +24,12 @@ class TokenSecretsTest extends BaseTestCase
         // prepare Symfony DI
         self::bootKernel();
         $repository = self::$container->get(TokenDoctrineRepository::class);
+
+        $cache = self::$container->get(AdapterInterface::class);
+        dump(get_class($cache));
+
+        dump($cache->get('hehe', function () { return date('Y-m-d H:i:s'); }));
+        die();
 
         // pass our DQL through Doctrine to see if it is correct
         $qb = $repository->createQueryBuilder('t');

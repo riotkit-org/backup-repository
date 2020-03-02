@@ -161,15 +161,17 @@ if (!function_exists('generateReplicasConfiguration')) {
     }
 }
 
-function validateReplicaConfigurationFields(string $replicaName, array $configuration) {
-    $expectedKeys = ['default_dbname', 'dbname', 'host', 'password', 'user', 'port', 'path'];
+if (!function_exists('validateReplicaConfigurationFields')) {
+    function validateReplicaConfigurationFields(string $replicaName, array $configuration) {
+        $expectedKeys = ['default_dbname', 'dbname', 'host', 'password', 'user', 'port', 'path'];
 
-    foreach ($expectedKeys as $key) {
-        if (!isset($configuration[$key])) {
-            throw new \Exception(
-                '"' . $replicaName . '" is missing configuration key "' . $key . '" ' .
-                '(DB_' . $replicaName . '_' . strtoupper($key)  . ')'
-            );
+        foreach ($expectedKeys as $key) {
+            if (!isset($configuration[$key])) {
+                throw new \Exception(
+                    '"' . $replicaName . '" is missing configuration key "' . $key . '" ' .
+                    '(DB_' . $replicaName . '_' . strtoupper($key)  . ')'
+                );
+            }
         }
     }
 }
