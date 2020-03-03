@@ -6,43 +6,27 @@ use App\Domain\Storage\Entity\StoredFile;
 
 class ReadSecurityContext
 {
-    /**
-     * @var bool
-     */
-    private $viewAllProtectedFiles;
-
-    /**
-     * @var bool
-     */
-    private $listAllFilesInAllTags;
-
-    /**
-     * @var string
-     */
-    private $requestPassword;
-
-    /**
-     * @var array
-     */
-    private $allowedTags;
-
-    /**
-     * @var bool
-     */
-    private $canListAnything;
+    private bool $viewAllProtectedFiles;
+    private bool $listAllFilesInAllTags;
+    private string $requestPassword;
+    private array $allowedTags;
+    private bool $canListAnything;
+    private bool $canSeeAdminMetadata;
 
     public function __construct(
         bool $viewAllProtectedFiles,
         bool $listAllFilesInAllTags,
         bool $canListAnything,
         string $requestPassword,
-        array $allowedTags
+        array $allowedTags,
+        bool $canSeeAdminMetadata
     ) {
         $this->viewAllProtectedFiles = $viewAllProtectedFiles;
         $this->listAllFilesInAllTags = $listAllFilesInAllTags;
         $this->canListAnything       = $canListAnything;
         $this->requestPassword       = $requestPassword;
         $this->allowedTags           = $allowedTags;
+        $this->canSeeAdminMetadata   = $canSeeAdminMetadata;
     }
 
     public function isAbleToViewFile(StoredFile $file): bool
@@ -67,5 +51,10 @@ class ReadSecurityContext
     public function canListAnything(): bool
     {
         return $this->canListAnything;
+    }
+
+    public function canSeeAdminMetadata(): bool
+    {
+        return $this->canSeeAdminMetadata;
     }
 }

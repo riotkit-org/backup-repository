@@ -80,17 +80,6 @@ abstract class AbstractUploadHandler
                 $token
             );
 
-        } catch (DuplicatedContentException $exception) {
-            return $this->finalize(
-                FileUploadedResponse::createWithMeaningFileWasAlreadyUploadedUnderOtherName(
-                    $this->publicUrlFactory->fromStoredFile($exception->getAlreadyExistingFile()),
-                    $exception->getAlreadyExistingFile()->getId(),
-                    $exception->getAlreadyExistingFile()->getFilename(),
-                    $this->getRequestedFilename($form)
-                ),
-                $token
-            );
-
         } catch (FileUploadedTwiceException $exception) {
             return $this->finalize(
                 FileUploadedResponse::createWithMeaningFileWasAlreadyUploaded(

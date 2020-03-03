@@ -5,22 +5,32 @@ namespace App\Domain\Storage\DomainCommand\Filesystem;
 use App\Domain\Backup\ValueObject\FileSize;
 use App\Domain\Bus;
 use App\Domain\Common\Service\Bus\CommandHandler;
+use App\Domain\Common\ValueObject\DiskSpace;
 use App\Domain\Common\ValueObject\Filename as CommonFilename;
+use App\Domain\Storage\Exception\StorageException;
 use App\Domain\Storage\Manager\FilesystemManager;
+use App\Domain\Storage\Repository\FileRepository;
 use App\Domain\Storage\ValueObject\Filename;
 
 class GetSizeCommand implements CommandHandler
 {
-    /**
-     * @var FilesystemManager
-     */
-    private $fs;
+    private FilesystemManager $fs;
+    private FileRepository $repository;
 
-    public function __construct(FilesystemManager $fs)
+    public function __construct(FilesystemManager $fs, FileRepository $repository)
     {
-        $this->fs = $fs;
+        $this->fs         = $fs;
+        $this->repository = $repository;
     }
 
+    /**
+     * @param mixed $input
+     * @param string $path
+     *
+     * @return DiskSpace
+     *
+     * @throws StorageException
+     */
     public function handle($input, string $path)
     {
         $filename = $input[0] ?? null;
@@ -31,7 +41,13 @@ class GetSizeCommand implements CommandHandler
             throw new \InvalidArgumentException('GetSizeCommand expects first argument to be Filename type, got "' . $type . '"');
         }
 
-        return FileSize::fromBytes($this->fs->getFileSize(Filename::createFromBasicForm($filename)));
+        $file = $this->repository->findByName(Filename::createFromBasicForm($filename));
+
+        if (!$file) {
+            throw StorageException::fileNotFoundException();
+        }
+
+        return FileSize::fromBytes($this->fs->getFileSize($file->getStoragePath()));
     }
 
     public function supportsInput($input, string $path): bool
@@ -44,8 +60,6 @@ class GetSizeCommand implements CommandHandler
      */
     public function getSupportedPaths(): array
     {
-        return [
-            Bus::STORAGE_GET_FILE_SIZE
-        ];
+        return [Bus::STORAGE_GET_FILE_SIZE];
     }
 }

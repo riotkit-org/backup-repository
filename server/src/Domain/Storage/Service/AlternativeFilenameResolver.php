@@ -10,10 +10,7 @@ use App\Domain\Storage\ValueObject\Filename;
  */
 class AlternativeFilenameResolver
 {
-    /**
-     * @var array
-     */
-    private $mapping;
+    private array $mapping;
 
     public function __construct(array $mapping)
     {

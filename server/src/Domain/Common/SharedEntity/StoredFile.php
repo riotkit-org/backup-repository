@@ -18,6 +18,13 @@ abstract class StoredFile
     protected $fileName;
 
     /**
+     * The real path at storage
+     *
+     * @var string
+     */
+    protected $storagePath = '';
+
+    /**
      * @var string
      */
     protected $contentHash = '';

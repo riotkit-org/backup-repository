@@ -40,9 +40,9 @@ class FilesListingHandler
         $entries = $this->repository->findMultipleBy($searchParameters);
         $maxPages = $this->repository->getMultipleByPagesCount($searchParameters);
 
-        // normalize results
+        // normalize/postprocess results
         $entriesUserHasAccessTo = $this->filterOutEntriesUserCannotSee($entries, $securityContext);
-        $entriesWithPublicLink = $this->prepareFilesForPublicResponse($entriesUserHasAccessTo);
+        $entriesWithPublicLink = $this->prepareFilesForPublicResponse($entriesUserHasAccessTo, $securityContext);
 
         return [
             'results' => $entriesWithPublicLink,
@@ -75,16 +75,22 @@ class FilesListingHandler
     }
 
     /**
-     * @param StoredFile[] $entries
+     * @param StoredFile[]        $entries
+     * @param ReadSecurityContext $securityContext
      *
      * @return array
      */
-    private function prepareFilesForPublicResponse(array $entries): array
+    private function prepareFilesForPublicResponse(array $entries, ReadSecurityContext $securityContext): array
     {
         $output = [];
 
         foreach ($entries as $entry) {
             $asArray = $entry->jsonSerialize();
+
+            if ($securityContext->canSeeAdminMetadata()) {
+                $asArray = array_merge_recursive($asArray, $entry->jsonSerializeAdmin());
+            }
+
 
             if (!$entry instanceof AnonymousFile) {
                 $asArray['publicUrl'] = $this->urlFactory->fromStoredFile($entry);

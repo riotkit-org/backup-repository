@@ -23,23 +23,23 @@ class SeparatedReadWriteFilesystemManager implements FilesystemManager
     /**
      * {@inheritdoc}
      */
-    public function fileExist(Filename $filename): bool
+    public function fileExist(Path $path): bool
     {
-        return $this->roFS->fileExist($filename);
+        return $this->roFS->fileExist($path);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function directoryExists(Filename $filename): bool
+    public function directoryExists(Path $path): bool
     {
-        return $this->roFS->fileExist($filename);
+        return $this->roFS->fileExist($path);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function read(Filename $name): Stream
+    public function read(Path $name): Stream
     {
         return $this->roFS->read($name);
     }
@@ -47,9 +47,9 @@ class SeparatedReadWriteFilesystemManager implements FilesystemManager
     /**
      * {@inheritdoc}
      */
-    public function write(Filename $filename, Stream $stream): bool
+    public function write(Path $path, Stream $stream): bool
     {
-        return $this->rwFS->write($filename, $stream);
+        return $this->rwFS->write($path, $stream);
     }
 
     /**
@@ -63,29 +63,29 @@ class SeparatedReadWriteFilesystemManager implements FilesystemManager
     /**
      * {@inheritdoc}
      */
-    public function getFileSize(Filename $filename): ?int
+    public function getFileSize(Path $path): ?int
     {
-        return $this->roFS->getFileSize($filename);
+        return $this->roFS->getFileSize($path);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function delete(Filename $filename): void
+    public function delete(Path $path): void
     {
-        $this->rwFS->delete($filename);
+        $this->rwFS->delete($path);
     }
 
     public function test(): void
     {
         $testStr = Uuid::uuid4()->toString();
-        $testFilename = new Filename(Uuid::uuid4()->toString(). '.health_check');
+        $testPath = Path::fromCompletePath(Uuid::uuid4()->toString(). '.health_check');
         $content = new Stream(fopen('php://temp/maxmemory:1024', 'rb+'));
         fwrite($content->attachTo(), $testStr);
 
         try {
-            $this->rwFS->write($testFilename, $content);
-            $verification = fread($this->roFS->read($testFilename)->attachTo(), 1024);
+            $this->rwFS->write($testPath, $content);
+            $verification = fread($this->roFS->read($testPath)->attachTo(), 1024);
 
         } catch (ReadOnlyException $exception) {
             return;
@@ -98,7 +98,7 @@ class SeparatedReadWriteFilesystemManager implements FilesystemManager
             );
         }
 
-        $this->delete($testFilename);
+        $this->delete($testPath);
 
         if ($verification !== $testStr) {
             throw new StorageException('Read-write test failed, the read string does not match written');

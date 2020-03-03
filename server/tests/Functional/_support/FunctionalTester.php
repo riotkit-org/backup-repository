@@ -35,6 +35,11 @@ class FunctionalTester extends \Codeception\Actor
         $this->haveHttpHeader('token', $token);
     }
 
+    public function assertSame($expected, $actual, $message = '')
+    {
+        \PHPUnit\Framework\Assert::assertSame($expected, $actual, $message);
+    }
+
     public function haveRoles(array $roles, array $params = [], bool $assert = true): string
     {
         $this->amAdmin();
@@ -136,12 +141,23 @@ class FunctionalTester extends \Codeception\Actor
         $this->sendPOST(Urls::URL_REPOSITORY_UPLOAD_RAW . '?' . http_build_query($params), $payload);
     }
 
-    public function deleteFile(string $fileName, array $params = []): void
+    public function deleteFile(string $filename, array $params = []): void
     {
         $this->sendDELETE(
             $this->fill(
                 Urls::URL_REPOSITORY_DELETE_FILE,
-                ['fileName' => $fileName]
+                ['fileName' => $filename]
+            ),
+            $params
+        );
+    }
+
+    public function fetchFile(string $filename, array $params = []): void
+    {
+        $this->sendGET(
+            $this->fill(
+                Urls::URL_REPOSITORY_FETCH_FILE,
+                ['fileName' => $filename]
             ),
             $params
         );

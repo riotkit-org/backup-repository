@@ -11,25 +11,15 @@ use App\Domain\Storage\ValueObject\Stream;
 
 class StagingAreaRepository
 {
-    /**
-     * @var StagedFile[]
-     */
-    private $files = [];
-
-    /**
-     * @var string
-     */
-    private $tempPath;
-
-    /**
-     * @var FileDecoder
-     */
-    private $fileDecoder;
+    private array       $files = [];
+    private string      $tempPath;
+    private FileDecoder $fileDecoder;
 
     public function __construct(string $tempPath, FileDecoder $fileDecoder)
     {
         $this->tempPath    = $tempPath;
         $this->fileDecoder = $fileDecoder;
+        $this->files       = [];
     }
 
     public function keepStreamAsTemporaryFile(Stream $stream, InputEncoding $encoding): StagedFile

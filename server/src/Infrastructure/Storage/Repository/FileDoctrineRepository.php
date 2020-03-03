@@ -2,6 +2,7 @@
 
 namespace App\Infrastructure\Storage\Repository;
 
+use App\Domain\Storage\ValueObject\Path;
 use App\Infrastructure\Common\Repository\BaseRepository;
 use App\Domain\Storage\Entity\StoredFile;
 use App\Domain\Storage\Parameters\Repository\FindByParameters;
@@ -47,8 +48,6 @@ class FileDoctrineRepository extends BaseRepository implements FileRepository
      * @param Checksum $checksum
      *
      * @return StoredFile|null
-     *
-     * @throws \Doctrine\ORM\NonUniqueResultException
      */
     public function findByHash(Checksum $checksum): ?StoredFile
     {
@@ -57,7 +56,7 @@ class FileDoctrineRepository extends BaseRepository implements FileRepository
             ->setParameter('contentHash', $checksum->getValue());
 
         try {
-            return $qb->getQuery()->getSingleResult();
+            return $qb->getQuery()->getResult()[0] ?? null;
         } catch (NoResultException $exception) {
             return null;
         }
@@ -110,6 +109,16 @@ class FileDoctrineRepository extends BaseRepository implements FileRepository
     public function findExampleFile(): StoredFile
     {
         return StoredFile::newFromFilename(new Filename('example'));
+    }
+
+    public function findIsPathUnique(Path $path): bool
+    {
+        $qb = $this->createQueryBuilder('file');
+        $qb->select('COUNT(file)');
+        $qb->where('file.storagePath = :path');
+        $qb->setParameter('path', $path->getValue());
+
+        return (int) $qb->getQuery()->getSingleScalarResult() > 1;
     }
 
     /**

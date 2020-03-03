@@ -29,20 +29,9 @@ use App\Domain\Storage\ValueObject\Filename;
  */
 class ViewFileHandler
 {
-    /**
-     * @var StorageManager
-     */
-    private $storageManager;
-
-    /**
-     * @var FilesystemManager
-     */
-    private $fs;
-
-    /**
-     * @var AlternativeFilenameResolver
-     */
-    private $nameResolver;
+    private StorageManager $storageManager;
+    private FilesystemManager $fs;
+    private AlternativeFilenameResolver $nameResolver;
 
     public function __construct(
         StorageManager $storageManager,
@@ -93,7 +82,7 @@ class ViewFileHandler
                     '',
                     true,
                     'bytes',
-                    $this->fs->getFileSize($file->getStoredFile()->getFilename())
+                    $this->fs->getFileSize($file->getStoredFile()->getStoragePath())
                 );
             });
         }
@@ -115,7 +104,7 @@ class ViewFileHandler
         $res = $file->getStream()->attachTo();
 
         $allowLastModifiedHeader = true;
-        $fileSize = $this->fs->getFileSize($file->getStoredFile()->getFilename());
+        $fileSize = $this->fs->getFileSize($file->getStoredFile()->getStoragePath());
 
         //
         // Bytes range support (for streaming bigger files eg. video files)

@@ -6,10 +6,7 @@ use App\Domain\Storage\Entity\StoredFile;
 
 class DuplicatedContentException extends StoragePushException
 {
-    /**
-     * @var StoredFile
-     */
-    private $alreadyExistingFile;
+    private StoredFile $alreadyExistingFile;
 
     /**
      * Factory method

@@ -24,35 +24,12 @@ use App\Domain\Storage\ValueObject\Stream;
  */
 class WriteManager
 {
-    /**
-     * @var FilesystemManager
-     */
-    private $fs;
-
-    /**
-     * @var FileRepository
-     */
-    private $repository;
-
-    /**
-     * @var FileInfoFactory
-     */
-    private $fileInfoFactory;
-
-    /**
-     * @var SubmittedFileValidator
-     */
-    private $validator;
-
-    /**
-     * @var StoredFileFactory
-     */
-    private $storedFileFactory;
-
-    /**
-     * @var StagingAreaRepository
-     */
-    private $staging;
+    private FilesystemManager      $fs;
+    private FileRepository         $repository;
+    private FileInfoFactory        $fileInfoFactory;
+    private SubmittedFileValidator $validator;
+    private StoredFileFactory      $storedFileFactory;
+    private StagingAreaRepository  $staging;
 
     public function __construct(
         FilesystemManager      $fs,
@@ -86,7 +63,6 @@ class WriteManager
      *
      * @return StoredFile
      *
-     * @throws DuplicatedContentException
      * @throws ValidationException
      */
     public function overwriteFile(
@@ -98,7 +74,7 @@ class WriteManager
 
         return $this->submitFileToBothRepositoryAndStorage(
             $stream,
-            $existingFromRepository->getFilename(),
+            $existingFromRepository->getStoragePath(),
             $securityContext,
             $existingFromRepository,
             '',
@@ -113,22 +89,25 @@ class WriteManager
      *      In this case we just add an entry, skipping the validation, as the file is already present,
      *      we do not plan to delete it in case the validation rules could change in time
      *
-     * @param Filename      $filename
-     * @param UploadForm    $form
+     * @param Filename $filename
+     * @param UploadForm $form
      * @param InputEncoding $encoding
+     * @param Path $path
      *
      * @return StoredFile
      *
      * @throws StorageException
+     * @throws ValidationException
      */
     public function submitFileLostInRepositoryButExistingInStorage(
         Filename $filename,
         UploadForm $form,
-        InputEncoding $encoding
+        InputEncoding $encoding,
+        Path $path
     ): StoredFile {
 
         return $this->commitToRegistry(
-            $this->staging->keepStreamAsTemporaryFile($this->fs->read($filename), $encoding),
+            $this->staging->keepStreamAsTemporaryFile($this->fs->read($path), $encoding),
             $this->storedFileFactory->createFromForm($form, $filename),
             $form->contentIdent
         );
@@ -140,28 +119,28 @@ class WriteManager
      *       - Get all metadata
      *       - Write to REGISTRY and to STORAGE
      *
-     * @param Stream                $stream
-     * @param Filename              $filename
+     * @param Stream $stream
+     * @param Filename $filename
      * @param UploadSecurityContext $securityContext
-     * @param UploadForm            $form
-     * @param InputEncoding         $encoding
+     * @param UploadForm $form
+     * @param InputEncoding $encoding
+     * @param Path $path
      *
      * @return StoredFile
      *
-     * @throws DuplicatedContentException
-     * @throws StorageException
      * @throws ValidationException
      */
     public function submitNewFile(
-        Stream $stream,
-        Filename $filename,
+        Stream                $stream,
+        Filename              $filename,
         UploadSecurityContext $securityContext,
-        UploadForm $form,
-        InputEncoding $encoding
+        UploadForm            $form,
+        InputEncoding         $encoding,
+        Path                  $path
     ): StoredFile {
         return $this->submitFileToBothRepositoryAndStorage(
             $stream,
-            $filename,
+            $path,
             $securityContext,
             $this->storedFileFactory->createFromForm($form, $filename),
             $form->contentIdent,
@@ -174,21 +153,21 @@ class WriteManager
      *       Storage does NOT HAVE FILE
      *
      * @param Stream                $stream
-     * @param Filename              $filename
      * @param StoredFile            $existingFromRepository
      * @param UploadSecurityContext $securityContext
      * @param InputEncoding         $encoding
+     * @param Path                  $path
      *
      * @return StoredFile
      *
      * @throws StorageException
      */
     public function submitFileThatExistsInRepositoryButNotOnStorage(
-        Stream $stream,
-        Filename $filename,
-        StoredFile $existingFromRepository,
+        Stream                $stream,
+        StoredFile            $existingFromRepository,
         UploadSecurityContext $securityContext,
-        InputEncoding $encoding
+        InputEncoding         $encoding,
+        Path                  $path
     ): StoredFile {
 
         $staged = $this->staging->keepStreamAsTemporaryFile($stream, $encoding);
@@ -198,15 +177,15 @@ class WriteManager
 
         return $this->writeToBothRegistryAndStorage(
             $staged,
-            $filename,
             $existingFromRepository,
-            ''
+            '',
+            $path
         );
     }
 
     /**
      * @param Stream $stream
-     * @param Filename $filename
+     * @param Path $path
      * @param UploadSecurityContext $securityContext
      * @param StoredFile $storedFile
      * @param string $contentIdent
@@ -214,16 +193,15 @@ class WriteManager
      * @param InputEncoding $encoding
      * @return StoredFile
      *
-     * @throws DuplicatedContentException
      * @throws ValidationException
      */
     private function submitFileToBothRepositoryAndStorage(
-        Stream $stream,
-        Filename $filename,
+        Stream                $stream,
+        Path                  $path,
         UploadSecurityContext $securityContext,
-        StoredFile $storedFile,
-        string $contentIdent,
-        InputEncoding $encoding
+        StoredFile            $storedFile,
+        string                $contentIdent,
+        InputEncoding         $encoding
     ): StoredFile {
 
         // 1. Keep file in temporary dir
@@ -232,8 +210,16 @@ class WriteManager
         // 2. Get all info about the file
         $info = $this->fileInfoFactory->generateForStagedFile($staged, $contentIdent);
 
-        // 3. Avoid content duplications
-        $this->validator->assertThereIsNoFileByChecksum($storedFile, $info->getChecksum());
+        // 3. Avoid content duplications: Create our entry with our filename, but pointing at other file in storage
+        //    EARLY EXIT THERE.
+        try {
+            $this->validator->assertThereIsNoFileByChecksum($storedFile, $info->getChecksum());
+
+        } catch (DuplicatedContentException $exception) {
+            $storedFile->setToPointAtExistingPathInStorage($exception->getAlreadyExistingFile());
+
+            return $this->commitToRegistry($staged, $storedFile, $contentIdent);
+        }
 
         // each new file needs to be validated
         $this->validator->validateAfterUpload($staged, $securityContext);
@@ -241,54 +227,60 @@ class WriteManager
         // 4. Write in case of a valid NEW file
         return $this->writeToBothRegistryAndStorage(
             $staged,
-            $filename,
             $storedFile,
-            $contentIdent
+            $contentIdent,
+            $path
         );
     }
 
     /**
      * @param StagedFile $stagedFile
-     * @param Filename $filename
      * @param StoredFile $storedFile
-     * @param string $contentIdent
+     * @param string     $contentIdent
+     * @param Path       $path
      *
      * @return StoredFile
      *
-     * @throws DuplicatedContentException
      * @throws ValidationException
      */
     private function writeToBothRegistryAndStorage(
         StagedFile $stagedFile,
-        Filename $filename,
         StoredFile $storedFile,
-        string $contentIdent
+        string $contentIdent,
+        Path $path
     ): StoredFile {
 
-        $this->fs->write($filename, $stagedFile->openAsStream());
+        $this->fs->write($path, $stagedFile->openAsStream());
 
         return $this->commitToRegistry($stagedFile, $storedFile, $contentIdent);
     }
 
     /**
      * @param StagedFile|Path $stagedFile
-     * @param StoredFile $file
-     * @param string $contentIdent
+     * @param StoredFile      $file
+     * @param string          $contentIdent
+     * @param StoredFile|null $originForReference
      *
      * @return StoredFile
-     * @throws DuplicatedContentException
      * @throws ValidationException
      */
-    private function commitToRegistry($stagedFile, StoredFile $file, string $contentIdent): StoredFile
+    private function commitToRegistry($stagedFile, StoredFile $file, string $contentIdent,
+                                      ?StoredFile $originForReference = null): StoredFile
     {
+        // case: $file is a duplicate of $originForReference (the second one was already upload and has same content)
+        if ($originForReference) {
+            $file->setToPointAtExistingPathInStorage($originForReference);
+        }
+
+        // set default storage path, when uploading a new file
+        $file->fillUpStoragePathIfEmpty();
+
         // fill up the metadata
         if (!$file->wasAlreadyStored()) {
             $info = $this->fileInfoFactory->generateForStagedFile($stagedFile, $contentIdent);
 
             $file->setContentHash($info->getChecksum());
             $file->setMimeType($info->getMime());
-
-            $this->validator->assertThereIsNoFileByChecksum($file, $info->getChecksum());
 
             $this->validator->assertThereIsNoFileByFilename($file);
         }

@@ -105,6 +105,9 @@ final class Roles
     /** Define that the user can use the listing endpoint (basic usage) */
     public const ROLE_ACCESS_LISTING_ENDPOINT = 'view.can_use_listing_endpoint_at_all';
 
+    /** Can see extra, technical metadata such as storage path in the listing */
+    public const ROLE_CAN_SEE_EXTRA_ADMIN_METADATA = 'view.can_see_admin_metadata_in_listing';
+
     //
     //
     // SecureCopy domain
@@ -176,6 +179,7 @@ final class Roles
         self::ROLE_VIEW_ALL_PROTECTED_FILES,
         self::ROLE_BROWSE_LIST_OF_FILES_BY_ANY_TAG,
         self::ROLE_ACCESS_LISTING_ENDPOINT,
+        self::ROLE_CAN_SEE_EXTRA_ADMIN_METADATA,
         self::ROLE_REVOKE_TOKENS,
         self::ROLE_ADMINISTRATOR,
 

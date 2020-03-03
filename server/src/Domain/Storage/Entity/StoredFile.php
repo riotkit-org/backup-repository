@@ -6,6 +6,7 @@ use App\Domain\Common\ValueObject\Password;
 use App\Domain\Storage\ValueObject\Filename;
 use App\Domain\Storage\ValueObject\Mime;
 use App\Domain\Common\SharedEntity\StoredFile as StoredFileFromCommon;
+use App\Domain\Storage\ValueObject\Path;
 
 /**
  * Represents a file that is (or will be) stored in the storage
@@ -209,7 +210,7 @@ class StoredFile extends StoredFileFromCommon implements \JsonSerializable
         return $this->contentHash === $etag;
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return [
             'publicUrl'   => '',
@@ -222,6 +223,15 @@ class StoredFile extends StoredFileFromCommon implements \JsonSerializable
             'public'      => $this->public,
             'attributes'  => [
                 'isPasswordProtected' => $this->isPasswordProtected()
+            ]
+        ];
+    }
+
+    public function jsonSerializeAdmin(): array
+    {
+        return [
+            'attributes' => [
+                'path' => $this->getStoragePath()->getValue()
             ]
         ];
     }
@@ -242,5 +252,29 @@ class StoredFile extends StoredFileFromCommon implements \JsonSerializable
     public function getTimezone(): \DateTimeZone
     {
         return new \DateTimeZone($this->timezone);
+    }
+
+    public function setToPointAtExistingPathInStorage(StoredFile $getAlreadyExistingFile): void
+    {
+        $this->storagePath = $getAlreadyExistingFile->getStoragePath()->getValue();
+    }
+
+    public function fillUpStoragePathIfEmpty(): void
+    {
+        if ($this->storagePath) {
+            return;
+        }
+
+        $this->storagePath = $this->getFilename()->getValue();
+    }
+
+    public function getStoragePath(): Path
+    {
+        return Path::fromCompletePath($this->storagePath);
+    }
+
+    public function isUniqueInStorage(): ?bool
+    {
+        return $this->getFilename()->getValue() !== $this->getStoragePath()->getValue();
     }
 }

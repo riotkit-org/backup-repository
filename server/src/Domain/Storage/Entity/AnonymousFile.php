@@ -27,4 +27,14 @@ class AnonymousFile extends StoredFile
     {
         return '';
     }
+
+    /**
+     * For anonymous files we do not want to show this status
+     *
+     * @return bool|null
+     */
+    public function isUniqueInStorage(): ?bool
+    {
+        return null;
+    }
 }

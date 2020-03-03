@@ -9,7 +9,7 @@ class Filename extends BaseValueObject implements \JsonSerializable
     /**
      * @var string
      */
-    protected $value;
+    protected string $value;
 
     public function __construct(string $value)
     {

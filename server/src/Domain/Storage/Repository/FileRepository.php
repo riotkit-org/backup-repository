@@ -6,6 +6,7 @@ use App\Domain\Storage\Entity\StoredFile;
 use App\Domain\Storage\Parameters\Repository\FindByParameters;
 use App\Domain\Storage\ValueObject\Checksum;
 use App\Domain\Storage\ValueObject\Filename;
+use App\Domain\Storage\ValueObject\Path;
 
 interface FileRepository
 {
@@ -57,4 +58,13 @@ interface FileRepository
     public function getMultipleByPagesCount(FindByParameters $parameters): int;
 
     public function findExampleFile(): StoredFile;
+
+    /**
+     * Checks if there are multiple files in registry pointing to a single file on the storage
+     *
+     * @param Path $path
+     *
+     * @return bool
+     */
+    public function findIsPathUnique(Path $path): bool;
 }

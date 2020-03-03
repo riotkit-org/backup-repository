@@ -12,41 +12,41 @@ interface FilesystemManager
     /**
      * Check if the file exists
      *
-     * @param Filename $filename
+     * @param Path $path
      *
      * @return bool
      */
-    public function fileExist(Filename $filename): bool;
+    public function fileExist(Path $path): bool;
 
     /**
      * Check if the directory exists
      *
-     * @param Filename $filename
+     * @param Path $path
      *
      * @return bool
      */
-    public function directoryExists(Filename $filename): bool;
+    public function directoryExists(Path $path): bool;
 
     /**
      * Read a file
      *
-     * @param Filename $name
+     * @param Path $name
      *
      * @throws StorageException
      *
      * @return Stream
      */
-    public function read(Filename $name): Stream;
+    public function read(Path $name): Stream;
 
     /**
      * Write to file
      *
-     * @param Filename $filename
+     * @param Path   $path
      * @param Stream $stream
      *
      * @return bool
      */
-    public function write(Filename $filename, Stream $stream): bool;
+    public function write(Path $path, Stream $stream): bool;
 
     /**
      * Create a directory
@@ -56,16 +56,16 @@ interface FilesystemManager
     public function mkdir(Path $path): void;
 
     /**
-     * @param Filename $filename
+     * @param Path $path
      *
      * @return int|null
      */
-    public function getFileSize(Filename $filename): ?int;
+    public function getFileSize(Path $path): ?int;
 
     /**
-     * @param Filename $filename
+     * @param Path $path
      */
-    public function delete(Filename $filename): void;
+    public function delete(Path $path): void;
 
     public function test(): void;
 }

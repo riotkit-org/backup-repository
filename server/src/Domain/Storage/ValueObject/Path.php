@@ -2,44 +2,28 @@
 
 namespace App\Domain\Storage\ValueObject;
 
-class Path
-{
-    /**
-     * @var string
-     */
-    private $dir;
+use App\Domain\Common\ValueObject\Path as PathFromCommon;
 
+class Path extends PathFromCommon
+{
     /**
      * @var Filename
      */
-    private $filename;
+    protected $filename;
 
-    public function __construct(string $dir, Filename $filename = null)
+    public static function fromCompletePath(string $path)
     {
-        $this->dir = $dir;
-        $this->filename = $filename;
+        $dir = pathinfo($path, PATHINFO_DIRNAME);
 
-        if (!preg_match('/\/([A-Za-z0-9\-_\+\.\,\@\!\~\=\+\/]+)/', $this->getValue())) {
-            throw new \InvalidArgumentException('Invalid path format: "' . $this->getValue() . '"');
+        if ($dir === './') {
+            $dir = '';
         }
-    }
 
-    public function getValue(): string
-    {
-        return $this->dir . '/' . ($this->filename ? $this->filename->getValue() : '');
+        return new static($dir, new Filename(pathinfo($path, PATHINFO_BASENAME)));
     }
 
     public function getFilename(): Filename
     {
         return $this->filename;
-    }
-
-    public function isFile(): bool
-    {
-        if (!$this->filename) {
-            return false;
-        }
-
-        return \is_file($this->dir . '/' . $this->filename->getValue());
     }
 }

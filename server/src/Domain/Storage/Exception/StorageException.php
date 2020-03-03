@@ -10,4 +10,9 @@ class StorageException extends \Exception
         'consistency_not_found_on_disk' => 7016102,
         'storage_unavailable'           => 7016103
     ];
+
+    public static function fileNotFoundException(): StorageException
+    {
+        return new StorageException('File not found in the storage', StorageException::codes['file_not_found']);
+    }
 }

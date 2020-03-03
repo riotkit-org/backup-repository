@@ -42,6 +42,11 @@ App\Domain\Storage\Entity\StoredFile:
             type: boolean
             column: public
 
+        storagePath:
+            type: string
+            length: 1024
+            column: storagePath
+
     manyToMany:
         tags:
             targetEntity: Tag

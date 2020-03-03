@@ -20,10 +20,7 @@ use App\Domain\Storage\ValueObject\Stream;
  */
 class UploadFileByPostHandler extends AbstractUploadHandler
 {
-    /**
-     * @var UserUploadProvider
-     */
-    private $uploadProvider;
+    private UserUploadProvider $uploadProvider;
 
     public function __construct(
         StorageManager $storageManager,

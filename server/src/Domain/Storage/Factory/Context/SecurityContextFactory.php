@@ -47,7 +47,8 @@ class SecurityContextFactory
             $token->hasRole(Roles::ROLE_BROWSE_LIST_OF_FILES_BY_ANY_TAG),
             $token->hasRole(Roles::ROLE_ACCESS_LISTING_ENDPOINT),
             $form->password ?? '',
-            $token->getTags()
+            $token->getTags(),
+            $token->hasRole(Roles::ROLE_CAN_SEE_EXTRA_ADMIN_METADATA)
         );
     }
 
@@ -58,14 +59,15 @@ class SecurityContextFactory
             $token->hasRole(Roles::ROLE_BROWSE_LIST_OF_FILES_BY_ANY_TAG),
             $token->hasRole(Roles::ROLE_ACCESS_LISTING_ENDPOINT),
             $form->password ?? '',
-            $token->getTags()
+            $token->getTags(),
+            $token->hasRole(Roles::ROLE_CAN_SEE_EXTRA_ADMIN_METADATA)
         );
     }
 
     public function createReadContextInShell(): ReadSecurityContext
     {
         return new ReadSecurityContext(
-            true, true, true, '', []
+            true, true, true, '', [], true
         );
     }
 

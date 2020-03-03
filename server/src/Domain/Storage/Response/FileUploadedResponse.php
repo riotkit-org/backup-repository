@@ -95,26 +95,6 @@ class FileUploadedResponse implements \JsonSerializable
     }
 
     /**
-     * @param Url $url
-     * @param string|int $id
-     * @param Filename $filename
-     *
-     * @return FileUploadedResponse
-     */
-    public static function createWithMeaningFileWasAlreadyUploadedUnderOtherName(Url $url, $id, Filename $filename, Filename $requestedFilename): FileUploadedResponse
-    {
-        $new = new static();
-        $new->status   = 'OK';
-        $new->exitCode = 202;
-        $new->url      = $url;
-        $new->id       = $id;
-        $new->filename = $filename->getValue();
-        $new->requestedFilename = $requestedFilename->getValue();
-
-        return $new;
-    }
-
-    /**
      * @param string $message
      * @param int    $code
      * @param array  $context

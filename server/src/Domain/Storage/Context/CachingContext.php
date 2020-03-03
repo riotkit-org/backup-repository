@@ -6,15 +6,8 @@ use App\Domain\Storage\Entity\StoredFile;
 
 class CachingContext
 {
-    /**
-     * @var string
-     */
-    private $etag;
-
-    /**
-     * @var \DateTimeImmutable
-     */
-    private $timestamp;
+    private string $etag;
+    private ?\DateTimeImmutable $timestamp;
 
     public function __construct(string $etag, \DateTimeImmutable $timestamp = null)
     {
