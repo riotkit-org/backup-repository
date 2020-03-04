@@ -152,7 +152,6 @@ abstract class AbstractUploadHandler
      * @param UploadSecurityContext $context
      * @return StoredFile
      *
-     * @throws DuplicatedContentException
      * @throws FileUploadedTwiceException
      * @throws StorageException
      * @throws ValidationException

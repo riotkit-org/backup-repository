@@ -19,10 +19,7 @@ use App\Domain\Storage\ValueObject\Url;
  */
 class UploadFileByUrlHandler extends AbstractUploadHandler
 {
-    /**
-     * @var HttpDownloadProvider
-     */
-    private $provider;
+    private HttpDownloadProvider $provider;
 
     public function __construct(
         StorageManager         $storageManager,

@@ -11,14 +11,24 @@ class Filename extends BaseValueObject implements \JsonSerializable
      */
     protected string $value;
 
-    public function __construct(string $value)
+    private const ALLOWED_CHARACTERS = 'A-Za-z0-9\.\-\_\+\ \(\)@!\[\],\$';
+
+    public function __construct(string $value, bool $stripOut = false)
     {
+        $exceptionType = static::getExceptionType();
         $this->value = $value;
 
-        if (!preg_match('/^([A-Za-z0-9\.\-\_\+]+)$/', $value)) {
-            $exceptionType = static::getExceptionType();
+        // allow to strip out the filename for better user experience
+        if ($stripOut) {
+            $this->value = preg_replace('/([^' . self::ALLOWED_CHARACTERS . ']+)/', '', $this->value);
+        }
 
-            throw new $exceptionType('File name is not valid, please normalize it');
+        if (!$this->value) {
+            throw new $exceptionType('The filename is empty. Maybe it become after stripping out bad characters?');
+        }
+
+        if (!preg_match('/^([' . self::ALLOWED_CHARACTERS . ']+)$/', $this->value)) {
+            throw new $exceptionType('Filename is not valid, please normalize it');
         }
     }
 

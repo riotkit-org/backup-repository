@@ -15,7 +15,8 @@ class FileNameFactory
         return new Filename(
             $url->getReproducibleHash() .
             '_' .
-            pathinfo($parts[0], PATHINFO_BASENAME)
+            pathinfo($parts[0], PATHINFO_BASENAME),
+            true
         );
     }
 
@@ -26,7 +27,8 @@ class FileNameFactory
         }
 
         return new Filename(
-            $this->generateRandomName() . basename($form->fileName)
+            $this->generateRandomName() . basename($form->fileName),
+            $form->stripInvalidCharacters
         );
     }
 

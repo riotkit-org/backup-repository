@@ -60,7 +60,7 @@ class UploadFileByPostHandler extends AbstractUploadHandler
      */
     protected function getRequestedFilename($form): Filename
     {
-        return new Filename($form->fileName);
+        return new Filename($form->fileName, $form->stripInvalidCharacters);
     }
 
     /**
