@@ -223,6 +223,16 @@ class FunctionalTester extends \Codeception\Actor
         );
     }
 
+    public function deleteVersionFromCollection(string $id, string $version): void
+    {
+        $this->sendDELETE(
+            $this->fill(
+                Urls::URL_COLLECTION_DELETE_VERSION,
+                ['collectionId' => $id, 'version' => $version]
+            )
+        );
+    }
+
     public function deleteCollection(string $id): void
     {
         $this->sendDELETE(

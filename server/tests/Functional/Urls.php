@@ -26,6 +26,7 @@ class Urls
     public const URL_COLLECTION_UPLOAD = '/repository/collection/{{ collectionId }}/backup';
     public const URL_COLLECTION_LIST_VERSIONS = '/repository/collection/{{ collectionId }}/version';
     public const URL_COLLECTION_DOWNLOAD_VERSION = '/repository/collection/{{ collectionId }}/version/{{ version }}';
+    public const URL_COLLECTION_DELETE_VERSION = '/repository/collection/{{ collectionId }}/version/{{ version }}';
 
     public const URL_COLLECTION_GRANT_TOKEN = '/repository/collection/{{ collectionId }}/token';
     public const URL_COLLECTION_REVOKE_TOKEN = '/repository/collection/{{ collectionId }}/token/{{ tokenId }}';

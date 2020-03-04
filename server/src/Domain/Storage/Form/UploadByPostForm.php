@@ -15,7 +15,7 @@ class UploadByPostForm extends UploadForm
     /**
      * @var bool|string
      */
-    public $stripInvalidCharacters;
+    public $stripInvalidCharacters = false;
 
     /**
      * Is this file name a final, and should not be changed?
