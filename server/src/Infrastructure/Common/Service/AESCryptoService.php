@@ -16,27 +16,27 @@ abstract class AESCryptoService implements CryptoService
         $this->salt   = $salt;
     }
 
-    public function decode(string $input): string
+    public function decode(string $input, string $alternativeSecret = null): string
     {
         if (!$input) {
             return '';
         }
 
         try {
-            return CryptoJSAES::decrypt($input, $this->secret);
+            return CryptoJSAES::decrypt($input, $alternativeSecret ?: $this->secret);
 
         } catch (\InvalidArgumentException $exception) {
             return '';
         }
     }
 
-    public function encode(string $input): string
+    public function encode(string $input, string $alternativeSecret = null): string
     {
         if (!$input) {
             return '';
         }
 
-        return CryptoJSAES::encrypt($input, $this->secret);
+        return CryptoJSAES::encrypt($input, $alternativeSecret ?: $this->secret);
     }
 
     public function hash(string $input): string

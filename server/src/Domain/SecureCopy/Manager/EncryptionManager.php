@@ -24,7 +24,7 @@ class EncryptionManager
     {
         if ($ctx->isEncryptionActive()) {
             $mapping = [];
-            $out = $this->encrypter->encryptEntry($input, $mapping);
+            $out = $this->encrypter->encryptEntry($input, $ctx->getPassphrase(), $mapping);
             $this->idMappingRepository->persist($mapping);
 
             return $out;

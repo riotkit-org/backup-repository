@@ -3,7 +3,7 @@
 namespace App\Domain\SecureCopy\ActionHandler;
 
 use App\Domain\SecureCopy\Exception\AuthenticationException;
-use App\Domain\SecureCopy\Exception\ValidationException;
+use App\Domain\SecureCopy\Exception\CryptoMapNotFoundError;
 use App\Domain\SecureCopy\Repository\CryptoMapRepository;
 use App\Domain\SecureCopy\Response\FileReadingResponse;
 use App\Domain\SecureCopy\Security\MirroringContext;
@@ -24,14 +24,14 @@ class ServeFileContentHandler extends BaseSecureCopyHandler
     }
 
     /**
-     * @param string   $encryptedId
+     * @param string $encryptedId
      * @param resource $output
      *
      * @param MirroringContext $context
      *
      * @return FileReadingResponse
      * @throws AuthenticationException
-     * @throws ValidationException
+     * @throws CryptoMapNotFoundError
      */
     public function handle(string $encryptedId, $output, MirroringContext $context): FileReadingResponse
     {
