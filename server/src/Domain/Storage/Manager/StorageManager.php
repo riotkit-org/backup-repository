@@ -160,7 +160,7 @@ class StorageManager
 
         $path = $storedFile->getStoragePath();
 
-        if (!$this->repository->findIsPathUnique($path)) {
+        if ($this->repository->findIsPathUnique($path)) {
             $this->fs->delete($path);
             $isDeletionOk = !$this->fs->fileExist($path);
         }

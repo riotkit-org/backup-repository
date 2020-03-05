@@ -19,19 +19,21 @@ class Path extends BaseValueObject
         $this->dir = $dir;
         $this->filename = $filename;
 
-        if (!preg_match('/\/([A-Za-z0-9\-_\+\.\,\@\!\~\=\+\/]+)/', $this->getValue())) {
+        if (!preg_match('/([A-Za-z0-9\-_\+\.\,\@\!\~\=\+\/]+)/', $this->getValue())) {
             throw new \InvalidArgumentException('Invalid path format: "' . $this->getValue() . '"');
         }
     }
 
     public function getValue(): string
     {
-        return $this->dir . '/' . ($this->filename ? $this->filename->getValue() : '');
-    }
+        $filename = ($this->filename ? $this->filename->getValue() : '');
 
-    public function getFilename(): Filename
-    {
-        return $this->filename;
+        // simplify and unify the path (strip out: "." and "./")
+        if ($this->dir === '.') {
+            return $filename;
+        }
+
+        return $this->dir . '/' . $filename;
     }
 
     public function isFile(): bool

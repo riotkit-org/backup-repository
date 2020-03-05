@@ -22,7 +22,8 @@ final class Version20200302073302 extends AbstractMigration
         $indexes = $table->getIndexes();
 
         foreach ($indexes as $index) {
-            if ($index->getColumns() === ['contenthash']) {
+            // cannot compare array with array, as on MySQL the array would contain camelCase, on PostgreSQL it will be lowercase string
+            if (strtolower($index->getColumns()[0]) === 'contenthash' && count($index->getColumns()) === 1) {
                 $table->dropIndex($index->getName());
                 break;
             }

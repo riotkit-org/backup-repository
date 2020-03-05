@@ -37,8 +37,7 @@ class FileUploader
                 'password'       => $collection->getPassword(),
                 'tags'           => [],
                 'backUrl'        => '',
-                'public'         => false,
-                'contentIdent'   => '_COLLECTION_' . $collection->getId()
+                'public'         => false
             ],
 
             'token' => $token

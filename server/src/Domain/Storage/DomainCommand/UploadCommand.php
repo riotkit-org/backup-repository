@@ -25,7 +25,6 @@ class UploadCommand implements CommandHandler
         $form->fileName        = (new Filename($input['form']['fileName']))->getValue();
         $form->fileOverwrite   = $input['form']['fileOverwrite'];
         $form->backUrl         = $input['form']['backUrl'];
-        $form->contentIdent    = $input['form']['contentIdent'] ?? '';
         $form->isFinalFilename = $input['form']['isFinalFilename'] ?? false;
         $form->stream          = $input['form']['stream'] ?? null;
 

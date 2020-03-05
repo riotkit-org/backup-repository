@@ -12,15 +12,15 @@ class FilenameValidationCest
     public function verifyValidationErrorWillBeReturned(FunctionalTester $I): void
     {
         $I->amAdmin();
-        $I->sendPOST(Urls::URL_REPOSITORY_FILE_UPLOAD . '?fileName=;\\\\@invalidfilename@@@', 'test');
+        $I->sendPOST(Urls::URL_REPOSITORY_FILE_UPLOAD . '?fileName=;\\\\@invalidfilename@@@&stripInvalidCharacters=false', str_repeat('IWA-AIT ', 8096));
         $I->canSeeResponseCodeIs(400);
-        $I->canSeeResponseContains('File name is not valid');
+        $I->canSeeResponseContains('Filename is not valid');
     }
 
     public function verifyValidFileNamePassedValidation(FunctionalTester $I): void
     {
         $I->amAdmin();
-        $I->sendPOST(Urls::URL_REPOSITORY_FILE_UPLOAD . '?fileName=1235Cdwqe3_anarchista_z_przypadku.mp4', null, [
+        $I->sendPOST(Urls::URL_REPOSITORY_FILE_UPLOAD . '?fileName=1235Cdwqe3_anarchista_z_przypadku.mp4&stripInvalidCharacters=false', null, [
             'test' => __FILE__
         ]);
         $I->canSeeResponseContains('"status": "OK"');

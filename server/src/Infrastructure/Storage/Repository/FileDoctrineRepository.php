@@ -118,7 +118,7 @@ class FileDoctrineRepository extends BaseRepository implements FileRepository
         $qb->where('file.storagePath = :path');
         $qb->setParameter('path', $path->getValue());
 
-        return (int) $qb->getQuery()->getSingleScalarResult() > 1;
+        return (int) $qb->getQuery()->getSingleScalarResult() <= 1;
     }
 
     /**

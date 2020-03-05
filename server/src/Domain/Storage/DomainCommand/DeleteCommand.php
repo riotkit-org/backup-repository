@@ -12,10 +12,7 @@ use App\Domain\Storage\Security\ManagementSecurityContext;
 
 class DeleteCommand implements CommandHandler
 {
-    /**
-     * @var DeleteFileHandler
-     */
-    private $handler;
+    private DeleteFileHandler $handler;
 
     public function __construct(DeleteFileHandler $handler)
     {

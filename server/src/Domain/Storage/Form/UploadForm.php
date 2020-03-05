@@ -40,12 +40,6 @@ class UploadForm extends ApplicationForm
     public $public = true;
 
     /**
-     * @internal ApplicationForm::typeInSchema string
-     * @var string
-     */
-    public $contentIdent = '';
-
-    /**
      * eg. base64 (if the data in body is encoded with base64 and needs to be decoded)
      *
      * @internal ApplicationForm::typeInSchema string
@@ -65,7 +59,6 @@ class UploadForm extends ApplicationForm
         $form = new static();
 
         // defaults
-        $form->contentIdent  = '';
         $form->backUrl       = '';
         $form->fileOverwrite = false;
 
@@ -80,7 +73,6 @@ class UploadForm extends ApplicationForm
     public function toArray(): array
     {
         return [
-            'contentIdent'  => $this->contentIdent,
             'backUrl'       => $this->backUrl,
             'fileOverwrite' => $this->fileOverwrite,
             'tags'          => $this->tags,

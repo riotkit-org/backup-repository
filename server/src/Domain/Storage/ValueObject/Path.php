@@ -13,17 +13,9 @@ class Path extends PathFromCommon
 
     public static function fromCompletePath(string $path)
     {
-        $dir = pathinfo($path, PATHINFO_DIRNAME);
+        $dir      = pathinfo($path, PATHINFO_DIRNAME);
+        $basename = pathinfo($path, PATHINFO_BASENAME);
 
-        if ($dir === './') {
-            $dir = '';
-        }
-
-        return new static($dir, new Filename(pathinfo($path, PATHINFO_BASENAME)));
-    }
-
-    public function getFilename(): Filename
-    {
-        return $this->filename;
+        return new static($dir, new Filename($basename));
     }
 }

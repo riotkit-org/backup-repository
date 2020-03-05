@@ -108,8 +108,7 @@ class WriteManager
 
         return $this->commitToRegistry(
             $this->staging->keepStreamAsTemporaryFile($this->fs->read($path), $encoding),
-            $this->storedFileFactory->createFromForm($form, $filename),
-            $form->contentIdent
+            $this->storedFileFactory->createFromForm($form, $filename)
         );
     }
 
@@ -143,7 +142,6 @@ class WriteManager
             $path,
             $securityContext,
             $this->storedFileFactory->createFromForm($form, $filename),
-            $form->contentIdent,
             $encoding
         );
     }
@@ -188,7 +186,6 @@ class WriteManager
      * @param Path $path
      * @param UploadSecurityContext $securityContext
      * @param StoredFile $storedFile
-     * @param string $contentIdent
      *
      * @param InputEncoding $encoding
      * @return StoredFile
@@ -200,7 +197,6 @@ class WriteManager
         Path                  $path,
         UploadSecurityContext $securityContext,
         StoredFile            $storedFile,
-        string                $contentIdent,
         InputEncoding         $encoding
     ): StoredFile {
 
@@ -208,7 +204,7 @@ class WriteManager
         $staged = $this->staging->keepStreamAsTemporaryFile($stream, $encoding);
 
         // 2. Get all info about the file
-        $info = $this->fileInfoFactory->generateForStagedFile($staged, $contentIdent);
+        $info = $this->fileInfoFactory->generateForStagedFile($staged);
 
         // 3. Avoid content duplications: Create our entry with our filename, but pointing at other file in storage
         //    EARLY EXIT THERE.
@@ -218,7 +214,7 @@ class WriteManager
         } catch (DuplicatedContentException $exception) {
             $storedFile->setToPointAtExistingPathInStorage($exception->getAlreadyExistingFile());
 
-            return $this->commitToRegistry($staged, $storedFile, $contentIdent);
+            return $this->commitToRegistry($staged, $storedFile);
         }
 
         // each new file needs to be validated
@@ -228,7 +224,6 @@ class WriteManager
         return $this->writeToBothRegistryAndStorage(
             $staged,
             $storedFile,
-            $contentIdent,
             $path
         );
     }
@@ -236,7 +231,6 @@ class WriteManager
     /**
      * @param StagedFile $stagedFile
      * @param StoredFile $storedFile
-     * @param string     $contentIdent
      * @param Path       $path
      *
      * @return StoredFile
@@ -246,25 +240,23 @@ class WriteManager
     private function writeToBothRegistryAndStorage(
         StagedFile $stagedFile,
         StoredFile $storedFile,
-        string $contentIdent,
         Path $path
     ): StoredFile {
 
         $this->fs->write($path, $stagedFile->openAsStream());
 
-        return $this->commitToRegistry($stagedFile, $storedFile, $contentIdent);
+        return $this->commitToRegistry($stagedFile, $storedFile);
     }
 
     /**
      * @param StagedFile|Path $stagedFile
      * @param StoredFile      $file
-     * @param string          $contentIdent
      * @param StoredFile|null $originForReference
      *
      * @return StoredFile
      * @throws ValidationException
      */
-    private function commitToRegistry($stagedFile, StoredFile $file, string $contentIdent,
+    private function commitToRegistry($stagedFile, StoredFile $file,
                                       ?StoredFile $originForReference = null): StoredFile
     {
         // case: $file is a duplicate of $originForReference (the second one was already upload and has same content)
@@ -277,7 +269,7 @@ class WriteManager
 
         // fill up the metadata
         if (!$file->wasAlreadyStored()) {
-            $info = $this->fileInfoFactory->generateForStagedFile($stagedFile, $contentIdent);
+            $info = $this->fileInfoFactory->generateForStagedFile($stagedFile);
 
             $file->setContentHash($info->getChecksum());
             $file->setMimeType($info->getMime());
