@@ -21,7 +21,7 @@ final class Version20200306063715 extends AbstractMigration
     public function up(Schema $schema) : void
     {
         $table = $schema->getTable('file_registry');
-        $table->addColumn('submittedBy', Types::STRING, ['length' => 36]);
+        $table->addColumn('submittedBy', Types::STRING, ['length' => 36, 'null' => true]);
     }
 
     public function down(Schema $schema) : void
