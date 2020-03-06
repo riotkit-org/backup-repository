@@ -72,6 +72,11 @@ class PublicFilesVisibilityCest
         $I->canSeeResponseCodeIs(200);
     }
 
+    /**
+     * Case: When I upload a file, then I can at least be able to read/download it.
+     *
+     * @param FunctionalTester $I
+     */
     public function asAUploaderIShouldHaveReadPermissionsToTheUploadedFile(FunctionalTester $I): void
     {
         // create two tokens
