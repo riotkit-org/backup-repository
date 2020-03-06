@@ -22,6 +22,8 @@ class Token
     // internal
     private bool $alreadyGrantedAdminAccess = false;
 
+    public const ANONYMOUS_TOKEN_ID = '00000000-0000-0000-0000-000000000000';
+
     /**
      * @return string
      */
@@ -64,5 +66,22 @@ class Token
     public function hasRole(string $roleName): bool
     {
         return \in_array($roleName, $this->getRoles(), true);
+    }
+
+    /**
+     * @return static
+     */
+    public static function createAnonymousToken()
+    {
+        $token = new static();
+        $token->id    = self::ANONYMOUS_TOKEN_ID;
+        $token->roles = [];
+
+        return $token;
+    }
+
+    public function canBePersisted(): bool
+    {
+        return $this->id !== self::ANONYMOUS_TOKEN_ID;
     }
 }

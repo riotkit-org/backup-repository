@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Swagger\Annotations as SWG;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class FetchController extends BaseController
 {
@@ -121,8 +122,8 @@ class FetchController extends BaseController
                     $this->authFactory->createVersioningContext($this->getLoggedUserToken())
                 );
 
-                if ($response->shouldRedirectToUrl()) {
-                    return new RedirectResponse($response->getUrl(), RedirectResponse::HTTP_FOUND);
+                if ($response->isSuccess()) {
+                    return new StreamedResponse($response->getCallback(), $response->getExitCode());
                 }
 
                 return new JsonFormattedResponse($response, $response->getExitCode());

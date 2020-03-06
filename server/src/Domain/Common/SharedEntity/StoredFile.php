@@ -30,6 +30,14 @@ abstract class StoredFile
     protected $contentHash = '';
 
     /**
+     * There is no constraint in the database.
+     * Tokens could be massively generated, then deleted, we do not want constraints for them
+     *
+     * @var string Token id
+     */
+    protected $submittedBy;
+
+    /**
      * @return Filename
      */
     public function getFilename()

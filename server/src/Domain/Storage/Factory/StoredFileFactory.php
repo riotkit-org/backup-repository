@@ -2,6 +2,7 @@
 
 namespace App\Domain\Storage\Factory;
 
+use App\Domain\Authentication\Entity\Token;
 use App\Domain\Common\ValueObject\Password;
 use App\Domain\Storage\Entity\StoredFile;
 use App\Domain\Storage\Form\UploadForm;
@@ -10,19 +11,16 @@ use App\Domain\Storage\ValueObject\Filename;
 
 class StoredFileFactory
 {
-    /**
-     * @var TagRepository
-     */
-    private $tagRepository;
+    private TagRepository $tagRepository;
 
     public function __construct(TagRepository $tagRepository)
     {
         $this->tagRepository = $tagRepository;
     }
 
-    public function createFromForm(UploadForm $form, Filename $filename): StoredFile
+    public function createFromForm(UploadForm $form, Filename $filename, Token $token): StoredFile
     {
-        $storedFile = StoredFile::newFromFilename($filename);
+        $storedFile = StoredFile::newFromFilename($filename, $token->getId());
         $this->mapFromForm($form, $storedFile);
 
         return $storedFile;

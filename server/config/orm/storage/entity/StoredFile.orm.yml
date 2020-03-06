@@ -47,6 +47,11 @@ App\Domain\Storage\Entity\StoredFile:
             length: 1024
             column: storagePath
 
+        submittedBy:
+            type: string
+            length: 36
+            column: submittedBy
+
     manyToMany:
         tags:
             targetEntity: Tag

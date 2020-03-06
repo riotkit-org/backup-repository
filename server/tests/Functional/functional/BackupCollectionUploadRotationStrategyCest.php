@@ -6,15 +6,8 @@ use FunctionalTester;
 
 class BackupCollectionUploadRotationStrategyCest
 {
-    /**
-     * @var string
-     */
-    private $id;
-
-    /**
-     * @var string
-     */
-    private $token;
+    private string $id    = '';
+    private string $token = '';
 
     public function prepareDataForTest(FunctionalTester $I): void
     {

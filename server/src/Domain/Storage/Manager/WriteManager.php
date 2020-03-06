@@ -2,6 +2,7 @@
 
 namespace App\Domain\Storage\Manager;
 
+use App\Domain\Authentication\Entity\Token;
 use App\Domain\Storage\Entity\StagedFile;
 use App\Domain\Storage\Entity\StoredFile;
 use App\Domain\Storage\Exception\DuplicatedContentException;
@@ -93,6 +94,7 @@ class WriteManager
      * @param UploadForm $form
      * @param InputEncoding $encoding
      * @param Path $path
+     * @param UploadSecurityContext $ctx
      *
      * @return StoredFile
      *
@@ -100,15 +102,16 @@ class WriteManager
      * @throws ValidationException
      */
     public function submitFileLostInRepositoryButExistingInStorage(
-        Filename $filename,
-        UploadForm $form,
-        InputEncoding $encoding,
-        Path $path
+        Filename              $filename,
+        UploadForm            $form,
+        InputEncoding         $encoding,
+        Path                  $path,
+        UploadSecurityContext $ctx
     ): StoredFile {
 
         return $this->commitToRegistry(
             $this->staging->keepStreamAsTemporaryFile($this->fs->read($path), $encoding),
-            $this->storedFileFactory->createFromForm($form, $filename)
+            $this->storedFileFactory->createFromForm($form, $filename, $ctx->getUploaderToken())
         );
     }
 
@@ -124,6 +127,7 @@ class WriteManager
      * @param UploadForm $form
      * @param InputEncoding $encoding
      * @param Path $path
+     * @param Token $token
      *
      * @return StoredFile
      *
@@ -135,13 +139,14 @@ class WriteManager
         UploadSecurityContext $securityContext,
         UploadForm            $form,
         InputEncoding         $encoding,
-        Path                  $path
+        Path                  $path,
+        Token                 $token
     ): StoredFile {
         return $this->submitFileToBothRepositoryAndStorage(
             $stream,
             $path,
             $securityContext,
-            $this->storedFileFactory->createFromForm($form, $filename),
+            $this->storedFileFactory->createFromForm($form, $filename, $token),
             $encoding
         );
     }
@@ -173,12 +178,7 @@ class WriteManager
         // each file added to filesystem should be validated
         $this->validator->validateAfterUpload($staged, $securityContext);
 
-        return $this->writeToBothRegistryAndStorage(
-            $staged,
-            $existingFromRepository,
-            '',
-            $path
-        );
+        return $this->writeToBothRegistryAndStorage($staged, $existingFromRepository, $path);
     }
 
     /**
@@ -221,11 +221,7 @@ class WriteManager
         $this->validator->validateAfterUpload($staged, $securityContext);
 
         // 4. Write in case of a valid NEW file
-        return $this->writeToBothRegistryAndStorage(
-            $staged,
-            $storedFile,
-            $path
-        );
+        return $this->writeToBothRegistryAndStorage($staged, $storedFile, $path);
     }
 
     /**

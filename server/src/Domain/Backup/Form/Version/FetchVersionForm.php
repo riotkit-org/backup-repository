@@ -30,4 +30,19 @@ class FetchVersionForm
      * @var string
      */
     public $token;
+
+    /**
+     * @var string
+     */
+    public $httpBytesRange;
+
+    /**
+     * @var string
+     */
+    public $httpIfNoneMatch;
+
+    /**
+     * @var string
+     */
+    public $httpIfModifiedSince;
 }

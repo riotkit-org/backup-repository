@@ -57,15 +57,17 @@ class StoredFile extends StoredFileFromCommon implements \JsonSerializable
 
     /**
      * @param Filename $filename
+     * @param string $submittedBy
      *
      * @return StoredFile
      *
      * @throws \Exception
      */
-    public static function newFromFilename(Filename $filename): StoredFile
+    public static function newFromFilename(Filename $filename, string $submittedBy): StoredFile
     {
         $new = new static();
         $new->fileName  = $filename->getValue();
+        $new->submittedBy = $submittedBy;
         $new->dateAdded = new \DateTimeImmutable();
         $new->tags      = [];
 
@@ -276,5 +278,10 @@ class StoredFile extends StoredFileFromCommon implements \JsonSerializable
     public function isUniqueInStorage(): ?bool
     {
         return $this->getFilename()->getValue() !== $this->getStoragePath()->getValue();
+    }
+
+    public function wasSubmittedByTokenId(?string $id): bool
+    {
+        return $id === $this->submittedBy;
     }
 }

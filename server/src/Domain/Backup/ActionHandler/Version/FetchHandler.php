@@ -4,37 +4,33 @@ namespace App\Domain\Backup\ActionHandler\Version;
 
 use App\Domain\Backup\Entity\BackupCollection;
 use App\Domain\Backup\Exception\AuthenticationException;
-use App\Domain\Backup\Factory\PublicUrlFactory;
 use App\Domain\Backup\Form\Version\FetchVersionForm;
 use App\Domain\Backup\Repository\VersionRepository;
 use App\Domain\Backup\Response\Version\FetchResponse;
 use App\Domain\Backup\Security\VersioningContext;
+use App\Domain\Bus;
+use App\Domain\Common\Exception\BusException;
+use App\Domain\Common\Service\Bus\DomainBus;
 
 class FetchHandler
 {
-    /**
-     * @var VersionRepository
-     */
     private VersionRepository $repository;
+    private DomainBus         $domain;
 
-    /**
-     * @var PublicUrlFactory
-     */
-    private PublicUrlFactory $urlFactory;
-
-    public function __construct(VersionRepository $repository, PublicUrlFactory $urlFactory)
+    public function __construct(VersionRepository $repository, DomainBus $bus)
     {
         $this->repository = $repository;
-        $this->urlFactory = $urlFactory;
+        $this->domain     = $bus;
     }
 
     /**
-     * @param FetchVersionForm  $form
+     * @param FetchVersionForm $form
      * @param VersioningContext $securityContext
      *
      * @return FetchResponse
      *
      * @throws AuthenticationException
+     * @throws BusException
      */
     public function handle(FetchVersionForm $form, VersioningContext $securityContext): FetchResponse
     {
@@ -53,12 +49,21 @@ class FetchHandler
             return FetchResponse::createWithNotFoundError();
         }
 
-        return FetchResponse::createSuccessResponseFromUrl(
-            $this->urlFactory->getUrlForVersion($version)
-                ->withQueryParam('password', $form->password ?? '')
-                ->withQueryParam('_token', $form->token),
-            $form->redirect
-        );
+        $response = $this->domain->call(Bus::STORAGE_VIEW_FILE, [
+            'isFileAlreadyValidated' => true,
+            'token'                  => $form->token,
+            'filename'               => $version->getFile()->getFilename()->getValue(),
+            'password'               => $form->password,
+            'bytesRange'             => $form->httpBytesRange,
+            'ifNoneMatch'            => $form->httpIfNoneMatch,
+            'ifModifiedSince'        => $form->httpIfModifiedSince
+        ]);
+
+        if ($response['callback'] ?? null) {
+            return FetchResponse::createSuccessResponseFromUrl($response['callback']);
+        }
+
+        return FetchResponse::createWithError($response['status'], $response['code']);
     }
 
     /**

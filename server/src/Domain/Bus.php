@@ -14,6 +14,7 @@ final class Bus
     public const STORAGE_UPLOAD            = 'storage.upload';
     public const STORAGE_DELETE            = 'storage.delete';
     public const STORAGE_GET_FILE_URL      = 'storage.get_file_url';
+    public const STORAGE_VIEW_FILE         = 'storage.view_file';
 
     //
     // cross domain

@@ -108,7 +108,7 @@ class FileDoctrineRepository extends BaseRepository implements FileRepository
 
     public function findExampleFile(): StoredFile
     {
-        return StoredFile::newFromFilename(new Filename('example'));
+        return StoredFile::newFromFilename(new Filename('example'), '123-456-789-10');
     }
 
     public function findIsPathUnique(Path $path): bool

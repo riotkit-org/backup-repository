@@ -2,8 +2,6 @@
 
 namespace App\Domain\Backup\Response\Version;
 
-use App\Domain\Backup\ValueObject\Url;
-
 class FetchResponse implements \JsonSerializable
 {
     /**
@@ -22,40 +20,27 @@ class FetchResponse implements \JsonSerializable
     private $errorCode;
 
     /**
-     * @var string
+     * @var callable
      */
-    private $url;
+    private $callback;
 
-    /**
-     * @var bool
-     */
-    private $allowRedirect;
-
-    /**
-     * @return string
-     */
-    public function getUrl(): string
-    {
-        return $this->url;
-    }
-
-    public function shouldRedirectToUrl(): bool
-    {
-        if (!$this->allowRedirect) {
-            return false;
-        }
-
-        return filter_var($this->url, FILTER_VALIDATE_URL) !== false;
-    }
-
-    public static function createSuccessResponseFromUrl(Url $url, bool $allowRedirect): FetchResponse
+    public static function createSuccessResponseFromUrl(callable $callback): FetchResponse
     {
         $new = new static();
         $new->status    = 'OK';
         $new->errorCode = 200;
         $new->exitCode  = 200;
-        $new->url       = $url->getValue();
-        $new->allowRedirect = $allowRedirect;
+        $new->callback = $callback;
+
+        return $new;
+    }
+
+    public static function createWithError(string $message, int $errorCode): FetchResponse
+    {
+        $new = new static();
+        $new->status    = $message;
+        $new->errorCode = 400;
+        $new->exitCode  = $errorCode;
 
         return $new;
     }
@@ -76,15 +61,21 @@ class FetchResponse implements \JsonSerializable
             'status'     => $this->status,
             'error_code' => $this->errorCode,
             'exit_code'  => $this->exitCode,
-            'url'        => $this->url
         ];
     }
 
-    /**
-     * @return int
-     */
+    public function isSuccess(): bool
+    {
+        return $this->getExitCode() <= 299;
+    }
+
     public function getExitCode(): int
     {
         return $this->exitCode;
+    }
+
+    public function getCallback(): callable
+    {
+        return $this->callback;
     }
 }

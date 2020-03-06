@@ -53,6 +53,20 @@ class ViewFileController extends BaseController
      *     description="HTTP Byte-Range support"
      * )
      *
+     * @SWG\Parameter(
+     *     name="If-None-Match",
+     *     type="string",
+     *     in="header",
+     *     description="HTTP caching header"
+     * )
+     *
+     * @SWG\Parameter(
+     *     name="If-modified-since",
+     *     type="string",
+     *     in="header",
+     *     description="HTTP caching header"
+     * )
+     *
      * @SWG\Response(
      *     response="200",
      *     description="Returns file contents"
@@ -111,6 +125,6 @@ class ViewFileController extends BaseController
 
     private function createPermissionsContext(ViewFileForm $form): ReadSecurityContext
     {
-        return $this->authFactory->createViewingContextFromTokenAndForm($this->getLoggedUserToken(), $form);
+        return $this->authFactory->createViewingContextFromTokenAndForm($this->getLoggedUserOrAnonymousToken(), $form);
     }
 }

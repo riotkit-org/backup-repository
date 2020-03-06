@@ -30,6 +30,11 @@ class FunctionalTester extends \Codeception\Actor
         $this->amToken('test-token-full-permissions');
     }
 
+    public function amGuest(): void
+    {
+        $this->deleteHeader('token');
+    }
+
     public function amToken(string $token): void
     {
         $this->haveHttpHeader('token', $token);

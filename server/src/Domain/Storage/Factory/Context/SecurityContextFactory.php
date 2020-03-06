@@ -36,11 +36,12 @@ class SecurityContextFactory
             $token->hasRole(Roles::ROLE_UPLOAD_ENFORCE_TOKEN_TAGS),
             $token->hasRole(Roles::ROLE_UPLOAD_ENFORCE_NO_PASSWORD),
             $token->hasRole(Roles::ROLE_ADMINISTRATOR),
-            $token->hasRole(Roles::ROLE_UPLOAD_ONLY_ONCE_SUCCESSFUL)
+            $token->hasRole(Roles::ROLE_UPLOAD_ONLY_ONCE_SUCCESSFUL),
+            $token
         );
     }
 
-    public function createViewingContextFromTokenAndForm(Token $token, ViewFileForm $form): ReadSecurityContext
+    public function createViewingContextFromTokenAndForm(Token $token, ViewFileForm $form, bool $isFileAlreadyValidated = false): ReadSecurityContext
     {
         return new ReadSecurityContext(
             $token->hasRole(Roles::ROLE_VIEW_ALL_PROTECTED_FILES),
@@ -48,11 +49,13 @@ class SecurityContextFactory
             $token->hasRole(Roles::ROLE_ACCESS_LISTING_ENDPOINT),
             $form->password ?? '',
             $token->getTags(),
-            $token->hasRole(Roles::ROLE_CAN_SEE_EXTRA_ADMIN_METADATA)
+            $token->hasRole(Roles::ROLE_CAN_SEE_EXTRA_ADMIN_METADATA),
+            $token,
+            $isFileAlreadyValidated
         );
     }
 
-    public function createListingContextFromTokenAndForm(Token $token, FilesListingForm $form): ReadSecurityContext
+    public function createListingContextFromTokenAndForm(Token $token, FilesListingForm $form, bool $isFileAlreadyValidated = false): ReadSecurityContext
     {
         return new ReadSecurityContext(
             $token->hasRole(Roles::ROLE_VIEW_ALL_PROTECTED_FILES),
@@ -60,14 +63,17 @@ class SecurityContextFactory
             $token->hasRole(Roles::ROLE_ACCESS_LISTING_ENDPOINT),
             $form->password ?? '',
             $token->getTags(),
-            $token->hasRole(Roles::ROLE_CAN_SEE_EXTRA_ADMIN_METADATA)
+            $token->hasRole(Roles::ROLE_CAN_SEE_EXTRA_ADMIN_METADATA),
+            $token,
+            $isFileAlreadyValidated
         );
     }
 
     public function createReadContextInShell(): ReadSecurityContext
     {
         return new ReadSecurityContext(
-            true, true, true, '', [], true
+            true, true, true, '', [], true,
+            Token::createAnonymousToken(), true
         );
     }
 

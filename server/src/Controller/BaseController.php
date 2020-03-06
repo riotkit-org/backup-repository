@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Domain\Authentication\Entity\Token;
 use App\Domain\Authentication\Factory\IncomingTokenFactory;
 use App\Domain\Common\Exception\AuthenticationException;
 use App\Domain\Common\Exception\CommonValidationException;
@@ -45,6 +46,16 @@ abstract class BaseController implements ContainerAwareInterface
         }
 
         return $token;
+    }
+
+    protected function getLoggedUserOrAnonymousToken(?string $className = null)
+    {
+        try {
+            return $this->getLoggedUserToken($className);
+
+        } catch (AccessDeniedHttpException $exception) {
+            return Token::createAnonymousToken();
+        }
     }
 
     protected function submitFormFromJsonRequest(Request $request, $formObject, string $formType): FormInterface

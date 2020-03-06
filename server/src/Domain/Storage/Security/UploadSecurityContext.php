@@ -2,6 +2,7 @@
 
 namespace App\Domain\Storage\Security;
 
+use App\Domain\Authentication\Entity\Token;
 use App\Domain\Storage\Entity\StoredFile;
 use App\Domain\Storage\Form\UploadForm;
 use App\Domain\Storage\ValueObject\Filesize;
@@ -9,50 +10,16 @@ use App\Domain\Storage\ValueObject\Mime;
 
 class UploadSecurityContext
 {
-    /**
-     * @var array
-     */
-    private $allowedMimes;
-
-    /**
-     * @var bool
-     */
-    private $isAllowedToUpload;
-
-    /**
-     * @var array
-     */
-    private $allowedTags;
-
-    /**
-     * @var bool
-     */
-    private $allowedToOverwrite;
-
-    /**
-     * @var int
-     */
-    private $maxAllowedFileSize;
-
-    /**
-     * @var bool
-     */
-    private $enforceTokenTags;
-
-    /**
-     * @var bool
-     */
-    private $enforceNoPassword;
-
-    /**
-     * @var bool
-     */
-    private $isAdministrator;
-
-    /**
-     * @var bool
-     */
-    private $canUploadOnlyOnce;
+    private array  $allowedMimes;
+    private bool   $isAllowedToUpload;
+    private array  $allowedTags;
+    private bool   $allowedToOverwrite;
+    private int    $maxAllowedFileSize;
+    private bool   $enforceTokenTags;
+    private bool   $enforceNoPassword;
+    private bool   $isAdministrator;
+    private bool   $canUploadOnlyOnce;
+    private Token  $uploaderToken;
 
     public function __construct(
         array $allowedMimes,
@@ -63,7 +30,8 @@ class UploadSecurityContext
         bool $enforceTokenTags,
         bool $enforceNoPassword,
         bool $isAdministrator,
-        bool $canUploadOnlyOnce
+        bool $canUploadOnlyOnce,
+        Token $uploaderToken
     ) {
         $this->allowedMimes = $allowedMimes;
         $this->allowedTags = $allowedTags;
@@ -74,6 +42,7 @@ class UploadSecurityContext
         $this->enforceNoPassword  = $enforceNoPassword;
         $this->isAdministrator    = $isAdministrator;
         $this->canUploadOnlyOnce  = $canUploadOnlyOnce;
+        $this->uploaderToken      = $uploaderToken;
     }
 
     public function isMimeAllowed(Mime $mime): bool
@@ -158,11 +127,14 @@ class UploadSecurityContext
         return $this->maxAllowedFileSize;
     }
 
-    /**
-     * @return bool
-     */
+    // @todo: Check usage of this, cover with tests
     public function isRestrictedToUploadOnlyOnce(): bool
     {
         return $this->canUploadOnlyOnce;
+    }
+
+    public function getUploaderToken(): Token
+    {
+        return $this->uploaderToken;
     }
 }

@@ -99,13 +99,13 @@ class StorageManager
         //       if there is any replication set up outside of the application (eg. MySQL + some clustering fs)
         if (!$existingFromRepository && $existsOnDisk) {
             // @todo: Make a selectable policies for this case
-            return $this->writeManager->submitFileLostInRepositoryButExistingInStorage($name, $form, $encoding, $path);
+            return $this->writeManager->submitFileLostInRepositoryButExistingInStorage($name, $form, $encoding, $path, $securityContext);
         }
 
         // case: FILE IS NEW
         // case: the file already exists but under different name
         if (!$existingFromRepository && !$existsOnDisk) {
-            return $this->writeManager->submitNewFile($stream, $name, $securityContext, $form, $encoding, $path);
+            return $this->writeManager->submitNewFile($stream, $name, $securityContext, $form, $encoding, $path, $securityContext->getUploaderToken());
         }
 
         // case: the file may be lost on the disk or not synchronized yet?

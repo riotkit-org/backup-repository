@@ -23,6 +23,10 @@ class TokenDoctrineRepository extends CommonTokenRepository implements TokenRepo
 
     public function persist(Token $token): void
     {
+        if (!$token->canBePersisted()) {
+            throw new \LogicException('Attempting to persist a token, that cannot be persisted');
+        }
+
         $this->_em->persist($token);
     }
 
