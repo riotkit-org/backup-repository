@@ -16,7 +16,7 @@ final class Version20200302073302 extends AbstractMigration
     public function up(Schema $schema) : void
     {
         $table = $schema->getTable('file_registry');
-        $table->addColumn('storagePath', Types::STRING, ['length' => 1024]);
+        $table->addColumn('storagePath', Types::STRING, ['length' => 254]);
         $table->addIndex(['storagePath'], 'storagePath_idx');
 
         $indexes = $table->getIndexes();

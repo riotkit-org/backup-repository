@@ -26,13 +26,14 @@ Lightweight, requires just PHP 7.4+ and at least SQLite3 or MySQL (other databas
 - Composer (PHP package manager)
 - "file" standard unix shell command
 - "sha256sum" unix shell command
-- MySQL 5.7+ / SQLite 3 / PostgreSQL
+- MariaDB 10.2+ / SQLite 3 / PostgreSQL 10.12+
+- NodeJS 12.x + NPM (for building simple frontend at installation time)
 
 **Requirements for the backup client "Bahub":**
 - Python 3.5+
 - For a list of required pip packages check: [requirements.txt](bahub-client/requirements.txt)
-- PostgreSQL client tools (for PostgreSQL support)
-- MySQL client tools (for MySQL support)
+- PostgreSQL client tools (for PostgreSQL databases backup support)
+- MariaDB/MySQL client tools (for MySQL/MariaDB databases backup support)
 
 **Requirements to manually build documentation:**
 - sphinx-glpi-theme

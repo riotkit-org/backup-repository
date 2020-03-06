@@ -25,7 +25,7 @@ services:
             DATABASE_PORT: "5432"
 
     postgresql:
-        image: postgres:12.1-alpine
+        image: postgres:10.12-alpine
         volumes:
             - postgresql_run:/var/run/postgresql
             - ./postgres/docker-entrypoint-initdb.d/extensions.sh:/docker-entrypoint-initdb.d/extensions.sh:ro

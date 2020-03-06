@@ -8,11 +8,12 @@ You can also use a ready-to-use docker container instead of using host installat
 
 **Application requirements:**
 
-- PHP 7.4 or newer (with extensions: ctype, fileinfo, curl, json, openssl, pdo, pdo_mysql, pdo_pgsql, iconv)
+- PHP 7.4+ with bcmath, openssl, iconv, ctype, fileinfo, json, pdo, pdo_sqlite, pdo_pgsql, pdo_mysql
+- Composer (PHP package manager)
+- "file" standard unix shell command
+- "sha256sum" unix shell command
+- MariaDB 10.2+ / SQLite 3 / PostgreSQL 10.12+
 - NodeJS 12.x + NPM (for building simple frontend at installation time)
-- SQLite3, MySQL 5.7+ or PostgreSQL 10+
-- Composer (PHP package manager, see packagist.org)
-- make (GNU Make, we use it for build scripts)
 
 *Notice: For PostgreSQL configuration please check the configuration reference at :ref:`postgresql_support` page*
 
