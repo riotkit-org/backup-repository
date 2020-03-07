@@ -8,18 +8,19 @@ File Repository
 
 File Repository is a modern API application dedicated for storing files. 
 Can use any type of backend supported by Flysystem library, officialy we support S3 and local filesystem.
-Lightweight, requires just PHP 7.4+ and at least SQLite3 or MySQL (other databases can be also supported in future due to using ORM).
+Lightweight, requires just PHP 7.4+ and at least SQLite3, PostgreSQL or MySQL.
 
 #### For installation, guides and more information please check he documentation: https://file-repository.readthedocs.io/en/latest/index.html
 
 **Main functionality:**
 
-- Strict access control, you can **generate a token** that will have access to specific actions on specific items
-- Store files where you need; on **AWS S3, Minio.io, FTP, local storage and others...**
+- Strict access control, you can **generate a token** that will have access to specific actions and access to specific items
+- Store files where you need; on **AWS S3, Minio.io, local storage, or on other location supported by Flysystem library (we oficially test on local storage and Min.io)**
 - **Deduplication for non-grouped files**. There will be no duplicated files stored on your disk
 - **Backups management**, you can define a collection of file versions that can **rotate on adding a new version**
-- API + lightweight frontend
+- HTTP API, download endpoints supports Bytes Range (rewinding video files), in-browser cache
 - Ready to integrate upload forms for your applications. Only generate token and redirect a user to an url
+- Encryption
 
 **Requirements for the server:**
 - PHP 7.4+ with bcmath, openssl, iconv, ctype, fileinfo, json, pdo, pdo_sqlite, pdo_pgsql, pdo_mysql
@@ -30,7 +31,7 @@ Lightweight, requires just PHP 7.4+ and at least SQLite3 or MySQL (other databas
 - NodeJS 12.x + NPM (for building simple frontend at installation time)
 
 **Requirements for the backup client "Bahub":**
-- Python 3.5+
+- Python 3.6+
 - For a list of required pip packages check: [requirements.txt](bahub-client/requirements.txt)
 - PostgreSQL client tools (for PostgreSQL databases backup support)
 - MariaDB/MySQL client tools (for MySQL/MariaDB databases backup support)
