@@ -34,14 +34,14 @@ class FileRepositorySession(requests.Session):
             qs['since'] = since.strftime('%Y-%m-%d %H:%M:%S')
 
         response = self.request('GET', '/secure-copy/' + element_type + '/list', params=qs)
-        respnose_as_str = response.content.decode('utf-8')
+        response_as_str = response.content.decode('utf-8')
         elements_parsed = []
 
         try:
-            header_body = respnose_as_str.split("\n\n")
+            header_body = response_as_str.split("\n\n")
             body_rows = header_body[1].split("\n")
         except IndexError as e:
-            raise Exception('Cannot parse returned response (' + str(e) + '): ' + respnose_as_str)
+            raise Exception('Cannot parse returned response (' + str(e) + '): ' + response_as_str)
 
         for line in body_rows:
             if not line:
@@ -53,7 +53,11 @@ class FileRepositorySession(requests.Session):
                 Logger.warning('Failed parsing event: ' + str(line))
                 continue
 
-        return elements_parsed
+        # make sure the list is sorted by date ascending, as we will be going through
+        # those elements one-by-one basing on last processed
+        reordered = sorted(elements_parsed, key=lambda element: element['date'])
+
+        return reordered
 
     def request_file(self, fileid: str) -> IO:
         """ Request a file content, get a stream that could be copied to file """

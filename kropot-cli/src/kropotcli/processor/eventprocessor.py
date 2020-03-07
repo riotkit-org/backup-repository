@@ -16,10 +16,12 @@ class EventProcessor(GenericEntryProcessor):
 
     children: List[GenericEntryProcessor]
     log_repository: LogRepository
+    instance_name: str
 
-    def __init__(self, client: FileRepositorySession, storage: StorageManager, log_repository: LogRepository):
+    def __init__(self, client: FileRepositorySession, storage: StorageManager, log_repository: LogRepository, instance_name: str):
         self.log_repository = log_repository
         self.children = [FileTypeProcessor(client, storage)]
+        self.instance_name = instance_name
 
         super().__init__(client, storage)
 
@@ -49,6 +51,7 @@ class EventProcessor(GenericEntryProcessor):
                     raw_data['tz'],
                     raw_data['form']
                 )
+                log_entry.mark_as_in_progress(self.instance_name)
                 self.log_repository.persist(log_entry)
 
                 # process

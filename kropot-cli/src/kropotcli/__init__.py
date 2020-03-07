@@ -21,8 +21,11 @@ def main():
     parser.add_argument('--db-string', help='Database connection string in SQLAlchemy format ' +
                                             '(see: https://docs.sqlalchemy.org/en/13/core/engines.html)',
                         default='sqlite:///database.db')
-    parser.add_argument('--refresh-time', help='Interval between checking for changes on the server', default=300, type=int)
+    parser.add_argument('--refresh-time', help='Interval between checking for changes on the server',
+                        default=300, type=int)
     parser.add_argument('action', metavar='action', type=str,  help='Action to perform: list, collect')
+    parser.add_argument('--instance-name', help='Name of the instance, when multiple KropotCLI are spawned',
+                        default='default')
 
     parser.description = 'File Repository client dedicated to perform streaming copy of the storage data. ' + \
                          'Not intended for HA/replication use, just for backup process.'
@@ -35,7 +38,8 @@ def main():
             storage_path=parsed['storage_path'],
             log_level=parsed['log_level'],
             db_string=parsed['db_string'],
-            sleep_time=parsed['refresh_time']
+            sleep_time=parsed['refresh_time'],
+            instance_name=parsed['instance_name']
         )
 
         app.main(action=parsed['action'])
