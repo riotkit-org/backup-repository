@@ -5,15 +5,18 @@ SUDO=sudo
 ARCH=x86_64
 PIP_BIN=pip3
 PIP_ARGS=
+SERVER_URL=http://localhost:8000
+SERVER_TOKEN=test-token-full-permissions
+STORAGE_PATH=/tmp/bread-crumbs
 
 help: ## Help
 	@grep -E '^[a-zA-Z\-\_0-9\.@]+:.*?## .*$$' Makefile | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
 test_run: ## Connect to local File Repository testing instance at localhost:8000 port and start streaming
 	cd src && ${PYTHON} -m kropotcli \
-		--token=test-token-full-permissions \
-		--server-url=http://localhost:8000 \
-		--storage-path=/tmp/bread-crumbs \
+		--token=${SERVER_TOKEN} \
+		--server-url=${SERVER_URL} \
+		--storage-path=${STORAGE_PATH} \
 		--db-string=sqlite:///database.db \
 		collect
 
