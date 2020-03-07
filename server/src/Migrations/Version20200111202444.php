@@ -14,6 +14,10 @@ final class Version20200111202444 extends AbstractMigration
 
     public function up(Schema $schema) : void
     {
+        if (!$this->getTimezone()) {
+            throw new \Exception('PHP timezone, or TZ environment variable is not set!');
+        }
+
         $this->addSql('UPDATE file_registry SET timezone = ? WHERE timezone is null OR timezone = \'\'', [$this->getTimezone()]);
     }
 
