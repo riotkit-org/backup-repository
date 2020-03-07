@@ -83,29 +83,17 @@ jobs:
     # ================
     #  Release: Docker
     # ================
-    - stage: "Server: Publish docker image"
+    - stage: "Publish all docker images"
       <<: *main_python_version
       before_script:
           - echo "$QUAY_PASSWORD" | sudo docker login -u "$QUAY_USERNAME" --password-stdin quay.io
       script:
           - cd server
           - make build_image TAG=${TRAVIS_TAG:-dev} PIP="pip" PIP_ARGS=" --ignore-installed " SUDO=""
-          - make push_image TAG=${TRAVIS_TAG:-dev}
-
-    - stage: "Bahub Client: Publish docker image"
-      <<: *main_python_version
-      before_script:
-          - echo "$QUAY_PASSWORD" | sudo docker login -u "$QUAY_USERNAME" --password-stdin quay.io
-      script:
+          - make push_image TAG=${TRAVIS_TAG:-dev} && cd ..
           - cd bahub-client
           - make build_image TAG=${TRAVIS_TAG:-dev} PIP="pip" PIP_ARGS=" --ignore-installed " SUDO=""
-          - make push_image TAG=${TRAVIS_TAG:-dev}
-
-    - stage: "Kropot-CLI Client: Publish docker image"
-      <<: *main_python_version
-      before_script:
-          - echo "$QUAY_PASSWORD" | sudo docker login -u "$QUAY_USERNAME" --password-stdin quay.io
-      script:
+          - make push_image TAG=${TRAVIS_TAG:-dev} && cd ..
           - cd kropot-cli
           - make build_image TAG=${TRAVIS_TAG:-dev} PIP="pip" PIP_ARGS=" --ignore-installed " SUDO=""
           - make push_image TAG=${TRAVIS_TAG:-dev}
