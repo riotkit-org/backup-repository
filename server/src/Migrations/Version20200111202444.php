@@ -14,7 +14,7 @@ final class Version20200111202444 extends AbstractMigration
 
     public function up(Schema $schema) : void
     {
-        $this->addSql('UPDATE file_registry SET timezone = ? WHERE timezone is null', [$this->getTimezone()]);
+        $this->addSql('UPDATE file_registry SET timezone = ? WHERE timezone is null OR timezone = \'\'', [$this->getTimezone()]);
     }
 
     public function down(Schema $schema) : void
@@ -23,6 +23,6 @@ final class Version20200111202444 extends AbstractMigration
 
     private function getTimezone(): string
     {
-        return $_SERVER['TZ'] ?? \date_default_timezone_get();
+        return $_SERVER['TZ'] ?: \date_default_timezone_get();
     }
 }
