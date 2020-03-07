@@ -4,8 +4,8 @@ from ..persistance import LogRepository
 from ..storage import StorageManager
 from ..httpclient import FileRepositorySession
 from time import sleep
+from datetime import datetime
 import traceback
-import sys
 
 
 class CollectAction:
@@ -16,6 +16,9 @@ class CollectAction:
     client: FileRepositorySession
     sleep_time: int
     processor: EventProcessor
+
+    # state
+    last_processed_element_timestamp: datetime
 
     def __init__(self, url: str, instance_name: str, storage_manager: StorageManager, log_repository: LogRepository,
                  client: FileRepositorySession, sleep_time: int):
@@ -34,49 +37,83 @@ class CollectAction:
         Logger.info('Identifying self instance as "' + self.instance_name + '"')
 
         element_types = ['file']
+        self.last_processed_element_timestamp = None
 
         while True:
             for element_type in element_types:
-                try:
-                    last_processed_element_timestamp = self.log_repository.find_last_processed_element_date(element_type)
+                last_processed_element_timestamp = self.log_repository.find_last_processed_element_date(element_type)
 
-                    if last_processed_element_timestamp:
-                        Logger.info('Last processed entry of type "' + element_type + '" is at ' +
-                                    last_processed_element_timestamp.strftime('%Y-%m-%d %H:%M:%S'))
-
-                    events = self.client.request_event_stream(since=last_processed_element_timestamp,
-                                                              element_type=element_type)
-
-                    # todo: filter out already in-progress, pending, done
-
-                except Exception:
-                    Logger.error('Exception during processing the incoming event stream')
-                    traceback.print_exc()
-                    sleep(self.sleep_time)
-                    continue
-
+                #
+                # Fetch last events, starting from the point, where finished last time
+                #
+                events = self._get_events(last_processed_element_timestamp, element_type)
                 Logger.info('Fetched ' + str(len(events)) + ' events from the stream')
 
                 if len(events) == 0:
                     Logger.debug('No events fetched')
 
+                #
+                # In first priority: Last failed events (for this instance)
+                #
                 events_to_retry = self._get_events_to_retry()
-                events = events_to_retry + events
 
                 Logger.info('There are remaining ' + str(len(events_to_retry)) + ' events to retry, '
                             'those will be fetched first')
 
+                self._process(events_to_retry, ignore_existing=True)
                 self._process(events)
+
+                #
+                # Process the rest of pages (server returns a paginated list)
+                #
+                Logger.info('Fetching next pages')
+                page_num = 1
+
+                while True:
+                    page_num += 1
+                    events = self._get_events(last_processed_element_timestamp, element_type, page=page_num)
+                    Logger.info('Fetched ' + str(len(events)) + ' events from page ' + str(page_num))
+
+                    if len(events) == 0:
+                        Logger.info('No more pages to process, ending at ' + str(page_num - 1))
+                        break
+
+                    self._process(events)
 
             sleep(self.sleep_time)
 
-    def _process(self, events: list):
+    def _get_events(self, last_processed_element_timestamp: datetime, element_type: str, page: int = 1) -> list:
+        try:
+            if last_processed_element_timestamp:
+                Logger.info('Last processed entry of type "' + element_type + '" is at ' +
+                            last_processed_element_timestamp.strftime('%Y-%m-%d %H:%M:%S'))
+
+            return self.client.request_event_stream(since=last_processed_element_timestamp,
+                                                    element_type=element_type, page=page)
+
+        except Exception:
+            Logger.error('Exception during processing the incoming event stream')
+            Logger.error(traceback.format_exc())
+            sleep(self.sleep_time)
+            return []
+
+    def _process(self, events: list, ignore_existing: bool = False):
         for event in events:
             if not self.processor.can_process(event):
                 Logger.warning('Cannot process event. Possibly unknown element type')
                 continue
 
-            self.processor.process(event)
+            if not ignore_existing:
+                if self.log_repository.exists(event['type'], event['id']):
+                    Logger.info('Skipping "' + event['id'] + '" due to it is already being processed')
+                    continue
+
+            try:
+                self.processor.process(event)
+            except Exception:
+                Logger.error('Cannot process event')
+                Logger.error(traceback.format_exc())
+                continue
 
     def _get_events_to_retry(self) -> list:
         not_finished_elements = self.log_repository.find_all_not_finished_elements(self.instance_name)

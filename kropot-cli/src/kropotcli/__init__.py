@@ -25,7 +25,10 @@ def main():
                         default=300, type=int)
     parser.add_argument('action', metavar='action', type=str,  help='Action to perform: list, collect')
     parser.add_argument('--instance-name', help='Name of the instance, when multiple KropotCLI are spawned',
-                        default='default')
+                        required=True)
+    parser.add_argument('--http-timeout',
+                        help='HTTP request timeout (how long the file could be downloaded or requested)',
+                        default=7200)
 
     parser.description = 'File Repository client dedicated to perform streaming copy of the storage data. ' + \
                          'Not intended for HA/replication use, just for backup process.'
@@ -39,7 +42,8 @@ def main():
             log_level=parsed['log_level'],
             db_string=parsed['db_string'],
             sleep_time=parsed['refresh_time'],
-            instance_name=parsed['instance_name']
+            instance_name=parsed['instance_name'],
+            timeout=int(parsed['http_timeout'])
         )
 
         app.main(action=parsed['action'])

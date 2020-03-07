@@ -16,12 +16,12 @@ class KropotCLI:
     instance_name: str
 
     def __init__(self, token: str, server_url: str, storage_path: str, log_level: str, db_string: str, sleep_time: int,
-                 instance_name: str):
+                 instance_name: str, timeout: int):
         setup_logger(log_level)
 
         self.sleep_time = sleep_time
         self.url = server_url
-        self.client = HttpClientFactory.create(token, server_url)
+        self.client = HttpClientFactory.create(token, server_url, timeout)
         self.storage_manager = StorageManager(storage_path)
         self.persistence = ORM(db_string)
         self.log_repository = LogRepository(self.persistence)

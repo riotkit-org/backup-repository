@@ -98,6 +98,14 @@ class LogRepository:
             .limit(1)\
             .one()
 
+    def exists(self, entry_type: str, entry_id: str) -> bool:
+        try:
+            self.find(entry_type, entry_id)
+            return True
+
+        except ORMNoResultFound:
+            return False
+
     def find_all_not_finished_elements(self, instance_name: str) -> list:
         return self._orm.session.query(ProcessedElementLog)\
             .filter(

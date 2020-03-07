@@ -8,9 +8,12 @@ from .logger import Logger
 
 
 class FileRepositorySession(requests.Session):
-    def __init__(self, base_url: str):
+    _timeout = 7200
+
+    def __init__(self, base_url: str, timeout: int = 7200):
         super(FileRepositorySession, self).__init__()
         self.url_base = base_url
+        self._timeout = timeout
 
     def request(self, method, url, **kwargs):
         """ Extends standard request() method with authorization capability """
@@ -19,16 +22,20 @@ class FileRepositorySession(requests.Session):
 
         return super(FileRepositorySession, self).request(method, modified_url, **kwargs)
 
-    def request_event_stream(self, since: datetime, element_type: str) -> list:
+    def request_event_stream(self, since: datetime, element_type: str, page: int = 1) -> list:
         """
         Fetch list of elements to download from the server
 
         :param since:
         :param element_type:
+        :param page:
+
         :return:
         """
 
-        qs = {}
+        qs = {
+            'page': page
+        }
 
         if since:
             qs['since'] = since.strftime('%Y-%m-%d %H:%M:%S')
@@ -61,13 +68,13 @@ class FileRepositorySession(requests.Session):
 
     def request_file(self, fileid: str) -> IO:
         """ Request a file content, get a stream that could be copied to file """
-        return self.request('GET', '/secure-copy/file/' + fileid + '/content', stream=True).raw
+        return self.request('GET', '/secure-copy/file/' + fileid + '/content', stream=True, timeout=self._timeout).raw
 
 
 class HttpClientFactory:
     @staticmethod
-    def create(token: str, url: str) -> FileRepositorySession:
-        session = FileRepositorySession(base_url=url)
+    def create(token: str, url: str, timeout: int) -> FileRepositorySession:
+        session = FileRepositorySession(base_url=url, timeout=timeout)
         session.headers.update({'token': token})
 
         return session
