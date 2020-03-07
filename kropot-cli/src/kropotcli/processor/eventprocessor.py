@@ -46,7 +46,7 @@ class EventProcessor(GenericEntryProcessor):
                     raw_data['type'],
                     raw_data['id'],
                     datetime.fromtimestamp(raw_data['date']),
-                    raw_data['tz']['timezone'],
+                    raw_data['tz'],
                     raw_data['form']
                 )
                 self.log_repository.persist(log_entry)

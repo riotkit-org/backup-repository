@@ -33,7 +33,7 @@ class SubmitData implements \JsonSerializable
             'type' => $this->type,
             'id'   => $this->id,
             'date' => $this->date->getTimestamp(),
-            'tz'   => $this->timezone,
+            'tz'   => $this->timezone->getName(),
             'form' => $this->rawMetadata
         ];
     }
