@@ -2,7 +2,6 @@
 import requests
 from json import loads as json_loads
 from json import JSONDecodeError
-from typing import IO
 from datetime import datetime
 from .logger import Logger
 
@@ -22,20 +21,17 @@ class FileRepositorySession(requests.Session):
 
         return super(FileRepositorySession, self).request(method, modified_url, **kwargs)
 
-    def request_event_stream(self, since: datetime, element_type: str, page: int = 1) -> list:
+    def request_event_stream(self, since: datetime, element_type: str) -> list:
         """
         Fetch list of elements to download from the server
 
         :param since:
         :param element_type:
-        :param page:
 
         :return:
         """
 
-        qs = {
-            'page': page
-        }
+        qs = {}
 
         if since:
             qs['since'] = since.strftime('%Y-%m-%d %H:%M:%S')

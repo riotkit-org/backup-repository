@@ -65,26 +65,9 @@ class CollectAction:
                 self._process(events_to_retry, ignore_existing=True)
                 self._process(events)
 
-                #
-                # Process the rest of pages (server returns a paginated list)
-                #
-                Logger.info('Fetching next pages')
-                page_num = 1
-
-                while True:
-                    page_num += 1
-                    events = self._get_events(last_processed_element_timestamp, element_type, page=page_num)
-                    Logger.info('Fetched ' + str(len(events)) + ' events from page ' + str(page_num))
-
-                    if len(events) == 0:
-                        Logger.info('No more pages to process, ending at ' + str(page_num - 1))
-                        break
-
-                    self._process(events)
-
             sleep(self.sleep_time)
 
-    def _get_events(self, last_processed_element_timestamp: datetime, element_type: str, page: int = 1) -> list:
+    def _get_events(self, last_processed_element_timestamp: datetime, element_type: str) -> list:
         """ Fetch new events from server """
 
         try:
@@ -93,7 +76,7 @@ class CollectAction:
                             last_processed_element_timestamp.strftime('%Y-%m-%d %H:%M:%S'))
 
             return self.client.request_event_stream(since=last_processed_element_timestamp,
-                                                    element_type=element_type, page=page)
+                                                    element_type=element_type)
 
         except Exception:
             Logger.error('Exception during processing the incoming event stream')

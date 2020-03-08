@@ -26,6 +26,6 @@ class GenericEntryProcessor:
         iv = response.headers.get('Encryption-Initialization-Vector')
 
         if iv:
-            Logger.info('Storing IV=' + iv)
+            Logger.debug('Storing IV=' + iv)
             entry.crypto_iv = iv
             self.repository.persist(entry)

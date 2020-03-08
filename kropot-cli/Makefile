@@ -19,6 +19,7 @@ test_run: ## Connect to local File Repository testing instance at localhost:8000
 		--storage-path=${STORAGE_PATH} \
 		--db-string=sqlite:///database.db \
 		--instance-name=test \
+		--log-level=debug \
 		collect
 
 install: ## Install in the system
