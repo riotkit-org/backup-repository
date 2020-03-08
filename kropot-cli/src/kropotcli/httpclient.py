@@ -66,9 +66,9 @@ class FileRepositorySession(requests.Session):
 
         return reordered
 
-    def request_file(self, fileid: str) -> IO:
+    def request_file(self, fileid: str) -> requests.Response:
         """ Request a file content, get a stream that could be copied to file """
-        return self.request('GET', '/secure-copy/file/' + fileid + '/content', stream=True, timeout=self._timeout).raw
+        return self.request('GET', '/secure-copy/file/' + fileid + '/content', stream=True, timeout=self._timeout)
 
 
 class HttpClientFactory:

@@ -31,6 +31,8 @@ class CollectAction:
         self.processor = EventProcessor(self.client, self.storage_manager, self.log_repository, self.instance_name)
 
     def handle(self):
+        """ Controlling method """
+
         Logger.info('Starting RiotKit\'s KropotCLI, let\'s better redistribute the bread!')
         Logger.info('>> https://riotkit.org | https://github.com/riotkit-org')
         Logger.info('Connecting to bakery at ' + self.url)
@@ -83,6 +85,8 @@ class CollectAction:
             sleep(self.sleep_time)
 
     def _get_events(self, last_processed_element_timestamp: datetime, element_type: str, page: int = 1) -> list:
+        """ Fetch new events from server """
+
         try:
             if last_processed_element_timestamp:
                 Logger.info('Last processed entry of type "' + element_type + '" is at ' +
@@ -98,8 +102,18 @@ class CollectAction:
             return []
 
     def _process(self, events: list, ignore_existing: bool = False):
+        """ Process single event """
+
         for event in events:
-            if not self.processor.can_process(event):
+            entry = self.log_repository.find_or_create(
+                event['type'],
+                event['id'],
+                datetime.fromtimestamp(event['date']),
+                event['tz'],
+                event['form']
+            )
+
+            if not self.processor.can_process(entry):
                 Logger.warning('Cannot process event. Possibly unknown element type')
                 continue
 
@@ -109,13 +123,16 @@ class CollectAction:
                     continue
 
             try:
-                self.processor.process(event)
+                self.processor.process(entry)
+
             except Exception:
                 Logger.error('Cannot process event')
                 Logger.error(traceback.format_exc())
                 continue
 
     def _get_events_to_retry(self) -> list:
+        """ Retrieve from database - events that needs retry """
+
         not_finished_elements = self.log_repository.find_all_not_finished_elements(self.instance_name)
         as_events = []
 

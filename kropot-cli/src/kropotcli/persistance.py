@@ -43,6 +43,7 @@ class ProcessedElementLog(Base):
     data = Column(JSON, nullable=False)
     status = Column(String, nullable=True)
     node = Column(String, nullable=False)
+    crypto_iv = Column(String, nullable=True)
 
     def mark_as_in_progress(self, instance_name: str):
         self.status = self.STATUS_IN_PROGRESS
@@ -80,6 +81,7 @@ class LogRepository:
         try:
             self._orm.session.add(log)
             self._orm.session.flush([log])
+            Logger.debug('Flushing: %s, %s' % (log.element_id, log.status))
 
         except OperationalError:
             Logger.info('Database locked, waiting')
@@ -115,7 +117,8 @@ class LogRepository:
             .order_by(ProcessedElementLog.element_date.asc())\
             .all()
 
-    def find_or_create(self, entry_type: str, entry_id: str, date: datetime, tz: str, form: str) -> ProcessedElementLog:
+    def find_or_create(self, entry_type: str, entry_id: str,
+                       date: datetime, tz: str, form: str) -> ProcessedElementLog:
         try:
             return self.find(entry_type, entry_id)
 
@@ -127,6 +130,7 @@ class LogRepository:
             log.element_tz = tz
             log.data = form
             log.processed_at = datetime.now()
+            log.crypto_iv = 'empty'
 
             return log
 
