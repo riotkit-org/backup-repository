@@ -130,7 +130,7 @@ class LogRepository:
             log.element_tz = tz
             log.data = form
             log.processed_at = datetime.now()
-            log.crypto_iv = 'empty'
+            log.crypto_iv = None
 
             return log
 
