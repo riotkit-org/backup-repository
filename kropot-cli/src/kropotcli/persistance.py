@@ -66,6 +66,11 @@ class ProcessedElementLog(Base):
             'form': self.data
         }
 
+    def to_status_string(self) -> str:
+        date: datetime = self.element_date
+
+        return self.element_id + ', status=' + self.status + ', date=' + date.strftime('%Y-%m-%d %H:%M:%S')
+
 
 class LogRepository:
     """
@@ -81,7 +86,7 @@ class LogRepository:
         try:
             self._orm.session.add(log)
             self._orm.session.flush([log])
-            Logger.debug('Flushing: %s, %s' % (log.element_id, log.status))
+            Logger.debug('Flushing: ' + log.to_status_string())
 
         except OperationalError:
             Logger.info('Database locked, waiting')
