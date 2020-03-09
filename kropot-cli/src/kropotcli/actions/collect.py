@@ -88,6 +88,7 @@ class CollectAction:
         """ Process single event """
 
         for event in events:
+            Logger.info('Processing id=%s, type=%s' % (event['id'], event['type']))
             entry = self.log_repository.find_or_create(
                 event['type'],
                 event['id'],
