@@ -20,9 +20,43 @@ class SecureCopyCest
         $I->haveRoles(['upload.all']);
 
         foreach ($dataSplitByLines as $lineNum => $line) {
-            $I->uploadByPayload($line, ['fileName' => $lineNum . '-iwa-statute.txt']);
+            $I->uploadByPayload($line, ['fileName' => '+line_' . $lineNum . '-iwa-statute.txt']);
             $I->canSeeResponseCodeIs(200);
         }
+    }
+
+    /**
+     * Case: Order is very important as the entries needs to be downloaded chronologically
+     *
+     * @param FunctionalTester $I
+     */
+    public function testOrderOnTheListMatchesChronology(FunctionalTester $I): void
+    {
+        $I->amAdmin();
+        $I->receiveListOfElementsFromSecureCopy('file');
+
+        $list = explode("\n", $I->grabResponse());
+        $elementsOnly = array_filter($list, function (string $line) {
+            return substr(trim($line), 0, 1) === '{' && isset(json_decode($line, true)['id']);
+        });
+        $listOfNames = array_map(
+            function (string $line) {
+                $asArray = json_decode($line, true);
+                return explode('+', $asArray['id'])[1];
+            },
+            $elementsOnly
+        );
+
+        $I->assertSame(
+            [
+                'line_0-iwa-statute.txt',
+                'line_1-iwa-statute.txt',
+                'line_2-iwa-statute.txt',
+                'line_3-iwa-statute.txt',
+                'line_4-iwa-statute.txt'
+            ],
+            array_values($listOfNames)
+        );
     }
 
     public function testAdminCanAccessSecureCopy(FunctionalTester $I): void

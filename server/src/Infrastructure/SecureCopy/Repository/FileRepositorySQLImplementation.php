@@ -42,7 +42,7 @@ class FileRepositorySQLImplementation implements FileRepository
             $since = new DateTime('1990-01-01');
         }
 
-        $rows = $this->connection->fetchAll('SELECT fileName as filename FROM file_registry WHERE dateAdded > ? ORDER BY dateAdded DESC LIMIT ' . $limit . ' OFFSET 0',
+        $rows = $this->connection->fetchAll('SELECT fileName as filename FROM file_registry WHERE dateAdded > ? ORDER BY dateAdded ASC, id ASC LIMIT ' . $limit . ' OFFSET 0',
             [$since->format('Y-m-d H:i:s')]
         );
 
