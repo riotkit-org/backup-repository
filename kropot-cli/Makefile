@@ -22,8 +22,11 @@ test_run: ## Connect to local File Repository testing instance at localhost:8000
 		--log-level=debug \
 		collect
 
+install_requirements: ## Install required dependencies
+	${SUDO} ${PIP_BIN} install -r ./requirements.txt
+
 install: ## Install in the system
-	${PYTHON} setup.py install
+	${SUDO} ${PYTHON} setup.py install
 
 user_install: ## Install in user home directory
 	${PYTHON} setup.py install --user
@@ -44,3 +47,10 @@ push_image: ## Push docker image
 
 get_version:
 	cat ../server/config/version.yaml  | shyaml get-value version
+
+unit_test: ## Run unit tests
+	export $$(grep -v '^#' ../env/.env | xargs); \
+	cd src && ${PYTHON} -m unittest discover -s ../tests/unit
+
+coverage: ## Generate code coverage
+	cd src && coverage run --source . -m unittest discover -s ../tests/unit

@@ -65,6 +65,16 @@ jobs:
       after_failure:
           - bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [FAILURE] Bahub tests are failing."
 
+    # =============================
+    # KropotCLI (SecureCopy client)
+    # =============================
+    - stage: KropotCLI tests @ Python 3.6
+      <<: *main_python_version
+      before_script:
+          - cd kropotcli && make install_requirements install PIP="pip" SUDO=""
+      script:
+          - make unit_test
+
     # =========================================================
     #  Server API tests on different databases and/or storages
     # =========================================================
