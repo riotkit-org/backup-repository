@@ -71,7 +71,7 @@ jobs:
     - stage: KropotCLI tests @ Python 3.6
       <<: *main_python_version
       before_script:
-          - cd kropotcli && make install_requirements install PIP="pip" SUDO=""
+          - cd kropot-cli && make install_requirements install PIP="pip" SUDO=""
       script:
           - make unit_test
 
