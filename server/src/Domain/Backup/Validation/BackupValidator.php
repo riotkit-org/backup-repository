@@ -60,7 +60,7 @@ class BackupValidator
     private function validateFileSizeNotExceedsCollectionSingleFileSize(StoredVersion $version): void
     {
         $max = $version->getCollection()->getMaxOneVersionSize();
-        $actual = $this->fs->getFileSize($version->getFile()->getFilename()); // @todo: Po nazwie pliku w domenie backup a po path w storage?
+        $actual = $this->fs->getFileSize($version->getFile()->getFilename());
 
         if ($actual->isHigherThan($max)) {
             throw ValidationException::createFromFieldError(

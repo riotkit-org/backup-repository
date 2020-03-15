@@ -33,4 +33,5 @@ class Urls
 
     public const URL_SECURE_COPY = '/secure-copy/{{ type }}/list';
     public const URL_SECURE_COPY_RETRIEVE_FILE_METADATA = '/secure-copy/file/{{ file }}/submitdata';
+    public const URL_SECURE_COPY_DOWNLOAD_FILE = '/secure-copy/file/{{ file }}/content';
 }

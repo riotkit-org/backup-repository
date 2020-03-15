@@ -64,7 +64,14 @@ class ViewFileCommand implements CommandHandler
 
         $response = $this->handler->handle($form, $securityContext, $cachingContext);
 
-        return ['response' => $response->jsonSerialize(), 'callback' => $response->getResponseCallback()];
+        return [
+            'status' => $response->getStatus(),
+            'code'   => $response->getCode(),
+            'response'             => $response->jsonSerialize(),
+            'stream'               => $response->getResponseStream(),
+            'headersFlushCallback' => $response->getHeadersFlushCallback(),
+            'contentFlushCallback' => $response->getContentFlushCallback()
+        ];
     }
 
     public function supportsInput($input, string $path): bool

@@ -25,38 +25,36 @@ class ServeFileContentHandler extends BaseSecureCopyHandler
 
     /**
      * @param string $encryptedId
-     * @param resource $output
-     *
      * @param MirroringContext $context
      *
      * @return FileReadingResponse
      * @throws AuthenticationException
      * @throws CryptoMapNotFoundError
      */
-    public function handle(string $encryptedId, $output, MirroringContext $context): FileReadingResponse
+    public function handle(string $encryptedId, MirroringContext $context): FileReadingResponse
     {
         $this->assertHasRights($context);
 
         $fileId = $this->decryptIdIfNecessary(SubmitDataTypes::TYPE_FILE, $encryptedId, $context);
 
         if ($context->isEncryptionActive()) {
-            return $this->handleEncrypted($fileId, $output, $context);
+            return $this->handleEncrypted($fileId, $context);
         }
 
-        return $this->handlePlain($fileId, $output);
+        return $this->handlePlain($fileId, $context);
     }
 
-    private function handlePlain(string $fileId, $output)
+    private function handlePlain(string $fileId, MirroringContext $context)
     {
         return FileReadingResponse::createOkResponseForStream(
-            $this->frs->getPlainStream($fileId, $output)
+            $this->frs->getPlainStream($fileId, $context)
         );
     }
 
-    private function handleEncrypted(string $fileId, $output, MirroringContext $context)
+    private function handleEncrypted(string $fileId, MirroringContext $context)
     {
         return FileReadingResponse::createOkResponseForStream(
-            $this->frs->getEncryptedStream($fileId, $output, $context)
+            $this->frs->getEncryptedStream($fileId, $context)
         );
     }
 }

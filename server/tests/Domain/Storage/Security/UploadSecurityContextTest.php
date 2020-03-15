@@ -2,6 +2,7 @@
 
 namespace Tests\Domain\Storage\Security;
 
+use App\Domain\Authentication\Entity\Token;
 use App\Domain\Storage\Entity\StoredFile;
 use App\Domain\Storage\Form\UploadForm;
 use App\Domain\Storage\Security\UploadSecurityContext;
@@ -27,7 +28,8 @@ class UploadSecurityContextTest extends TestCase
                     true,  // enforce token tags
                     false, // enforce no-password
                     false,  // is administrator
-                    false
+                    false,
+                    new Token()
                 ),
                 'booleanExpects' => [
                     'canSetPassword'   => true
@@ -94,7 +96,8 @@ class UploadSecurityContextTest extends TestCase
             true,
             false,
             false,
-            false
+            false,
+            new Token()
         );
 
         $formWithInvalidPassword = new UploadForm();
@@ -176,7 +179,8 @@ class UploadSecurityContextTest extends TestCase
             true,
             false,
             false,
-            false
+            false,
+            new Token()
         );
 
         $dto = new UploadForm();

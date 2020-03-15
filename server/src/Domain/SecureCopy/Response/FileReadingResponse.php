@@ -5,6 +5,7 @@ namespace App\Domain\SecureCopy\Response;
 use App\Domain\Common\Http;
 use App\Domain\SecureCopy\DTO\FileContent\StreamableFileContent;
 use App\Domain\SecureCopy\DTO\FileContent\StreamableFileContentWithEncryptionInformation;
+use Psr\Http\Message\StreamInterface;
 
 class FileReadingResponse
 {
@@ -24,16 +25,16 @@ class FileReadingResponse
     private $headers;
 
     /**
-     * @var callable
+     * @var StreamInterface
      */
-    private $callback;
+    private $stream;
 
     public static function createOkResponseForStream(StreamableFileContent $encryption): FileReadingResponse
     {
         $new = new static();
         $new->status      = 'OK';
         $new->statusCode  = Http::HTTP_OK;
-        $new->callback    = $encryption->getStreamFlushingCallback();
+        $new->stream      = $encryption->getStream();
         $new->headers     = [
             'Content-Type' => 'application/octet-stream',
             'Content-Disposition' => 'attachment; filename="' . $encryption->getFileName() . '"'
@@ -56,8 +57,8 @@ class FileReadingResponse
         return $this->headers;
     }
 
-    public function getFlushingCallback(): callable
+    public function getStream(): StreamInterface
     {
-        return $this->callback;
+        return $this->stream;
     }
 }

@@ -46,13 +46,14 @@ class ReadFileCommand extends Command
         $securityContext = $this->contextFactory->createReadContextInShell();
 
         $response = $this->handler->handle($form, $securityContext, $cachingContext);
-        $callback = $response->getResponseCallback();
+        $stream = $response->getResponseStream();
+        $contentFlushCallback = $response->getContentFlushCallback();
 
-        if (!$callback) {
+        if (!$stream || !$contentFlushCallback) {
             throw new \Exception('Cannot read the file, maybe the id is not valid?');
         }
 
-        $callback();
+        $contentFlushCallback($stream->detach(), fopen('php://output', 'wb'));
 
         return 0;
     }

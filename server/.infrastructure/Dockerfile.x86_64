@@ -81,7 +81,10 @@ ENV DATABASE_URL=sqlite:///%kernel.project_dir%/var/data.db \
     POST_INSTALL_CMD="" \
     CACHE_ADAPTER_TYPE="cache.adapter.filesystem" \
     CACHE_REDIS_URL="redis://localhost" \
-    CACHE_MEMCACHED_PROVIDER="memcached://localhost"
+    CACHE_MEMCACHED_PROVIDER="memcached://localhost" \
+    ENC_ALGORITHM=aes-256-cbc \
+    ENC_DIGEST_ALGORITHM=sha512 \
+    ENC_DIGEST_ROUNDS=6000
 
 COPY server /var/www/html
 COPY --from=builder /var/www/html/public /var/www/html/

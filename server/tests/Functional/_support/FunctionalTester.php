@@ -45,6 +45,11 @@ class FunctionalTester extends \Codeception\Actor
         \PHPUnit\Framework\Assert::assertSame($expected, $actual, $message);
     }
 
+    public function assertTrue($condition, $message = '')
+    {
+        \PHPUnit\Framework\Assert::assertTrue($condition, $message);
+    }
+
     public function haveRoles(array $roles, array $params = [], bool $assert = true): string
     {
         $this->amAdmin();
@@ -171,6 +176,12 @@ class FunctionalTester extends \Codeception\Actor
     public function receiveListOfElementsFromSecureCopy(string $type): void
     {
         $this->sendGET($this->fill(Urls::URL_SECURE_COPY, ['type' => $type]));
+    }
+
+    public function downloadFileFromSecureCopy(string $fileId): string
+    {
+        $this->sendGET($this->fill(Urls::URL_SECURE_COPY_DOWNLOAD_FILE, ['file' => $fileId]));
+        return $this->grabResponse();
     }
 
     public function retrieveFileMetadataFromSecureCopy(string $filename): void

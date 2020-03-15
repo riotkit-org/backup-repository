@@ -54,10 +54,9 @@ class GenerateDecryptionCommandHandler extends BaseSecureCopyHandler
         }
 
         $encryptionCommand = $this->fes->generateShellCryptoCommand(
-            $subjectContext->getEncryptionMethod(),
-            $subjectContext->getPassphrase(),
-            $initializationVector,
-            true
+            $subjectContext->getCryptographySpecification()->getCryptoAlgorithm(),
+            $subjectContext->getCryptographySpecification()->getPassphrase(),
+            $initializationVector
         );
 
         if ($filePath) {

@@ -2,6 +2,8 @@
 
 namespace App\Domain\Storage\ValueObject;
 
+use Psr\Http\Message\StreamInterface;
+
 class Stream
 {
     /**
@@ -34,10 +36,12 @@ class Stream
     }
 
     /**
-     * @return string
+     * @todo: Make Stream extends StreamInterface implementation
+     *
+     * @return StreamInterface
      */
-    public function getId(): string
+    public function getAsPSRStream(): StreamInterface
     {
-        return $this->id;
+        return new \GuzzleHttp\Psr7\Stream($this->attachTo());
     }
 }

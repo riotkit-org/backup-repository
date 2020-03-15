@@ -15,8 +15,8 @@ class FilenameTest extends TestCase
     {
         return [
             ['/this-is-invalid'],
-            ['@is not a valid character'],
-            ['   ']
+            [';is not a valid character'],
+            ['###']
         ];
     }
 

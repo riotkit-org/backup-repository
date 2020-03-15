@@ -25,12 +25,6 @@ class TokenSecretsTest extends BaseTestCase
         self::bootKernel();
         $repository = self::$container->get(TokenDoctrineRepository::class);
 
-        $cache = self::$container->get(AdapterInterface::class);
-        dump(get_class($cache));
-
-        dump($cache->get('hehe', function () { return date('Y-m-d H:i:s'); }));
-        die();
-
         // pass our DQL through Doctrine to see if it is correct
         $qb = $repository->createQueryBuilder('t');
         $qb->select($generated);

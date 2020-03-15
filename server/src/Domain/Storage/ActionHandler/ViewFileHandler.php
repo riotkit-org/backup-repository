@@ -17,6 +17,8 @@ use App\Domain\Storage\Response\FileDownloadResponse;
 use App\Domain\Storage\Security\ReadSecurityContext;
 use App\Domain\Storage\Service\AlternativeFilenameResolver;
 use App\Domain\Storage\ValueObject\Filename;
+use GuzzleHttp\Psr7\Stream;
+use Psr\Http\Message\StreamInterface;
 
 /**
  * Response handler that serves file content.
@@ -87,9 +89,9 @@ class ViewFileHandler
             });
         }
 
-        [$code, $streamHandler] = $this->createStreamHandler($file, $form);
+        [$code, $headersFlushCallback, $outputStream, $contentFlushCallback] = $this->createStreamHandler($file, $form);
 
-        return new FileDownloadResponse('OK', $code, $streamHandler);
+        return new FileDownloadResponse('OK', $code, $headersFlushCallback, $contentFlushCallback, $outputStream);
     }
 
     /**
@@ -100,8 +102,7 @@ class ViewFileHandler
      */
     private function createStreamHandler(FileRetrievedFromStorage $file, ViewFileForm $form): array
     {
-        $out = $this->fopen('php://output', 'wb');
-        $res = $file->getStream()->attachTo();
+        $fileAsStream = $file->getStream()->getAsPSRStream();
 
         $allowLastModifiedHeader = true;
         $fileSize = $this->fs->getFileSize($file->getStoredFile()->getStoragePath());
@@ -119,14 +120,14 @@ class ViewFileHandler
             $contentLength = $bytesRange->getRangeContentLength()->getValue();
 
         } catch (ContentRangeInvalidException $rangeInvalidException) {
-            return [Http::HTTP_INVALID_STREAM_RANGE, static function () use ($out, $res) {
-                fclose($out);
-                fclose($res);
+            return [Http::HTTP_INVALID_STREAM_RANGE, static function () use ($fileAsStream) {
+                $fileAsStream->close();
             }];
         }
 
-        $callback = function () use (
-            $res, $out, $maxLength, $offset, $etagSuffix, $allowLastModifiedHeader, $file, $acceptRange, $contentLength
+        $headersFlushCallback = function () use (
+            $fileAsStream, $maxLength, $offset, $etagSuffix, $allowLastModifiedHeader,
+            $file, $acceptRange, $contentLength
         ) {
             $this->sendHttpHeaders(
                 $file->getStoredFile(),
@@ -135,13 +136,20 @@ class ViewFileHandler
                 $acceptRange,
                 $contentLength
             );
-
-            stream_copy_to_stream($res, $out, $maxLength, $offset);
-            fclose($out);
-            fclose($res);
         };
 
-        return [$bytesRange->shouldServePartialContent() ? Http::HTTP_STREAM_PARTIAL_CONTENT : Http::HTTP_OK, $callback];
+        return [
+            $bytesRange->shouldServePartialContent() ? Http::HTTP_STREAM_PARTIAL_CONTENT : Http::HTTP_OK,
+            $headersFlushCallback,
+            $fileAsStream,
+            /**
+             * @param resource $a
+             * @param resource $b
+             */
+            function ($from, $to) use ($maxLength, $offset) {
+                stream_copy_to_stream($from, $to, $maxLength, $offset);
+            }
+        ];
     }
 
     private function preProcessForm(ViewFileForm $form): void
@@ -182,8 +190,9 @@ class ViewFileHandler
         header($content);
     }
 
-    protected function fopen(string $filename, string $mode)
+    protected function fopen(string $filename, string $mode): StreamInterface
     {
-        return fopen($filename, $mode);
+        // @todo: wrap Stream class
+        return new Stream(fopen($filename, $mode));
     }
 }

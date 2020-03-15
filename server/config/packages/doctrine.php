@@ -81,7 +81,7 @@ if (!\function_exists('addDoctrineMappings')) {
         $subDirs = getDirSubDirs($domainPath . '/' . $dirName . '/');
 
         foreach ($subDirs as $subDir) {
-            if (basename($subDir) === 'Docs') {
+            if (basename($subDir) === 'Docs' || basename($subDir) === 'Cryptography') {
                 continue;
             }
 

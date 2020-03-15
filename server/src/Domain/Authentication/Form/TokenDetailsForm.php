@@ -41,6 +41,21 @@ class TokenDetailsForm
      */
     public $secureCopyEncryptionMethod;
 
+    /**
+     * @var string
+     */
+    public $secureCopyDigestMethod;
+
+    /**
+     * @var int
+     */
+    public $secureCopyDigestRounds;
+
+    /**
+     * @var string
+     */
+    public $secureCopyDigestSalt;
+
     public function toArray(): array
     {
         return [
@@ -54,7 +69,10 @@ class TokenDetailsForm
             // as the key cannot be look up by any user. The key is a limitation on the token, to replicate with
             // zero-knowledge about the data.
             Token::FIELD_SECURE_COPY_ENC_KEY    => (string) $this->secureCopyEncryptionKey,
-            Token::FIELD_SECURE_COPY_ENC_METHOD => (string) $this->secureCopyEncryptionMethod
+            Token::FIELD_SECURE_COPY_ENC_METHOD => (string) $this->secureCopyEncryptionMethod,
+            Token::FIELD_SECURE_COPY_DIGEST_METHOD => (string) $this->secureCopyDigestMethod,
+            Token::FIELD_SECURE_COPY_DIGEST_ROUNDS => (int) $this->secureCopyDigestRounds,
+            Token::FIELD_SECURE_COPY_DIGEST_SALT   => (string) $this->secureCopyDigestSalt
         ];
     }
 }

@@ -2,6 +2,8 @@
 
 namespace App\Domain\SecureCopy\DTO\FileContent;
 
+use Psr\Http\Message\StreamInterface;
+
 /**
  * @codeCoverageIgnore No logic, no test
  */
@@ -13,14 +15,14 @@ class StreamableFileContent
     private $fileName;
 
     /**
-     * @var callable $callback
+     * @var StreamInterface $stream
      */
-    private $callback;
+    private $stream;
 
-    public function __construct(string $fileName, callable $callback)
+    public function __construct(string $fileName, StreamInterface $callback)
     {
         $this->fileName = $fileName;
-        $this->callback = $callback;
+        $this->stream = $callback;
     }
 
     public function getFileName(): string
@@ -28,8 +30,8 @@ class StreamableFileContent
         return $this->fileName;
     }
 
-    public function getStreamFlushingCallback(): ?callable
+    public function getStream(): ?StreamInterface
     {
-        return $this->callback;
+        return $this->stream;
     }
 }

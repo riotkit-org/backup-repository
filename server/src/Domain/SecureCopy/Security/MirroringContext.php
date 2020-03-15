@@ -2,21 +2,22 @@
 
 namespace App\Domain\SecureCopy\Security;
 
-use App\Domain\SecureCopy\DTO\MirroringClient;
-use App\Domain\SecureCopy\ValueObject\EncryptionAlgorithm;
-use App\Domain\SecureCopy\ValueObject\EncryptionPassphrase;
+use App\Domain\SecureCopy\Aggregate\CryptoSpecification;
+use App\Domain\SecureCopy\Entity\Authentication\Token;
 
 class MirroringContext
 {
     private bool $canStream;
     private bool $canReadSecrets;
-    private MirroringClient $client;
+    private CryptoSpecification $cryptoSpec;
+    private Token               $token;
 
-    public function __construct(bool $canStream, bool $canReadSecrets, MirroringClient $client)
+    public function __construct(bool $canStream, bool $canReadSecrets, CryptoSpecification $cryptoSpec, Token $token)
     {
         $this->canStream      = $canStream;
         $this->canReadSecrets = $canReadSecrets;
-        $this->client         = $client;
+        $this->cryptoSpec     = $cryptoSpec;
+        $this->token          = $token;
     }
 
     public function canStreamCopies(): bool
@@ -31,16 +32,16 @@ class MirroringContext
 
     public function isEncryptionActive(): bool
     {
-        return $this->client->algorithm->isEncrypting();
+        return $this->getCryptographySpecification()->getCryptoAlgorithm()->isEncrypting();
     }
 
-    public function getPassphrase(): EncryptionPassphrase
+    public function getToken(): Token
     {
-        return $this->client->passphrase;
+        return $this->token;
     }
 
-    public function getEncryptionMethod(): EncryptionAlgorithm
+    public function getCryptographySpecification(): CryptoSpecification
     {
-        return $this->client->algorithm;
+        return $this->cryptoSpec;
     }
 }

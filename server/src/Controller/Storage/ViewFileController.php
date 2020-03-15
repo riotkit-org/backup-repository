@@ -3,7 +3,6 @@
 namespace App\Controller\Storage;
 
 use App\Controller\BaseController;
-use App\Domain\Common\Http;
 use App\Domain\Storage\ActionHandler\ViewFileHandler;
 use App\Domain\Storage\Context\CachingContext;
 use App\Domain\Storage\Factory\Context\SecurityContextFactory;
@@ -98,8 +97,29 @@ class ViewFileController extends BaseController
                     $this->createCachingContext($request)
                 );
 
-                if ($response->getCode() <= Http::HTTP_MAX_OK_CODE) {
-                    return new StreamedResponse($response->getResponseCallback(), $response->getCode());
+                //
+                // Flush a file: headers + body
+                // In headers we expect bytes range, caching etc.
+                //
+                if ($response->isFlushingFile()) {
+                    return new StreamedResponse(
+                        static function () use ($response) {
+                            $input = $response->getResponseStream()->detach();
+                            $output = fopen('php://output', 'wb');
+
+                            // headers first
+                            $headersFlush = $response->getHeadersFlushCallback();
+                            $headersFlush();
+
+                            // flush the content, including the HTTP-like behavior (bytes range support etc.)
+                            $contentFlush = $response->getContentFlushCallback();
+                            $contentFlush($input, $output);
+
+                            @fclose($input);
+                            @fclose($output);
+                        },
+                        $response->getCode()
+                    );
                 }
 
                 return new JsonFormattedResponse($response, $response->getCode());

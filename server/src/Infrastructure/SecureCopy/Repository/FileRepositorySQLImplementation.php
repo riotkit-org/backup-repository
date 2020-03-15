@@ -15,7 +15,6 @@ use Doctrine\DBAL\Connection;
 
 /**
  * Plain SQL implementation of repository for performance reasons
- * The repository needs to be prepared to return millions of records
  *
  * The SQL statements should be compatible with basic SQL standard implemented by all engines
  * including PostgreSQL, SQLite3 and MySQL for sure.

@@ -4,7 +4,7 @@ namespace App\Infrastructure\Authentication\Form;
 
 use App\Domain\Authentication\Form\TokenDetailsForm;
 use App\Domain\Common\SharedEntity\Token;
-use App\Domain\SSLAlgorithms;
+use App\Domain\Cryptography;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
@@ -40,7 +40,16 @@ class TokenDetailsFormType extends AbstractType
                 'empty_data' => ''
             ])
             ->add(Token::FIELD_SECURE_COPY_ENC_METHOD, ChoiceType::class, [
-                'choices'    => SSLAlgorithms::ALGORITHMS
+                'choices'    => Cryptography::CRYPTO_ALGORITHMS
+            ])
+            ->add(Token::FIELD_SECURE_COPY_DIGEST_METHOD, ChoiceType::class, [
+                'choices'    => Cryptography::DIGEST_ALGORITHMS
+            ])
+            ->add(Token::FIELD_SECURE_COPY_DIGEST_ROUNDS, TextType::class, [
+                'required'   => false,
+            ])
+            ->add(Token::FIELD_SECURE_COPY_DIGEST_SALT, TextType::class, [
+                'required'   => false,
             ]);
     }
 

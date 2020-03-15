@@ -70,8 +70,8 @@ class FileRepositorySQLImplementationTest extends FunctionalTestCase
 
         $connection->executeQuery(
             'INSERT INTO file_registry 
-                   (id, fileName, contentHash, dateAdded, mimeType, password, public, timezone)
-                   VALUES (161, "antifa.png", "7c0ca491e121cb0c9fa76a53f0c4348ec3f0362237124785ebe6a4267ba737be", "2019-05-01 08:00:00", "image/png", "", 1, "Europe/Warsaw");
+                   (id, fileName, contentHash, dateAdded, mimeType, password, public, timezone, storagePath)
+                   VALUES (161, "antifa.png", "7c0ca491e121cb0c9fa76a53f0c4348ec3f0362237124785ebe6a4267ba737be", "2019-05-01 08:00:00", "image/png", "", 1, "Europe/Warsaw", "antifa.png");
         ');
     }
 }

@@ -8,9 +8,11 @@ use App\Domain\SecureCopy\Entity\Authentication\Token;
 use App\Domain\SecureCopy\Exception\AuthenticationException;
 use App\Domain\SecureCopy\Exception\CryptoMapNotFoundError;
 use App\Domain\SecureCopy\Factory\SecurityContextFactory;
+use GuzzleHttp\Psr7\Stream;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Swagger\Annotations as SWG;
+use function GuzzleHttp\Psr7\copy_to_stream;
 
 class ServeFileController extends BaseController
 {
@@ -46,7 +48,7 @@ class ServeFileController extends BaseController
      */
     public function fetchAction(string $fileName): Response
     {
-        $output = fopen('php://output', 'wb');
+        $output = new Stream(fopen('php://output', 'wb'));
 
         /**
          * @var Token $token
@@ -55,11 +57,13 @@ class ServeFileController extends BaseController
         $context  = $this->contextFactory->create($token);
 
         // act, and get response
-        $response = $this->handler->handle($fileName, $output, $context);
+        $response = $this->handler->handle($fileName, $context);
 
-        return $this->wrap(function () use ($response) {
+        return $this->wrap(function () use ($response, $output) {
             return new StreamedResponse(
-                $response->getFlushingCallback(),
+                static function () use ($response, $output) {
+                    copy_to_stream($response->getStream(), $output);
+                },
                 $response->getStatusCode(),
                 $response->getHeaders()
             );

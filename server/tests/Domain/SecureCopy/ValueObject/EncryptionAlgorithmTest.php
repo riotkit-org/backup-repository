@@ -3,7 +3,7 @@
 namespace Tests\Domain\SecureCopy\ValueObject;
 
 use App\Domain\SecureCopy\ValueObject\EncryptionAlgorithm;
-use App\Domain\SSLAlgorithms;
+use App\Domain\Cryptography;
 use Tests\BaseTestCase;
 
 class EncryptionAlgorithmTest extends BaseTestCase
@@ -13,10 +13,7 @@ class EncryptionAlgorithmTest extends BaseTestCase
      */
     public function testGenerateInitializationVector()
     {
-        $alogs = [
-            'aes-128-cbc', 'aes-128-cfb', 'aes-128-cfb1', 'aes-256-cbc',
-            'aes-256-ctr', 'des3', 'blowfish'
-        ];
+        $alogs = ['aes-256-cbc'];
 
         foreach ($alogs as $algorithm) {
             if (!$algorithm) {
@@ -26,10 +23,6 @@ class EncryptionAlgorithmTest extends BaseTestCase
             $vo = new EncryptionAlgorithm($algorithm);
             $this->assertNotEmpty($vo->generateInitializationVector(), 'IV length must be `!= 0` for ' . $algorithm);
         }
-
-        // non-IV algorithms
-        $vo = new EncryptionAlgorithm('aes-256-ecb');
-        $this->assertEmpty($vo->generateInitializationVector(), 'IV is not required by ECB-type cipher');
     }
 
     /**
@@ -37,7 +30,7 @@ class EncryptionAlgorithmTest extends BaseTestCase
      */
     public function testIsEncrypting()
     {
-        foreach (SSLAlgorithms::ALGORITHMS as $algorithm) {
+        foreach (Cryptography::CRYPTO_ALGORITHMS as $algorithm) {
             if (!$algorithm) {
                 continue;
             }
@@ -45,5 +38,8 @@ class EncryptionAlgorithmTest extends BaseTestCase
             $vo = new EncryptionAlgorithm($algorithm);
             $this->assertTrue($vo->isEncrypting());
         }
+
+        $vo = new EncryptionAlgorithm('');
+        $this->assertFalse($vo->isEncrypting());
     }
 }

@@ -19,6 +19,9 @@ parameters:
     env(REPLICATION_PRIMARY_URL): ''
     env(BASE_URL): ''
     env(ENC_SALT): ''
+    env(ENC_ALGORITHM): 'aes-256-cbc'
+    env(ENC_DIGEST_ALGORITHM): 'sha512'
+    env(ENC_DIGEST_ROUNDS): "6000"
 
 services:
     # default configuration for services in *this* file
@@ -51,15 +54,14 @@ services:
             $manager: '@App\Domain\Authentication\Manager\TokenManager'
             $expirationTime: '%env(TOKEN_EXPIRATION_TIME)%'
 
-    App\Domain\Storage\Factory\PathFactory:
-        class: App\Domain\Storage\Factory\PathFactory
-        arguments:
-            $basePath: '%env(TEMP_DIRECTORY)%'
-
     App\Infrastructure\Authentication\Service\AESCryptoService:
         arguments:
             $secret: '%env(ENC_TOKEN_PHRASE)%'
             $salt: '%env(ENC_SALT)%'
+            $encAlgorithm: '%env(ENC_ALGORITHM)%'
+            $digestAlgorithm: '%env(ENC_DIGEST_ALGORITHM)%'
+            $digestRounds: '%env(ENC_DIGEST_ROUNDS)%'
+        autowire: true
 
     App\Infrastructure\Authentication\Event\Subscriber\TokenSubscriber:
         autowire: true
@@ -140,6 +142,10 @@ services:
         arguments:
             $secret: '%env(ENC_TOKEN_PHRASE)%'
             $salt: '%env(ENC_SALT)%'
+            $encAlgorithm: '%env(ENC_ALGORITHM)%'
+            $digestAlgorithm: '%env(ENC_DIGEST_ALGORITHM)%'
+            $digestRounds: '%env(ENC_DIGEST_ROUNDS)%'
+        autowire: true
 
     App\Domain\Authentication\Factory\IncomingTokenFactory:
         public: true

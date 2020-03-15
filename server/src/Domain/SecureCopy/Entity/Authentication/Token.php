@@ -6,16 +6,16 @@ use App\Domain\Common\SharedEntity\Token as TokenFromCommon;
 
 class Token extends TokenFromCommon
 {
-    private array $data = [];
+    public array $data = [];
 
     public function setId(string $id)
     {
         $this->id = $id;
     }
 
-    public function getDataField(string $fieldName, $default)
+    public function getDataField(string $fieldName, $default, bool $allowEmpty = true)
     {
-        if (!isset($this->data[$fieldName])) {
+        if (!isset($this->data[$fieldName]) || ((!$this->data[$fieldName] ?? '') && !$allowEmpty)) {
             return $default;
         }
 

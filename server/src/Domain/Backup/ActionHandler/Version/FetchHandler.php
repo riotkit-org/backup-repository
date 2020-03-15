@@ -11,6 +11,7 @@ use App\Domain\Backup\Security\VersioningContext;
 use App\Domain\Bus;
 use App\Domain\Common\Exception\BusException;
 use App\Domain\Common\Service\Bus\DomainBus;
+use Psr\Http\Message\StreamInterface;
 
 class FetchHandler
 {
@@ -59,8 +60,23 @@ class FetchHandler
             'ifModifiedSince'        => $form->httpIfModifiedSince
         ]);
 
-        if ($response['callback'] ?? null) {
-            return FetchResponse::createSuccessResponseFromUrl($response['callback']);
+        if ($response['stream'] ?? null) {
+            return FetchResponse::createSuccessResponseFromUrl(
+                function () use ($response) {
+                    /**
+                     * @var StreamInterface $stream
+                     */
+                    $stream = $response['stream'];
+
+                    // headers first
+                    $headersCallback = $response['headersFlushCallback'];
+                    $headersCallback();
+
+                    // body then
+                    $bodyCallback = $response['contentFlushCallback'];
+                    $bodyCallback($stream->detach(), fopen('php://output', 'wb'));
+                }
+            );
         }
 
         return FetchResponse::createWithError($response['status'], $response['code']);

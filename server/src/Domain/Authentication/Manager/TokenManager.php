@@ -26,9 +26,12 @@ class TokenManager
      * @param array $roles
      * @param \DateTimeImmutable $expirationTime
      * @param array $details
+     * @param string|null $customId
      *
      * @return Token
-     * @throws Exception
+     *
+     * @throws InvalidTokenIdException
+     * @throws \App\Domain\Authentication\Exception\MissingDataFieldsError
      */
     public function generateNewToken(array $roles, \DateTimeImmutable $expirationTime,
                                      array $details, ?string $customId = null): Token
@@ -67,7 +70,7 @@ class TokenManager
     {
         // encrypt the key with master key, as it should not be visible to the user
         if ($data[Token::FIELD_SECURE_COPY_ENC_KEY] ?? '') {
-            $data[Token::FIELD_SECURE_COPY_ENC_KEY] = $this->cryptoService->encode($data[Token::FIELD_SECURE_COPY_ENC_KEY]);
+            $data[Token::FIELD_SECURE_COPY_ENC_KEY] = $this->cryptoService->encodeString($data[Token::FIELD_SECURE_COPY_ENC_KEY]);
         }
 
         return $data;
