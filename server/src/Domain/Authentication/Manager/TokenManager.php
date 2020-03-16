@@ -7,7 +7,6 @@ use App\Domain\Authentication\Exception\InvalidTokenIdException;
 use App\Domain\Authentication\Repository\TokenRepository;
 use App\Domain\Authentication\Service\CryptoService;
 use App\Domain\Authentication\Service\UuidValidator;
-use Exception;
 
 class TokenManager
 {
@@ -71,6 +70,11 @@ class TokenManager
         // encrypt the key with master key, as it should not be visible to the user
         if ($data[Token::FIELD_SECURE_COPY_ENC_KEY] ?? '') {
             $data[Token::FIELD_SECURE_COPY_ENC_KEY] = $this->cryptoService->encodeString($data[Token::FIELD_SECURE_COPY_ENC_KEY]);
+        }
+
+        // the same for digest salt
+        if ($data[Token::FIELD_SECURE_COPY_DIGEST_SALT] ?? '') {
+            $data[Token::FIELD_SECURE_COPY_DIGEST_SALT] = $this->cryptoService->encodeString($data[Token::FIELD_SECURE_COPY_DIGEST_SALT]);
         }
 
         return $data;

@@ -48,7 +48,7 @@ class SecurityContextFactory
             new DigestAlgorithm(
                 (string) $token->getDataField(Token::FIELD_SECURE_COPY_DIGEST_METHOD, 'sha512'),
                 (int) $token->getDataField(Token::FIELD_SECURE_COPY_DIGEST_ROUNDS, 6000),
-                (string) $token->getDataField(Token::FIELD_SECURE_COPY_DIGEST_SALT, '', false)
+                $this->getDigestSalt($token)
             )
         );
 
@@ -58,6 +58,17 @@ class SecurityContextFactory
     private function getEncryptionKey(Token $token): string
     {
         $key = $token->getDataField(Token::FIELD_SECURE_COPY_ENC_KEY, '');
+
+        if ($key) {
+            return $this->crypto->decodeString($key);
+        }
+
+        return '';
+    }
+
+    private function getDigestSalt(Token $token): string
+    {
+        $key = $token->getDataField(Token::FIELD_SECURE_COPY_DIGEST_SALT, '', false);
 
         if ($key) {
             return $this->crypto->decodeString($key);

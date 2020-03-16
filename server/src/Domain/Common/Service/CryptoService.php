@@ -33,5 +33,5 @@ interface CryptoService
 
     public function decodeString(string $input, CryptoSpecification $spec = null): string;
 
-    public function hashString(string $input): string;
+    public function hashString(string $input, CryptoSpecification $spec = null): string;
 }
