@@ -27,6 +27,6 @@ final class Version20200111202444 extends AbstractMigration
 
     private function getTimezone(): string
     {
-        return $_SERVER['TZ'] ?: \date_default_timezone_get();
+        return $_SERVER['TZ'] ?? \date_default_timezone_get();
     }
 }
