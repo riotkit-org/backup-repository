@@ -38,7 +38,7 @@ ADD .git /build/.git
 RUN apk --update add make git \
     && cd /build \
     && pip install -r requirements.txt \
-    && make install
+    && make install SUDO=""
 
 RUN mkdir /app /storage \
     && addgroup -g 1000 -S riotkit \
