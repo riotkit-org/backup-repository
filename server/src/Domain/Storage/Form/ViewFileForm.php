@@ -2,6 +2,8 @@
 
 namespace App\Domain\Storage\Form;
 
+use Psr\Http\Message\StreamInterface;
+
 class ViewFileForm extends BasicFileAccessForm
 {
     /**

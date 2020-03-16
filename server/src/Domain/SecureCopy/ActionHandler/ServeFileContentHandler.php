@@ -9,6 +9,7 @@ use App\Domain\SecureCopy\Response\FileReadingResponse;
 use App\Domain\SecureCopy\Security\MirroringContext;
 use App\Domain\SecureCopy\Service\FileReadService;
 use App\Domain\SubmitDataTypes;
+use Psr\Http\Message\StreamInterface;
 
 /**
  * Serves file content with encryption on-the-fly support
