@@ -29,7 +29,19 @@ Selecting a scalable database
 Any modern database server supports the replication, it's up to you to pick the best. At RiotKit we are preferring PostgreSQL.
 Please note that SQLite3 is a tiny scale in-file database that does not scale.
 
-- PostgreSQL
-- MySQL
-- Oracle
-- Microsoft SQL Server
+- PostgreSQL [Officially supported by File Repository, suggested]
+- MySQL [Officially supported by File Repository]
+- Oracle [Supported by libraries, not well tested]
+- Microsoft SQL Server [Supported by libraries, not well tested]
+
+
+Using a scalable cache
+----------------------
+
+Cache driver cannot be relying on local filesystem, needs to be distributed, we suggest to use one of those:
+
+- Redis
+- Memcached
+
+
+Both are supported by Symfony and by File Repository. Officially we run automatic at least on Redis on our CI.

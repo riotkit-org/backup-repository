@@ -14,8 +14,11 @@ data.allowedMimeTypes               List of allowed mime types (OPTIONAL)
 data.maxAllowedFileSize             Number of bytes of maximum file size (OPTIONAL)
 data.allowedUserAgents              List of allowed User-Agent header values (ex. to restrict token to single browser) (OPTIONAL)
 data.allowedIpAddresses             List of allowed IP addresses (ex. to restrict one-time-token to single person/session) (OPTIONAL)
-data.secureCopyEncryptionMethod     Encryption method in SecureCopy mechanism (if using) (OPTIONAL)
+data.secureCopyEncryptionMethod     Encryption method in SecureCopy mechanism [choices: aes-256-cbc] (if using) (OPTIONAL)
 data.secureCopyEncryptionKey        Encryption key in SecureCopy component. If active, then client using this token will be downloading encrypted files (zero-knowledge) (OPTIONAL)
+data.secureCopyDigestMethod         Digest algorithm [choices: sha512] (optional)
+data.secureCopyDigestRounds         Digest rounds eg. 6000 (optional)
+data.secureCopyDigestSalt           Digest salt used in OpenSSL to generate a hash
 expires                             Expiration date, or "auto", "automatic", "never". Empty value means same as "auto"
 id                                  Custom UUIDv4 (requires: *security.create_predictable_token_ids* role or to be an admin)
 ================================  =======================================================================================================================================================

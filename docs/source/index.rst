@@ -32,6 +32,7 @@ Main functionality:
    domain/minimumui/index
    domain/securecopy/index
    client/bahub.rst
+   encryption
    shell-access
    riotkit-guide
 

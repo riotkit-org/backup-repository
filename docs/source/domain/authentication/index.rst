@@ -26,3 +26,4 @@ To authorize in the API you need to provide the token in one of those methods:
    operating-tokens
    shell-access
    token-load-hierarchy
+   secure-copy-secrets

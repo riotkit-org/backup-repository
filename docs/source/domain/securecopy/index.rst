@@ -3,12 +3,13 @@ SecureCopy
 
 Storage mirroring with additional layer of security - encryption on the server side.
 
-Features:
+**Features:**
 
 - Each client have it's own permissions.
 - Encryption credentials are per-client (in token generated in File Repository)
+- The encryption is strong AES-256 in CBC mode with PBKDF2
 - Black-box/Zero-knowledge encryption, the client only retrieve data
-- External, ready to use client application "kropot-cli" that will help you to better redistribute your bread ;-)
+- External, ready to use client application "kropot-cli" that will help you to better redistribute your bread to other bakeries for backup
 
 =======================================================================  ===================================================================================
  The difference between "rsync" type tools and File Repository's Secure Copy
@@ -20,6 +21,7 @@ Features:
  Encryption on server side, without sharing the key to client              Impossible to perform a on-fly encryption, when client requests the files
  Requires additional setup time, requires database, maintenance time       Less maintenance, no database required, less frequent updates
  Brand new tool, nobody recognizes it                                      Everybody know the basic UNIX tools, less entry threshold
+ Very strong encryption with passphrase per client/token                   Unknown / NA
 =======================================================================  ===================================================================================
 
 
