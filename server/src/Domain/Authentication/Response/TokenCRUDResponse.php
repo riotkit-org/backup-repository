@@ -43,6 +43,17 @@ class TokenCRUDResponse extends BaseResponse
         return $response;
     }
 
+    public static function createTokenNotFoundResponse(): self
+    {
+        $response = new static();
+        $response->status   = false;
+        $response->exitCode = Http::HTT_NOT_FOUND;
+        $response->token    = null;
+        $response->message  = 'Token not found';
+
+        return $response;
+    }
+
     public function jsonSerialize()
     {
         $base = parent::jsonSerialize();
@@ -54,5 +65,10 @@ class TokenCRUDResponse extends BaseResponse
     public function getTokenId(): ?string
     {
         return $this->token->getId();
+    }
+
+    public function getHttpCode(): int
+    {
+        return $this->exitCode;
     }
 }

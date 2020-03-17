@@ -33,7 +33,7 @@ class TokenDeleteHandler
         $token = $this->repository->findTokenById($tokenToDelete);
 
         if (!$token instanceof Token) {
-            return null;
+            return TokenCRUDResponse::createTokenNotFoundResponse();
         }
 
         $this->assertHasRights($context, $token);

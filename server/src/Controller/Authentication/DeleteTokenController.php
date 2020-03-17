@@ -86,13 +86,9 @@ class DeleteTokenController extends BaseController
                     $this->authFactory->createFromToken($this->getLoggedUserToken())
                 );
 
-                if ($response === null) {
-                    return $this->createNotFoundResponse();
-                }
-
                 return new JsonFormattedResponse(
                     $response,
-                    JsonFormattedResponse::HTTP_OK
+                    $response->getHttpCode()
                 );
             }
         );
