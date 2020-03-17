@@ -58,7 +58,6 @@ There exists extra parameters that are implemented by the docker container itsel
 
 
 .. _cache: https://symfony.com/doc/4.4/cache.html
-.. _postgresql_support:
 
 Redis/Memcached cache support
 -----------------------------
@@ -69,6 +68,8 @@ Without a docker container you need to fill up a file in **config/packages/cache
 
 .. literalinclude:: ../../server/config/packages/cache.yaml
    :language: yaml
+
+.. _postgresql_support:
 
 PostgreSQL support
 ------------------

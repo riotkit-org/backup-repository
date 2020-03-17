@@ -12,6 +12,7 @@ You can also use a ready-to-use docker container instead of using host installat
 - Composer (PHP package manager)
 - "file" standard unix shell command
 - "sha256sum" unix shell command
+- "openssl" unix shell command
 - MariaDB 10.2+ / SQLite 3 / PostgreSQL 10.12+
 - NodeJS 12.x + NPM (for building simple frontend at installation time)
 

@@ -56,3 +56,11 @@ Specification of data format returned by event list endpoint
  tz                                      No                         Timezone in plaintext representation eg. UTC, Europe/Warsaw
  form                                    Yes - using AES            Form that needs to be submitted in order to push that data back to File Repository (eg. re-upload a file)
 ======================================  =========================  ====================================================================================================================
+
+
+Specification of encryption of file content
+===========================================
+
+Each file is encrypted using parameters from requester's token - File Repository is encrypting the file while serving it to the requester.
+
+See encryption specification in :ref:`cryptography_spec` section.
