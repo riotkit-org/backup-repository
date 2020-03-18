@@ -1,7 +1,7 @@
 Monitoring errors with Sentry
 =============================
 
-.. image:: ../_static/screenshots/bahub/sentry.png
+.. image:: ../../_static/screenshots/bahub/sentry.png
 
 Bahub uses shell commands to take some data, pack it and encrypt. What if any of those commands will fail?
 What if there are no enough permissions? What if the directory does not exist? All of those are good reasons
@@ -22,7 +22,7 @@ To enable the monitoring you need to have a ready-to-use Sentry instance/account
 Slack/Mattermost notifications
 ==============================
 
-.. image:: ../_static/screenshots/bahub/notifier-mattermost.png
+.. image:: ../../_static/screenshots/bahub/notifier-mattermost.png
 
 Each event such as upload success, restore success, or a failure can emit a notification.
 

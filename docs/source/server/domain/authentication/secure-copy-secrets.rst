@@ -1,3 +1,5 @@
+.. _token_secrets:
+
 Secure Copy and token secrets
 =============================
 

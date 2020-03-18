@@ -1,3 +1,5 @@
+.. _secure_copy:
+
 SecureCopy
 ==========
 
@@ -25,7 +27,7 @@ Storage mirroring with additional layer of security - encryption on the server s
 =======================================================================  ===================================================================================
 
 
-.. image:: ../../_static/diagrams/securecopy/architecture.png
+.. image:: ../../../_static/diagrams/securecopy/architecture.png
 
 .. toctree::
    :maxdepth: 2

@@ -33,7 +33,7 @@ Below there are multiple examples, you can configure the URL however you want, *
 So, let's take a look at the most interesting part - the access token generation.
 
 
-**Each visitor on your page needs to get a unique access token** that will allow to see the file content **only for him/her**.
+**Each visitor on your page needs to get a unique access token** that will allow to see the file content **only for that user**.
 To generate such access token we need to **DEFINE A COMMON FORMAT that your application will use and File Repository will understand**.
 
 .. code:: bash

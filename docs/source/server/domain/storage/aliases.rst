@@ -25,7 +25,7 @@ To start you need to create a file `config/ids_mapping.yaml`, where you will lis
 
 Example:
 
-.. literalinclude:: ../../../../server/config/ids_mapping.yaml.example
+.. literalinclude:: ../../../../../server/config/ids_mapping.yaml.example
    :language: yaml
 
 

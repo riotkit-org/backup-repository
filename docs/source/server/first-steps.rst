@@ -84,7 +84,7 @@ for you at the beginning.
 
     edit ./env/.env
 
-.. literalinclude:: ../../env/.env
+.. literalinclude:: ../../../env/.env
 
 
 **Starting the example environment:**
@@ -166,7 +166,7 @@ To do so, check all available roles in the application:
 
     GET /auth/roles?_token=YOUR-ADMIN-TOKEN-HERE
 
-:ref:`Note: If you DO NOT KNOW HOW to perform a request, then go to the /api/doc endpoint, type your token and submit a form for given endpoint.
+*Note: If you DO NOT KNOW HOW to perform a request, then go to the /api/doc endpoint, type your token and submit a form for given endpoint.*
 
 You should see something like this:
 

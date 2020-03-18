@@ -39,9 +39,9 @@ _token                                   Access token
 
     In the browser access URL: /minimum.ui/upload/image?_token=TOKEN-THERE
 
-.. image:: ../../_static/screenshots/minimum-ui/cropper-1.png
+.. image:: ../../../_static/screenshots/minimum-ui/cropper-1.png
 
-.. image:: ../../_static/screenshots/minimum-ui/cropper-2.png
+.. image:: ../../../_static/screenshots/minimum-ui/cropper-2.png
 
 
 File upload
@@ -53,11 +53,11 @@ File upload offers a multiple file upload, with drag & drop and fancy animations
 
     In the browser access URL: /minimum.ui/upload/file?_token=TOKEN-THERE
 
-.. image:: ../../_static/screenshots/minimum-ui/file-uploader-1.png
+.. image:: ../../../_static/screenshots/minimum-ui/file-uploader-1.png
 
-.. image:: ../../_static/screenshots/minimum-ui/file-uploader-2.png
+.. image:: ../../../_static/screenshots/minimum-ui/file-uploader-2.png
 
-.. image:: ../../_static/screenshots/minimum-ui/file-uploader-3.png
+.. image:: ../../../_static/screenshots/minimum-ui/file-uploader-3.png
 
 
 Video watching
@@ -70,4 +70,4 @@ MinimumUI exposes additional endpoint with a HTML5 <video> tag, so the video cou
 
     In the browser access URL: /minimum.ui/watch/video/some-file-name.mp4
 
-.. image:: ../../_static/screenshots/minimum-ui/watch-video.png
+.. image:: ../../../_static/screenshots/minimum-ui/watch-video.png

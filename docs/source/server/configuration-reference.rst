@@ -7,7 +7,7 @@ Application configuration
 When setting up application without a docker a .env file needs to be created in the root directory of the application.
 The .env.dist is a template with example, reference values. If you use a docker image, then you may use those variables as environment variables for the container.
 
-.. literalinclude:: ../../server/.env.dist
+.. literalinclude:: ../../../server/.env.dist
 
 ..  _permissions_reference:
 
@@ -36,7 +36,7 @@ Legend:
     - **upload.images** is the role name that you need to know
 
 
-.. literalinclude:: ../../server/src/Domain/Roles.php
+.. literalinclude:: ../../../server/src/Domain/Roles.php
    :language: ruby
 
 Docker container extra parameters
@@ -66,7 +66,7 @@ Docker container defines CACHE_ADAPTER_TYPE, CACHE_REDIS_URL and CACHE_MEMCACHED
 
 Without a docker container you need to fill up a file in **config/packages/cache.yaml** to point to your cache server.
 
-.. literalinclude:: ../../server/config/packages/cache.yaml
+.. literalinclude:: ../../../server/config/packages/cache.yaml
    :language: yaml
 
 .. _postgresql_support:

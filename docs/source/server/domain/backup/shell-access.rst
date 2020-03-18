@@ -7,7 +7,7 @@ as API endpoints.
 Creating collections
 --------------------
 
-.. image:: ../../_static/screenshots/console/creating-collections.png
+.. image:: ../../../_static/screenshots/console/creating-collections.png
 
 The command will return just a collection id on success. On failure a json is returned.
 

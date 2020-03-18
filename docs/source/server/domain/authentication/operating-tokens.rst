@@ -1,3 +1,5 @@
+.. _creating_a_token:
+
 Creating a token
 ----------------
 

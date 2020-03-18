@@ -18,22 +18,13 @@ Main functionality:
 - Ready to integrate upload forms for your applications. Only generate token and redirect a user to an url
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 5
    :caption: Contents:
 
-   first-steps
-   configuration-reference
-   project-rules
-   swagger-docs
+   server/index
    docker
-   domain/authentication/index
-   domain/storage/index
-   domain/backup/index
-   domain/minimumui/index
-   domain/securecopy/index
-   client/bahub.rst
-   encryption
-   shell-access
+   project-rules
+   clients/index
    riotkit-guide
 
 From authors
