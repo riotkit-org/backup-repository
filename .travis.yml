@@ -22,6 +22,19 @@ main_php_version: &main_php_version
     services: docker
     php: 7.4
 
+pypi_deploy: &pypi_deploy
+    deploy:
+        skip_cleanup: true
+        provider: pypi
+        distributions: sdist bdist_wheel
+        skip_existing: true
+        on:
+            all_branches: true
+            condition: $TRAVIS_TAG =~ ^v[0-9\.a-z\-]+ || $TRAVIS_BRANCH == "master"
+        user: marek_man
+        password:
+            secure: XUgQcpOxE2HCcmD8uJ8yzBsxnIdH8SNA91fEC54fzVvD5KupxFtuLs5OAL9Mj0xiXjfoTAS5za4RaPCSQPu/GVvmAtMnA1+tjdk1NxenmtlZOR54PmaQ3gY4QTyb0UUH08QcG5MZA0EDBlhyOcxpf5jp30oUT/h3zSHCM/hJ6lsoDtwn7foBUtLDxlOVIwdA7rO5pWPhg2YKJDlPkg6Bo2TpNMtKh4kjSN3somD1GRDdBEnqPKlSFi5Xiu3RhFwoUohGPMZhocrwA9aaLonx+XmZ+KOqiJX+kJg2c1hreYHUlqVCydHIDrnA8iQKEs+alI71ERGUuTkXZQYDfUJ1s7Ycnpj0Xg8iBa4bGSpvjNJYYfulXjFUH9XdIk2OMYzsKbuv+AS0aIQHjQXqk4u5szqZKhmpTYyRHdMObODjTBB1Vgdz3N437ex+biApsm7fM7QKN7iFD6RNqGPa2ksrF80/lxnvCkVTU1MGOqxsdsBEO1hoCl8OxqtNoTzLoJDwq7zJpMIrBbjnsum86QpGZh85JO8kzDeSvK08lRz3fqwbQjw6WhJbqeev6l+YvUWFKq8E+ElVVuj7xelKSjW0DBYdxVKKhlF7C2CaJnikvd2Y8nnMVtSQrlOPCh0KZm4tj+AoaOKNYa/EdefwS2coJZPstqq8l1AvN3L6fAuxj9s=
+
 language: php
 os: linux
 
@@ -111,20 +124,15 @@ jobs:
     # ==============
     #  Release: PyPI
     # ==============
-    - stage: "Bahub Client: Deploy to PyPI"
+    - stage: "Bahub client: Deploy to PyPI"
       <<: *main_python_version
       script: cd bahub-client
-      deploy:
-          skip_cleanup: true
-          provider: pypi
-          distributions: sdist bdist_wheel
-          skip_existing: true
-          on:
-              all_branches: true
-              condition: $TRAVIS_TAG =~ ^v[0-9\.a-z\-]+ || $TRAVIS_BRANCH == "master"
-          user: marek_man
-          password:
-              secure: XUgQcpOxE2HCcmD8uJ8yzBsxnIdH8SNA91fEC54fzVvD5KupxFtuLs5OAL9Mj0xiXjfoTAS5za4RaPCSQPu/GVvmAtMnA1+tjdk1NxenmtlZOR54PmaQ3gY4QTyb0UUH08QcG5MZA0EDBlhyOcxpf5jp30oUT/h3zSHCM/hJ6lsoDtwn7foBUtLDxlOVIwdA7rO5pWPhg2YKJDlPkg6Bo2TpNMtKh4kjSN3somD1GRDdBEnqPKlSFi5Xiu3RhFwoUohGPMZhocrwA9aaLonx+XmZ+KOqiJX+kJg2c1hreYHUlqVCydHIDrnA8iQKEs+alI71ERGUuTkXZQYDfUJ1s7Ycnpj0Xg8iBa4bGSpvjNJYYfulXjFUH9XdIk2OMYzsKbuv+AS0aIQHjQXqk4u5szqZKhmpTYyRHdMObODjTBB1Vgdz3N437ex+biApsm7fM7QKN7iFD6RNqGPa2ksrF80/lxnvCkVTU1MGOqxsdsBEO1hoCl8OxqtNoTzLoJDwq7zJpMIrBbjnsum86QpGZh85JO8kzDeSvK08lRz3fqwbQjw6WhJbqeev6l+YvUWFKq8E+ElVVuj7xelKSjW0DBYdxVKKhlF7C2CaJnikvd2Y8nnMVtSQrlOPCh0KZm4tj+AoaOKNYa/EdefwS2coJZPstqq8l1AvN3L6fAuxj9s=
+      <<: *pypi_deploy
+
+    - stage: "KropotCLI client: Deploy to PyPI"
+      <<: *main_python_version
+      script: cd kropot-cli
+      <<: *pypi_deploy
 
     # =============================================
     #  Additional, optional stages allowed to fail
