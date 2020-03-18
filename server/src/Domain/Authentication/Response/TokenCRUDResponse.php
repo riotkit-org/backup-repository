@@ -14,7 +14,7 @@ class TokenCRUDResponse extends BaseResponse
     {
         $response = new TokenCRUDResponse();
         $response->status   = true;
-        $response->exitCode = Http::HTTP_ACCEPTED;
+        $response->exitCode = Http::HTTP_OK;
         $response->token    = $token;
         $response->message  = 'Token was deleted';
 
