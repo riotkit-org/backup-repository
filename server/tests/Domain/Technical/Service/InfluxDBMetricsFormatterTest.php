@@ -40,16 +40,6 @@ class InfluxDBMetricsFormatterTest extends TestCase
         $formatter = new InfluxDBMetricsFormatter();
         $formatted = $formatter->format(['data' => []], 'http://localhost', 'test');
 
-        $this->assertStringContainsString('backup_repository_report,base_url="http://localhost",app_env="test"  ', $formatted);
-    }
-
-    public function testTimestampIsPresentAtTheEndOfMetricString(): void
-    {
-        $formatter = new InfluxDBMetricsFormatter();
-        $formatted = $formatter->format(['data' => []], 'http://localhost', 'test');
-
-        $exp = explode(' ', $formatted);
-
-        $this->assertIsNumeric(str_replace('us', '', $exp[count($exp) - 1]));
+        $this->assertStringContainsString('backup_repository_report,base_url="http://localhost",app_env="test" ', $formatted);
     }
 }
