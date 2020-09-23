@@ -35,14 +35,4 @@ class FetchVersionForm
      * @var string
      */
     public $httpBytesRange;
-
-    /**
-     * @var string
-     */
-    public $httpIfNoneMatch;
-
-    /**
-     * @var string
-     */
-    public $httpIfModifiedSince;
 }

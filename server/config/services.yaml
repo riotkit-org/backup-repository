@@ -58,17 +58,6 @@ services:
         arguments:
             $tempPath: '%env(TEMP_DIRECTORY)%'
 
-    App\Infrastructure\Storage\Manager\DownloadViaGuzzleProvider:
-        class: App\Infrastructure\Storage\Manager\DownloadViaGuzzleProvider
-        arguments:
-            $state: '@App\Domain\Common\Manager\StateManager'
-            $httpTimeout: '%env(HTTP_TIMEOUT)%'
-
-    App\Infrastructure\Storage\Manager\TestHttpDownloadProvider:
-        class: App\Infrastructure\Storage\Manager\TestHttpDownloadProvider
-        arguments:
-            $parentProvider: '@App\Infrastructure\Storage\Manager\DownloadViaGuzzleProvider'
-
     App\Domain\Backup\Settings\BackupSettings:
         class: App\Domain\Backup\Settings\BackupSettings
         arguments:

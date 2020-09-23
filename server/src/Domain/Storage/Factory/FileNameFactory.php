@@ -8,18 +8,6 @@ use App\Domain\Storage\ValueObject\Url;
 
 class FileNameFactory
 {
-    public function fromUrl(Url $url): Filename
-    {
-        $parts = explode('?', $url->getValue());
-
-        return new Filename(
-            $url->getReproducibleHash() .
-            '_' .
-            pathinfo($parts[0], PATHINFO_BASENAME),
-            true
-        );
-    }
-
     public function fromForm(UploadByPostForm $form): Filename
     {
         if ($form->isFinalFilename) {

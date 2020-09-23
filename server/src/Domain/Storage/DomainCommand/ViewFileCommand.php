@@ -6,7 +6,6 @@ use App\Domain\Authentication\Repository\TokenRepository;
 use App\Domain\Bus;
 use App\Domain\Common\Service\Bus\CommandHandler;
 use App\Domain\Storage\ActionHandler\ViewFileHandler;
-use App\Domain\Storage\Context\CachingContext;
 use App\Domain\Storage\Exception\AuthenticationException;
 use App\Domain\Storage\Factory\Context\SecurityContextFactory;
 use App\Domain\Storage\Form\ViewFileForm;
@@ -36,8 +35,6 @@ class ViewFileCommand implements CommandHandler
      *  - string filename
      *  - string password
      *  - Token  token
-     *  - string ifNoneMatch
-     *  - string ifModifiedSince
      *
      * @param mixed $input
      * @param string $path
@@ -56,13 +53,7 @@ class ViewFileCommand implements CommandHandler
         $form->password   = $input['password']   ?? '';
 
         $securityContext = $this->authFactory->createViewingContextFromTokenAndForm($token, $form, $isFileAlreadyValidated);
-        $cachingContext = new CachingContext(
-            (string) ($input['ifNoneMatch'] ?? ''),
-            ($input['ifModifiedSince'] ?? '') ?
-                new \DateTimeImmutable($input['ifModifiedSince']) : null
-        );
-
-        $response = $this->handler->handle($form, $securityContext, $cachingContext);
+        $response = $this->handler->handle($form, $securityContext);
 
         return [
             'status' => $response->getStatus(),

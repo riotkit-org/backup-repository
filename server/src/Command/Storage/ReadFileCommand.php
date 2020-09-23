@@ -3,7 +3,6 @@
 namespace App\Command\Storage;
 
 use App\Domain\Storage\ActionHandler\ViewFileHandler;
-use App\Domain\Storage\Context\CachingContext;
 use App\Domain\Storage\Factory\Context\SecurityContextFactory;
 use App\Domain\Storage\Form\ViewFileForm;
 use Symfony\Component\Console\Command\Command;
@@ -42,10 +41,9 @@ class ReadFileCommand extends Command
         $form->filename   = $input->getArgument('filename');
         $form->bytesRange = '';
 
-        $cachingContext = new CachingContext('');
         $securityContext = $this->contextFactory->createReadContextInShell();
 
-        $response = $this->handler->handle($form, $securityContext, $cachingContext);
+        $response = $this->handler->handle($form, $securityContext);
         $stream = $response->getResponseStream();
         $contentFlushCallback = $response->getContentFlushCallback();
 

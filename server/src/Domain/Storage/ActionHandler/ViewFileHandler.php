@@ -5,7 +5,6 @@ namespace App\Domain\Storage\ActionHandler;
 use App\Domain\Common\Http;
 use App\Domain\Storage\Aggregate\BytesRangeAggregate;
 use App\Domain\Storage\Aggregate\FileRetrievedFromStorage;
-use App\Domain\Storage\Context\CachingContext;
 use App\Domain\Storage\Entity\StoredFile;
 use App\Domain\Storage\Exception\AuthenticationException;
 use App\Domain\Storage\Exception\ContentRangeInvalidException;
@@ -15,7 +14,6 @@ use App\Domain\Storage\Manager\FilesystemManager;
 use App\Domain\Storage\Manager\StorageManager;
 use App\Domain\Storage\Response\FileDownloadResponse;
 use App\Domain\Storage\Security\ReadSecurityContext;
-use App\Domain\Storage\Service\AlternativeFilenameResolver;
 use App\Domain\Storage\ValueObject\Filename;
 use GuzzleHttp\Psr7\Stream;
 use Psr\Http\Message\StreamInterface;
@@ -43,13 +41,12 @@ class ViewFileHandler
     /**
      * @param ViewFileForm        $form
      * @param ReadSecurityContext $securityContext
-     * @param CachingContext      $cachingContext
      *
      * @return FileDownloadResponse
      *
      * @throws AuthenticationException
      */
-    public function handle(ViewFileForm $form, ReadSecurityContext $securityContext, CachingContext $cachingContext): FileDownloadResponse
+    public function handle(ViewFileForm $form, ReadSecurityContext $securityContext): FileDownloadResponse
     {
         try {
             $file = $this->storageManager->retrieve(new Filename((string) $form->filename));
@@ -68,16 +65,6 @@ class ViewFileHandler
                 'No access to read the file, maybe invalid password?',
                 AuthenticationException::CODES['no_read_access_or_invalid_password']
             );
-        }
-
-        if (!$cachingContext->isCacheExpiredForFile($file->getStoredFile())) {
-            return new FileDownloadResponse('Not Modified', Http::HTTP_NOT_MODIFIED, $this->createHttpHeadersList(
-                $file->getStoredFile(),
-                '',
-                true,
-                'bytes',
-                $this->fs->getFileSize($file->getStoredFile()->getStoragePath())
-            ));
         }
 
         [$code, $headers, $outputStream, $contentFlushCallback] = $this->createStreamHandler($file, $form);
@@ -138,7 +125,7 @@ class ViewFileHandler
         ];
     }
 
-    private function createHttpHeadersList(StoredFile $file, string $eTagSuffix, bool $allowLastModifiedHeader, string $acceptRange, int $contentLength): array
+    private function createHttpHeadersList(StoredFile $file, string $acceptRange, int $contentLength): array
     {
         $headers = [];
 
@@ -151,15 +138,7 @@ class ViewFileHandler
             $headers['Content-Length'] = $contentLength;
         }
 
-        //
-        // caching
-        //
-        if ($allowLastModifiedHeader) {
-            $headers['Last-Modified'] = $file->getDateAdded()->format('D, d M Y H:i:s') . ' GMT';
-        }
-
-        $headers['ETag'] = $file->getContentHash() . $eTagSuffix;
-        $headers['Cache-Control'] = 'public, max-age=25200';
+        //$headers['Cache-Control'] = 'public, max-age=60';
 
         //
         // others

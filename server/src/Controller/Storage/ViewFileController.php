@@ -4,7 +4,6 @@ namespace App\Controller\Storage;
 
 use App\Controller\BaseController;
 use App\Domain\Storage\ActionHandler\ViewFileHandler;
-use App\Domain\Storage\Context\CachingContext;
 use App\Domain\Storage\Factory\Context\SecurityContextFactory;
 use App\Domain\Storage\Form\ViewFileForm;
 use App\Domain\Storage\Response\FileDownloadResponse;
@@ -95,7 +94,6 @@ class ViewFileController extends BaseController
                 $response = $this->handler->handle(
                     $form,
                     $this->createPermissionsContext($form),
-                    $this->createCachingContext($request)
                 );
 
                 //
@@ -128,22 +126,6 @@ class ViewFileController extends BaseController
 
                 return new JsonFormattedResponse($response, $response->getCode());
             }
-        );
-    }
-
-    /**
-     * @param Request $request
-     *
-     * @return CachingContext
-     *
-     * @throws Exception
-     */
-    private function createCachingContext(Request $request): CachingContext
-    {
-        return new CachingContext(
-            (string) $request->headers->get('if-none-match'),
-            $request->headers->has('if-modified-since') ?
-                new \DateTimeImmutable($request->headers->get('if-modified-since')) : null
         );
     }
 

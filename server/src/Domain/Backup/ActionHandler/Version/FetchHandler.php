@@ -55,9 +55,7 @@ class FetchHandler
             'token'                  => $form->token,
             'filename'               => $version->getFile()->getFilename()->getValue(),
             'password'               => $form->password,
-            'bytesRange'             => $form->httpBytesRange,
-            'ifNoneMatch'            => $form->httpIfNoneMatch,
-            'ifModifiedSince'        => $form->httpIfModifiedSince
+            'bytesRange'             => $form->httpBytesRange
         ]);
 
         if ($response['stream'] ?? null) {
