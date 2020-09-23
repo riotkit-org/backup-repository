@@ -5,12 +5,11 @@ namespace App\Domain\Storage\Manager;
 use App\Domain\Storage\Aggregate\FileRetrievedFromStorage;
 use App\Domain\Storage\Entity\StoredFile;
 use App\Domain\Storage\Exception\FileUploadedTwiceException;
+use App\Domain\Storage\Exception\InvalidAttributeException;
 use App\Domain\Storage\Exception\StorageException;
-use App\Domain\Storage\Exception\ValidationException;
 use App\Domain\Storage\Form\UploadForm;
 use App\Domain\Storage\Repository\FileRepository;
 use App\Domain\Storage\Security\UploadSecurityContext;
-use App\Domain\Storage\Validation\SubmittedFileValidator;
 use App\Domain\Storage\ValueObject\Filename;
 use App\Domain\Storage\ValueObject\InputEncoding;
 use App\Domain\Storage\ValueObject\Path;
@@ -34,18 +33,15 @@ class StorageManager
     private FilesystemManager      $fs;
     private WriteManager           $writeManager;
     private FileRepository         $repository;
-    private SubmittedFileValidator $validator;
 
     public function __construct(
         FilesystemManager $fs,
         WriteManager $writeManager,
-        FileRepository $repository,
-        SubmittedFileValidator $validator
+        FileRepository $repository
     ) {
         $this->fs                = $fs;
         $this->writeManager      = $writeManager;
         $this->repository        = $repository;
-        $this->validator         = $validator;
     }
 
     /**
@@ -57,11 +53,11 @@ class StorageManager
      * @param UploadSecurityContext $securityContext
      * @param UploadForm $form
      *
-     * @throws FileUploadedTwiceException
-     * @throws StorageException
-     * @throws ValidationException
-     *
      * @return StoredFile
+     *
+     * @throws StorageException
+     * @throws InvalidAttributeException
+     * @throws FileUploadedTwiceException
      */
     public function store(
         Filename $name,
@@ -81,9 +77,6 @@ class StorageManager
         // policies
         $canOverwriteFile = $existingFromRepository ? $securityContext->canOverwriteFile($existingFromRepository, $form) : false;
 
-        // early validation. There exists also validation after upload, which checks eg. mime type and size
-        $this->validator->validateBeforeUpload($form, $securityContext);
-
         // case: file exists in both repository and on the disk, but we do not allow overwriting (VERIFIED BY FILENAME)
         if ($existsBothDbAndDisk && !$canOverwriteFile) {
             throw FileUploadedTwiceException::create($existingFromRepository);
@@ -98,7 +91,7 @@ class StorageManager
         //       possibly eg. a replication may be delayed on database level
         //       if there is any replication set up outside of the application (eg. MySQL + some clustering fs)
         if (!$existingFromRepository && $existsOnDisk) {
-            // @todo: Make a selectable policies for this case
+            // @todo: Make a selectable policies for this case?
             return $this->writeManager->submitFileLostInRepositoryButExistingInStorage($name, $form, $encoding, $path, $securityContext);
         }
 

@@ -54,6 +54,17 @@ class UploadForm extends ApplicationForm
      */
     public $stream;
 
+    /**
+     * @internal ApplicationForm::typeInSchema string
+     * @var string
+     */
+    public $attributes;
+
+    public function getAttributes(): string
+    {
+        return $this->attributes ?: '{}';
+    }
+
     public static function createFromFile(StoredFile $file): UploadForm
     {
         $form = new static();

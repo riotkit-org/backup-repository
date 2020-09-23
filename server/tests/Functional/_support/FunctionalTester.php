@@ -151,6 +151,11 @@ class FunctionalTester extends \Codeception\Actor
         $this->sendPOST(Urls::URL_REPOSITORY_UPLOAD_RAW . '?' . http_build_query($params), $payload);
     }
 
+    public function readFileAttributes(string $filename): void
+    {
+        $this->sendGET(Urls::URL_REPOSITORY_READ_ATTRIBUTES, ['filename' => $filename]);
+    }
+
     public function deleteFile(string $filename, array $params = []): void
     {
         $this->sendDELETE(

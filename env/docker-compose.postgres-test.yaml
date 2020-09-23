@@ -1,9 +1,0 @@
-version: "3.5"
-
-#
-# This file extends docker-compose.yaml by adding additional services and environment variables to existing services
-#
-
-services:
-    postgresql:
-        container_name: "${COMPOSE_ENV_NAME}_postgresql_1" # workaround for Compose bug that causes suffixes breaking CI builds. Do not use on PROD if not necessary

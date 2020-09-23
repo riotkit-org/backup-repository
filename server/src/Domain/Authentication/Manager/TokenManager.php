@@ -5,20 +5,17 @@ namespace App\Domain\Authentication\Manager;
 use App\Domain\Authentication\Entity\Token;
 use App\Domain\Authentication\Exception\InvalidTokenIdException;
 use App\Domain\Authentication\Repository\TokenRepository;
-use App\Domain\Authentication\Service\CryptoService;
 use App\Domain\Authentication\Service\UuidValidator;
 
 class TokenManager
 {
     private TokenRepository $repository;
     private UuidValidator $uuidValidator;
-    private CryptoService $cryptoService;
 
-    public function __construct(TokenRepository $repository, UuidValidator $uuidValidator, CryptoService $crypto)
+    public function __construct(TokenRepository $repository, UuidValidator $uuidValidator)
     {
         $this->repository    = $repository;
         $this->uuidValidator = $uuidValidator;
-        $this->cryptoService = $crypto;
     }
 
     /**
@@ -39,7 +36,7 @@ class TokenManager
         $token->setId($customId ?: uniqid('', true));
         $token->setRoles($roles);
         $token->setExpirationDate($expirationTime);
-        $token->setData($this->processTokenData($details));
+        $token->setData($details);
 
         $this->repository->persist($token);
 
@@ -63,20 +60,5 @@ class TokenManager
     public function flushAll(): void
     {
         $this->repository->flush();
-    }
-
-    private function processTokenData(array $data): array
-    {
-        // encrypt the key with master key, as it should not be visible to the user
-        if ($data[Token::FIELD_SECURE_COPY_ENC_KEY] ?? '') {
-            $data[Token::FIELD_SECURE_COPY_ENC_KEY] = $this->cryptoService->encodeString($data[Token::FIELD_SECURE_COPY_ENC_KEY]);
-        }
-
-        // the same for digest salt
-        if ($data[Token::FIELD_SECURE_COPY_DIGEST_SALT] ?? '') {
-            $data[Token::FIELD_SECURE_COPY_DIGEST_SALT] = $this->cryptoService->encodeString($data[Token::FIELD_SECURE_COPY_DIGEST_SALT]);
-        }
-
-        return $data;
     }
 }

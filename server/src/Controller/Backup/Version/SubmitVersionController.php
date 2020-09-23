@@ -56,6 +56,7 @@ class SubmitVersionController extends BaseController
         $infrastructureForm = $this->createForm(BackupSubmitFormType::class, $form);
         $infrastructureForm->submit([
             'collection' => $collectionId,
+            'attributes' => $request->get('kv', '{}')
         ]);
 
         if (!$infrastructureForm->isValid()) {

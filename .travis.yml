@@ -78,30 +78,6 @@ jobs:
       after_failure:
           - bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [FAILURE] Bahub tests are failing."
 
-    # =============================
-    # KropotCLI (SecureCopy client)
-    # =============================
-    - stage: KropotCLI tests @ Python 3.6
-      <<: *main_python_version
-      before_script:
-          - cd kropot-cli && make install_requirements install PIP="pip" SUDO=""
-      script:
-          - make unit_test
-
-    # =========================================================
-    #  Server API tests on different databases and/or storages
-    # =========================================================
-    - stage: File Repository API tests (local storage + SQLite3)
-      <<: *main_php_version
-      script: cd server && make test_api@ci SUDO="" TAG=${TRAVIS_TAG:-dev} VARIANT=""
-      after_success: bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [OK] File repository API tests on local storage passed."
-      after_failure: bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [FAILURE] File repository API tests on local storage are failing."
-
-    - stage: File Repository API tests (Min.io + MariaDB + Redis cache)
-      <<: *main_php_version
-      script: cd server && make test_api@ci SUDO="" TAG=${TRAVIS_TAG:-dev} VARIANT="s3 mariadb redis-cache"
-      after_success: bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [OK] File repository API tests on MariaDB."
-      after_failure: bash ./.infrastructure/ci/notify.sh "${SLACK_URL}" " [FAILURE] File repository API tests on MariaDB are failing."
 
     # ================
     #  Release: Docker
@@ -127,11 +103,6 @@ jobs:
     - stage: "Bahub client: Deploy to PyPI"
       <<: *main_python_version
       script: cd bahub-client
-      <<: *pypi_deploy
-
-    - stage: "KropotCLI client: Deploy to PyPI"
-      <<: *main_python_version
-      script: cd kropot-cli
       <<: *pypi_deploy
 
     # =============================================

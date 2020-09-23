@@ -15,6 +15,7 @@ class Urls
     public const URL_REPOSITORY_UPLOAD_BY_URL = '/repository/image/add-by-url';
     public const URL_REPOSITORY_DELETE_FILE   = '/repository/file/{{ fileName }}';
     public const URL_REPOSITORY_FETCH_FILE    = '/repository/file/{{ fileName }}';
+    public const URL_REPOSITORY_READ_ATTRIBUTES = '/repository/file/{{ fileName }}/attributes';
 
     public const URL_REPOSITORY_LISTING = '/repository';
 

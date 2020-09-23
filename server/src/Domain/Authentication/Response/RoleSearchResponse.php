@@ -3,9 +3,9 @@
 namespace App\Domain\Authentication\Response;
 
 use App\Domain\Common\Http;
-use App\Domain\Common\Response\BaseSearchResponse;
+use App\Domain\Common\Response\NormalSearchResponse;
 
-class RoleSearchResponse extends BaseSearchResponse
+class RoleSearchResponse extends NormalSearchResponse
 {
     public static function createResultsResponse(array $roles): RoleSearchResponse
     {

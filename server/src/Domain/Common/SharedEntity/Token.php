@@ -12,26 +12,14 @@ class Token
     public const FIELD_MAX_ALLOWED_FILE_SIZE     = 'maxAllowedFileSize';
     public const FIELD_ALLOWED_IPS               = 'allowedIpAddresses';
     public const FIELD_ALLOWED_UAS               = 'allowedUserAgents';
-    public const FIELD_SECURE_COPY_ENC_METHOD    = 'secureCopyEncryptionMethod';
-    public const FIELD_SECURE_COPY_ENC_KEY       = 'secureCopyEncryptionKey';
-    public const FIELD_SECURE_COPY_DIGEST_METHOD = 'secureCopyDigestMethod';
-    public const FIELD_SECURE_COPY_DIGEST_ROUNDS = 'secureCopyDigestRounds';
-    public const FIELD_SECURE_COPY_DIGEST_SALT   = 'secureCopyDigestSalt';
-
-    public const SECURE_COPY_FIELDS = [
-        self::FIELD_SECURE_COPY_ENC_METHOD,
-        self::FIELD_SECURE_COPY_ENC_KEY,
-        self::FIELD_SECURE_COPY_DIGEST_METHOD,
-        self::FIELD_SECURE_COPY_DIGEST_ROUNDS,
-        self::FIELD_SECURE_COPY_DIGEST_SALT
-    ];
 
     // Entity properties
     protected ?string $id    = null;
     protected array   $roles = [];
 
     // internal
-    private bool $alreadyGrantedAdminAccess = false;
+    private bool  $alreadyGrantedAdminAccess = false;
+    private array $requestedRoles = [];
 
     public const ANONYMOUS_TOKEN_ID = '00000000-0000-0000-0000-000000000000';
 
@@ -76,7 +64,23 @@ class Token
 
     public function hasRole(string $roleName): bool
     {
+        $this->recordRoleRequest($roleName);
+
         return \in_array($roleName, $this->getRoles(), true);
+    }
+
+    public function getRequestedRolesList(): array
+    {
+        return $this->requestedRoles;
+    }
+
+    private function recordRoleRequest(string $roleName): void
+    {
+        if (!\in_array($roleName, Roles::getRolesList(), true)) {
+            return;
+        }
+
+        $this->requestedRoles[] = $roleName;
     }
 
     /**

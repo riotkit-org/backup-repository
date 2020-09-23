@@ -15,4 +15,9 @@ class StorageException extends \Exception
     {
         return new StorageException('File not found in the storage', StorageException::codes['file_not_found']);
     }
+
+    public function isFileNotFoundError(): bool
+    {
+        return $this->getCode() === self::codes['file_not_found'];
+    }
 }

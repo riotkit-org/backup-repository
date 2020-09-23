@@ -12,6 +12,7 @@ use App\Domain\Storage\Manager\StorageManager;
 use App\Domain\Storage\Provider\UserUploadProvider;
 use App\Domain\Storage\Repository\StagingAreaRepository;
 use App\Domain\Storage\Service\Notifier;
+use App\Domain\Storage\Validation\SubmittedFileValidator;
 use App\Domain\Storage\ValueObject\Filename;
 use App\Domain\Storage\ValueObject\Stream;
 
@@ -29,7 +30,8 @@ class UploadFileByPostHandler extends AbstractUploadHandler
         UserUploadProvider $uploadProvider,
         SecurityContextFactory $securityContextFactory,
         StagingAreaRepository $stagingAreaRepository,
-        Notifier $notifier
+        Notifier $notifier,
+        SubmittedFileValidator $validator
     ) {
         $this->uploadProvider = $uploadProvider;
 
@@ -39,7 +41,8 @@ class UploadFileByPostHandler extends AbstractUploadHandler
             $publicUrlFactory,
             $securityContextFactory,
             $stagingAreaRepository,
-            $notifier
+            $notifier,
+            $validator
         );
     }
 

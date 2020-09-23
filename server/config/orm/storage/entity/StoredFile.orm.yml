@@ -66,3 +66,9 @@ App\Domain\Storage\Entity\StoredFile:
                 inverseJoinColumns:
                     tag_id:
                         referencedColumnName: id
+
+    oneToMany:
+        attributes:
+            targetEntity: Attribute
+            mappedBy: storedFile
+            cascade: ['persist']

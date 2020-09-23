@@ -6,11 +6,9 @@ use App\Domain\Authentication\Entity\Token;
 use App\Domain\Storage\Entity\StoredFile;
 use App\Domain\Storage\Form\UploadForm;
 use App\Domain\Storage\ValueObject\Filesize;
-use App\Domain\Storage\ValueObject\Mime;
 
 class UploadSecurityContext
 {
-    private array  $allowedMimes;
     private bool   $isAllowedToUpload;
     private array  $allowedTags;
     private bool   $allowedToOverwrite;
@@ -22,7 +20,6 @@ class UploadSecurityContext
     private Token  $uploaderToken;
 
     public function __construct(
-        array $allowedMimes,
         array $allowedTags,
         bool $isAllowedToUploadAnything,
         bool $allowedToOverwrite,
@@ -33,7 +30,6 @@ class UploadSecurityContext
         bool $canUploadOnlyOnce,
         Token $uploaderToken
     ) {
-        $this->allowedMimes = $allowedMimes;
         $this->allowedTags = $allowedTags;
         $this->isAllowedToUpload = $isAllowedToUploadAnything;
         $this->allowedToOverwrite = $allowedToOverwrite;
@@ -43,15 +39,6 @@ class UploadSecurityContext
         $this->isAdministrator    = $isAdministrator;
         $this->canUploadOnlyOnce  = $canUploadOnlyOnce;
         $this->uploaderToken      = $uploaderToken;
-    }
-
-    public function isMimeAllowed(Mime $mime): bool
-    {
-        if ($this->isAdministrator) {
-            return true;
-        }
-
-        return !$this->allowedMimes || \in_array($mime->getValue(), $this->allowedMimes, true);
     }
 
     public function isTagAllowed(string $tag): bool

@@ -66,6 +66,11 @@ abstract class BaseController implements ContainerAwareInterface
             throw new RequestException('Missing content');
         }
 
+        // dirty fix: normalize attributes form, allow array submission as part of JSON payload
+        if (isset($arrayForm['attributes']) && \is_array($arrayForm['attributes'])) {
+            $arrayForm['attributes'] = json_encode($arrayForm['attributes']);
+        }
+
         $infrastructureForm = $this->createForm($formType, $formObject);
         $infrastructureForm->submit($arrayForm);
 

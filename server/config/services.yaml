@@ -14,14 +14,7 @@ parameters:
     env(TEMP_DIRECTORY): /tmp
     env(LONG_EXECUTION_TIME): "300"
     env(TOKEN_EXPIRATION_TIME): "+30 minutes"
-    env(ENC_TOKEN_PHRASE): "test123"
-    env(REPLICATION_SECRET): ''
-    env(REPLICATION_PRIMARY_URL): ''
     env(BASE_URL): ''
-    env(ENC_SALT): ''
-    env(ENC_ALGORITHM): 'aes-256-cbc'
-    env(ENC_DIGEST_ALGORITHM): 'sha512'
-    env(ENC_DIGEST_ROUNDS): "6000"
 
 services:
     # default configuration for services in *this* file
@@ -53,15 +46,6 @@ services:
         arguments:
             $manager: '@App\Domain\Authentication\Manager\TokenManager'
             $expirationTime: '%env(TOKEN_EXPIRATION_TIME)%'
-
-    App\Infrastructure\Authentication\Service\AESCryptoService:
-        arguments:
-            $secret: '%env(ENC_TOKEN_PHRASE)%'
-            $salt: '%env(ENC_SALT)%'
-            $encAlgorithm: '%env(ENC_ALGORITHM)%'
-            $digestAlgorithm: '%env(ENC_DIGEST_ALGORITHM)%'
-            $digestRounds: '%env(ENC_DIGEST_ROUNDS)%'
-        autowire: true
 
     App\Infrastructure\Authentication\Event\Subscriber\TokenSubscriber:
         autowire: true
@@ -117,17 +101,7 @@ services:
         arguments:
             $readOnly: '%env(bool:READ_ONLY)%'
 
-    App\Infrastructure\SecureCopy\Repository\TokenDoctrineRepository:
-        autowire: true
-        arguments:
-            $readOnly: '%env(bool:READ_ONLY)%'
-
     App\Infrastructure\Backup\Repository\TokenDoctrineRepository:
-        autowire: true
-        arguments:
-            $readOnly: '%env(bool:READ_ONLY)%'
-
-    App\Infrastructure\SecureCopy\Repository\CryptoMapDoctrineRepository:
         autowire: true
         arguments:
             $readOnly: '%env(bool:READ_ONLY)%'
@@ -138,15 +112,6 @@ services:
             $fs: '@App\Domain\Backup\Service\Filesystem'
             $readOnly: '%env(bool:READ_ONLY)%'
 
-    App\Infrastructure\SecureCopy\Service\AESCryptoService:
-        arguments:
-            $secret: '%env(ENC_TOKEN_PHRASE)%'
-            $salt: '%env(ENC_SALT)%'
-            $encAlgorithm: '%env(ENC_ALGORITHM)%'
-            $digestAlgorithm: '%env(ENC_DIGEST_ALGORITHM)%'
-            $digestRounds: '%env(ENC_DIGEST_ROUNDS)%'
-        autowire: true
-
     App\Domain\Authentication\Factory\IncomingTokenFactory:
         public: true
         autowire: true
@@ -155,16 +120,6 @@ services:
         autowire: true
         arguments:
             $baseUrl: '%env(BASE_URL)%'
-
-    App\Domain\SecureCopy\Factory\RepositoryLegendFactory:
-        autowire: true
-        arguments:
-            $baseUrl: '%env(BASE_URL)%'
-
-    App\Domain\Replication\Provider\ConfigurationProvider:
-        arguments:
-            $token: '%env(REPLICATION_SECRET)%'
-            $primaryUrl: '%env(REPLICATION_PRIMARY_URL)%'
 
     ro_fs:
         class: App\Infrastructure\Storage\Manager\FlysystemFilesystemManager
@@ -202,15 +157,3 @@ services:
               credentials:
                   key: "%env(FS_AWSS3V3_KEY)%"
                   secret: "%env(FS_AWSS3V3_SECRET)%"
-
-    replication_primary_httpclient:
-        class: App\Infrastructure\Replication\Service\HttpClient
-        autowire: true
-        factory: ['\App\Infrastructure\Replication\Factory\Http\PrimaryGuzzleClientFactory', 'createClient']
-        arguments:
-            $primaryServerUrl: '%env(REPLICATION_PRIMARY_URL)%'
-            $token: '%env(REPLICATION_SECRET)%'
-
-    App\Infrastructure\Replication\Provider\GuzzlePrimaryServerVersionProvider:
-        arguments:
-            $client: '@replication_primary_httpclient'

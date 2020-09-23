@@ -27,7 +27,7 @@ class HelloController extends BaseController
     public function sayHelloAction(): JsonResponse
     {
         return new JsonResponse(
-            'Hello, welcome. Please take a look at /repository/routing/map for the list of available routes.',
+            'todo: Run Vue.js / React / any other frontend there',
             JsonResponse::HTTP_OK
         );
     }

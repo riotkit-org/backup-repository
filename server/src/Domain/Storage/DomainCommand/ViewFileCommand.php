@@ -69,7 +69,7 @@ class ViewFileCommand implements CommandHandler
             'code'   => $response->getCode(),
             'response'             => $response->jsonSerialize(),
             'stream'               => $response->getResponseStream(),
-            'headersFlushCallback' => $response->getHeadersFlushCallback(),
+            'headersFlushCallback' => $response->getHeaders(),
             'contentFlushCallback' => $response->getContentFlushCallback()
         ];
     }

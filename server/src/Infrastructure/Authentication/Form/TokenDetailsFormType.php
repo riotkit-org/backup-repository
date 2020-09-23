@@ -4,12 +4,9 @@ namespace App\Infrastructure\Authentication\Form;
 
 use App\Domain\Authentication\Form\TokenDetailsForm;
 use App\Domain\Common\SharedEntity\Token;
-use App\Domain\Cryptography;
 use Symfony\Component\Form\AbstractType;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -34,22 +31,6 @@ class TokenDetailsFormType extends AbstractType
             ->add(Token::FIELD_ALLOWED_UAS, CollectionType::class, [
                 'allow_add'    => true,
                 'allow_delete' => true
-            ])
-            ->add(Token::FIELD_SECURE_COPY_ENC_KEY, TextType::class, [
-                'required'   => false,
-                'empty_data' => ''
-            ])
-            ->add(Token::FIELD_SECURE_COPY_ENC_METHOD, ChoiceType::class, [
-                'choices'    => Cryptography::CRYPTO_ALGORITHMS
-            ])
-            ->add(Token::FIELD_SECURE_COPY_DIGEST_METHOD, ChoiceType::class, [
-                'choices'    => Cryptography::DIGEST_ALGORITHMS
-            ])
-            ->add(Token::FIELD_SECURE_COPY_DIGEST_ROUNDS, TextType::class, [
-                'required'   => false,
-            ])
-            ->add(Token::FIELD_SECURE_COPY_DIGEST_SALT, TextType::class, [
-                'required'   => false,
             ]);
     }
 

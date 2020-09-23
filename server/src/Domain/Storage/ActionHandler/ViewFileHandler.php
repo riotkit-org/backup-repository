@@ -33,16 +33,11 @@ class ViewFileHandler
 {
     private StorageManager $storageManager;
     private FilesystemManager $fs;
-    private AlternativeFilenameResolver $nameResolver;
 
-    public function __construct(
-        StorageManager $storageManager,
-        FilesystemManager $fs,
-        AlternativeFilenameResolver $nameResolver
-    ) {
+    public function __construct(StorageManager $storageManager, FilesystemManager $fs)
+    {
         $this->storageManager = $storageManager;
         $this->fs             = $fs;
-        $this->nameResolver   = $nameResolver;
     }
 
     /**
@@ -56,8 +51,6 @@ class ViewFileHandler
      */
     public function handle(ViewFileForm $form, ReadSecurityContext $securityContext, CachingContext $cachingContext): FileDownloadResponse
     {
-        $this->preProcessForm($form);
-
         try {
             $file = $this->storageManager->retrieve(new Filename((string) $form->filename));
 
@@ -78,20 +71,18 @@ class ViewFileHandler
         }
 
         if (!$cachingContext->isCacheExpiredForFile($file->getStoredFile())) {
-            return new FileDownloadResponse('Not Modified', 304, function () use ($file) {
-                $this->sendHttpHeaders(
-                    $file->getStoredFile(),
-                    '',
-                    true,
-                    'bytes',
-                    $this->fs->getFileSize($file->getStoredFile()->getStoragePath())
-                );
-            });
+            return new FileDownloadResponse('Not Modified', Http::HTTP_NOT_MODIFIED, $this->createHttpHeadersList(
+                $file->getStoredFile(),
+                '',
+                true,
+                'bytes',
+                $this->fs->getFileSize($file->getStoredFile()->getStoragePath())
+            ));
         }
 
-        [$code, $headersFlushCallback, $outputStream, $contentFlushCallback] = $this->createStreamHandler($file, $form);
+        [$code, $headers, $outputStream, $contentFlushCallback] = $this->createStreamHandler($file, $form);
 
-        return new FileDownloadResponse('OK', $code, $headersFlushCallback, $contentFlushCallback, $outputStream);
+        return new FileDownloadResponse('OK', $code, $headers, $contentFlushCallback, $outputStream);
     }
 
     /**
@@ -125,22 +116,17 @@ class ViewFileHandler
             }];
         }
 
-        $headersFlushCallback = function () use (
-            $fileAsStream, $maxLength, $offset, $etagSuffix, $allowLastModifiedHeader,
-            $file, $acceptRange, $contentLength
-        ) {
-            $this->sendHttpHeaders(
-                $file->getStoredFile(),
-                $etagSuffix,
-                $allowLastModifiedHeader,
-                $acceptRange,
-                $contentLength
-            );
-        };
+        $headers = $this->createHttpHeadersList(
+            $file->getStoredFile(),
+            $etagSuffix,
+            $allowLastModifiedHeader,
+            $acceptRange,
+            $contentLength
+        );
 
         return [
             $bytesRange->shouldServePartialContent() ? Http::HTTP_STREAM_PARTIAL_CONTENT : Http::HTTP_OK,
-            $headersFlushCallback,
+            $headers,
             $fileAsStream,
             /**
              * @param resource $a
@@ -152,42 +138,36 @@ class ViewFileHandler
         ];
     }
 
-    private function preProcessForm(ViewFileForm $form): void
+    private function createHttpHeadersList(StoredFile $file, string $eTagSuffix, bool $allowLastModifiedHeader, string $acceptRange, int $contentLength): array
     {
-        $form->filename = $this->nameResolver->resolveFilename(new Filename($form->filename))->getValue();
-    }
+        $headers = [];
 
-    private function sendHttpHeaders(StoredFile $file, string $eTagSuffix, bool $allowLastModifiedHeader, string $acceptRange, int $contentLength): void
-    {
         if ($acceptRange) {
-            $this->header('Accept-Ranges: bytes');
-            $this->header('Content-Range: ' . $acceptRange);
+            $headers['Accept-Ranges'] = 'bytes';
+            $headers['Content-Range'] = $acceptRange;
         }
 
         if ($contentLength) {
-            $this->header('Content-Length: ' . $contentLength);
+            $headers['Content-Length'] = $contentLength;
         }
 
         //
         // caching
         //
         if ($allowLastModifiedHeader) {
-            $this->header('Last-Modified:  ' . $file->getDateAdded()->format('D, d M Y H:i:s') . ' GMT');
+            $headers['Last-Modified'] = $file->getDateAdded()->format('D, d M Y H:i:s') . ' GMT';
         }
 
-        $this->header('ETag: ' . $file->getContentHash() . $eTagSuffix);
-        $this->header('Cache-Control: public, max-age=25200');
+        $headers['ETag'] = $file->getContentHash() . $eTagSuffix;
+        $headers['Cache-Control'] = 'public, max-age=25200';
 
         //
         // others
         //
-        $this->header('Content-Type: ' . $file->getMimeType());
-        $this->header('Content-Disposition: attachment; filename="' . $file->getFilename()->getValue() . '"');
-    }
+        $headers['Content-Type'] = 'application/octet-stream';
+        $headers['Content-Disposition'] = 'attachment; filename="' . $file->getFilename()->getValue() . '"';
 
-    protected function header(string $content): void
-    {
-        header($content);
+        return $headers;
     }
 
     protected function fopen(string $filename, string $mode): StreamInterface

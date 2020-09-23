@@ -14,17 +14,9 @@ use App\Domain\Storage\Security\UploadSecurityContext;
 
 class SecurityContextFactory
 {
-    private MimeTypeProvider $mimeProvider;
-
-    public function __construct(MimeTypeProvider $mimeTypeProvider)
-    {
-        $this->mimeProvider = $mimeTypeProvider;
-    }
-
     public function createUploadContextFromToken(Token $token): UploadSecurityContext
     {
         return new UploadSecurityContext(
-            $this->createListOfMimeTypes($token),
             $token->getTags(),
             $token->hasRole(Roles::ROLE_UPLOAD)
                 || $token->hasRole(Roles::ROLE_UPLOAD_DOCS)
@@ -83,17 +75,5 @@ class SecurityContextFactory
             $token->hasRole(Roles::ROLE_DELETE_ALL_FILES),
             $form->password ?? ''
         );
-    }
-
-    private function createListOfMimeTypes(Token $token): array
-    {
-        $mimes = $token->getAllowedMimeTypes();
-        $roleBasedMimeTypes = [];
-
-        foreach ($token->getRoles() as $role) {
-            $roleBasedMimeTypes[] = $this->mimeProvider->getMimesForRole($role);
-        }
-
-        return \array_merge($mimes, ...$roleBasedMimeTypes);
     }
 }

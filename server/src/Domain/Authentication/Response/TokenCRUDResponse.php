@@ -4,9 +4,9 @@ namespace App\Domain\Authentication\Response;
 
 use App\Domain\Authentication\Entity\Token;
 use App\Domain\Common\Http;
-use App\Domain\Common\Response\BaseResponse;
+use App\Domain\Common\Response\NormalResponse;
 
-class TokenCRUDResponse extends BaseResponse
+class TokenCRUDResponse extends NormalResponse
 {
     protected ?Token $token = null;
 
@@ -25,7 +25,7 @@ class TokenCRUDResponse extends BaseResponse
     {
         $response = new TokenCRUDResponse();
         $response->status   = true;
-        $response->exitCode = Http::HTTP_ACCEPTED;
+        $response->exitCode = Http::HTTP_CREATED;
         $response->token    = $token;
         $response->message  = 'Token created';
 
@@ -47,7 +47,7 @@ class TokenCRUDResponse extends BaseResponse
     {
         $response = new static();
         $response->status   = false;
-        $response->exitCode = Http::HTT_NOT_FOUND;
+        $response->exitCode = Http::HTTP_NOT_FOUND;
         $response->token    = null;
         $response->message  = 'Token not found';
 

@@ -110,18 +110,6 @@ final class Roles
 
     //
     //
-    // SecureCopy domain
-    //
-    //
-
-    /** Can use SecureCopy at all? */
-    public const ROLE_SECURE_COPY_READ_DATA_STREAM = 'securecopy.stream';
-
-    /** Read SecureCopy secrets: Encryption method, password, initialization vector. With following role can read secrets of any token in the system. */
-    public const ROLE_READ_SECURE_COPY_SECRETS = 'securecopy.all_secrets_read';
-
-    //
-    //
     // collections
     //
     //
@@ -196,11 +184,7 @@ final class Roles
         self::ROLE_CAN_MANAGE_TOKENS_IN_ALLOWED_COLLECTIONS,
         self::ROLE_CAN_UPLOAD_TO_ALLOWED_COLLECTIONS,
         self::ROLE_LIST_VERSIONS_FOR_ALLOWED_COLLECTIONS,
-        self::ROLE_DELETE_VERSIONS_IN_ALLOWED_COLLECTIONS,
-
-        // securecopy
-        self::ROLE_SECURE_COPY_READ_DATA_STREAM,
-        self::ROLE_READ_SECURE_COPY_SECRETS
+        self::ROLE_DELETE_VERSIONS_IN_ALLOWED_COLLECTIONS
     ];
 
     public const RESTRICTIONS_LIST = [

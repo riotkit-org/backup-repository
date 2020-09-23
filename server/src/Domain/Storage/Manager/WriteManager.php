@@ -6,6 +6,7 @@ use App\Domain\Authentication\Entity\Token;
 use App\Domain\Storage\Entity\StagedFile;
 use App\Domain\Storage\Entity\StoredFile;
 use App\Domain\Storage\Exception\DuplicatedContentException;
+use App\Domain\Storage\Exception\InvalidAttributeException;
 use App\Domain\Storage\Exception\StorageException;
 use App\Domain\Storage\Exception\ValidationException;
 use App\Domain\Storage\Factory\FileInfoFactory;
@@ -78,7 +79,6 @@ class WriteManager
             $existingFromRepository->getStoragePath(),
             $securityContext,
             $existingFromRepository,
-            '',
             $encoding
         );
     }
@@ -100,6 +100,7 @@ class WriteManager
      *
      * @throws StorageException
      * @throws ValidationException
+     * @throws InvalidAttributeException
      */
     public function submitFileLostInRepositoryButExistingInStorage(
         Filename              $filename,

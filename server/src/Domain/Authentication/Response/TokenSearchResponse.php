@@ -4,16 +4,16 @@ namespace App\Domain\Authentication\Response;
 
 use App\Domain\Authentication\Entity\Token;
 use App\Domain\Common\Http;
-use App\Domain\Common\Response\BaseSearchResponse;
+use App\Domain\Common\Response\NormalSearchResponse;
 
-class TokenSearchResponse extends BaseSearchResponse
+class TokenSearchResponse extends NormalSearchResponse
 {
     public static function createResultsResponse(array $matches, int $page,
                                                  int $limit, int $maxPages, bool $censorIds): TokenSearchResponse
     {
         $response = new TokenSearchResponse();
         $response->message   = count($matches) > 0 ? 'Matches found' : 'No matches found';
-        $response->exitCode  = Http::HTTP_OK;
+        $response->httpCode  = Http::HTTP_OK;
         $response->page      = $page;
         $response->pageLimit = $limit;
         $response->maxPages  = $maxPages;

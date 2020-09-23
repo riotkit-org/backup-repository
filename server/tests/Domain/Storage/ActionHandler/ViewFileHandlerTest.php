@@ -96,7 +96,7 @@ class ViewFileHandlerTest extends TestCase
             $cachingContext
         );
 
-        $callback = $response->getHeadersFlushCallback();
+        $callback = $response->getHeaders();
         $callback();
 
         $this->assertSame(304, $response->getCode());

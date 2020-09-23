@@ -10,4 +10,11 @@ class BackupSubmitForm
      * @var BackupCollection
      */
     public $collection;
+
+    /**
+     * Serialized JSON with file attributes (key-value store)
+     *
+     * @var string
+     */
+    public $attributes;
 }

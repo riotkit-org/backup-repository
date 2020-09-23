@@ -25,6 +25,7 @@ class UploadByPostFormType extends UploadFormType
                 ]
             ]);
 
+        // @todo: Use BooleanTransformer
         $builder->get('stripInvalidCharacters')
             ->addModelTransformer(new CallbackTransformer(
                 static function ($value) {

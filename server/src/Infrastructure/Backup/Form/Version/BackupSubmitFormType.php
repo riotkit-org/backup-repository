@@ -6,6 +6,7 @@ use App\Domain\Backup\Entity\BackupCollection;
 use App\Domain\Backup\Form\BackupSubmitForm;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
@@ -20,7 +21,8 @@ class BackupSubmitFormType extends AbstractType
             ->add('collection', EntityType::class, [
                 'class'           => BackupCollection::class,
                 'invalid_message' => 'collection_no_longer_exists'
-            ]);
+            ])
+            ->add('attributes', TextType::class);
     }
 
     public function configureOptions(OptionsResolver $resolver)

@@ -47,7 +47,7 @@ class BackupSubmitHandler
         //
 
         try {
-            $result = $this->fileUploader->upload($form->collection, $token);
+            $result = $this->fileUploader->upload($form->collection, $token, $form->attributes);
 
             if ($result->isSuccess()) {
                 $backup = $this->backupManager->submitNewVersion($form->collection, $result->getFileId());

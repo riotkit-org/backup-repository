@@ -10,6 +10,27 @@ File Repository is a modern API application dedicated for storing files.
 Can use any type of backend supported by Flysystem library, officialy we support S3 and local filesystem.
 Lightweight, requires just PHP 7.4+ and at least SQLite3, PostgreSQL or MySQL.
 
+Backup Repository Todo
+----------------------
+
+- Replace at least most of the Authentication domain with ready to use JWT
+- Delete support for MySQL and SQLite3, only PostgreSQL is support
+- Leave only Amazon S3 + Min.io + Filesystem support in filesystems
+- Drop all encryption methods, SecureCopy
+- Delete externally generated tokens functionality
+- Delete MinimumUI functionality
+- Implement WebDav for usage with rclone as a client
+- Drop generic object storage endpoints, leave only backup endpoints
+- Drop all unused tables
+- Add support for joining backups into BackupApplication
+- Drop custom ORM config
+- Remove ids mapping
+- Bump Symfony 4 to Symfony 5 (at the end of refactoring)
+- Exceptions & Errors in ONE file mapped as constants, properly done exception inheriting and factory methods
+- Consider removing file deduplication feature to simplify storage, as backups cannot be the same - those should be encrypted, then with this assumption there should be no possibility to have duplicated files
+- Delete mime type validation as zero-knowledge backups cannot be analylzed
+- Drop download file by url (backups will be uploaded only via POST)
+
 #### For installation, guides and more information please check he documentation: https://file-repository.readthedocs.io/en/latest/index.html
 
 **Main functionality:**

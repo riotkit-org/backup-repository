@@ -45,7 +45,7 @@ class AllowedTokensResponse implements \JsonSerializable
     {
         $new = new static();
         $new->status    = 'Object not found';
-        $new->exitCode  = Http::HTT_NOT_FOUND;
+        $new->exitCode  = Http::HTTP_NOT_FOUND;
 
         return $new;
     }

@@ -28,7 +28,7 @@ class FileUploader
         $this->nameFactory = $nameFactory;
     }
 
-    public function upload(BackupCollection $collection, Token $token): StorageUploadResponse
+    public function upload(BackupCollection $collection, Token $token, string $attributes): StorageUploadResponse
     {
         $responseAsArray = $this->bus->call(Bus::STORAGE_UPLOAD, [
             'form' => [
@@ -37,7 +37,8 @@ class FileUploader
                 'password'       => $collection->getPassword(),
                 'tags'           => [],
                 'backUrl'        => '',
-                'public'         => false
+                'public'         => false,
+                'attributes'     => $attributes
             ],
 
             'token' => $token

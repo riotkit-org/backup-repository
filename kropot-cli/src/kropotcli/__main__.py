@@ -1,4 +1,0 @@
-
-from . import main
-
-main()

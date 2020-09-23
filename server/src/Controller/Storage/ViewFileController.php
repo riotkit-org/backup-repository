@@ -7,6 +7,7 @@ use App\Domain\Storage\ActionHandler\ViewFileHandler;
 use App\Domain\Storage\Context\CachingContext;
 use App\Domain\Storage\Factory\Context\SecurityContextFactory;
 use App\Domain\Storage\Form\ViewFileForm;
+use App\Domain\Storage\Response\FileDownloadResponse;
 use App\Domain\Storage\Security\ReadSecurityContext;
 use App\Infrastructure\Common\Http\JsonFormattedResponse;
 use App\Infrastructure\Storage\Form\ViewFileFormType;
@@ -101,15 +102,18 @@ class ViewFileController extends BaseController
                 // Flush a file: headers + body
                 // In headers we expect bytes range, caching etc.
                 //
-                if ($response->isFlushingFile()) {
+                if ($response instanceof FileDownloadResponse && $response->isFlushingFile()) {
                     return new StreamedResponse(
                         static function () use ($response) {
                             $input = $response->getResponseStream()->detach();
                             $output = fopen('php://output', 'wb');
 
                             // headers first
-                            $headersFlush = $response->getHeadersFlushCallback();
-                            $headersFlush();
+                            $headers = $response->getHeaders();
+
+                            foreach ($headers as $header => $value) {
+                                @header($header . ': ' . $value);
+                            }
 
                             // flush the content, including the HTTP-like behavior (bytes range support etc.)
                             $contentFlush = $response->getContentFlushCallback();
