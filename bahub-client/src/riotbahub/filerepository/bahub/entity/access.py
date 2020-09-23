@@ -1,4 +1,6 @@
 
+from .attributes import VersionAttributes
+
 
 class ServerAccess:
 
@@ -19,7 +21,7 @@ class ServerAccess:
     def get_token(self):
         return self._token
 
-    def build_url(self, endpoint: str, with_token: bool, password: str = ''):
+    def build_url(self, endpoint: str, with_token: bool, password: str = '', attributes: VersionAttributes = None):
         url = self._url.rstrip('/') + '/' + endpoint.lstrip('/')
 
         qs = '?'
@@ -30,5 +32,7 @@ class ServerAccess:
         if password:
             qs += '&password=' + password
 
-        return url + qs.replace('?&', '?')
+        if attributes:
+            qs += '&kv=' + attributes.serialize_to_querystring_value()
 
+        return url + qs.replace('?&', '?')

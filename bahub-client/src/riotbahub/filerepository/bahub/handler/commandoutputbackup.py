@@ -3,6 +3,7 @@ from .abstractdocker import AbstractDockerAwareHandler
 from ..result import CommandExecutionResult
 from ..exceptions import ReadWriteException
 from ..entity.definition.local import CommandOutputDefinition
+from ..entity.attributes import VersionAttributes
 
 
 class CommandOutputBackup(AbstractDockerAwareHandler):
@@ -33,14 +34,15 @@ Possibility of using the restore depends on well defined "restore_command" param
     def _get_definition(self) -> CommandOutputDefinition:
         return self._definition
 
-    def receive_backup_stream(self) -> CommandExecutionResult:
+    def receive_backup_stream(self, kv: VersionAttributes) -> CommandExecutionResult:
         return self.execute_command_in_proper_context(
             command=self._get_definition().get_command(),
             mode='backup',
-            with_crypto_support=True
+            with_crypto_support=True,
+            attributes=kv
         )
 
-    def restore_backup_from_stream(self, stream) -> CommandExecutionResult:
+    def restore_backup_from_stream(self, stream, attributes: VersionAttributes) -> CommandExecutionResult:
         definition = self._get_definition()
 
         if not definition.get_restore_command():
@@ -51,5 +53,6 @@ Possibility of using the restore depends on well defined "restore_command" param
             mode='restore',
             with_crypto_support=True,
             stdin=stream,
-            copy_stdin=True
+            copy_stdin=True,
+            attributes=attributes
         )

@@ -1,5 +1,6 @@
 
 from ..entity.definition import BackupDefinition
+from ..entity.attributes import VersionAttributes
 from ..exceptions import InvalidRequestException, UnexpectedResponseException, ReadWriteException
 from logging import Logger
 from json import loads as json_loads
@@ -48,20 +49,25 @@ class FileRepositoryClient:
     def __init__(self, _logger: Logger):
         self._logger = _logger
 
-    def send(self, process: subprocess.Popen, definition: BackupDefinition):
+    def send(self, process: subprocess.Popen, definition: BackupDefinition, kv: VersionAttributes) -> dict:
         """
         Sends the backup to the File Repository
         Supports exiting on interruption instead of sending corrupted data
 
         :param subprocess.Popen process:
         :param BackupDefinition definition:
+        :param VersionAttributes kv:
+
         :return:
         """
 
         process_reader = ProcessReader(process)
         response_body_stream = io.BytesIO()
         url = definition.get_access().build_url(
-            '/repository/collection/' + definition.get_collection_id() + '/backup', True)
+            endpoint='/repository/collection/' + definition.get_collection_id() + '/backup',
+            with_token=True,
+            attributes=kv
+        )
 
         curl = pycurl.Curl()
         curl.setopt(curl.URL, url)
@@ -118,6 +124,23 @@ class FileRepositoryClient:
             raise InvalidRequestException(response.text, response.json(), response.json().get('error_code', 0))
 
         return response.raw
+
+    def fetch_attributes(self, version: str, definition: BackupDefinition) -> VersionAttributes:
+        return VersionAttributes({
+            'iv': 'test'
+        })
+
+        url = definition.get_access().build_url(
+            '/repository/collecton/' + definition.get_collection_id() + '/backup/' + version + '/attributes',
+            with_token=True)
+
+        response = requests.get(url)
+
+        if response.status_code > 299:
+            self._logger.debug('response_code=' + str(response.text))
+            raise InvalidRequestException(response.text, response.json(), response.json().get('error_code', 0))
+
+        return response.json()['data']
 
     def list_backups(self, definition: BackupDefinition) -> dict:
         url = definition.get_access().build_url(

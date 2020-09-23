@@ -1,6 +1,7 @@
 
 from .fileordirectorybackup import FileOrDirectoryBackup
 from ..entity.definition.docker import DockerOfflineVolumesDefinition
+from ..entity.attributes import VersionAttributes
 from ..result import CommandExecutionResult
 
 
@@ -86,7 +87,7 @@ Notice: Your applications will have a downtime. Be careful about dependent servi
         # do not check if container is up, it does not need to be. It must only exists.
         pass
 
-    def receive_backup_stream(self, container: str = None):
+    def receive_backup_stream(self, kv: VersionAttributes, container: str = None):
         self._logger.info('Performing backup of origin container in offline mode')
 
         temporary_container_id = self._stop_origin_and_start_temporary_containers(
@@ -94,9 +95,9 @@ Notice: Your applications will have a downtime. Be careful about dependent servi
             cmd=self._get_definition().get_temp_cmd()
         )
 
-        return super().receive_backup_stream(container=temporary_container_id)
+        return super().receive_backup_stream(container=temporary_container_id, kv=kv)
 
-    def restore_backup_from_stream(self, stream, container: str = None) -> CommandExecutionResult:
+    def restore_backup_from_stream(self, stream, attributes: VersionAttributes, container: str = None) -> CommandExecutionResult:
         self._logger.info('Restoring backup to the temporary container through mounted volumes of origin container')
 
         temporary_container_id = self._stop_origin_and_start_temporary_containers(
@@ -104,7 +105,7 @@ Notice: Your applications will have a downtime. Be careful about dependent servi
             cmd=self._get_definition().get_temp_cmd()
         )
 
-        return super().restore_backup_from_stream(stream, container=temporary_container_id)
+        return super().restore_backup_from_stream(stream, container=temporary_container_id, attributes=attributes)
 
     def backup_container_directories(self, docker_bin: str, container: str, paths: list,
                                      definition: DockerOfflineVolumesDefinition) -> CommandExecutionResult:

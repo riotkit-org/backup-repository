@@ -1,4 +1,5 @@
 from ..entity.definition import BackupDefinition
+from ..entity.attributes import VersionAttributes
 from ..service.client import FileRepositoryClient
 from ..service.pipefactory import PipeFactory
 from ..exceptions import ReadWriteException
@@ -37,7 +38,9 @@ class BackupHandler:
         self.validate_before_creating_backup()
 
         self._logger.info('Receiving backup stream')
-        response = self.receive_backup_stream()
+
+        kv = VersionAttributes.create_empty()
+        response = self.receive_backup_stream(kv)
 
         try:
             self._logger.info('Starting sending backup stream to server')
@@ -50,7 +53,7 @@ class BackupHandler:
                 pass
 
             self._raise_read_error_if_invalid_error_code(response)
-            upload_response = self._client.send(response.process, self._get_definition())
+            upload_response = self._client.send(response.process, self._get_definition(), kv)
 
         except Exception as e:
             response.process.kill()
@@ -79,8 +82,8 @@ class BackupHandler:
             #        It would be just an additional option for safety
             #        See: https://github.com/riotkit-org/file-repository/issues/101
 
-            stream = self._read_from_storage(version)
-            response = self.restore_backup_from_stream(stream)
+            stream, attributes = self._read_from_storage(version)
+            response = self.restore_backup_from_stream(stream, attributes)
 
             self.wait_for_process_to_finish(response.process)
 
@@ -100,7 +103,7 @@ class BackupHandler:
 
         return '{"status": "OK"}'
 
-    def close(self, action: str):
+    def finalize(self, action: str):
         self._logger.info('Finishing the process')
 
         if action == 'backup':
@@ -167,16 +170,17 @@ class BackupHandler:
     def validate_before_creating_backup(self):
         raise Exception('validate_before_creating_backup() not implemented for handler')
 
-    def receive_backup_stream(self) -> CommandExecutionResult:
+    def receive_backup_stream(self, kv: VersionAttributes) -> CommandExecutionResult:
         """ TAR output or file stream buffered from ANY source for example """
         raise Exception('receive_backup_stream() not implemented for handler')
 
-    def restore_backup_from_stream(self, stream) -> CommandExecutionResult:
+    def restore_backup_from_stream(self, stream, attributes: VersionAttributes) -> CommandExecutionResult:
         """ A file stream or tar output be written into the storage. May be OpenSSL encoded, depends on definition """
         raise Exception('restore_backup_from_stream() not implemented for handler')
 
-    def _read_from_storage(self, version: str):
-        return self._client.fetch(version, self._get_definition())
+    def _read_from_storage(self, version: str) -> (any, VersionAttributes):
+        return self._client.fetch(version, self._get_definition()),\
+               self._client.fetch_attributes(version, self._get_definition())
 
     def on_failed_restore(self):
         """ When restore is failed. Allows to specify a recovery procedure """

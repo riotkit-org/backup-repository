@@ -2,6 +2,7 @@
 from .abstractdocker import AbstractDockerAwareHandler
 from ..result import CommandExecutionResult
 from ..entity.definition.local import PathBackupDefinition
+from ..entity.attributes import VersionAttributes
 import os
 
 
@@ -68,7 +69,7 @@ Uses TAR with gzip compression. Supports docker container paths and host paths.
             if not os.path.exists(path):
                 raise Exception('Path "' + path + '" does not exist')
 
-    def receive_backup_stream(self, container: str = None) -> CommandExecutionResult:
+    def receive_backup_stream(self, kv: VersionAttributes, container: str = None) -> CommandExecutionResult:
         """ Read from directory/file and return as a TAR-OPENSSL stream """
 
         tar_cmd = self._get_definition().get_pack_cmd(self._get_definition().get_paths())
@@ -77,10 +78,11 @@ Uses TAR with gzip compression. Supports docker container paths and host paths.
             command=tar_cmd,
             mode='backup',
             with_crypto_support=True,
-            container=container
+            container=container,
+            attributes=kv
         )
 
-    def restore_backup_from_stream(self, stream, container: str = None) -> CommandExecutionResult:
+    def restore_backup_from_stream(self, stream, attributes: VersionAttributes, container: str = None) -> CommandExecutionResult:
         """ Write to a directory/file - unpack a TAR archive """
 
         return self.execute_command_in_proper_context(
@@ -89,5 +91,6 @@ Uses TAR with gzip compression. Supports docker container paths and host paths.
             with_crypto_support=True,
             stdin=stream,
             container=container,
-            copy_stdin=True
+            copy_stdin=True,
+            attributes=attributes
         )

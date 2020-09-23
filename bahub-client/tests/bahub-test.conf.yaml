@@ -9,6 +9,11 @@ encryption:
         passphrase: ""
         method: ""
 
+    aes:
+        method: "aes-256-cbc"
+        passphrase: "IYrVfkKIA3i4VzKwWYyZtIKXvIp5aYL3AoyZFr3fsYSHrpq2Utif4b+Zt23nAUFx"
+        salt: "sKEjp6otKDwPi3jN4rfSS5kZinX/jvswA+Gq9vQsSkkZ+Ygmzr2MmOBuQcvV6m"
+        rounds: 16000
 
 backups:
     docker_hot_volumes_example:

@@ -2,6 +2,7 @@
 from .abstractdocker import AbstractDockerAwareHandler
 from ..result import CommandExecutionResult
 from ..entity.definition.sql import PostgreSQLDefinition, PostgreSQLBaseBackupDefinition
+from ..entity.attributes import VersionAttributes
 
 
 class PostgreSQLDumpBackup(AbstractDockerAwareHandler):
@@ -26,13 +27,14 @@ On restore:
     def validate_before_creating_backup(self):
         pass
 
-    def receive_backup_stream(self):
+    def receive_backup_stream(self, kv: VersionAttributes):
         return self.execute_command_in_proper_context(
             command=self._get_definition().get_dump_command() + ' | gzip',
-            mode='backup'
+            mode='backup',
+            attributes=kv
         )
 
-    def restore_backup_from_stream(self, stream) -> CommandExecutionResult:
+    def restore_backup_from_stream(self, stream, attributes: VersionAttributes) -> CommandExecutionResult:
         self.set_connection_limit_on_databases(0)
         self._kill_all_other_connections_to_the_database()
 
@@ -40,7 +42,8 @@ On restore:
             command='gunzip | ' + self._get_definition().get_restore_command(),
             mode='restore',
             stdin=stream,
-            copy_stdin=True
+            copy_stdin=True,
+            attributes=attributes
         )
 
     def _finalize_restore(self):
@@ -92,7 +95,7 @@ On restore:
     def _get_definition(self) -> PostgreSQLBaseBackupDefinition:
         return self._definition
 
-    def receive_backup_stream(self):
+    def receive_backup_stream(self, kv: VersionAttributes):
         """ Do a copy using pg_basebackup """
 
         # ensure the temporary directory is empty and exists
@@ -100,10 +103,11 @@ On restore:
 
         return self.execute_command_in_proper_context(
             command=self._get_definition().get_backup_command() + ' | gzip',
-            mode='backup'
+            mode='backup',
+            attributes=kv
         )
 
-    def restore_backup_from_stream(self, stream) -> CommandExecutionResult:
+    def restore_backup_from_stream(self, stream, attributes: VersionAttributes) -> CommandExecutionResult:
         """ Restore backup on an offline database """
         self._shutdown_the_database()
         self._rename_current_data_dir()
@@ -112,7 +116,8 @@ On restore:
             command='gunzip | ' + self._get_definition().get_restore_command(),
             mode='backup',
             stdin=stream,
-            copy_stdin=True
+            copy_stdin=True,
+            attributes=attributes
         )
 
     def _rename_current_data_dir(self):

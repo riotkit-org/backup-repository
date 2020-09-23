@@ -2,6 +2,7 @@
 from .abstractdocker import AbstractDockerAwareHandler
 from ..result import CommandExecutionResult
 from ..entity.definition.kv import RedisDefinition
+from ..entity.attributes import VersionAttributes
 
 
 class RedisBackup(AbstractDockerAwareHandler):
@@ -43,7 +44,7 @@ Backup mechanism:
     def _get_definition(self) -> RedisDefinition:
         return self._definition
 
-    def receive_backup_stream(self) -> CommandExecutionResult:
+    def receive_backup_stream(self, kv: VersionAttributes) -> CommandExecutionResult:
         """
             Write REDIS state to disk, then copy files
         """
@@ -51,10 +52,11 @@ Backup mechanism:
         return self.execute_command_in_proper_context(
             command='redis-cli "SAVE" > /dev/null && ' + self._get_definition().get_pack_cmd([self.get_data_dir()]),
             mode='backup',
-            with_crypto_support=True
+            with_crypto_support=True,
+            attributes=kv
         )
 
-    def restore_backup_from_stream(self, stream) -> CommandExecutionResult:
+    def restore_backup_from_stream(self, stream, attributes: VersionAttributes) -> CommandExecutionResult:
         """
             Restore REDIS data files, then optionally fix AOF log if needed, restart the service
         """
@@ -71,7 +73,8 @@ Backup mechanism:
             with_crypto_support=True,
             stdin=stream,
             copy_stdin=True,
-            container=container_id
+            container=container_id,
+            attributes=attributes
         )
 
     def _finalize_restore(self):

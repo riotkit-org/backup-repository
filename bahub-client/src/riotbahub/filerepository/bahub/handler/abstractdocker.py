@@ -1,6 +1,7 @@
 
 from . import BackupHandler
 from ..entity.definition import ContainerizedDefinition
+from ..entity.attributes import VersionAttributes
 from ..exceptions import ReadWriteException
 from ..result import CommandExecutionResult
 
@@ -32,6 +33,7 @@ class AbstractDockerAwareHandler(BackupHandler):
         return self._get_definition().should_use_docker()
 
     def _execute_in_container(self, docker_bin: str, container: str, command: str, definition: ContainerizedDefinition,
+                              attributes: VersionAttributes = None,
                               allocate_pts=False,
                               interactive=False,
                               with_crypto=True,
@@ -41,6 +43,9 @@ class AbstractDockerAwareHandler(BackupHandler):
                               copy_stdin: bool = False) -> CommandExecutionResult:
 
         """ Executes any command inside of the container """
+
+        if attributes is None:
+            attributes = VersionAttributes.create_empty()
 
         opts = ''
 
@@ -63,7 +68,8 @@ class AbstractDockerAwareHandler(BackupHandler):
             method(
                 docker_bin + ' exec ' + opts + ' ' + container + ' /bin/sh -c "' + command.replace('"', '\\"') + '"',
                 definition,
-                with_crypto=with_crypto
+                with_crypto=with_crypto,
+                kv=attributes
             ),
             stdin=stdin,
             copy_stdin=copy_stdin,
@@ -71,10 +77,14 @@ class AbstractDockerAwareHandler(BackupHandler):
         )
 
     def execute_command_in_proper_context(self, command: str, mode: str = '', with_crypto_support: bool = True,
-                                          stdin=None, container: str = None,
-                                          wait: int = None, copy_stdin: bool = False) -> CommandExecutionResult:
+                                          stdin=None, container: str = None, wait: int = None, copy_stdin: bool = False,
+                                          attributes: VersionAttributes = None) -> CommandExecutionResult:
         """
-        Execute command in docker or on host
+            Execute command in docker or on host
+            Facade to private methods: _execute_in_container(), _execute_command()
+
+            Notes for parameters:
+              - container: Could be different in case, when using eg. a temporary container
         """
 
         factory_method = self._pipe_factory.create_pure_command
@@ -97,14 +107,16 @@ class AbstractDockerAwareHandler(BackupHandler):
                 interactive=True,
                 stdin=stdin,
                 copy_stdin=copy_stdin,
-                wait=wait
+                wait=wait,
+                attributes=attributes
             )
 
         return self._execute_command(
             factory_method(
                 command=command,
                 definition=self._get_definition(),
-                with_crypto=with_crypto_support
+                with_crypto=with_crypto_support,
+                kv=attributes
             ),
             stdin=stdin,
             copy_stdin=copy_stdin,
@@ -150,7 +162,8 @@ class AbstractDockerAwareHandler(BackupHandler):
             self._pipe_factory.create_backup_command(
                 run_command,
                 self._get_definition(),
-                with_crypto=False
+                with_crypto=False,
+                kv=VersionAttributes.create_empty()
             ),
             wait=300
         )

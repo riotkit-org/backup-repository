@@ -5,6 +5,7 @@ import logging
 import datetime
 import sys
 
+this = sys.modules[__name__]
 MAPPING = {
     'DEBUG': 37,
     'INFO': 36,
@@ -67,6 +68,8 @@ class LoggerFactory:
         logger.addHandler(logging_handler)
         logger.addHandler(log_file_handler)
 
+        this.logger = logger
+
         return logger
 
 
@@ -99,3 +102,20 @@ class PasswordsProtectedFilter(logging.Filter):
 
         return msg
 
+
+class Logger:
+    @staticmethod
+    def debug(msg: str):
+        this.logger.debug(msg)
+
+    @staticmethod
+    def info(msg: str):
+        this.logger.info(msg)
+
+    @staticmethod
+    def warning(msg: str):
+        this.logger.warning(msg)
+
+    @staticmethod
+    def error(msg: str):
+        this.logger.error(msg)

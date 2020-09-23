@@ -84,7 +84,12 @@ class ConfigurationFactory:
 
         for key, values in config.items():
             with DefinitionFactoryErrorCatcher('encryption.' + key, self._debug):
-                self._encryption[key] = Encryption.from_config(values)
+                try:
+                    self._encryption[key] = Encryption.from_config(values)
+
+                except KeyError as config_key_name:
+                    raise ConfigurationError('Encryption "%s" is missing "%s" configuration option' %
+                                             (key, config_key_name))
 
     def _parse_recovery_plans(self, config: dict):
         """ Recovery plans/strategies """
