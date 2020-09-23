@@ -1,7 +1,7 @@
 File Repository
 ===============
 
-**Note: We are preparing for a renaming to Backup Repository with release v4. Features like object storage, pseudo-replication, html-forms for integration with applications will be no longer maintained and deleted from the codebase as we are no longer able to maintain a bigger project - so we picked a specialization which is a hosted multi-user backup storage**
+**Note: We are preparing for a renaming to Backup Repository with release v4. Features like object storage, pseudo-replication, html-forms for integration with applications will be no longer maintained and deleted from the codebase as we are no longer able to maintain a bigger project - so we picked a specialization which is a hosted multi-user backup storage. Critical fixes and security fixes will be cherry-picked to 3.x branch for a period of one year.**
 
 [![Build Status](https://travis-ci.org/riotkit-org/file-repository.svg?branch=master)](https://travis-ci.org/riotkit-org/file-repository)
 [![Documentation Status](https://readthedocs.org/projects/file-repository/badge/?version=latest)](https://file-repository.docs.riotkit.org/en/latest/?badge=latest)
