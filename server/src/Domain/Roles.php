@@ -25,18 +25,6 @@ final class Roles
     //
     //
 
-    /** Allows to upload images */
-    public const ROLE_UPLOAD_IMAGES            = 'upload.images';
-
-    /** Allows to upload video files */
-    public const ROLE_UPLOAD_VIDEOS            = 'upload.videos';
-
-    /** Allows to upload documents */
-    public const ROLE_UPLOAD_DOCS              = 'upload.documents';
-
-    /** Allows to submit backups */
-    public const ROLE_UPLOAD_BACKUP            = 'upload.backup';
-
     /** Allows to upload ALL types of files regardless of mime type */
     public const ROLE_UPLOAD                   = 'upload.all';
 
@@ -154,9 +142,6 @@ final class Roles
     public const ROLE_DELETE_VERSIONS_IN_ALLOWED_COLLECTIONS = 'collections.delete_versions_for_allowed_collections';
 
     public const GRANTS_LIST = [
-        self::ROLE_UPLOAD_IMAGES,
-        self::ROLE_UPLOAD_DOCS,
-        self::ROLE_UPLOAD_BACKUP,
         self::ROLE_UPLOAD,
         self::ROLE_LOOKUP_TOKENS,
         self::ROLE_SEARCH_FOR_TOKENS,
