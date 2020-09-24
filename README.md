@@ -13,24 +13,24 @@ Lightweight, requires just PHP 7.4+ and at least SQLite3, PostgreSQL or MySQL.
 Backup Repository Todo
 ----------------------
 
-- [ ] Replace at least most of the Authentication domain with ready to use JWT
-- [x] Delete support for MySQL and SQLite3, only PostgreSQL is support
+- [x] Delete support for MySQL and SQLite3, only PostgreSQL should be support
 - [x] Leave only Amazon S3 + Min.io + Filesystem support in filesystems
 - [x] Drop all encryption methods, SecureCopy
 - [ ] Delete externally generated tokens functionality
 - [x] Delete MinimumUI functionality
-- [ ] FEATURE: Implement WebDav for usage with rclone as a client
-- [ ] Drop generic object storage endpoints, leave only backup endpoints + storage download & listing endpoints (for administrators as a fallback)
+- [x] Drop generic object storage endpoints, leave only backup endpoints + storage download & listing endpoints (for administrators as a fallback)
 - [x] Drop all unused tables
-- [ ] FEATURE: Add support for joining backups into BackupApplication
-- [ ] Drop custom ORM config
+- [x] Drop custom ORM config
 - [x] Remove ids mapping
-- [ ] Bump Symfony 4 to Symfony 5 (at the end of refactoring)
-- [ ] FEATURE/REFACTOR: Exceptions & Errors in ONE file mapped as constants, properly done exception inheriting and factory methods
-- [ ] Consider removing file deduplication feature to simplify storage, as backups cannot be the same - those should be encrypted, then with this assumption there should be no possibility to have duplicated files
+- [ ] (?) Consider removing file deduplication feature to simplify storage, as backups cannot be the same - those should be encrypted, then with this assumption there should be no possibility to have duplicated files
 - [x] Delete mime type validation as zero-knowledge backups cannot be analylzed
 - [x] Drop upload file by url (backups will be uploaded only via POST)
 - [x] Drop HTTP caching functionality - backups do not need to be cached
+- [ ] FEATURE: Add support for joining backups into BackupApplication
+- [ ] FEATURE/REFACTOR: Exceptions & Errors in ONE file mapped as constants, properly done exception inheriting and factory methods
+- [ ] FEATURE: at least most of the Authentication domain with ready to use JWT
+- [ ] FEATURE: Implement WebDav for usage with rclone as a client
+- [ ] FEATURE: Bump Symfony 4 to Symfony 5 (at the end of refactoring)
 
 #### For installation, guides and more information please check he documentation: https://file-repository.readthedocs.io/en/latest/index.html
 
