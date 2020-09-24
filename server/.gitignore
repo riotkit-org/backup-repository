@@ -8,3 +8,8 @@
 ###> symfony/web-server-bundle ###
 /.web-server-pid
 ###< symfony/web-server-bundle ###
+.rkd/logs
+*.pyc
+*__pycache__*
+/.venv
+.venv-setup.log

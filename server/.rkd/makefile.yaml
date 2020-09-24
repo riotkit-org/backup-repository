@@ -1,0 +1,9 @@
+version: org.riotkit.rkd/yaml/v1
+imports: []
+tasks:
+    :docker:up:
+        become: root
+        description: Runs a dockerized environment
+        steps: |
+            docker-compose -p s3pb -f .infrastructure/docker/docker-compose.yml up -d
+

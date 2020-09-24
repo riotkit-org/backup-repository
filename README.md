@@ -14,14 +14,14 @@ Backup Repository Todo
 ----------------------
 
 - [ ] Replace at least most of the Authentication domain with ready to use JWT
-- [ ] Delete support for MySQL and SQLite3, only PostgreSQL is support
+- [x] Delete support for MySQL and SQLite3, only PostgreSQL is support
 - [x] Leave only Amazon S3 + Min.io + Filesystem support in filesystems
 - [x] Drop all encryption methods, SecureCopy
 - [ ] Delete externally generated tokens functionality
 - [x] Delete MinimumUI functionality
 - [ ] FEATURE: Implement WebDav for usage with rclone as a client
 - [ ] Drop generic object storage endpoints, leave only backup endpoints + storage download & listing endpoints (for administrators as a fallback)
-- [ ] Drop all unused tables
+- [x] Drop all unused tables
 - [ ] FEATURE: Add support for joining backups into BackupApplication
 - [ ] Drop custom ORM config
 - [x] Remove ids mapping
