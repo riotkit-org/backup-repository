@@ -17,7 +17,3 @@ services:
     App\Domain\Authentication\Factory\Context\SecurityContextFactory:
         public: true
         autowire: true
-
-    App\Infrastructure\SecureCopy\Repository\FileRepositorySQLImplementation:
-        public: true
-        autowire: true
