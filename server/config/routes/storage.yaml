@@ -1,0 +1,17 @@
+#
+# Read-only endpoints for the administrator to browse and download single files
+#
+
+storage.list_files:
+    path: /repository
+    controller: 'App\Controller\Storage\FilesListingController::handleListing'
+    methods: ['GET']
+    defaults:
+        _secured: true
+
+storage.get_file:
+    path: /repository/file/{filename}
+    controller: '\App\Controller\Storage\ViewFileController::handle'
+    methods: ['GET']
+    defaults:
+        _secured: true
