@@ -28,6 +28,7 @@ Backup Repository Todo
 - [x] Drop HTTP caching functionality - backups do not need to be cached
 - [ ] FEATURE: Add support for joining backups into BackupApplication
 - [ ] FEATURE/REFACTOR: Exceptions & Errors in ONE file mapped as constants, properly done exception inheriting and factory methods
+- [ ] FEATURE: Add support for granting a token access, when backup collection is created
 - [ ] FEATURE: at least most of the Authentication domain with ready to use JWT
 - [ ] FEATURE: Implement WebDav for usage with rclone as a client
 - [ ] FEATURE: Bump Symfony 4 to Symfony 5 (at the end of refactoring)
