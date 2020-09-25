@@ -35,7 +35,6 @@ class TokenDetailsForm
     {
         return [
             Token::FIELD_TAGS                   => $this->tags,
-            Token::FIELD_ALLOWED_MIME_TYPES     => $this->allowedMimeTypes,
             Token::FIELD_MAX_ALLOWED_FILE_SIZE  => $this->maxAllowedFileSize,
             Token::FIELD_ALLOWED_IPS            => $this->allowedIpAddresses,
             Token::FIELD_ALLOWED_UAS            => $this->allowedUserAgents

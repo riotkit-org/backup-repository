@@ -4,7 +4,6 @@ namespace App\Domain\Authentication\ActionHandler;
 
 use App\Domain\Authentication\Exception\AuthenticationException;
 use App\Domain\Authentication\Exception\InvalidTokenIdException;
-use App\Domain\Authentication\Exception\MissingDataFieldsError;
 use App\Domain\Authentication\Exception\TokenAlreadyExistsException;
 use App\Domain\Authentication\Exception\ValidationException;
 use App\Domain\Authentication\Form\AuthForm;
@@ -54,11 +53,6 @@ class TokenGenerationHandler
         catch (InvalidTokenIdException $exception) {
             throw ValidationException::createFromFieldsList([
                 'id' => ['id_expects_to_be_uuidv4_format']
-            ]);
-        }
-        catch (MissingDataFieldsError $exception) {
-            throw ValidationException::createFromFieldsList([
-                'data' => [$exception->getMessage()]
             ]);
         }
 

@@ -2,7 +2,6 @@
 
 namespace App\Domain\Authentication\Entity;
 
-use App\Domain\Authentication\Exception\MissingDataFieldsError;
 use DateTimeImmutable;
 use Swagger\Annotations as SWG;
 
@@ -102,17 +101,6 @@ class Token extends \App\Domain\Common\SharedEntity\Token implements \JsonSerial
 
     public function setData(array $data): Token
     {
-        $matching = [true => 0, false => 0];
-
-        foreach (self::SECURE_COPY_FIELDS as $fieldName) {
-            $matching[isset($data[$fieldName]) && $data[$fieldName]]++;
-        }
-
-        // all Secure Copy related files should be filled up
-        if ($matching[true] > 0 && $matching[false] > 0) {
-            throw MissingDataFieldsError::createMissingSecureCopyKeysError();
-        }
-
         $this->data = $data;
         return $this;
     }
@@ -129,15 +117,6 @@ class Token extends \App\Domain\Common\SharedEntity\Token implements \JsonSerial
     {
         return isset($this->data[self::FIELD_TAGS]) && \is_array($this->data[self::FIELD_TAGS])
             ? $this->data[self::FIELD_TAGS] : [];
-    }
-
-    /**
-     * @return string[]
-     */
-    public function getAllowedMimeTypes(): array
-    {
-        return isset($this->data[self::FIELD_ALLOWED_MIME_TYPES]) && \is_array($this->data[self::FIELD_ALLOWED_MIME_TYPES])
-            ? $this->data[self::FIELD_ALLOWED_MIME_TYPES] : [];
     }
 
     public function getMaxAllowedFileSize(): int

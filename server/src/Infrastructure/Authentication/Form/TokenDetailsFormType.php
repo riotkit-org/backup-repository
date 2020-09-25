@@ -19,10 +19,6 @@ class TokenDetailsFormType extends AbstractType
                 'allow_add'    => true,
                 'allow_delete' => true
             ])
-            ->add(Token::FIELD_ALLOWED_MIME_TYPES, CollectionType::class, [
-                'allow_add'    => true,
-                'allow_delete' => true
-            ])
             ->add(Token::FIELD_MAX_ALLOWED_FILE_SIZE, IntegerType::class)
             ->add(Token::FIELD_ALLOWED_IPS, CollectionType::class, [
                 'allow_add'    => true,

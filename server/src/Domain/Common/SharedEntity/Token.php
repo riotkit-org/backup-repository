@@ -8,7 +8,6 @@ use App\Domain\Roles;
 class Token
 {
     public const FIELD_TAGS                      = 'tags';
-    public const FIELD_ALLOWED_MIME_TYPES        = 'allowedMimeTypes';
     public const FIELD_MAX_ALLOWED_FILE_SIZE     = 'maxAllowedFileSize';
     public const FIELD_ALLOWED_IPS               = 'allowedIpAddresses';
     public const FIELD_ALLOWED_UAS               = 'allowedUserAgents';
