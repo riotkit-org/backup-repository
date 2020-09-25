@@ -24,15 +24,17 @@ class FileDownloadResponse extends NormalResponse
 
     /**
      * @param bool                 $status
+     * @param string               $message
      * @param int                  $code
      * @param array|null           $headers  Flushes headers (allows to decide if we flush them or not)
      * @param callable|null        $contentFlushCallback  Function that copies our content to output stream
      * @param StreamInterface|null $stream         Raw stream for post-processing eg. encryption
      */
-    public function __construct(string $status, int $code, array $headers = null,
+    public function __construct(bool $status, string $message, int $code, array $headers = null,
                                 callable $contentFlushCallback = null, StreamInterface $stream = null)
     {
         $this->status               = $status;
+        $this->message              = $message;
         $this->httpCode             = $code;
         $this->stream               = $stream;
         $this->headers              = $headers;
@@ -49,7 +51,7 @@ class FileDownloadResponse extends NormalResponse
      */
     public function getCode(): int
     {
-        return $this->code;
+        return $this->httpCode;
     }
 
     public function isFlushingFile(): bool
@@ -60,16 +62,16 @@ class FileDownloadResponse extends NormalResponse
     /**
      * @return string
      */
-    public function getStatus(): string
+    public function getMessage(): string
     {
-        return $this->status;
+        return $this->message;
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return [
             'status' => $this->status,
-            'code'   => $this->code
+            'code'   => $this->httpCode
         ];
     }
 

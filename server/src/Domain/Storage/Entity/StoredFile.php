@@ -46,11 +46,6 @@ class StoredFile extends StoredFileFromCommon implements \JsonSerializable
     private $tags;
 
     /**
-     * @var Attribute[]
-     */
-    private $attributes;
-
-    /**
      * @throws \Exception
      */
     public function __construct()
@@ -58,7 +53,6 @@ class StoredFile extends StoredFileFromCommon implements \JsonSerializable
         $this->dateAdded  = new \DateTimeImmutable();
         $this->timezone   = \date_default_timezone_get();
         $this->tags       = [];
-        $this->attributes = [];
     }
 
     /**
@@ -76,7 +70,6 @@ class StoredFile extends StoredFileFromCommon implements \JsonSerializable
         $new->submittedBy = $submittedBy;
         $new->dateAdded   = new \DateTimeImmutable();
         $new->tags        = [];
-        $new->attributes  = [];
 
         return $new;
     }
@@ -94,18 +87,6 @@ class StoredFile extends StoredFileFromCommon implements \JsonSerializable
         return $this->tags;
     }
 
-    /**
-     * @return Attribute[]
-     */
-    public function getAttributes(): array
-    {
-        if (\is_object($this->attributes)) {
-            $this->attributes = $this->attributes->toArray();
-        }
-
-        return $this->attributes;
-    }
-
     public function addTag(Tag $tag): void
     {
         $tags = $this->getTags();
@@ -119,18 +100,6 @@ class StoredFile extends StoredFileFromCommon implements \JsonSerializable
         $this->tags = \array_unique($tags);
     }
 
-    public function addAttribute(Attribute $attribute): void
-    {
-        $attributes = $this->getAttributes();
-
-        if ($this->hasAttributeNamed($attribute->getName())) {
-            throw InvalidAttributeException::createDuplicatedAttributeException($attribute->getName());
-        }
-
-        $attributes[] = $attribute;
-        $this->attributes = $attributes;
-    }
-
     public function hasTagNamed(string $name): bool
     {
         $tag = new Tag();
@@ -138,19 +107,6 @@ class StoredFile extends StoredFileFromCommon implements \JsonSerializable
 
         foreach ($this->getTags() as $existingTag) {
             if ($existingTag->isSameContentAs($tag)) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    public function hasAttributeNamed(string $name): bool
-    {
-        $attribute = new Attribute($this, $name, '');
-
-        foreach ($this->attributes as $existing) {
-            if ($existing->hasSameNameAs($attribute)) {
                 return true;
             }
         }

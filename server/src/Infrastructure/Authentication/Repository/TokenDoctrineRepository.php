@@ -85,13 +85,7 @@ class TokenDoctrineRepository extends CommonTokenRepository implements TokenRepo
 
         // search only in allowed parts of token "*****f40-**87-**7c-**bb-********e8c0" when user does not have permissions to see full tokens
         $qb->andWhere(TokenSecrets::generateDQLConcatString('token.id') . ' LIKE :pattern OR token.id = :token_id');
-
-        // @fixme: Normal support for all databases
-        if ($this->getDatabasePlatform() === 'sqlite') {
-            $qb->orWhere('token.roles LIKE :pattern');
-        } else {
-            $qb->orWhere('CAST(token.roles as STRING) LIKE :pattern');
-        }
+        $qb->orWhere('CAST(token.roles as STRING) LIKE :pattern');
 
         $qb->setParameters(['pattern' => '%' . $pattern . '%', 'token_id' => $pattern]);
 

@@ -6,15 +6,14 @@ use FunctionalTester;
 
 class RegistryListingCest
 {
+    // @todo: Check if we can use file:// protocol to simplify the test
     private const SAMPLE_FILE = 'http://test-webserver/files/image.jpg';
 
     private function populateWithSomeData(FunctionalTester $I): void
     {
         $I->haveRoles(['upload.all']);
-        $I->uploadByPayload('Hello world.', ['fileName' => 'hello.txt', 'public' => true]);
-        $I->uploadByPayload('Hello workers, to you the world belong.',
-            ['fileName' => 'iwa.txt', 'public' => true, 'password' => 'IWA-AIT.org']
-        );
+
+        // @todo: Upload backups as we no longer provide object storage endpoints as of Backup Repository v4.x
     }
 
     public function testListingAllFiles(FunctionalTester $I): void

@@ -15,7 +15,7 @@ class RemovingCredentialsFromListingsCest
     public function seedApplication(FunctionalTester $I): void
     {
         $I->amAdmin();
-        $I->createToken(['roles' => ['upload.images'], 'id' => self::SOME_EXAMPLE_TOKEN], false);
+        $I->createToken(['roles' => ['upload.all'], 'id' => self::SOME_EXAMPLE_TOKEN], false);
 
         // non-privileged token we want to use to browse tokens in listing endpoint
         $I->createToken(['roles' => ['security.search_for_tokens', 'security.authentication_lookup', 'security.cannot_see_full_token_ids'], 'id' => self::RESTRICTED_TOKEN], false);

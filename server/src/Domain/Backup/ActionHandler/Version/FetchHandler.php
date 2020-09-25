@@ -67,8 +67,11 @@ class FetchHandler
                     $stream = $response['stream'];
 
                     // headers first
-                    $headersCallback = $response['headersFlushCallback'];
-                    $headersCallback();
+                    $headers = $response['headers'];
+
+                    foreach ($headers as $header => $headerValue) {
+                        header($header . ': ' . $headerValue);
+                    }
 
                     // body then
                     $bodyCallback = $response['contentFlushCallback'];

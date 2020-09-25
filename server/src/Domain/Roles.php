@@ -25,14 +25,14 @@ final class Roles
     //
     //
 
-    /** Allows to upload ALL types of files regardless of mime type */
-    public const ROLE_UPLOAD                   = 'upload.all';
+    /** Allows to upload files at all */
+    public const ROLE_UPLOAD                      = 'upload.all';
 
     /** Enforce no password for all uploads for this token */
-    public const ROLE_UPLOAD_ENFORCE_NO_PASSWORD = 'upload.enforce_no_password';
+    public const ROLE_UPLOAD_ENFORCE_NO_PASSWORD  = 'upload.enforce_no_password';
 
     /** Enforce token tags. In result every uploaded file will have tags specified in token regardless if they were sent in request */
-    public const ROLE_UPLOAD_ENFORCE_TOKEN_TAGS = 'upload.enforce_tags_selected_in_token';
+    public const ROLE_UPLOAD_ENFORCE_TOKEN_TAGS   = 'upload.enforce_tags_selected_in_token';
 
     public const ROLE_UPLOAD_ONLY_ONCE_SUCCESSFUL = 'upload.only_once_successful';
 

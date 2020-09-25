@@ -9,6 +9,7 @@ use App\Domain\Common\Response\NormalResponse;
 class TokenCRUDResponse extends NormalResponse
 {
     protected ?Token $token = null;
+    private int $exitCode;
 
     public static function createTokenDeletedResponse(Token $token): TokenCRUDResponse
     {
@@ -54,7 +55,7 @@ class TokenCRUDResponse extends NormalResponse
         return $response;
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         $base = parent::jsonSerialize();
         $base['token'] = $this->token;

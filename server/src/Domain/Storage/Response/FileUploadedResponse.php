@@ -90,7 +90,7 @@ class FileUploadedResponse extends NormalResponse implements \JsonSerializable
 
     public function isOk(): bool
     {
-        return $this->exitCode <= 299;
+        return $this->httpCode <= 299;
     }
 
     /**
@@ -98,7 +98,7 @@ class FileUploadedResponse extends NormalResponse implements \JsonSerializable
      */
     public function getExitCode(): int
     {
-        return $this->exitCode;
+        return $this->httpCode;
     }
 
     /**

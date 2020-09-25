@@ -269,7 +269,6 @@ class WriteManager
             $info = $this->fileInfoFactory->generateForStagedFile($stagedFile);
 
             $file->setContentHash($info->getChecksum());
-            $file->setMimeType($info->getMime());
 
             $this->validator->assertThereIsNoFileByFilename($file);
         }

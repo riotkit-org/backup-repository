@@ -25,7 +25,7 @@ class BackupCollectionUploadAlertOnLimitStrategyCest
                 "collections.manage_tokens_in_allowed_collections",
                 "collections.upload_to_allowed_collections",
                 "collections.list_versions_for_allowed_collections",
-                "upload.backup"
+                "upload.all"
             ]
         ]);
 

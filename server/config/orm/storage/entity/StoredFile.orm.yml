@@ -28,11 +28,6 @@ App\Domain\Storage\Entity\StoredFile:
             column: timezone
             length: 48
 
-        mimeType:
-            type: string
-            length: 48
-            column: mimeType
-
         password:
             type: string
             length: 254
@@ -66,9 +61,3 @@ App\Domain\Storage\Entity\StoredFile:
                 inverseJoinColumns:
                     tag_id:
                         referencedColumnName: id
-
-    oneToMany:
-        attributes:
-            targetEntity: Attribute
-            mappedBy: storedFile
-            cascade: ['persist']

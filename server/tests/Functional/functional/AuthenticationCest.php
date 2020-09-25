@@ -14,7 +14,7 @@ class AuthenticationCest
         $I->amAdmin();
         $I->createToken([
             'roles' => [
-                'upload.images', 'upload.enforce_no_password', 'upload.enforce_tags_selected_in_token'
+                'upload.all', 'upload.enforce_no_password', 'upload.enforce_tags_selected_in_token'
             ],
             'data' => [
                 'tags' => ['gallery']
@@ -48,11 +48,10 @@ class AuthenticationCest
         $I->amAdmin();
         $I->createToken([
             'roles' => [
-                'upload.images'
+                'upload.all'
             ],
             'data' => [
                 'tags' => ['user_uploads.u123', 'user_uploads'],
-                'allowedMimeTypes'   => ['image/jpeg', 'image/png', 'image/gif'],
                 'maxAllowedFileSize' => 14579
             ]
         ], false);
@@ -68,10 +67,9 @@ class AuthenticationCest
             'token' => [
                 'id' => $I->getPreviouslyStoredIdOf('LIMITED_TOKEN'),
                 'active' => true,
-                'roles'  => ['upload.images'],
+                'roles'  => ['upload.all'],
                 'data'   => [
                     'tags'               => ['user_uploads.u123', 'user_uploads'],
-                    'allowedMimeTypes'   => ['image/jpeg', 'image/png', 'image/gif'],
                     'maxAllowedFileSize' => 14579
                 ]
             ]
@@ -82,10 +80,9 @@ class AuthenticationCest
     {
         $I->amAdmin();
         $I->createToken([
-            'roles' => ['upload.images', 'is-this-working?'],
+            'roles' => ['upload.all', 'is-this-working?'],
             'data' => [
                 'tags' => ['user_uploads.u123', 'user_uploads'],
-                'allowedMimeTypes'   => ['image/jpeg', 'image/png', 'image/gif'],
                 'maxAllowedFileSize' => 100
             ]
         ], false);
@@ -97,10 +94,9 @@ class AuthenticationCest
     {
         $I->amToken($I->getPreviouslyStoredIdOf('LIMITED_TOKEN'));
         $I->createToken([
-            'roles' => ['upload.images'],
+            'roles' => ['upload.all'],
             'data' => [
                 'tags' => ['user_uploads.u123', 'user_uploads'],
-                'allowedMimeTypes'   => ['image/jpeg', 'image/png', 'image/gif'],
                 'maxAllowedFileSize' => 100
             ]
         ], false);
@@ -161,7 +157,7 @@ class AuthenticationCest
         $I->amAdmin();
         $I->createToken([
             'roles' => [
-                'upload.images'
+                'upload.all'
             ],
             'data' => [],
             'id'   => '1c2c84f2-d488-4ea0-9c88-d25aab139ac4'
@@ -181,7 +177,7 @@ class AuthenticationCest
 
         $I->createToken([
             'roles' => [
-                'upload.images'
+                'upload.all'
             ],
             'data' => [],
             'id'   => '1c2c84f2-d488-4ea0-9c88-d25aab139ac4'
@@ -189,7 +185,7 @@ class AuthenticationCest
 
         $I->createToken([
             'roles' => [
-                'upload.images'
+                'upload.all'
             ],
             'data' => [],
             'id'   => '1c2c84f2-d488-4ea0-9c88-d25aab139ac4'
@@ -211,7 +207,7 @@ class AuthenticationCest
 
         $I->createToken([
             'roles' => [
-                'upload.images'
+                'upload.all'
             ],
             'data' => [],
             'id'   => 'international-workers-association'
@@ -243,7 +239,7 @@ class AuthenticationCest
         $I->amToken($I->getPreviouslyStoredIdOf('LIMITED_TOKEN_NO_PREDICTABLE_IDS'));
         $I->createToken([
             'roles' => [
-                'upload.images'
+                'upload.all'
             ],
             'data' => [],
             'id'   => 'international-workers-association'
@@ -254,7 +250,7 @@ class AuthenticationCest
         $I->amToken($I->getPreviouslyStoredIdOf('LIMITED_TOKEN_NO_PREDICTABLE_IDS'));
         $I->createToken([
             'roles' => [
-                'upload.images'
+                'upload.all'
             ],
             'data' => []
             // case: no "id" there
@@ -269,8 +265,7 @@ class AuthenticationCest
 
         $I->canSeeResponseContainsJson([
             'data' => [
-                'upload.images' => 'Allows to upload images',
-                'upload.videos' => 'Allows to upload video files'
+                'upload.all' => 'Allows to upload files at all',
             ]
         ]);
     }

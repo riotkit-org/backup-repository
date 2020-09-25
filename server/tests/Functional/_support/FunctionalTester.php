@@ -129,23 +129,6 @@ class FunctionalTester extends \Codeception\Actor
         );
     }
 
-    public function uploadByUrl(string $url, array $overrideParams = []): void
-    {
-        $templateParams = [
-            'fileUrl' => $url,
-            'tags'    => [],
-            'public'  => true
-        ];
-
-        $params = \array_merge(
-            $templateParams,
-            ['fileUrl' => $url],
-            $overrideParams
-        );
-
-        $this->sendPOST(Urls::URL_REPOSITORY_UPLOAD_BY_URL, $params);
-    }
-
     public function uploadByPayload(string $payload, array $params = []): void
     {
         $this->sendPOST(Urls::URL_REPOSITORY_UPLOAD_RAW . '?' . http_build_query($params), $payload);

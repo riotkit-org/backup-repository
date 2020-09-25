@@ -54,10 +54,10 @@ class ViewFileHandler
         } catch (StorageException $exception) {
 
             if ($exception->getCode() === StorageException::codes['file_not_found']) {
-                return new FileDownloadResponse($exception->getMessage(), 404);
+                return new FileDownloadResponse(false, $exception->getMessage(), 404);
             }
 
-            return new FileDownloadResponse($exception->getMessage(), 500);
+            return new FileDownloadResponse(false, $exception->getMessage(), 500);
         }
 
         if (!$securityContext->isAbleToViewFile($file->getStoredFile())) {
@@ -69,7 +69,7 @@ class ViewFileHandler
 
         [$code, $headers, $outputStream, $contentFlushCallback] = $this->createStreamHandler($file, $form);
 
-        return new FileDownloadResponse('OK', $code, $headers, $contentFlushCallback, $outputStream);
+        return new FileDownloadResponse(true, 'OK', $code, $headers, $contentFlushCallback, $outputStream);
     }
 
     /**
@@ -125,7 +125,7 @@ class ViewFileHandler
         ];
     }
 
-    private function createHttpHeadersList(StoredFile $file, string $acceptRange, int $contentLength): array
+    private function createHttpHeadersList(StoredFile $file, string $eTagSuffix, bool $allowLastModifiedHeader, string $acceptRange, int $contentLength): array
     {
         $headers = [];
 
@@ -138,7 +138,14 @@ class ViewFileHandler
             $headers['Content-Length'] = $contentLength;
         }
 
-        //$headers['Cache-Control'] = 'public, max-age=60';
+        //
+        // caching
+        //
+        if ($allowLastModifiedHeader) {
+            $headers['Last-Modified'] = $file->getDateAdded()->format('D, d M Y H:i:s') . ' GMT';
+        }
+
+        $headers['ETag'] = $file->getContentHash() . $eTagSuffix;
 
         //
         // others

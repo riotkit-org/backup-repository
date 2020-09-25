@@ -6,7 +6,6 @@ use App\Domain\Storage\Entity\StagedFile;
 use App\Domain\Storage\ValueObject\Checksum;
 use App\Domain\Storage\ValueObject\FileInfo;
 use App\Domain\Storage\ValueObject\Filesize;
-use App\Domain\Storage\ValueObject\Mime;
 use App\Domain\Storage\ValueObject\Path;
 
 /**
@@ -49,15 +48,8 @@ class FileInfoFactory
 
         return new FileInfo(
             new Checksum($this->doCheckSum($path), $this->checksumTool),
-            new Mime($this->getMimeForFile($path)),
             new Filesize(\filesize($path->getValue()))
         );
-    }
-
-    private function getMimeForFile(Path $path): string
-    {
-        // fileinfo native PHP extension consumes too much memory for unknown reason
-        return trim(shell_exec('file -b --mime-type "' . $path->getValue() . '"'));
     }
 
     private function doCheckSum(Path $path): string
