@@ -12,6 +12,27 @@ A Symfony application designed to store bigger amounts of data, including metada
 - Any kind of storage that is supported by Flysystem library (including AWS S3, Min.io, local filesystem, even FTP)
 - Versioned backups
 
+Developing
+----------
+
+```bash
+# run dependencies
+rkd :docker:up
+
+# migrate database
+./bin/console doctrine:migrations:migrate -vv
+
+# run development web server (requires a Symfony CLI utility to be installed and in PATH)
+symfony serve
+
+#
+# Testing
+#
+
+# API tests
+./vendor/bin/codecept run
+```
+
 Copyleft
 --------
 
