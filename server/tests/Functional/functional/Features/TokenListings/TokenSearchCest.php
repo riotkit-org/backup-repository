@@ -16,7 +16,7 @@ class TokenSearchCest
         for ($num = 1; $num <= 250; $num++) {
             $I->createToken([
                 'roles' => [
-                    'upload.images', 'upload.enforce_no_password', 'upload.enforce_tags_selected_in_token'
+                    'upload.all', 'upload.enforce_no_password', 'upload.enforce_tags_selected_in_token'
                 ],
                 'data' => [
                     'tags' => ['role_generated_' . $num]

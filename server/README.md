@@ -29,8 +29,14 @@ symfony serve
 # Testing
 #
 
-# API tests
+# run all API test cases
 ./vendor/bin/codecept run
+
+# run API test case from selected directory
+./vendor/bin/codecept run --html=/tmp/file-repository.html functional Features/Security/FeatureLimitTokenAccessPerIpAndUserAgentCest
+
+# run API test case from root directory
+./vendor/bin/codecept run --html=/tmp/file-repository.html AuthenticationCest
 ```
 
 Copyleft

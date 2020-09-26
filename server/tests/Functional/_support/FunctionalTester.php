@@ -129,11 +129,6 @@ class FunctionalTester extends \Codeception\Actor
         );
     }
 
-    public function uploadByPayload(string $payload, array $params = []): void
-    {
-        $this->sendPOST(Urls::URL_REPOSITORY_UPLOAD_RAW . '?' . http_build_query($params), $payload);
-    }
-
     public function readFileAttributes(string $filename): void
     {
         $this->sendGET(Urls::URL_REPOSITORY_READ_ATTRIBUTES, ['filename' => $filename]);

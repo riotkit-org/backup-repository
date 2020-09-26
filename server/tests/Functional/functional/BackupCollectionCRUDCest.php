@@ -16,7 +16,6 @@ class BackupCollectionCRUDCest
         ], [
             'data' => [
                 'tags'               => ['user_uploads.u123', 'user_uploads'],
-                'allowedMimeTypes'   => ['image/jpeg', 'image/png', 'image/gif'],
                 'maxAllowedFileSize' => 145790
             ]
         ]);
@@ -73,7 +72,6 @@ class BackupCollectionCRUDCest
             [
                 'data' => [
                     'tags'               => ['user_uploads.u123', 'user_uploads'],
-                    'allowedMimeTypes'   => ['image/jpeg', 'image/png', 'image/gif'],
                     'maxAllowedFileSize' => 145790
             ]
         ]);

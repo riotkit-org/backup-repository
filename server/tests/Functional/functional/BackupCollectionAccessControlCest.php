@@ -10,10 +10,9 @@ class BackupCollectionAccessControlCest
     {
         $I->amAdmin();
         $secondTokenId = $I->createToken([
-            'roles' => ['upload.images'],
+            'roles' => ['upload.all'],
             'data' => [
                 'tags' => ['user_uploads.u123', 'user_uploads'],
-                'allowedMimeTypes'   => ['image/jpeg', 'image/png', 'image/gif'],
                 'maxAllowedFileSize' => 100
             ]
         ]);

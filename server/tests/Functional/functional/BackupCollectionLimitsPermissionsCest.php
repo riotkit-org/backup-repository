@@ -10,8 +10,7 @@ class BackupCollectionLimitsPermissionsCest
     {
         $I->haveRoles(['collections.create_new'], [
             'data' => [
-                'tags'    => ['user_uploads.u123', 'user_uploads'],
-                'allowedMimeTypes'   => ['image/jpeg', 'image/png', 'image/gif'],
+                'tags'               => ['user_uploads.u123', 'user_uploads'],
                 'maxAllowedFileSize' => 14579
             ]
         ]);
@@ -25,8 +24,7 @@ class BackupCollectionLimitsPermissionsCest
     {
         $I->haveRoles(['collections.create_new'], [
             'data' => [
-                'tags'    => ['user_uploads.u123', 'user_uploads'],
-                'allowedMimeTypes'   => ['image/jpeg', 'image/png', 'image/gif'],
+                'tags'               => ['user_uploads.u123', 'user_uploads'],
                 'maxAllowedFileSize' => 14579
             ]
         ]);
@@ -53,8 +51,7 @@ class BackupCollectionLimitsPermissionsCest
     {
         $I->haveRoles(['collections.create_new', 'collections.allow_infinite_limits'], [
             'data' => [
-                'tags'    => ['user_uploads.u123', 'user_uploads'],
-                'allowedMimeTypes'   => ['image/jpeg', 'image/png', 'image/gif'],
+                'tags'               => ['user_uploads.u123', 'user_uploads'],
                 'maxAllowedFileSize' => 14579
             ]
         ]);
