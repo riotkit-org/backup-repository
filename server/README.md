@@ -1,16 +1,18 @@
-File Repository Server
-======================
+Backup Repository Server
+========================
 
-A Symfony application designed to store bigger amounts of data, including metadata attributes.
+An application designed for shared backups storage with limits per user, per application and per file.
+Perfectly fits in case, when multiple organizations are hosting their backups at same server - the administrator can allocate space and grant rights.
+
+*Written in PHP 7.4 & Symfony 5.x, designed to run on cheap hardware and on cheap cloud infrastructure.*
 
 **Features:**
 
 - Strict permissions (Role based)
-- Tokens
-- Upload forms ready to adapt for external application
-- Limits per item, per backup collection
-- Any kind of storage that is supported by Flysystem library (including AWS S3, Min.io, local filesystem, even FTP)
-- Versioned backups
+- Users management
+- Limits per item, per backup collection, per user
+- Storage at the local filesystem or at AWS S3 compatible storage (officially supporting Min.io)
+- Versioned backups with rotation policies
 
 Developing
 ----------
