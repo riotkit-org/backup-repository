@@ -46,6 +46,6 @@ class TokenSecretsTest extends BaseTestCase
         $testToken = new Token();
         $testToken->setId(Uuid::uuid4()->toString());
         $repository->persist($testToken);
-        $repository->flush($testToken);
+        $repository->flush();
     }
 }

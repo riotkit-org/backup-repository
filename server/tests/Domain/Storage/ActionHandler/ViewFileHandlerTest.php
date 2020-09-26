@@ -7,12 +7,10 @@ use App\Domain\Storage\Entity\StoredFile;
 use App\Domain\Storage\Exception\AuthenticationException;
 use App\Domain\Storage\ValueObject\Filename;
 use App\Domain\Storage\ActionHandler\ViewFileHandler;
-use App\Domain\Storage\Context\CachingContext;
 use App\Domain\Storage\Form\ViewFileForm;
 use App\Domain\Storage\Manager\FilesystemManager;
 use App\Domain\Storage\Manager\StorageManager;
 use App\Domain\Storage\Security\ReadSecurityContext;
-use App\Domain\Storage\Service\AlternativeFilenameResolver;
 use App\Domain\Storage\ValueObject\Stream;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -31,8 +29,7 @@ class ViewFileHandlerTest extends TestCase
 
         $handler = $this->mockHandlerPartially([
             $this->createMock(StorageManager::class),
-            $this->createMock(FilesystemManager::class),
-            $this->mockNameResolver()
+            $this->createMock(FilesystemManager::class)
         ]);
 
         // replace methods at external services (to test only our scope)
@@ -43,16 +40,14 @@ class ViewFileHandlerTest extends TestCase
         // because ReadSecurityContext::isAbleToViewFile() returns false
         $handler->handle(
             $this->createExampleForm(),
-            $securityContext,
-            mock(CachingContext::class)
+            $securityContext
         );
     }
 
     /**
-     * Assert that returns 304 Not Modified + valid headers in the response when a CachingContext tells that the
-     * cache is still valid
+     * Assert that basic headers are at it's place
      */
-    public function testNotModifiedResponse(): void
+    public function testHeadersReturnedValidLengthAndContentDisposition(): void
     {
         $headers = '';
 
@@ -64,7 +59,7 @@ class ViewFileHandlerTest extends TestCase
 
         $fromStorage = $this->createMock(StoredFile::class);
         $fromStorage->method('getFilename')->willReturn(new Filename('bakunin.ogv'));
-        $file = new FileRetrievedFromStorage($fromStorage, new Stream(fopen('/dev/null', 'rb')));
+        $file = new FileRetrievedFromStorage($fromStorage, new Stream(fopen('/bin/sh', 'rb')));
 
         $manager = $this->createMock(StorageManager::class);
         $manager->method('retrieve')->willReturn($file);
@@ -75,17 +70,9 @@ class ViewFileHandlerTest extends TestCase
         //
         // create handler
         //
-        $handler = $this->mockHandlerPartially([
-            $manager,
-            $fs,
-            $this->mockNameResolver()
-        ]);
+        $handler = $this->mockHandlerPartially([$manager, $fs]);
 
         $handler->method('header')->willReturnCallback(function ($header) use (&$headers) { $headers .= $header . " "; });
-
-        // let the CachingContext be saying that the cache is still valid
-        $cachingContext = mock(CachingContext::class);
-        $cachingContext->shouldReceive('isCacheExpiredForFile')->andReturn(false);
 
         //
         // test method
@@ -93,17 +80,19 @@ class ViewFileHandlerTest extends TestCase
         $response = $handler->handle(
             $this->createExampleForm(),
             $securityContext,
-            $cachingContext
         );
 
-        $callback = $response->getHeaders();
-        $callback();
+        $headers = $response->getHeaders();
+        $headersAsString = '';
 
-        $this->assertSame(304, $response->getCode());
+        foreach ($headers as $header => $value) {
+            $headersAsString .= $header . ': ' . $value . "\n";
+        }
 
-        $this->assertStringContainsString('Accept-Ranges: bytes', $headers);
-        $this->assertStringContainsString('Content-Length: 161', $headers);
-        $this->assertStringContainsString('Content-Disposition: attachment; filename="bakunin.ogv"', $headers);
+        $this->assertSame(200, $response->getCode());
+        $this->assertStringContainsString('Accept-Ranges: bytes', $headersAsString);
+        $this->assertStringContainsString('Content-Length: 161', $headersAsString);
+        $this->assertStringContainsString('Content-Disposition: attachment; filename="bakunin.ogv"', $headersAsString);
     }
 
     private function createExampleForm(): ViewFileForm
@@ -128,16 +117,5 @@ class ViewFileHandlerTest extends TestCase
         $builder->setMethods(['header']);
 
         return $builder->getMock();
-    }
-
-    /**
-     * @return AlternativeFilenameResolver|\PHPUnit\Framework\MockObject\MockObject
-     */
-    private function mockNameResolver()
-    {
-        $nameResolver = $this->createMock(AlternativeFilenameResolver::class);
-        $nameResolver->method('resolveFilename')->willReturn(new Filename('bakunin.ogv'));
-
-        return $nameResolver;
     }
 }

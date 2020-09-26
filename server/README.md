@@ -37,6 +37,12 @@ symfony serve
 
 # run API test case from root directory
 ./vendor/bin/codecept run --html=/tmp/file-repository.html AuthenticationCest
+
+# unit tests (all tests)
+./vendor/bin/phpunit
+
+# single unit test
+./vendor/bin/phpunit --filter 
 ```
 
 Copyleft
