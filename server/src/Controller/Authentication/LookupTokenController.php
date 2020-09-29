@@ -23,13 +23,13 @@ class LookupTokenController extends BaseController
     }
 
     /**
-     * Retrieve details for specific token
+     * Retrieve details of a specific user
      *
      * @SWG\Parameter(
      *     type="string",
      *     in="path",
-     *     name="token",
-     *     description="Token to show details for"
+     *     name="userId",
+     *     description="Id of an user to lookup"
      * )
      *
      * @SWG\Response(
@@ -71,18 +71,18 @@ class LookupTokenController extends BaseController
      *     )
      * )
      *
-     * @param string $token
+     * @param string $userId
      *
      * @return JsonFormattedResponse
      *
      * @throws Exception
      */
-    public function handle(string $token): Response
+    public function handle(string $userId): Response
     {
         return $this->wrap(
-            function () use ($token) {
+            function () use ($userId) {
                 $response = $this->handler->handle(
-                    $token,
+                    $userId,
                     $this->authFactory->createFromToken($this->getLoggedUserToken())
                 );
 

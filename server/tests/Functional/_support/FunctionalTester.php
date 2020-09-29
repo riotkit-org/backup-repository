@@ -78,12 +78,12 @@ class FunctionalTester extends \Codeception\Actor
         $this->sendPUT($url, $params, $files);
     }
 
-    public function lookupToken(string $tokenId): void
+    public function lookupToken(string $userId): void
     {
         $this->sendGET(
             $this->fill(
-                Urls::URL_TOKEN_LOOKUP,
-                ['token' => $tokenId]
+                Urls::URL_USER_LOOKUP,
+                ['userId' => $userId]
             )
         );
     }
@@ -100,7 +100,7 @@ class FunctionalTester extends \Codeception\Actor
 
     public function createToken(array $data, bool $assert = true): string
     {
-        $this->postJson(Urls::URL_TOKEN_GENERATE,
+        $this->postJson(Urls::URL_USER_CREATE,
             \array_merge(
                 [
                     'roles' => [],
@@ -119,12 +119,12 @@ class FunctionalTester extends \Codeception\Actor
         return $this->grabDataFromResponseByJsonPath('.token.id')[0] ?? '';
     }
 
-    public function deleteToken(string $tokenId): void
+    public function deleteToken(string $userId): void
     {
         $this->sendDELETE(
             $this->fill(
                 Urls::URL_TOKEN_DELETE,
-                ['token' => $tokenId]
+                ['userId' => $userId]
             )
         );
     }

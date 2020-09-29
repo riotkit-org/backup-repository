@@ -23,13 +23,13 @@ class DeleteTokenController extends BaseController
     }
 
     /**
-     * Revoke a token
+     * Revoke an access for given user
      *
      * @SWG\Parameter(
      *     type="string",
      *     in="path",
-     *     name="token",
-     *     description="Token that needs to be deleted"
+     *     name="userId",
+     *     description="Id of an user that should be deleted"
      * )
      *
      * @SWG\Response(
@@ -71,18 +71,18 @@ class DeleteTokenController extends BaseController
      *     )
      * )
      *
-     * @param string $token
+     * @param string $userId
      *
      * @return JsonFormattedResponse
      *
      * @throws Exception
      */
-    public function handle(string $token): Response
+    public function handle(string $userId): Response
     {
         return $this->wrap(
-            function () use ($token) {
+            function () use ($userId) {
                 $response = $this->handler->handle(
-                    $token,
+                    $userId,
                     $this->authFactory->createFromToken($this->getLoggedUserToken())
                 );
 

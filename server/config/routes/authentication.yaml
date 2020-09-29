@@ -1,36 +1,37 @@
 authentication.generate_token:
-    path: /auth/token/generate
+    path: /auth/user
     controller: 'App\Controller\Authentication\GenerateTokenController::generateAction'
     methods: ['POST']
     defaults:
         _secured: true
 
-
-authentication.roles_listing:
-    path: /auth/roles
-    controller: 'App\Controller\Authentication\RolesListingController::handle'
-    methods: ['GET']
-    defaults:
-        _secured: true
-
-
-authentication.lookup:
-    path: /auth/token/{token}
-    controller: 'App\Controller\Authentication\LookupTokenController::handle'
-    methods: ['GET']
-    defaults:
-        _secured: true
+# @todo: Edit user...
 
 authentication.search:
-    path: /auth/search
+    path: /auth/user/search
     controller: '\App\Controller\Authentication\TokenSearchController::searchAction'
     methods: ['GET']
     defaults:
         _secured: true
 
+authentication.lookup:
+    path: /auth/user/by-id/{userId}
+    controller: 'App\Controller\Authentication\LookupTokenController::handle'
+    methods: ['GET']
+    defaults:
+        _secured: true
+
 authentication.delete:
-    path: /auth/token/{token}
+    path: /auth/user/by-id/{userId}
     controller: 'App\Controller\Authentication\DeleteTokenController::handle'
     methods: ['DELETE']
+    defaults:
+        _secured: true
+
+# documentation: roles listing
+authentication.roles_listing:
+    path: /auth/roles
+    controller: 'App\Controller\Authentication\RolesListingController::handle'
+    methods: ['GET']
     defaults:
         _secured: true
