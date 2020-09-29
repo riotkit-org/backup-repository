@@ -5,7 +5,7 @@ namespace App\Domain\Authentication\ActionHandler;
 use App\Domain\Authentication\Exception\AuthenticationException;
 use App\Domain\Authentication\Exception\ValidationException;
 use App\Domain\Authentication\Repository\TokenRepository;
-use App\Domain\Authentication\Response\TokenSearchResponse;
+use App\Domain\Authentication\Response\UserSearchResponse;
 use App\Domain\Authentication\Security\Context\AuthenticationManagementContext;
 
 class TokenSearchHandler
@@ -23,12 +23,12 @@ class TokenSearchHandler
      * @param int $limit
      * @param AuthenticationManagementContext $ctx
      *
-     * @return TokenSearchResponse
+     * @return UserSearchResponse
      *
      * @throws AuthenticationException
      * @throws ValidationException
      */
-    public function handle(string $pattern, int $page, int $limit, AuthenticationManagementContext $ctx): TokenSearchResponse
+    public function handle(string $pattern, int $page, int $limit, AuthenticationManagementContext $ctx): UserSearchResponse
     {
         $this->assertHasRights($ctx);
 
@@ -45,7 +45,7 @@ class TokenSearchHandler
             throw ValidationException::createFromFieldsList(['page' => ['invalid_page_value']]);
         }
 
-        return TokenSearchResponse::createResultsResponse(
+        return UserSearchResponse::createResultsResponse(
             $this->repository->findTokensBy($pattern, $page, $limit, !$ctx->cannotSeeFullTokenIds()),
             $page,
             $limit,

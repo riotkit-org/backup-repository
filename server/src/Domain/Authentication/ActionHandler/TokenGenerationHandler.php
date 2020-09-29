@@ -8,7 +8,7 @@ use App\Domain\Authentication\Exception\UserAlreadyExistsException;
 use App\Domain\Authentication\Exception\ValidationException;
 use App\Domain\Authentication\Form\AuthForm;
 use App\Domain\Authentication\Manager\TokenManager;
-use App\Domain\Authentication\Response\TokenCRUDResponse;
+use App\Domain\Authentication\Response\UserCRUDResponse;
 use App\Domain\Authentication\Security\Context\AuthenticationManagementContext;
 use App\Domain\Common\Exception\DomainAssertionFailure;
 use Exception;
@@ -32,12 +32,12 @@ class TokenGenerationHandler
      * @param AuthForm $form
      * @param AuthenticationManagementContext $context
      *
-     * @return TokenCRUDResponse
+     * @return UserCRUDResponse
      *
      * @throws DomainAssertionFailure
      * @throws Exception
      */
-    public function handle(AuthForm $form, AuthenticationManagementContext $context): TokenCRUDResponse
+    public function handle(AuthForm $form, AuthenticationManagementContext $context): UserCRUDResponse
     {
         $this->assertHasRights($context, $form);
 
@@ -64,7 +64,7 @@ class TokenGenerationHandler
             throw DomainAssertionFailure::fromErrors([$exception]);
         }
 
-        return TokenCRUDResponse::createTokenCreatedResponse($token);
+        return UserCRUDResponse::createTokenCreatedResponse($token);
     }
 
     /**

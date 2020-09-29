@@ -26,7 +26,7 @@ class AuthenticationCest
         ], false);
 
         $I->canSeeResponseCodeIs(201);
-        $I->storeIdAs('.token.id', 'BASIC_USER_ACCESS_ID');
+        $I->storeIdAs('.user.id', 'BASIC_USER_ACCESS_ID');
     }
 
     public function verifyUserAccessWasGenerated(FunctionalTester $I): void
@@ -34,13 +34,13 @@ class AuthenticationCest
         $I->amAdmin();
         $I->lookupUser($I->getPreviouslyStoredIdOf('BASIC_USER_ACCESS_ID'));
         $I->canSeeResponseContainsJson([
-            'token' => [
+            'user' => [
                 'id' => $I->getPreviouslyStoredIdOf('BASIC_USER_ACCESS_ID')
             ]
         ]);
     }
 
-    public function verifyTokenCanBeFoundInSearchByOneOfItsRoles(FunctionalTester $I): void
+    public function verifyUserCanBeFoundInSearchByOneOfItsRoles(FunctionalTester $I): void
     {
         $I->amAdmin();
         $I->searchForUsers('upload.enforce_tags_selected_in_token', 1, 50);
@@ -48,7 +48,7 @@ class AuthenticationCest
         $I->canSeeResponseCodeIs(200);
     }
 
-    public function generateTokenWithLimitToSelectedTagsAndMimes(FunctionalTester $I): void
+    public function createUserWithLimitToSelectedTagsAndMimes(FunctionalTester $I): void
     {
         $I->amAdmin();
         $I->createUser([
@@ -66,7 +66,7 @@ class AuthenticationCest
             ]
         ], false);
         $I->canSeeResponseCodeIs(201);
-        $I->storeIdAs('.token.id', 'LIMITED_USER_ACCESS_ID');
+        $I->storeIdAs('.user.id', 'LIMITED_USER_ACCESS_ID');
     }
 
     public function verifyTheLimitedUserAccess(FunctionalTester $I): void
@@ -74,7 +74,7 @@ class AuthenticationCest
         $I->amAdmin();
         $I->lookupUser($I->getPreviouslyStoredIdOf('LIMITED_USER_ACCESS_ID'));
         $I->canSeeResponseContainsJson([
-            'token' => [
+            'user' => [
                 'id' => $I->getPreviouslyStoredIdOf('LIMITED_USER_ACCESS_ID'),
                 'active' => true,
                 'roles'  => ['upload.all'],
@@ -167,7 +167,7 @@ class AuthenticationCest
     }
 
     /**
-     * Feature: Possibility to set "id" of a token manually
+     * Feature: Possibility to set "id" of a user manually
      * Case: Successful case
      *
      * @param FunctionalTester $I
@@ -327,7 +327,7 @@ class AuthenticationCest
      */
     public function testNoRightsToUseIdFieldWhenGeneratingUserWithoutSufficientPermissions(FunctionalTester $I): void
     {
-        // create a limited token at first
+        // create a limited user account at first
         $I->amAdmin();
         $I->createUser([
             'password'     => 'anarchist-book-fair-1936',
@@ -340,7 +340,7 @@ class AuthenticationCest
             ],
             'data' => []
         ]);
-        $I->storeIdAs('.token.id', 'LIMITED_USER_ACCESS_ID_NO_PREDICTABLE_IDS');
+        $I->storeIdAs('.user.id', 'LIMITED_USER_ACCESS_ID_NO_PREDICTABLE_IDS');
 
         // then use such access to test "access denied"
         $I->amUser($I->getPreviouslyStoredIdOf('LIMITED_USER_ACCESS_ID_NO_PREDICTABLE_IDS'));

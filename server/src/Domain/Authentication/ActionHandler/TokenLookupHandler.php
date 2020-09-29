@@ -5,7 +5,7 @@ namespace App\Domain\Authentication\ActionHandler;
 use App\Domain\Authentication\Entity\Token;
 use App\Domain\Authentication\Exception\AuthenticationException;
 use App\Domain\Authentication\Repository\TokenRepository;
-use App\Domain\Authentication\Response\TokenCRUDResponse;
+use App\Domain\Authentication\Response\UserCRUDResponse;
 use App\Domain\Authentication\Security\Context\AuthenticationManagementContext;
 
 class TokenLookupHandler
@@ -21,11 +21,11 @@ class TokenLookupHandler
      * @param string $tokenStringToLookup
      * @param AuthenticationManagementContext $context
      *
-     * @return null|TokenCRUDResponse
+     * @return null|UserCRUDResponse
      *
      * @throws AuthenticationException
      */
-    public function handle(string $tokenStringToLookup, AuthenticationManagementContext $context): ?TokenCRUDResponse
+    public function handle(string $tokenStringToLookup, AuthenticationManagementContext $context): ?UserCRUDResponse
     {
         $token = $this->repository->findTokenById($tokenStringToLookup);
         $this->assertHasRights($context);
@@ -34,7 +34,7 @@ class TokenLookupHandler
             return null;
         }
 
-        return TokenCRUDResponse::createTokenFoundResponse($token);
+        return UserCRUDResponse::createTokenFoundResponse($token);
     }
 
     /**

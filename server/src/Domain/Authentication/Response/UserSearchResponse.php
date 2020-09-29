@@ -6,12 +6,12 @@ use App\Domain\Authentication\Entity\Token;
 use App\Domain\Common\Http;
 use App\Domain\Common\Response\NormalSearchResponse;
 
-class TokenSearchResponse extends NormalSearchResponse
+class UserSearchResponse extends NormalSearchResponse
 {
     public static function createResultsResponse(array $matches, int $page,
-                                                 int $limit, int $maxPages, bool $censorIds): TokenSearchResponse
+                                                 int $limit, int $maxPages, bool $censorIds): UserSearchResponse
     {
-        $response = new TokenSearchResponse();
+        $response = new UserSearchResponse();
         $response->message   = count($matches) > 0 ? 'Matches found' : 'No matches found';
         $response->httpCode  = Http::HTTP_OK;
         $response->page      = $page;

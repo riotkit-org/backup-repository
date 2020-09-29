@@ -6,40 +6,40 @@ use App\Domain\Authentication\Entity\Token;
 use App\Domain\Common\Http;
 use App\Domain\Common\Response\NormalResponse;
 
-class TokenCRUDResponse extends NormalResponse
+class UserCRUDResponse extends NormalResponse
 {
-    protected ?Token $token = null;
+    protected ?Token $user = null;
     private int $exitCode;
 
-    public static function createTokenDeletedResponse(Token $token): TokenCRUDResponse
+    public static function createTokenDeletedResponse(Token $token): UserCRUDResponse
     {
-        $response = new TokenCRUDResponse();
+        $response = new UserCRUDResponse();
         $response->status   = true;
         $response->exitCode = Http::HTTP_OK;
-        $response->token    = $token;
-        $response->message  = 'Token was deleted';
+        $response->user    = $token;
+        $response->message  = 'User was deleted';
 
         return $response;
     }
 
-    public static function createTokenCreatedResponse(Token $token): TokenCRUDResponse
+    public static function createTokenCreatedResponse(Token $token): UserCRUDResponse
     {
-        $response = new TokenCRUDResponse();
+        $response = new UserCRUDResponse();
         $response->status   = true;
         $response->exitCode = Http::HTTP_CREATED;
-        $response->token    = $token;
-        $response->message  = 'Token created';
+        $response->user    = $token;
+        $response->message  = 'User created';
 
         return $response;
     }
 
     public static function createTokenFoundResponse(Token $token)
     {
-        $response = new TokenCRUDResponse();
+        $response = new UserCRUDResponse();
         $response->status   = true;
         $response->exitCode = Http::HTTP_OK;
-        $response->token    = $token;
-        $response->message  = 'Token found';
+        $response->user    = $token;
+        $response->message  = 'User found';
 
         return $response;
     }
@@ -49,8 +49,8 @@ class TokenCRUDResponse extends NormalResponse
         $response = new static();
         $response->status   = false;
         $response->exitCode = Http::HTTP_NOT_FOUND;
-        $response->token    = null;
-        $response->message  = 'Token not found';
+        $response->user    = null;
+        $response->message  = 'User not found';
 
         return $response;
     }
@@ -58,14 +58,14 @@ class TokenCRUDResponse extends NormalResponse
     public function jsonSerialize(): array
     {
         $base = parent::jsonSerialize();
-        $base['token'] = $this->token;
+        $base['user'] = $this->user;
 
         return $base;
     }
 
     public function getTokenId(): ?string
     {
-        return $this->token->getId();
+        return $this->user->getId();
     }
 
     public function getHttpCode(): int
