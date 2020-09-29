@@ -21,7 +21,6 @@ class TextField
     public static function fromString(string $value)
     {
         static::validateMaxAllowedChars($value);
-        static::validateUtf($value);
 
         $new = new static();
         $new->value = $value;
@@ -41,22 +40,6 @@ class TextField
                 static::$field,
                 Errors::ERR_MSG_TEXT_FIELD_TOO_LONG,
                 Errors::ERR_TEXT_FIELD_TOO_LONG
-            );
-        }
-    }
-
-    /**
-     * @param string $value
-     *
-     * @throws DomainInputValidationConstraintViolatedError
-     */
-    private static function validateUtf(string $value)
-    {
-        if (!mb_check_encoding($value, 'UTF-8')) {
-            throw DomainInputValidationConstraintViolatedError::fromString(
-                static::$field,
-                Errors::ERR_MSG_NON_UTF_CHARACTERS,
-                Errors::ERR_NON_UTF_CHARACTERS
             );
         }
     }
