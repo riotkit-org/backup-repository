@@ -265,6 +265,33 @@ class AuthenticationCest
     }
 
     /**
+     * Case: E-mail and password fields are mandatory
+     *
+     * @param FunctionalTester $I
+     */
+    public function testEmailAndPasswordAreMandatoryFields(FunctionalTester $I): void
+    {
+        $I->amAdmin();
+
+        $I->createToken([
+            // password: missing
+            // email: missing
+            'organization' => 'Wolna Biblioteka',
+            'about'        => 'A libertarian library',
+            'roles' => ['upload.all'],
+            'data' => [],
+        ], false);
+
+        $I->canSeeResponseContains('Invalid e-mail format');
+        $I->canSeeResponseContains('"code": 40005');
+
+        $I->canSeeResponseContains('Password is too short');
+        $I->canSeeResponseContains('"code": 40006');
+
+        $I->canSeeResponseCodeIs(400);
+    }
+
+    /**
      * Feature: Possibility to set "id" of a token manually
      * Case: Trying to enter non-uuid string
      *
