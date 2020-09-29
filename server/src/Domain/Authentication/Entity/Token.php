@@ -2,11 +2,22 @@
 
 namespace App\Domain\Authentication\Entity;
 
+use App\Domain\Authentication\Configuration\PasswordHashingConfiguration;
+use App\Domain\Authentication\ValueObject\About;
+use App\Domain\Authentication\ValueObject\Email;
+use App\Domain\Authentication\ValueObject\ExpirationDate;
+use App\Domain\Authentication\ValueObject\Organization;
+use App\Domain\Authentication\ValueObject\Password;
+use App\Domain\Authentication\ValueObject\Roles;
+use App\Domain\Common\Exception\DomainAssertionFailure;
+use App\Domain\Common\SharedEntity\EntityValidationTrait;
 use DateTimeImmutable;
 use Swagger\Annotations as SWG;
 
 class Token extends \App\Domain\Common\SharedEntity\Token implements \JsonSerializable
 {
+    use EntityValidationTrait;
+
     /**
      * @SWG\Property(type="string", maxLength=32, example="2020-05-01 08:00:00")
      *
@@ -17,9 +28,9 @@ class Token extends \App\Domain\Common\SharedEntity\Token implements \JsonSerial
     /**
      * @SWG\Property(type="string", maxLength=32, example="2020-05-01 08:00:00")
      *
-     * @var DateTimeImmutable
+     * @var null|ExpirationDate
      */
-    protected $expirationDate;
+    protected ?ExpirationDate $expirationDate;
 
     /**
      * @SWG\Property(
@@ -29,9 +40,15 @@ class Token extends \App\Domain\Common\SharedEntity\Token implements \JsonSerial
      *     )
      * )
      *
-     * @var string[]
+     * @var string[]|array[]
      */
     protected $data = [];
+
+    protected string       $salt;
+    protected Password     $password;
+    protected Email        $email;
+    protected Organization $organization;
+    protected About        $about;
 
     /**
      * @SWG\Property(type="boolean")
@@ -45,9 +62,58 @@ class Token extends \App\Domain\Common\SharedEntity\Token implements \JsonSerial
      */
     public function __construct()
     {
-        $this->expirationDate = new DateTimeImmutable();
-        $this->creationDate = new DateTimeImmutable();
-        $this->active = true;
+        $this->expirationDate = ExpirationDate::fromString('now', 'now');
+        $this->creationDate   = new DateTimeImmutable();
+        $this->active         = true;
+        $this->salt           = base64_encode(random_bytes(32));
+    }
+
+    /**
+     * @param array $roles
+     * @param ?string $expirationTime
+     * @param array $details
+     * @param ?string $email
+     * @param ?string $password
+     * @param ?string $organizationName
+     * @param ?string $about
+     * @param PasswordHashingConfiguration $configuration
+     * @param string $defaultExpirationTime
+     *
+     * @return static
+     *
+     * @throws DomainAssertionFailure
+     */
+    public static function createFrom(array $roles, ?string $expirationTime, array $details,
+                                      ?string $email, ?string $password, ?string $organizationName, ?string $about,
+                                      PasswordHashingConfiguration $configuration, string $defaultExpirationTime)
+    {
+        $new = new static();
+
+        static::withValidationErrorAggregation([
+            static function () use ($new, $roles) {
+                $new->setRoles(Roles::fromArray($roles));
+            },
+            static function () use ($new, $expirationTime, $defaultExpirationTime) {
+                $new->setExpirationDate(ExpirationDate::fromString($expirationTime, $defaultExpirationTime));
+            },
+            static function () use ($new, $details) {
+                $new->setData($details);
+            },
+            static function () use ($new, $email) {
+                $new->setEmail(Email::fromString((string) $email));
+            },
+            static function () use ($new, $password, $configuration) {
+                $new->setPassword(Password::fromString((string) $password, $new->salt, $configuration));
+            },
+            static function () use ($new, $organizationName) {
+                $new->setOrganization(Organization::fromString((string) $organizationName));
+            },
+            static function () use ($new, $about) {
+                $new->setAbout(About::fromString((string) $about));
+            }
+        ]);
+
+        return $new;
     }
 
     public function setId(string $id): Token
@@ -72,7 +138,7 @@ class Token extends \App\Domain\Common\SharedEntity\Token implements \JsonSerial
 
     public function getExpirationDate(): DateTimeImmutable
     {
-        return $this->expirationDate;
+        return $this->expirationDate->getValue();
     }
 
     public function setCreationDate(DateTimeImmutable $creationDate): Token
@@ -81,9 +147,33 @@ class Token extends \App\Domain\Common\SharedEntity\Token implements \JsonSerial
         return $this;
     }
 
-    public function setExpirationDate(DateTimeImmutable $expirationDate): Token
+    public function setExpirationDate(ExpirationDate $expirationDate): Token
     {
         $this->expirationDate = $expirationDate;
+        return $this;
+    }
+
+    private function setEmail(Email $email): Token
+    {
+        $this->email = $email;
+        return $this;
+    }
+
+    private function setPassword(Password $password): Token
+    {
+        $this->password = $password;
+        return $this;
+    }
+
+    private function setOrganization(Organization $organization): Token
+    {
+        $this->organization = $organization;
+        return $this;
+    }
+
+    private function setAbout(About $about): Token
+    {
+        $this->about = $about;
         return $this;
     }
 
@@ -172,6 +262,7 @@ class Token extends \App\Domain\Common\SharedEntity\Token implements \JsonSerial
     {
         return [
             'id'           => $censorId ? $this->getCensoredId() : $this->getId(),
+            'email'        => $this->email->getValue(),
             'active'       => $this->active,
             'expired'      => !$this->isNotExpired(),
             'expires'      => $this->getExpirationDate()->format('Y-m-d H:i:s'),

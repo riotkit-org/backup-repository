@@ -5,6 +5,6 @@ namespace App\Domain\Common\Exception;
 /**
  * @codeCoverageIgnore
  */
-class ReadOnlyException extends \Exception
+class ReadOnlyException extends ApplicationException
 {
 }

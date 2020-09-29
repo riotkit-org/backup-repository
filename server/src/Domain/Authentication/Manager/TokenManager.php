@@ -2,49 +2,71 @@
 
 namespace App\Domain\Authentication\Manager;
 
+use App\Domain\Authentication\Configuration\PasswordHashingConfiguration;
 use App\Domain\Authentication\Entity\Token;
 use App\Domain\Authentication\Exception\InvalidTokenIdException;
 use App\Domain\Authentication\Repository\TokenRepository;
 use App\Domain\Authentication\Service\UuidValidator;
+use App\Domain\Common\Exception\DomainAssertionFailure;
 
+/**
+ * @todo: Rewrite into commands
+ */
 class TokenManager
 {
     private TokenRepository $repository;
     private UuidValidator $uuidValidator;
+    private PasswordHashingConfiguration $hashingConfiguration;
+    private string $defaultExpirationTime;
 
-    public function __construct(TokenRepository $repository, UuidValidator $uuidValidator)
+    public function __construct(TokenRepository $repository, UuidValidator $uuidValidator, PasswordHashingConfiguration $hashingConfiguration)
     {
         $this->repository    = $repository;
         $this->uuidValidator = $uuidValidator;
+        $this->hashingConfiguration = $hashingConfiguration;
+        $this->defaultExpirationTime = '+2 hours'; // @todo parametrize
     }
 
     /**
-     * @param array $roles
-     * @param \DateTimeImmutable $expirationTime
-     * @param array $details
+     * @param array  $roles
+     * @param ?string $expirationTime
+     * @param array  $details
+     * @param ?string $email
+     * @param ?string $password
+     * @param ?string $organizationName
+     * @param ?string $about
      * @param string|null $customId
      *
      * @return Token
      *
      * @throws InvalidTokenIdException
-     * @throws \App\Domain\Authentication\Exception\MissingDataFieldsError
+     * @throws DomainAssertionFailure
      */
-    public function generateNewToken(array $roles, \DateTimeImmutable $expirationTime,
-                                     array $details, ?string $customId = null): Token
+    public function generateNewToken(array $roles, ?string $expirationTime, array $details, ?string $email,
+                                     ?string $password, ?string $organizationName, ?string $about,
+                                     ?string $customId = null): Token
     {
-        $token = new Token();
-        $token->setId($customId ?: uniqid('', true));
-        $token->setRoles($roles);
-        $token->setExpirationDate($expirationTime);
-        $token->setData($details);
+        if ($customId) {
+            if (!$this->uuidValidator->isValid($customId)) {
+                throw new InvalidTokenIdException();
+            }
+        }
+
+        $token = Token::createFrom(
+            $roles,
+            $expirationTime,
+            $details,
+            $email,
+            $password,
+            $organizationName,
+            $about,
+            $this->hashingConfiguration,
+            $this->defaultExpirationTime
+        );
 
         $this->repository->persist($token);
 
         if ($customId) {
-            if (!$this->uuidValidator->isValid($customId)) {
-                throw new InvalidTokenIdException('Invalid token id format. Expected UUIDv4 format');
-            }
-
             $token->setId($customId);
             $this->repository->persist($token);
         }

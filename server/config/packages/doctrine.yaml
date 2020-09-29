@@ -43,6 +43,13 @@ doctrine:
                 prefix: 'App\Domain\Authentication\Entity'
                 alias: AuthEntity
 
+            App\Domain\Authentication\ValueObject:
+                is_bundle: false
+                type: yml
+                dir: '%kernel.project_dir%/config/orm/authentication/valueobject'
+                prefix: 'App\Domain\Authentication\ValueObject'
+                alias: AuthVO
+
             App\Domain\Backup\ValueObject:
                 is_bundle: false
                 type: yml

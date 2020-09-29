@@ -4,6 +4,7 @@ namespace App\Domain\Authentication\Exception;
 
 use App\Domain\Common\Exception\CommonValidationException;
 
+// @todo: Replace with DomainAssertionFailure
 class ValidationException extends \Exception implements CommonValidationException
 {
     /**

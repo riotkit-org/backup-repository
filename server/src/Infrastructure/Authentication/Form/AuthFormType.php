@@ -5,6 +5,7 @@ namespace App\Infrastructure\Authentication\Form;
 use App\Domain\Authentication\Form\AuthForm;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
+use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -18,6 +19,10 @@ class AuthFormType extends AbstractType
                 'allow_add'    => true,
                 'allow_delete' => true
             ])
+            ->add('password', TextType::class)
+            ->add('about', TextType::class)
+            ->add('organization', TextType::class)
+            ->add('email', EmailType::class)
             ->add('expires', TextType::class)
             ->add('data',    TokenDetailsFormType::class)
             ->add('id', TextType::class);

@@ -4,19 +4,17 @@ namespace App\Domain\Authentication\ActionHandler;
 
 use App\Domain\Authentication\Exception\AuthenticationException;
 use App\Domain\Authentication\Exception\InvalidTokenIdException;
-use App\Domain\Authentication\Exception\TokenAlreadyExistsException;
+use App\Domain\Authentication\Exception\UserAlreadyExistsException;
 use App\Domain\Authentication\Exception\ValidationException;
 use App\Domain\Authentication\Form\AuthForm;
 use App\Domain\Authentication\Manager\TokenManager;
 use App\Domain\Authentication\Response\TokenCRUDResponse;
 use App\Domain\Authentication\Security\Context\AuthenticationManagementContext;
+use App\Domain\Common\Exception\DomainAssertionFailure;
 use Exception;
 
 class TokenGenerationHandler
 {
-    private const DATE_MODIFIER_AUTO  = ['auto', 'automatic', '', null];
-    private const DATE_MODIFIER_NEVER = ['never'];
-
     private TokenManager $tokenManager;
 
     /**
@@ -36,6 +34,7 @@ class TokenGenerationHandler
      *
      * @return TokenCRUDResponse
      *
+     * @throws DomainAssertionFailure
      * @throws Exception
      */
     public function handle(AuthForm $form, AuthenticationManagementContext $context): TokenCRUDResponse
@@ -45,53 +44,27 @@ class TokenGenerationHandler
         try {
             $token = $this->tokenManager->generateNewToken(
                 $form->roles,
-                $this->generateExpirationDate($form->expires),
+                $form->expires,
                 $form->data->toArray(),
+                $form->email,
+                $form->password,
+                $form->organization,
+                $form->about,
                 $form->id
             );
         }
         catch (InvalidTokenIdException $exception) {
-            throw ValidationException::createFromFieldsList([
-                'id' => ['id_expects_to_be_uuidv4_format']
-            ]);
+            throw DomainAssertionFailure::fromErrors([$exception]);
         }
 
         try {
             $this->tokenManager->flushAll();
 
-        } catch (TokenAlreadyExistsException $exception) {
-            throw ValidationException::createFromFieldsList([
-                'id' => ['id_already_exists_please_select_other_one']
-            ]);
+        } catch (UserAlreadyExistsException $exception) {
+            throw DomainAssertionFailure::fromErrors([$exception]);
         }
 
         return TokenCRUDResponse::createTokenCreatedResponse($token);
-    }
-
-    /**
-     * @param $expires
-     *
-     * @return \DateTimeImmutable
-     *
-     * @throws Exception
-     */
-    private function generateExpirationDate($expires): \DateTimeImmutable
-    {
-        if (\in_array($expires, static::DATE_MODIFIER_AUTO, true)) {
-            return (new \DateTimeImmutable())->modify($this->expirationTimeModifier);
-        }
-
-        if (\in_array($expires, static::DATE_MODIFIER_NEVER, true)) {
-            return (new \DateTimeImmutable())->modify('+40 years');
-        }
-
-        if (!\strtotime($expires)) {
-            throw ValidationException::createFromFieldsList([
-                'expires' => ['invalid_date_format_and_not_an_expression']
-            ]);
-        }
-
-        return new \DateTimeImmutable($expires);
     }
 
     /**

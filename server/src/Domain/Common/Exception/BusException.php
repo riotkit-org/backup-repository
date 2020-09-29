@@ -5,7 +5,7 @@ namespace App\Domain\Common\Exception;
 /**
  * @codeCoverageIgnore
  */
-class BusException extends \Exception
+class BusException extends ApplicationException
 {
     public const CALL_ON_NON_SINGLE_COMMAND     = 1;
     public const NO_COMMAND_REGISTERED          = 2;

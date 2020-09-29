@@ -42,6 +42,8 @@ class GenerateTokenController extends BaseController
      *             type="object",
      *             required={"id", "roles", "data"},
      *             @SWG\Property(property="id", example="ca6a2635-d2cb-4682-ba81-3879dd0e8a77", type="string"),
+     *             @SWG\Property(property="password", example="aNti_cap.italiSM", type="string"),
+     *             @SWG\Property(property="email", example="example@riseup.net", type="string"),
      *             @SWG\Property(property="roles", example={"collections.create_new", "collections.manage_tokens_in_allowed_collections"}, type="array", @SWG\Items(type="string")),
      *             @SWG\Property(property="expires", type="string", example="2021-05-01 01:06:01"),
      *             @SWG\Property(property="data", ref=@Model(type=\App\Domain\Authentication\Entity\Docs\TokenData::class))

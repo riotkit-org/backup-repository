@@ -3,7 +3,7 @@
 namespace App\Infrastructure\Authentication\Repository;
 
 use App\Domain\Authentication\Entity\Token;
-use App\Domain\Authentication\Exception\TokenAlreadyExistsException;
+use App\Domain\Authentication\Exception\UserAlreadyExistsException;
 use App\Domain\Authentication\Helper\TokenSecrets;
 use App\Domain\Authentication\Repository\TokenRepository;
 use App\Infrastructure\Common\Repository\TokenDoctrineRepository as CommonTokenRepository;
@@ -34,8 +34,9 @@ class TokenDoctrineRepository extends CommonTokenRepository implements TokenRepo
     {
         try {
             $this->_em->flush($token);
+
         } catch (UniqueConstraintViolationException $exception) {
-            throw new TokenAlreadyExistsException('Token of selected id already exists');
+            throw new UserAlreadyExistsException($exception);
         }
     }
 
@@ -53,7 +54,7 @@ class TokenDoctrineRepository extends CommonTokenRepository implements TokenRepo
     public function getExpiredTokens(): array
     {
         $qb = $this->createQueryBuilder('token');
-        $qb->where('token.expirationDate <= :now')
+        $qb->where('token.expirationDate.value <= :now')
             ->setParameter('now', (new \DateTime())->format('Y-m-d H:i:s'));
 
         return $qb->getQuery()->getResult();
@@ -85,7 +86,7 @@ class TokenDoctrineRepository extends CommonTokenRepository implements TokenRepo
 
         // search only in allowed parts of token "*****f40-**87-**7c-**bb-********e8c0" when user does not have permissions to see full tokens
         $qb->andWhere(TokenSecrets::generateDQLConcatString('token.id') . ' LIKE :pattern OR token.id = :token_id');
-        $qb->orWhere('CAST(token.roles as STRING) LIKE :pattern');
+        $qb->orWhere('CAST(token.roles.value as STRING) LIKE :pattern');
 
         $qb->setParameters(['pattern' => '%' . $pattern . '%', 'token_id' => $pattern]);
 

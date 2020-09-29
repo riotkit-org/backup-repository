@@ -128,7 +128,7 @@ class TokenSubscriber implements EventSubscriberInterface
     {
         $token = new Token();
         $token->setId(Roles::TEST_TOKEN);
-        $token->setRoles([Roles::ROLE_ADMINISTRATOR]);
+        $token->setRoles(\App\Domain\Authentication\ValueObject\Roles::fromArray([Roles::ROLE_ADMINISTRATOR]));
 
         $this->tokenStorage->setToken(
             new TokenTransport(Roles::TEST_TOKEN, $token)

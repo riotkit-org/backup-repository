@@ -5,6 +5,6 @@ namespace App\Domain\Common\Exception;
 /**
  * @codeCoverageIgnore
  */
-class RequestException extends \Exception
+class RequestException extends ApplicationException
 {
 }

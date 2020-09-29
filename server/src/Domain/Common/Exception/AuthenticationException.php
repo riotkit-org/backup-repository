@@ -5,7 +5,7 @@ namespace App\Domain\Common\Exception;
 /**
  * @codeCoverageIgnore
  */
-class AuthenticationException extends \Exception
+class AuthenticationException extends ApplicationException
 {
     private const NOT_AUTHENTICATED = 403;
 

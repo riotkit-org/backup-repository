@@ -4,15 +4,14 @@ namespace App\Domain\Authentication\Exception;
 
 use App\Domain\Common\Exception\DomainInputValidationConstraintViolatedError;
 use App\Domain\Errors;
-use Throwable;
 
-class InvalidTokenIdException extends DomainInputValidationConstraintViolatedError
+class UserAlreadyExistsException extends DomainInputValidationConstraintViolatedError
 {
-    public function __construct(Throwable $previous = null)
+    public function __construct(\Throwable $previous = null)
     {
         parent::__construct(
-            Errors::ERR_MSG_USERID_FORMAT_INVALID,
-            Errors::ERR_USERID_FORMAT_INVALID,
+            Errors::ERR_MSG_USER_EXISTS,
+            Errors::ERR_USER_EXISTS,
             $previous
         );
 

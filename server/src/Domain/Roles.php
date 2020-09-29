@@ -2,6 +2,9 @@
 
 namespace App\Domain;
 
+use App\Domain\Authentication\Exception\InvalidRoleError;
+use ReflectionClass;
+
 /**
  * List of roles which could be required for a temporary token
  *

@@ -3,7 +3,7 @@
 namespace App\Domain\Common\SharedEntity;
 
 use App\Domain\Authentication\Helper\TokenSecrets;
-use App\Domain\Roles;
+use App\Domain\Common\ValueObject\Roles;
 
 class Token
 {
@@ -14,11 +14,7 @@ class Token
 
     // Entity properties
     protected ?string $id    = null;
-    protected array   $roles = [];
-
-    // internal
-    private bool  $alreadyGrantedAdminAccess = false;
-    private array $requestedRoles = [];
+    protected Roles $roles;
 
     public const ANONYMOUS_TOKEN_ID = '00000000-0000-0000-0000-000000000000';
 
@@ -44,42 +40,31 @@ class Token
         return $token->getId() === $this->getId();
     }
 
-    public function setRoles(array $roles): self
+    /**
+     * @param Roles $roles
+     *
+     * @return static
+     */
+    public function setRoles(Roles $roles)
     {
-        $this->roles = array_values(array_unique($roles));
+        $this->roles = $roles;
 
         return $this;
     }
 
     public function getRoles(): array
     {
-        if (!$this->alreadyGrantedAdminAccess && \in_array(Roles::ROLE_ADMINISTRATOR, $this->roles, true)) {
-            $this->setRoles(\array_merge($this->roles, Roles::GRANTS_LIST));
-            $this->alreadyGrantedAdminAccess = true;
-        }
-
-        return $this->roles;
+        return $this->roles->getAsList();
     }
 
     public function hasRole(string $roleName): bool
     {
-        $this->recordRoleRequest($roleName);
-
-        return \in_array($roleName, $this->getRoles(), true);
+        return $this->roles->hasRole($roleName);
     }
 
     public function getRequestedRolesList(): array
     {
-        return $this->requestedRoles;
-    }
-
-    private function recordRoleRequest(string $roleName): void
-    {
-        if (!\in_array($roleName, Roles::getRolesList(), true)) {
-            return;
-        }
-
-        $this->requestedRoles[] = $roleName;
+        return $this->roles->getRequestedRolesList();
     }
 
     /**
@@ -89,7 +74,7 @@ class Token
     {
         $token = new static();
         $token->id    = self::ANONYMOUS_TOKEN_ID;
-        $token->roles = [];
+        $token->roles = Roles::createEmpty();
 
         return $token;
     }

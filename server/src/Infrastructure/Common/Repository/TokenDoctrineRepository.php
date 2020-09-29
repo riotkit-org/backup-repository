@@ -4,7 +4,8 @@ namespace App\Infrastructure\Common\Repository;
 
 use App\Domain\Authentication\Entity\Token;
 use App\Domain\Common\Repository\TokenRepository;
-use App\Domain\Roles;
+use App\Domain\Common\ValueObject\Roles as RolesVO;
+use App\Domain\Roles as RolesDomain;
 
 /**
  * @codeCoverageIgnore
@@ -17,13 +18,13 @@ abstract class TokenDoctrineRepository extends BaseRepository implements TokenRe
             $className = $this->getTokenClass();
         }
 
-        if (Roles::isTestToken($id) || Roles::isInternalApplicationToken($id)) {
+        if (RolesDomain::isTestToken($id) || RolesDomain::isInternalApplicationToken($id)) {
             /**
              * @var Token $token
              */
             $token = new $className();
             $token->setId($id);
-            $token->setRoles([Roles::ROLE_ADMINISTRATOR]);
+            $token->setRoles(RolesVO::fromArray([RolesDomain::ROLE_ADMINISTRATOR]));
 
             return $token;
         }
@@ -33,7 +34,7 @@ abstract class TokenDoctrineRepository extends BaseRepository implements TokenRe
 
     public function findApplicationInternalToken(): Token
     {
-        return $this->findTokenById(Roles::INTERNAL_CONSOLE_TOKEN, Token::class);
+        return $this->findTokenById(RolesDomain::INTERNAL_CONSOLE_TOKEN, Token::class);
     }
 
     protected function getTokenClass(): string

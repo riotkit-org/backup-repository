@@ -13,6 +13,10 @@ class AuthenticationCest
     {
         $I->amAdmin();
         $I->createToken([
+            'password'     => 'anarchist-book-fair-1936',
+            'email'        => 'example@riseup.net',
+            'organization' => 'Wolna Biblioteka',
+            'about'        => 'A libertarian library',
             'roles' => [
                 'upload.all', 'upload.enforce_no_password', 'upload.enforce_tags_selected_in_token'
             ],
@@ -20,6 +24,7 @@ class AuthenticationCest
                 'tags' => ['gallery']
             ]
         ], false);
+
         $I->canSeeResponseCodeIs(201);
         $I->storeIdAs('.token.id', 'BASIC_TOKEN');
     }
@@ -47,6 +52,11 @@ class AuthenticationCest
     {
         $I->amAdmin();
         $I->createToken([
+            'password'     => 'anarchist-book-fair-1936',
+            'email'        => 'example-1@riseup.net',
+            'organization' => 'Wolna Biblioteka',
+            'about'        => 'A libertarian library',
+
             'roles' => [
                 'upload.all'
             ],
@@ -80,6 +90,11 @@ class AuthenticationCest
     {
         $I->amAdmin();
         $I->createToken([
+            'password'     => 'anarchist-book-fair-1936',
+            'email'        => 'example-2@riseup.net',
+            'organization' => 'Wolna Biblioteka',
+            'about'        => 'A libertarian library',
+
             'roles' => ['upload.all', 'is-this-working?'],
             'data' => [
                 'tags' => ['user_uploads.u123', 'user_uploads'],
@@ -94,6 +109,11 @@ class AuthenticationCest
     {
         $I->amToken($I->getPreviouslyStoredIdOf('LIMITED_TOKEN'));
         $I->createToken([
+            'password'     => 'anarchist-book-fair-1936',
+            'email'        => 'example-3@riseup.net',
+            'organization' => 'Wolna Biblioteka',
+            'about'        => 'A libertarian library',
+
             'roles' => ['upload.all'],
             'data' => [
                 'tags' => ['user_uploads.u123', 'user_uploads'],
@@ -156,6 +176,11 @@ class AuthenticationCest
     {
         $I->amAdmin();
         $I->createToken([
+            'password'     => 'anarchist-book-fair-1936',
+            'email'        => 'example-4@riseup.net',
+            'organization' => 'Wolna Biblioteka',
+            'about'        => 'A libertarian library',
+
             'roles' => [
                 'upload.all'
             ],
@@ -176,6 +201,11 @@ class AuthenticationCest
         $I->amAdmin();
 
         $I->createToken([
+            'password'     => 'anarchist-book-fair-1936',
+            'email'        => 'example-5@riseup.net',
+            'organization' => 'Wolna Biblioteka',
+            'about'        => 'A libertarian library',
+
             'roles' => [
                 'upload.all'
             ],
@@ -184,6 +214,11 @@ class AuthenticationCest
         ], false);
 
         $I->createToken([
+            'password'     => 'anarchist-book-fair-1936',
+            'email'        => 'example-6@riseup.net',
+            'organization' => 'Wolna Biblioteka',
+            'about'        => 'A libertarian library',
+
             'roles' => [
                 'upload.all'
             ],
@@ -191,7 +226,41 @@ class AuthenticationCest
             'id'   => '1c2c84f2-d488-4ea0-9c88-d25aab139ac4'
         ], false);
 
-        $I->canSeeResponseContains('id_already_exists_please_select_other_one');
+        $I->canSeeResponseContains('User already exists');
+        $I->canSeeResponseContains('"code": 40001');
+        $I->canSeeResponseCodeIs(400);
+    }
+
+    /**
+     * Case: Trying to register two users on same e-mail address. ID is not specified, will be generated.
+     *
+     * @param FunctionalTester $I
+     */
+    public function testCannotCreateTwoUsersSharingSameEmailAddress(FunctionalTester $I): void
+    {
+        $I->amAdmin();
+
+        $I->createToken([
+            'password'     => 'anarchist-book-fair-1936',
+            'email'        => 'example-5@riseup.net',
+            'organization' => 'Wolna Biblioteka',
+            'about'        => 'A libertarian library',
+            'roles' => ['upload.all'],
+            'data' => [],
+        ], false);
+
+        $I->createToken([
+            'password'     => 'anarchist-book-fair-1936',
+            'email'        => 'example-5@riseup.net',
+            'organization' => 'Wolna Biblioteka',
+            'about'        => 'A libertarian library',
+
+            'roles' => ['upload.all'],
+            'data' => [],
+        ], false);
+
+        $I->canSeeResponseContains('User already exists');
+        $I->canSeeResponseContains('"code": 40001');
         $I->canSeeResponseCodeIs(400);
     }
 
@@ -206,6 +275,11 @@ class AuthenticationCest
         $I->amAdmin();
 
         $I->createToken([
+            'password'     => 'anarchist-book-fair-1936',
+            'email'        => 'example-7@riseup.net',
+            'organization' => 'Wolna Biblioteka',
+            'about'        => 'A libertarian library',
+
             'roles' => [
                 'upload.all'
             ],
@@ -213,7 +287,8 @@ class AuthenticationCest
             'id'   => 'international-workers-association'
         ], false);
 
-        $I->canSeeResponseContains('id_expects_to_be_uuidv4_format');
+        $I->canSeeResponseContains('User ID format invalid, should be a uuidv4 format');
+        $I->canSeeResponseContains('"code": 40021');
         $I->canSeeResponseCodeIs(400);
     }
 
@@ -228,6 +303,11 @@ class AuthenticationCest
         // create a limited token at first
         $I->amAdmin();
         $I->createToken([
+            'password'     => 'anarchist-book-fair-1936',
+            'email'        => 'example-8@riseup.net',
+            'organization' => 'Wolna Biblioteka',
+            'about'        => 'A libertarian library',
+
             'roles' => [
                 'security.generate_tokens',
             ],
@@ -238,6 +318,11 @@ class AuthenticationCest
         // then use such token to test "access denied"
         $I->amToken($I->getPreviouslyStoredIdOf('LIMITED_TOKEN_NO_PREDICTABLE_IDS'));
         $I->createToken([
+            'password'     => 'anarchist-book-fair-1936',
+            'email'        => 'example-9@riseup.net',
+            'organization' => 'Wolna Biblioteka',
+            'about'        => 'A libertarian library',
+
             'roles' => [
                 'upload.all'
             ],
@@ -249,6 +334,11 @@ class AuthenticationCest
         // then check that has permissions to create tokens at all, but without specifying "id"
         $I->amToken($I->getPreviouslyStoredIdOf('LIMITED_TOKEN_NO_PREDICTABLE_IDS'));
         $I->createToken([
+            'password'     => 'anarchist-book-fair-1936',
+            'email'        => 'example-10@riseup.net',
+            'organization' => 'Wolna Biblioteka',
+            'about'        => 'A libertarian library',
+
             'roles' => [
                 'upload.all'
             ],
