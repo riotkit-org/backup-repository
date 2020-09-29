@@ -1,4 +1,4 @@
-authentication.generate_token:
+authentication.create_user:
     path: /auth/user
     controller: 'App\Controller\Authentication\GenerateTokenController::generateAction'
     methods: ['POST']

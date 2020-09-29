@@ -26,16 +26,16 @@ class AuthenticationCest
         ], false);
 
         $I->canSeeResponseCodeIs(201);
-        $I->storeIdAs('.token.id', 'BASIC_TOKEN');
+        $I->storeIdAs('.token.id', 'BASIC_USER_ACCESS');
     }
 
-    public function verifyTokenWasGeneratedTodoSoUseLookupEndpoint(FunctionalTester $I): void
+    public function verifyTokenWasGenerated(FunctionalTester $I): void
     {
         $I->amAdmin();
-        $I->lookupToken($I->getPreviouslyStoredIdOf('BASIC_TOKEN'));
+        $I->lookupToken($I->getPreviouslyStoredIdOf('BASIC_USER_ACCESS'));
         $I->canSeeResponseContainsJson([
             'token' => [
-                'id' => $I->getPreviouslyStoredIdOf('BASIC_TOKEN')
+                'id' => $I->getPreviouslyStoredIdOf('BASIC_USER_ACCESS')
             ]
         ]);
     }
@@ -44,7 +44,7 @@ class AuthenticationCest
     {
         $I->amAdmin();
         $I->searchForTokens('upload.enforce_tags_selected_in_token', 1, 50);
-        $I->canSeeResponseContains($I->getPreviouslyStoredIdOf('BASIC_TOKEN'));
+        $I->canSeeResponseContains($I->getPreviouslyStoredIdOf('BASIC_USER_ACCESS'));
         $I->canSeeResponseCodeIs(200);
     }
 
@@ -127,7 +127,7 @@ class AuthenticationCest
     public function testCannotLookupTokensWhenHaveNoRightsGrantedToLookupTokens(FunctionalTester $I): void
     {
         $I->amToken($I->getPreviouslyStoredIdOf('LIMITED_TOKEN'));
-        $I->lookupToken($I->getPreviouslyStoredIdOf('BASIC_TOKEN'));
+        $I->lookupToken($I->getPreviouslyStoredIdOf('BASIC_USER_ACCESS'));
         $I->canSeeResponseCodeIs(403);
     }
 
@@ -152,7 +152,7 @@ class AuthenticationCest
         $I->canSeeResponseCodeIs(403);
 
         $I->amToken($I->getPreviouslyStoredIdOf('LIMITED_TOKEN'));
-        $I->deleteToken($I->getPreviouslyStoredIdOf('BASIC_TOKEN'));
+        $I->deleteToken($I->getPreviouslyStoredIdOf('BASIC_USER_ACCESS'));
         $I->canSeeResponseCodeIs(403);
     }
 
@@ -162,7 +162,7 @@ class AuthenticationCest
         $I->deleteToken($I->getPreviouslyStoredIdOf('LIMITED_TOKEN'));
         $I->canSeeResponseCodeIs(200);
 
-        $I->deleteToken($I->getPreviouslyStoredIdOf('BASIC_TOKEN'));
+        $I->deleteToken($I->getPreviouslyStoredIdOf('BASIC_USER_ACCESS'));
         $I->canSeeResponseCodeIs(200);
     }
 
