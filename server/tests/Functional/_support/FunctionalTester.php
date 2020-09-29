@@ -27,7 +27,7 @@ class FunctionalTester extends \Codeception\Actor
 
     public function amAdmin(): void
     {
-        $this->amToken('test-token-full-permissions');
+        $this->amUser('test-token-full-permissions');
     }
 
     public function amGuest(): void
@@ -35,7 +35,7 @@ class FunctionalTester extends \Codeception\Actor
         $this->deleteHeader('token');
     }
 
-    public function amToken(string $token): void
+    public function amUser(string $token): void
     {
         $this->haveHttpHeader('token', $token);
     }
@@ -54,14 +54,14 @@ class FunctionalTester extends \Codeception\Actor
     {
         $this->amAdmin();
 
-        $token = $this->createToken(
+        $token = $this->createUser(
             array_merge(
                 ['roles' => $roles],
                 $params
             ),
             $assert
         );
-        $this->amToken($token);
+        $this->amUser($token);
 
         return $token;
     }
@@ -78,7 +78,7 @@ class FunctionalTester extends \Codeception\Actor
         $this->sendPUT($url, $params, $files);
     }
 
-    public function lookupToken(string $userId): void
+    public function lookupUser(string $userId): void
     {
         $this->sendGET(
             $this->fill(
@@ -88,7 +88,7 @@ class FunctionalTester extends \Codeception\Actor
         );
     }
 
-    public function searchForTokens(string $searchPhrase, int $page, int $limit): void
+    public function searchForUsers(string $searchPhrase, int $page, int $limit): void
     {
         $this->sendGET(
             $this->fill(
@@ -98,7 +98,7 @@ class FunctionalTester extends \Codeception\Actor
         );
     }
 
-    public function createToken(array $data, bool $assert = true): string
+    public function createUser(array $data, bool $assert = true): string
     {
         $this->postJson(Urls::URL_USER_CREATE,
             \array_merge(
@@ -119,7 +119,7 @@ class FunctionalTester extends \Codeception\Actor
         return $this->grabDataFromResponseByJsonPath('.token.id')[0] ?? '';
     }
 
-    public function deleteToken(string $userId): void
+    public function revokeAccess(string $userId): void
     {
         $this->sendDELETE(
             $this->fill(

@@ -19,7 +19,7 @@ class BackupCollectionUploadAlertOnLimitStrategyCest
     public function prepareDataForTest(FunctionalTester $I): void
     {
         $I->amAdmin();
-        $this->token = $I->createToken([
+        $this->token = $I->createUser([
             'roles' => [
                 "collections.create_new",
                 "collections.manage_tokens_in_allowed_collections",
@@ -29,7 +29,7 @@ class BackupCollectionUploadAlertOnLimitStrategyCest
             ]
         ]);
 
-        $I->amToken($this->token);
+        $I->amUser($this->token);
 
         $this->id = $I->createCollection([
             "maxBackupsCount" => 2,
@@ -44,7 +44,7 @@ class BackupCollectionUploadAlertOnLimitStrategyCest
 
     public function testAlertsWhenCollectionIsFull(FunctionalTester $I): void
     {
-        $I->amToken($this->token);
+        $I->amUser($this->token);
         $I->uploadToCollection($this->id, "............... Good, v1");
         $I->seeResponseCodeIsSuccessful();
 

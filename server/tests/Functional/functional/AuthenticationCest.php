@@ -9,10 +9,10 @@ use Tests\Urls;
 
 class AuthenticationCest
 {
-    public function generateBasicToken(FunctionalTester $I): void
+    public function generateBasicUserAccess(FunctionalTester $I): void
     {
         $I->amAdmin();
-        $I->createToken([
+        $I->createUser([
             'password'     => 'anarchist-book-fair-1936',
             'email'        => 'example@riseup.net',
             'organization' => 'Wolna Biblioteka',
@@ -26,16 +26,16 @@ class AuthenticationCest
         ], false);
 
         $I->canSeeResponseCodeIs(201);
-        $I->storeIdAs('.token.id', 'BASIC_USER_ACCESS');
+        $I->storeIdAs('.token.id', 'BASIC_USER_ACCESS_ID');
     }
 
-    public function verifyTokenWasGenerated(FunctionalTester $I): void
+    public function verifyUserAccessWasGenerated(FunctionalTester $I): void
     {
         $I->amAdmin();
-        $I->lookupToken($I->getPreviouslyStoredIdOf('BASIC_USER_ACCESS'));
+        $I->lookupUser($I->getPreviouslyStoredIdOf('BASIC_USER_ACCESS_ID'));
         $I->canSeeResponseContainsJson([
             'token' => [
-                'id' => $I->getPreviouslyStoredIdOf('BASIC_USER_ACCESS')
+                'id' => $I->getPreviouslyStoredIdOf('BASIC_USER_ACCESS_ID')
             ]
         ]);
     }
@@ -43,15 +43,15 @@ class AuthenticationCest
     public function verifyTokenCanBeFoundInSearchByOneOfItsRoles(FunctionalTester $I): void
     {
         $I->amAdmin();
-        $I->searchForTokens('upload.enforce_tags_selected_in_token', 1, 50);
-        $I->canSeeResponseContains($I->getPreviouslyStoredIdOf('BASIC_USER_ACCESS'));
+        $I->searchForUsers('upload.enforce_tags_selected_in_token', 1, 50);
+        $I->canSeeResponseContains($I->getPreviouslyStoredIdOf('BASIC_USER_ACCESS_ID'));
         $I->canSeeResponseCodeIs(200);
     }
 
     public function generateTokenWithLimitToSelectedTagsAndMimes(FunctionalTester $I): void
     {
         $I->amAdmin();
-        $I->createToken([
+        $I->createUser([
             'password'     => 'anarchist-book-fair-1936',
             'email'        => 'example-1@riseup.net',
             'organization' => 'Wolna Biblioteka',
@@ -66,16 +66,16 @@ class AuthenticationCest
             ]
         ], false);
         $I->canSeeResponseCodeIs(201);
-        $I->storeIdAs('.token.id', 'LIMITED_TOKEN');
+        $I->storeIdAs('.token.id', 'LIMITED_USER_ACCESS_ID');
     }
 
-    public function verifyTheLimitedToken(FunctionalTester $I): void
+    public function verifyTheLimitedUserAccess(FunctionalTester $I): void
     {
         $I->amAdmin();
-        $I->lookupToken($I->getPreviouslyStoredIdOf('LIMITED_TOKEN'));
+        $I->lookupUser($I->getPreviouslyStoredIdOf('LIMITED_USER_ACCESS_ID'));
         $I->canSeeResponseContainsJson([
             'token' => [
-                'id' => $I->getPreviouslyStoredIdOf('LIMITED_TOKEN'),
+                'id' => $I->getPreviouslyStoredIdOf('LIMITED_USER_ACCESS_ID'),
                 'active' => true,
                 'roles'  => ['upload.all'],
                 'data'   => [
@@ -89,7 +89,7 @@ class AuthenticationCest
     public function testValidationContainsInvalidRoleName(FunctionalTester $I): void
     {
         $I->amAdmin();
-        $I->createToken([
+        $I->createUser([
             'password'     => 'anarchist-book-fair-1936',
             'email'        => 'example-2@riseup.net',
             'organization' => 'Wolna Biblioteka',
@@ -105,10 +105,10 @@ class AuthenticationCest
         $I->canSeeResponseContains('Please select valid roles');
     }
 
-    public function testCannotGenerateTokensWhenRoleDoesNotAllowGeneratingTokens(FunctionalTester $I): void
+    public function testCannotCreateUsersWhenRoleDoesNotAllowCreatingOnes(FunctionalTester $I): void
     {
-        $I->amToken($I->getPreviouslyStoredIdOf('LIMITED_TOKEN'));
-        $I->createToken([
+        $I->amUser($I->getPreviouslyStoredIdOf('LIMITED_USER_ACCESS_ID'));
+        $I->createUser([
             'password'     => 'anarchist-book-fair-1936',
             'email'        => 'example-3@riseup.net',
             'organization' => 'Wolna Biblioteka',
@@ -121,13 +121,13 @@ class AuthenticationCest
             ]
         ], false);
         $I->canSeeResponseCodeIs(403);
-        $I->canSeeResponseContains('Current token does not allow to generate tokens');
+        $I->canSeeResponseContains('Current access does not allow to create users');
     }
 
-    public function testCannotLookupTokensWhenHaveNoRightsGrantedToLookupTokens(FunctionalTester $I): void
+    public function testCannotLookupUsersWhenHaveNoRightsGrantedToLookupUsers(FunctionalTester $I): void
     {
-        $I->amToken($I->getPreviouslyStoredIdOf('LIMITED_TOKEN'));
-        $I->lookupToken($I->getPreviouslyStoredIdOf('BASIC_USER_ACCESS'));
+        $I->amUser($I->getPreviouslyStoredIdOf('LIMITED_USER_ACCESS_ID'));
+        $I->lookupUser($I->getPreviouslyStoredIdOf('BASIC_USER_ACCESS_ID'));
         $I->canSeeResponseCodeIs(403);
     }
 
@@ -140,29 +140,29 @@ class AuthenticationCest
 
     public function testCanListRolesDocumentationWhenNonAdmin(FunctionalTester $I): void
     {
-        $I->amToken($I->getPreviouslyStoredIdOf('LIMITED_TOKEN'));
+        $I->amUser($I->getPreviouslyStoredIdOf('LIMITED_USER_ACCESS_ID'));
         $I->sendGET(Urls::ROLES_LISTING);
         $I->canSeeResponseCodeIs(403);
     }
 
-    public function testTryToDeleteGeneratedTokensAsNotAuthorizedUserToDeleteTokens(FunctionalTester $I): void
+    public function testTryToCreateUsersAsNotAuthorizedUserToDeleteUsers(FunctionalTester $I): void
     {
-        $I->amToken($I->getPreviouslyStoredIdOf('LIMITED_TOKEN'));
-        $I->deleteToken($I->getPreviouslyStoredIdOf('LIMITED_TOKEN'));
+        $I->amUser($I->getPreviouslyStoredIdOf('LIMITED_USER_ACCESS_ID'));
+        $I->revokeAccess($I->getPreviouslyStoredIdOf('LIMITED_USER_ACCESS_ID'));
         $I->canSeeResponseCodeIs(403);
 
-        $I->amToken($I->getPreviouslyStoredIdOf('LIMITED_TOKEN'));
-        $I->deleteToken($I->getPreviouslyStoredIdOf('BASIC_USER_ACCESS'));
+        $I->amUser($I->getPreviouslyStoredIdOf('LIMITED_USER_ACCESS_ID'));
+        $I->revokeAccess($I->getPreviouslyStoredIdOf('BASIC_USER_ACCESS_ID'));
         $I->canSeeResponseCodeIs(403);
     }
 
-    public function testDeletePreviouslyGeneratedTokens(FunctionalTester $I): void
+    public function testDeletePreviouslyCreatedUsers(FunctionalTester $I): void
     {
         $I->amAdmin();
-        $I->deleteToken($I->getPreviouslyStoredIdOf('LIMITED_TOKEN'));
+        $I->revokeAccess($I->getPreviouslyStoredIdOf('LIMITED_USER_ACCESS_ID'));
         $I->canSeeResponseCodeIs(200);
 
-        $I->deleteToken($I->getPreviouslyStoredIdOf('BASIC_USER_ACCESS'));
+        $I->revokeAccess($I->getPreviouslyStoredIdOf('BASIC_USER_ACCESS_ID'));
         $I->canSeeResponseCodeIs(200);
     }
 
@@ -172,10 +172,10 @@ class AuthenticationCest
      *
      * @param FunctionalTester $I
      */
-    public function testGenerateTokenWithCustomIdSpecifiedInRequest(FunctionalTester $I): void
+    public function testCreateUserWithCustomIdSpecifiedInRequest(FunctionalTester $I): void
     {
         $I->amAdmin();
-        $I->createToken([
+        $I->createUser([
             'password'     => 'anarchist-book-fair-1936',
             'email'        => 'example-4@riseup.net',
             'organization' => 'Wolna Biblioteka',
@@ -191,16 +191,16 @@ class AuthenticationCest
     }
 
     /**
-     * Feature: Possibility to set "id" of a token manually
-     * Case: Trying to create same token at least twice
+     * Feature: Possibility to set "id" of a user manually
+     * Case: Trying to create same user at least twice
      *
      * @param FunctionalTester $I
      */
-    public function testCannotCreateTokenWithSameIdTwice(FunctionalTester $I): void
+    public function testCannotCreateUserWithSameIdTwice(FunctionalTester $I): void
     {
         $I->amAdmin();
 
-        $I->createToken([
+        $I->createUser([
             'password'     => 'anarchist-book-fair-1936',
             'email'        => 'example-5@riseup.net',
             'organization' => 'Wolna Biblioteka',
@@ -213,7 +213,7 @@ class AuthenticationCest
             'id'   => '1c2c84f2-d488-4ea0-9c88-d25aab139ac4'
         ], false);
 
-        $I->createToken([
+        $I->createUser([
             'password'     => 'anarchist-book-fair-1936',
             'email'        => 'example-6@riseup.net',
             'organization' => 'Wolna Biblioteka',
@@ -240,7 +240,7 @@ class AuthenticationCest
     {
         $I->amAdmin();
 
-        $I->createToken([
+        $I->createUser([
             'password'     => 'anarchist-book-fair-1936',
             'email'        => 'example-5@riseup.net',
             'organization' => 'Wolna Biblioteka',
@@ -249,7 +249,7 @@ class AuthenticationCest
             'data' => [],
         ], false);
 
-        $I->createToken([
+        $I->createUser([
             'password'     => 'anarchist-book-fair-1936',
             'email'        => 'example-5@riseup.net',
             'organization' => 'Wolna Biblioteka',
@@ -273,7 +273,7 @@ class AuthenticationCest
     {
         $I->amAdmin();
 
-        $I->createToken([
+        $I->createUser([
             // password: missing
             // email: missing
             'organization' => 'Wolna Biblioteka',
@@ -292,16 +292,16 @@ class AuthenticationCest
     }
 
     /**
-     * Feature: Possibility to set "id" of a token manually
+     * Feature: Possibility to set "id" of a user manually
      * Case: Trying to enter non-uuid string
      *
      * @param FunctionalTester $I
      */
-    public function testCannotCreateCustomTokenIfNotInUuidFormat(FunctionalTester $I): void
+    public function testCannotCreateCustomUserIfNotInUuidFormat(FunctionalTester $I): void
     {
         $I->amAdmin();
 
-        $I->createToken([
+        $I->createUser([
             'password'     => 'anarchist-book-fair-1936',
             'email'        => 'example-7@riseup.net',
             'organization' => 'Wolna Biblioteka',
@@ -320,16 +320,16 @@ class AuthenticationCest
     }
 
     /**
-     * Feature: Possibility to set "id" of a token manually
+     * Feature: Possibility to set "id" of a user manually
      * Case: Cannot set "id" field, when does not have a proper role
      *
      * @param FunctionalTester $I
      */
-    public function testNoRightsToUseIdFieldWhenGeneratingTokenWithoutSufficientPermissions(FunctionalTester $I): void
+    public function testNoRightsToUseIdFieldWhenGeneratingUserWithoutSufficientPermissions(FunctionalTester $I): void
     {
         // create a limited token at first
         $I->amAdmin();
-        $I->createToken([
+        $I->createUser([
             'password'     => 'anarchist-book-fair-1936',
             'email'        => 'example-8@riseup.net',
             'organization' => 'Wolna Biblioteka',
@@ -340,11 +340,11 @@ class AuthenticationCest
             ],
             'data' => []
         ]);
-        $I->storeIdAs('.token.id', 'LIMITED_TOKEN_NO_PREDICTABLE_IDS');
+        $I->storeIdAs('.token.id', 'LIMITED_USER_ACCESS_ID_NO_PREDICTABLE_IDS');
 
-        // then use such token to test "access denied"
-        $I->amToken($I->getPreviouslyStoredIdOf('LIMITED_TOKEN_NO_PREDICTABLE_IDS'));
-        $I->createToken([
+        // then use such access to test "access denied"
+        $I->amUser($I->getPreviouslyStoredIdOf('LIMITED_USER_ACCESS_ID_NO_PREDICTABLE_IDS'));
+        $I->createUser([
             'password'     => 'anarchist-book-fair-1936',
             'email'        => 'example-9@riseup.net',
             'organization' => 'Wolna Biblioteka',
@@ -358,9 +358,9 @@ class AuthenticationCest
         ], false);
         $I->canSeeResponseCodeIs(403);
 
-        // then check that has permissions to create tokens at all, but without specifying "id"
-        $I->amToken($I->getPreviouslyStoredIdOf('LIMITED_TOKEN_NO_PREDICTABLE_IDS'));
-        $I->createToken([
+        // then check that has permissions to create user accounts at all, but without specifying "id"
+        $I->amUser($I->getPreviouslyStoredIdOf('LIMITED_USER_ACCESS_ID_NO_PREDICTABLE_IDS'));
+        $I->createUser([
             'password'     => 'anarchist-book-fair-1936',
             'email'        => 'example-10@riseup.net',
             'organization' => 'Wolna Biblioteka',

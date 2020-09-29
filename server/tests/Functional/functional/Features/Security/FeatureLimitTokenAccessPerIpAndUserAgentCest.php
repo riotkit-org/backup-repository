@@ -24,7 +24,7 @@ class FeatureLimitTokenAccessPerIpAndUserAgentCest
         $I->seeResponseCodeIsSuccessful();
 
         $I->deleteHeader('User-Agent');
-        $I->lookupToken($token);
+        $I->lookupUser($token);
         $I->canSeeResponseCodeIsClientError();
     }
 
@@ -34,7 +34,7 @@ class FeatureLimitTokenAccessPerIpAndUserAgentCest
         $I->seeResponseCodeIsSuccessful();
 
         $I->haveHttpHeader('User-Agent', 'Not a valid UA');
-        $I->lookupToken($token);
+        $I->lookupUser($token);
         $I->canSeeResponseCodeIsClientError();
     }
 
@@ -44,7 +44,7 @@ class FeatureLimitTokenAccessPerIpAndUserAgentCest
         $I->seeResponseCodeIsSuccessful();
 
         $I->haveHttpHeader('User-Agent', 'Test UA :)');
-        $I->lookupToken($token);
+        $I->lookupUser($token);
         $I->canSeeResponseCodeIsSuccessful();
     }
 
@@ -54,7 +54,7 @@ class FeatureLimitTokenAccessPerIpAndUserAgentCest
         $I->seeResponseCodeIsSuccessful();
 
         $I->deleteHeader('User-Agent');
-        $I->lookupToken($token);
+        $I->lookupUser($token);
         $I->canSeeResponseCodeIsSuccessful();
     }
 }

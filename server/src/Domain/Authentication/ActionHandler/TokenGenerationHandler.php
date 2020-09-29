@@ -76,14 +76,14 @@ class TokenGenerationHandler
     {
         if (!$context->canGenerateNewToken()) {
             throw new AuthenticationException(
-                'Current token does not allow to generate tokens',
+                'Current access does not allow to create users',
                 AuthenticationException::CODES['not_authenticated']
             );
         }
 
         if ($form->id && !$context->canCreateTokensWithPredictableIdentifiers()) {
             throw new AuthenticationException(
-                'Current token does not allow setting predictable identifiers for tokens',
+                'Current access does not allow setting predictable identifiers for users',
                 AuthenticationException::CODES['no_permissions_for_predictable_ids']
             );
         }

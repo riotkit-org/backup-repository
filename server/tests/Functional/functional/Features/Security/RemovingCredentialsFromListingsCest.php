@@ -15,10 +15,10 @@ class RemovingCredentialsFromListingsCest
     public function seedApplication(FunctionalTester $I): void
     {
         $I->amAdmin();
-        $I->createToken(['roles' => ['upload.all'], 'id' => self::SOME_EXAMPLE_TOKEN], false);
+        $I->createUser(['roles' => ['upload.all'], 'id' => self::SOME_EXAMPLE_TOKEN], false);
 
         // non-privileged token we want to use to browse tokens in listing endpoint
-        $I->createToken(['roles' => ['security.search_for_tokens', 'security.authentication_lookup', 'security.cannot_see_full_token_ids'], 'id' => self::RESTRICTED_TOKEN], false);
+        $I->createUser(['roles' => ['security.search_for_tokens', 'security.authentication_lookup', 'security.cannot_see_full_token_ids'], 'id' => self::RESTRICTED_TOKEN], false);
     }
 
     /**
@@ -28,10 +28,10 @@ class RemovingCredentialsFromListingsCest
      */
     public function asARestrictedUserIShouldNotBeAbleToSeeFullTokensToNotStealOthersIdentity(FunctionalTester $I): void
     {
-        $I->amToken(self::RESTRICTED_TOKEN);
+        $I->amUser(self::RESTRICTED_TOKEN);
 
         // search for token by it's visible part
-        $I->searchForTokens('31', 1, 50);
+        $I->searchForUsers('31', 1, 50);
         $I->cantSeeResponseContains(self::SOME_EXAMPLE_TOKEN);
         $I->canSeeResponseContains('*****931-**52-**6a-**8c-********459b');
     }
@@ -43,10 +43,10 @@ class RemovingCredentialsFromListingsCest
      */
     public function asARestrictedUserIShouldNotBeAbleToSearchByHiddenPartsOfTheToken(FunctionalTester $I): void
     {
-        $I->amToken(self::RESTRICTED_TOKEN);
+        $I->amUser(self::RESTRICTED_TOKEN);
 
         // search for token by part that is NOT visible
-        $I->searchForTokens('79d0d', 1, 50);
+        $I->searchForUsers('79d0d', 1, 50);
         $I->cantSeeResponseContains(self::SOME_EXAMPLE_TOKEN);
         $I->cantSeeResponseContains('*****931-**52-**6a-**8c-********459b');
     }
@@ -58,10 +58,10 @@ class RemovingCredentialsFromListingsCest
      */
     public function asARestrictedUserIShouldBeAbleToFindATokenAnywayIfIKnowItsFullForm(FunctionalTester $I): void
     {
-        $I->amToken(self::RESTRICTED_TOKEN);
+        $I->amUser(self::RESTRICTED_TOKEN);
 
         // search for token by its full form
-        $I->searchForTokens(self::SOME_EXAMPLE_TOKEN, 1, 50);
+        $I->searchForUsers(self::SOME_EXAMPLE_TOKEN, 1, 50);
         $I->cantSeeResponseContains(self::SOME_EXAMPLE_TOKEN);
         $I->canSeeResponseContains('*****931-**52-**6a-**8c-********459b');
     }
