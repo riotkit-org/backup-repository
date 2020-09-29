@@ -4,7 +4,7 @@ namespace Tests\Domain\Authentication\Entity;
 
 use App\Domain\Authentication\Entity\Token;
 use App\Domain\Authentication\Helper\TokenSecrets;
-use App\Infrastructure\Authentication\Repository\TokenDoctrineRepository;
+use App\Infrastructure\Authentication\Repository\UserDoctrineRepository;
 use Doctrine\ORM\AbstractQuery;
 use Ramsey\Uuid\Uuid;
 use Tests\BaseTestCase;
@@ -23,7 +23,7 @@ class TokenSecretsTest extends BaseTestCase
 
         // prepare Symfony DI
         self::bootKernel();
-        $repository = self::$container->get(TokenDoctrineRepository::class);
+        $repository = self::$container->get(UserDoctrineRepository::class);
 
         // we need to have any data in the table in order to execute any query...
         // even if we want to only execute something like SELECT 1. The Doctrine does not allow to delete "FROM".
@@ -41,7 +41,7 @@ class TokenSecretsTest extends BaseTestCase
         $this->assertSame('*****f40-**87-**7c-**bb-********e8c0', $parsedResult[0][1], 'The result should be predictable');
     }
 
-    private function populateDatabaseWithExampleToken(TokenDoctrineRepository $repository): void
+    private function populateDatabaseWithExampleToken(UserDoctrineRepository $repository): void
     {
         $testToken = new Token();
         $testToken->setId(Uuid::uuid4()->toString());

@@ -7,7 +7,7 @@ use App\Domain\Authentication\Exception\InvalidTokenIdException;
 use App\Domain\Authentication\Exception\UserAlreadyExistsException;
 use App\Domain\Authentication\Exception\ValidationException;
 use App\Domain\Authentication\Form\AuthForm;
-use App\Domain\Authentication\Manager\TokenManager;
+use App\Domain\Authentication\Manager\UserManager;
 use App\Domain\Authentication\Response\UserCRUDResponse;
 use App\Domain\Authentication\Security\Context\AuthenticationManagementContext;
 use App\Domain\Common\Exception\DomainAssertionFailure;
@@ -15,14 +15,14 @@ use Exception;
 
 class TokenGenerationHandler
 {
-    private TokenManager $tokenManager;
+    private UserManager $tokenManager;
 
     /**
      * @var string A modificator eg. "+30 minutes"
      */
     private string $expirationTimeModifier;
 
-    public function __construct(TokenManager $manager, string $expirationTime)
+    public function __construct(UserManager $manager, string $expirationTime)
     {
         $this->tokenManager           = $manager;
         $this->expirationTimeModifier = $expirationTime;

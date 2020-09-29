@@ -11,7 +11,7 @@ class UserCRUDResponse extends NormalResponse
     protected ?Token $user = null;
     private int $exitCode;
 
-    public static function createTokenDeletedResponse(Token $token): UserCRUDResponse
+    public static function createDeletedResponse(Token $token): UserCRUDResponse
     {
         $response = new UserCRUDResponse();
         $response->status   = true;
@@ -44,12 +44,12 @@ class UserCRUDResponse extends NormalResponse
         return $response;
     }
 
-    public static function createTokenNotFoundResponse(): self
+    public static function createNotFoundResponse(): self
     {
         $response = new static();
         $response->status   = false;
         $response->exitCode = Http::HTTP_NOT_FOUND;
-        $response->user    = null;
+        $response->user     = null;
         $response->message  = 'User not found';
 
         return $response;

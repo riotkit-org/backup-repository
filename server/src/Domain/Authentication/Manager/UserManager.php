@@ -5,21 +5,21 @@ namespace App\Domain\Authentication\Manager;
 use App\Domain\Authentication\Configuration\PasswordHashingConfiguration;
 use App\Domain\Authentication\Entity\Token;
 use App\Domain\Authentication\Exception\InvalidTokenIdException;
-use App\Domain\Authentication\Repository\TokenRepository;
+use App\Domain\Authentication\Repository\UserRepository;
 use App\Domain\Authentication\Service\UuidValidator;
 use App\Domain\Common\Exception\DomainAssertionFailure;
 
 /**
  * @todo: Rewrite into commands
  */
-class TokenManager
+class UserManager
 {
-    private TokenRepository $repository;
+    private UserRepository $repository;
     private UuidValidator $uuidValidator;
     private PasswordHashingConfiguration $hashingConfiguration;
     private string $defaultExpirationTime;
 
-    public function __construct(TokenRepository $repository, UuidValidator $uuidValidator, PasswordHashingConfiguration $hashingConfiguration)
+    public function __construct(UserRepository $repository, UuidValidator $uuidValidator, PasswordHashingConfiguration $hashingConfiguration)
     {
         $this->repository    = $repository;
         $this->uuidValidator = $uuidValidator;
@@ -74,7 +74,7 @@ class TokenManager
         return $token;
     }
 
-    public function revokeToken(Token $token): void
+    public function revokeAccessForUser(Token $token): void
     {
         $this->repository->remove($token);
     }

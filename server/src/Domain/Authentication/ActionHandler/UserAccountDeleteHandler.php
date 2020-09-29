@@ -4,55 +4,55 @@ namespace App\Domain\Authentication\ActionHandler;
 
 use App\Domain\Authentication\Entity\Token;
 use App\Domain\Authentication\Exception\AuthenticationException;
-use App\Domain\Authentication\Manager\TokenManager;
-use App\Domain\Authentication\Repository\TokenRepository;
+use App\Domain\Authentication\Manager\UserManager;
+use App\Domain\Authentication\Repository\UserRepository;
 use App\Domain\Authentication\Response\UserCRUDResponse;
 use App\Domain\Authentication\Security\Context\AuthenticationManagementContext;
 
-class TokenDeleteHandler
+class UserAccountDeleteHandler
 {
-    private TokenRepository $repository;
-    private TokenManager $manager;
+    private UserRepository $repository;
+    private UserManager $manager;
 
-    public function __construct(TokenRepository $repository, TokenManager $manager)
+    public function __construct(UserRepository $repository, UserManager $manager)
     {
         $this->repository = $repository;
         $this->manager    = $manager;
     }
 
     /**
-     * @param string $tokenToDelete
+     * @param string $userId
      * @param AuthenticationManagementContext $context
      *
      * @return null|UserCRUDResponse
      *
      * @throws AuthenticationException
      */
-    public function handle(string $tokenToDelete, AuthenticationManagementContext $context): UserCRUDResponse
+    public function handle(string $userId, AuthenticationManagementContext $context): UserCRUDResponse
     {
-        $token = $this->repository->findTokenById($tokenToDelete);
+        $user = $this->repository->findUserByUserId($userId);
 
-        if (!$token instanceof Token) {
-            return UserCRUDResponse::createTokenNotFoundResponse();
+        if (!$user instanceof Token) {
+            return UserCRUDResponse::createNotFoundResponse();
         }
 
-        $this->assertHasRights($context, $token);
+        $this->assertHasRights($context, $user);
 
-        $this->manager->revokeToken($token);
+        $this->manager->revokeAccessForUser($user);
         $this->manager->flushAll();
 
-        return UserCRUDResponse::createTokenDeletedResponse($token);
+        return UserCRUDResponse::createDeletedResponse($user);
     }
 
     /**
      * @param AuthenticationManagementContext $context
-     * @param Token                           $token
+     * @param Token                           $user
      *
      * @throws AuthenticationException
      */
-    private function assertHasRights(AuthenticationManagementContext $context, Token $token): void
+    private function assertHasRights(AuthenticationManagementContext $context, Token $user): void
     {
-        if (!$context->canRevokeToken($token)) {
+        if (!$context->canRevokeAccess($user)) {
             throw new AuthenticationException(
                 'Current token does not allow to revoke this token or just any other token',
                 AuthenticationException::CODES['not_authenticated']

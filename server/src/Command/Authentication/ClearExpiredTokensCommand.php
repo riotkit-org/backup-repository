@@ -2,7 +2,7 @@
 
 namespace App\Command\Authentication;
 
-use App\Domain\Authentication\ActionHandler\ClearExpiredTokensHandler;
+use App\Domain\Authentication\ActionHandler\ClearExpiredUserAccountsHandler;
 use App\Domain\Authentication\Factory\Context\SecurityContextFactory;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -11,7 +11,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 class ClearExpiredTokensCommand extends Command
 {
     /**
-     * @var ClearExpiredTokensHandler
+     * @var ClearExpiredUserAccountsHandler
      */
     private $handler;
 
@@ -20,7 +20,7 @@ class ClearExpiredTokensCommand extends Command
      */
     private $authFactory;
 
-    public function __construct(ClearExpiredTokensHandler $handler, SecurityContextFactory $authFactory)
+    public function __construct(ClearExpiredUserAccountsHandler $handler, SecurityContextFactory $authFactory)
     {
         $this->handler = $handler;
         $this->authFactory = $authFactory;

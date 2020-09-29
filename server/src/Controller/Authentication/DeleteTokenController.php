@@ -3,7 +3,7 @@
 namespace App\Controller\Authentication;
 
 use App\Controller\BaseController;
-use App\Domain\Authentication\ActionHandler\TokenDeleteHandler;
+use App\Domain\Authentication\ActionHandler\UserAccountDeleteHandler;
 use App\Domain\Authentication\Factory\Context\SecurityContextFactory;
 use App\Infrastructure\Common\Http\JsonFormattedResponse;
 use Exception;
@@ -13,10 +13,10 @@ use Swagger\Annotations as SWG;
 
 class DeleteTokenController extends BaseController
 {
-    private TokenDeleteHandler $handler;
+    private UserAccountDeleteHandler $handler;
     private SecurityContextFactory $authFactory;
 
-    public function __construct(TokenDeleteHandler $handler, SecurityContextFactory $authFactory)
+    public function __construct(UserAccountDeleteHandler $handler, SecurityContextFactory $authFactory)
     {
         $this->handler = $handler;
         $this->authFactory = $authFactory;

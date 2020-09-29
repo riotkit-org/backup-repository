@@ -4,15 +4,15 @@ namespace App\Domain\Authentication\ActionHandler;
 
 use App\Domain\Authentication\Entity\Token;
 use App\Domain\Authentication\Exception\AuthenticationException;
-use App\Domain\Authentication\Repository\TokenRepository;
+use App\Domain\Authentication\Repository\UserRepository;
 use App\Domain\Authentication\Response\UserCRUDResponse;
 use App\Domain\Authentication\Security\Context\AuthenticationManagementContext;
 
 class TokenLookupHandler
 {
-    private TokenRepository $repository;
+    private UserRepository $repository;
 
-    public function __construct(TokenRepository $repository)
+    public function __construct(UserRepository $repository)
     {
         $this->repository = $repository;
     }
@@ -27,7 +27,7 @@ class TokenLookupHandler
      */
     public function handle(string $tokenStringToLookup, AuthenticationManagementContext $context): ?UserCRUDResponse
     {
-        $token = $this->repository->findTokenById($tokenStringToLookup);
+        $token = $this->repository->findUserByUserId($tokenStringToLookup);
         $this->assertHasRights($context);
 
         if (!$token instanceof Token) {

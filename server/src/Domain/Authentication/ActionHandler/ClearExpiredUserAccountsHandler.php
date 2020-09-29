@@ -3,23 +3,16 @@
 namespace App\Domain\Authentication\ActionHandler;
 
 use App\Domain\Authentication\Exception\AuthenticationException;
-use App\Domain\Authentication\Manager\TokenManager;
-use App\Domain\Authentication\Repository\TokenRepository;
+use App\Domain\Authentication\Manager\UserManager;
+use App\Domain\Authentication\Repository\UserRepository;
 use App\Domain\Authentication\Security\Context\AuthenticationManagementContext;
 
-class ClearExpiredTokensHandler
+class ClearExpiredUserAccountsHandler
 {
-    /**
-     * @var TokenManager
-     */
-    private $manager;
+    private UserManager $manager;
+    private UserRepository $repository;
 
-    /**
-     * @var TokenRepository
-     */
-    private $repository;
-
-    public function __construct(TokenManager $manager, TokenRepository $repository)
+    public function __construct(UserManager $manager, UserRepository $repository)
     {
         $this->manager = $manager;
         $this->repository = $repository;
@@ -43,18 +36,18 @@ class ClearExpiredTokensHandler
 
         $log = [];
 
-        foreach ($this->repository->getExpiredTokens() as $token) {
+        foreach ($this->repository->getExpiredTokens() as $user) {
             $notifier(
-                '[' . $token->getExpirationDate()->format('Y-m-d H:i:s') . '] ' .
-                '<comment>Removing token ' . $token->getId() . '</comment>'
+                '[' . $user->getExpirationDate()->format('Y-m-d H:i:s') . '] ' .
+                '<comment>Removing user account ' . $user->getId() . '</comment>'
             );
 
             $log[] = [
-                'id'   => $token->getId(),
-                'date' => $token->getExpirationDate()->format('Y-m-d H:i:s')
+                'id'   => $user->getId(),
+                'date' => $user->getExpirationDate()->format('Y-m-d H:i:s')
             ];
 
-            $this->manager->revokeToken($token);
+            $this->manager->revokeAccessForUser($user);
         }
 
         $this->manager->flushAll();

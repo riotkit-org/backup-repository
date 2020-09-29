@@ -46,7 +46,7 @@ services:
 
     App\Domain\Authentication\ActionHandler\TokenGenerationHandler:
         arguments:
-            $manager: '@App\Domain\Authentication\Manager\TokenManager'
+            $manager: '@App\Domain\Authentication\Manager\UserManager'
             $expirationTime: '%env(TOKEN_EXPIRATION_TIME)%'
 
     App\Infrastructure\Authentication\Event\Subscriber\TokenSubscriber:
@@ -87,7 +87,7 @@ services:
         arguments:
             $readOnly: '%env(bool:READ_ONLY)%'
 
-    App\Infrastructure\Authentication\Repository\TokenDoctrineRepository:
+    App\Infrastructure\Authentication\Repository\UserDoctrineRepository:
         autowire: true
         arguments:
             $readOnly: '%env(bool:READ_ONLY)%'

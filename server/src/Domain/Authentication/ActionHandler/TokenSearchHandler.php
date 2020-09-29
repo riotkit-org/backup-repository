@@ -4,15 +4,15 @@ namespace App\Domain\Authentication\ActionHandler;
 
 use App\Domain\Authentication\Exception\AuthenticationException;
 use App\Domain\Authentication\Exception\ValidationException;
-use App\Domain\Authentication\Repository\TokenRepository;
+use App\Domain\Authentication\Repository\UserRepository;
 use App\Domain\Authentication\Response\UserSearchResponse;
 use App\Domain\Authentication\Security\Context\AuthenticationManagementContext;
 
 class TokenSearchHandler
 {
-    private TokenRepository $repository;
+    private UserRepository $repository;
 
-    public function __construct(TokenRepository $repository)
+    public function __construct(UserRepository $repository)
     {
         $this->repository = $repository;
     }

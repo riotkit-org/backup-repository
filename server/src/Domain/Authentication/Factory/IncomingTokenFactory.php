@@ -4,16 +4,16 @@ namespace App\Domain\Authentication\Factory;
 
 use App\Domain\Authentication\Entity\Token;
 use App\Domain\Authentication\Exception\AuthenticationException;
-use App\Domain\Authentication\Repository\TokenRepository;
+use App\Domain\Authentication\Repository\UserRepository;
 
 class IncomingTokenFactory
 {
     /**
-     * @var TokenRepository $repository
+     * @var UserRepository $repository
      */
     private $repository;
 
-    public function __construct(TokenRepository $repository)
+    public function __construct(UserRepository $repository)
     {
         $this->repository = $repository;
     }
@@ -28,7 +28,7 @@ class IncomingTokenFactory
      */
     public function createFromString(string $tokenString, string $className = Token::class)
     {
-        $persistedToken = $this->repository->findTokenById($tokenString, $className);
+        $persistedToken = $this->repository->findUserByUserId($tokenString, $className);
 
         if (!$persistedToken) {
             throw new AuthenticationException(

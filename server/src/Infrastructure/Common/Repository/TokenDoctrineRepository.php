@@ -12,7 +12,7 @@ use App\Domain\Roles as RolesDomain;
  */
 abstract class TokenDoctrineRepository extends BaseRepository implements TokenRepository
 {
-    public function findTokenById(string $id, string $className = null)
+    public function findUserByUserId(string $id, string $className = null)
     {
         if ($className === null) {
             $className = $this->getTokenClass();
@@ -34,7 +34,7 @@ abstract class TokenDoctrineRepository extends BaseRepository implements TokenRe
 
     public function findApplicationInternalToken(): Token
     {
-        return $this->findTokenById(RolesDomain::INTERNAL_CONSOLE_TOKEN, Token::class);
+        return $this->findUserByUserId(RolesDomain::INTERNAL_CONSOLE_TOKEN, Token::class);
     }
 
     protected function getTokenClass(): string

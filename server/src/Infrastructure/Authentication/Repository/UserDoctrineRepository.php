@@ -5,7 +5,7 @@ namespace App\Infrastructure\Authentication\Repository;
 use App\Domain\Authentication\Entity\Token;
 use App\Domain\Authentication\Exception\UserAlreadyExistsException;
 use App\Domain\Authentication\Helper\TokenSecrets;
-use App\Domain\Authentication\Repository\TokenRepository;
+use App\Domain\Authentication\Repository\UserRepository;
 use App\Infrastructure\Common\Repository\TokenDoctrineRepository as CommonTokenRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
@@ -14,7 +14,7 @@ use Doctrine\ORM\Tools\Pagination\Paginator;
 /**
  * @codeCoverageIgnore
  */
-class TokenDoctrineRepository extends CommonTokenRepository implements TokenRepository
+class UserDoctrineRepository extends CommonTokenRepository implements UserRepository
 {
     public function __construct(ManagerRegistry $registry, bool $readOnly)
     {

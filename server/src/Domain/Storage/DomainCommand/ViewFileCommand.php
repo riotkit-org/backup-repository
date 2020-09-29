@@ -2,7 +2,7 @@
 
 namespace App\Domain\Storage\DomainCommand;
 
-use App\Domain\Authentication\Repository\TokenRepository;
+use App\Domain\Authentication\Repository\UserRepository;
 use App\Domain\Bus;
 use App\Domain\Common\Service\Bus\CommandHandler;
 use App\Domain\Storage\ActionHandler\ViewFileHandler;
@@ -19,9 +19,9 @@ class ViewFileCommand implements CommandHandler
 {
     private ViewFileHandler $handler;
     private SecurityContextFactory $authFactory;
-    private TokenRepository $tokenRepository;
+    private UserRepository $tokenRepository;
 
-    public function __construct(ViewFileHandler $handler, SecurityContextFactory $authFactory, TokenRepository $repository)
+    public function __construct(ViewFileHandler $handler, SecurityContextFactory $authFactory, UserRepository $repository)
     {
         $this->handler         = $handler;
         $this->authFactory     = $authFactory;
@@ -45,7 +45,7 @@ class ViewFileCommand implements CommandHandler
     public function handle($input, string $path)
     {
         $isFileAlreadyValidated = (bool) ($input['isFileAlreadyValidated'] ?? false);
-        $token = $this->tokenRepository->findTokenById($input['token']);
+        $token = $this->tokenRepository->findUserByUserId($input['token']);
 
         $form = new ViewFileForm();
         $form->bytesRange = $input['bytesRange'] ?? '';

@@ -72,7 +72,7 @@ class AuthenticationManagementContext
         return $this->canUseTechnicalEndpoints;
     }
 
-    public function canRevokeToken(Token $token): bool
+    public function canRevokeAccess(Token $token): bool
     {
         if ($this->isAdministrator) {
             return true;
