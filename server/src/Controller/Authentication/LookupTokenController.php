@@ -3,7 +3,7 @@
 namespace App\Controller\Authentication;
 
 use App\Controller\BaseController;
-use App\Domain\Authentication\ActionHandler\TokenLookupHandler;
+use App\Domain\Authentication\ActionHandler\UserAccountLookupHandler;
 use App\Domain\Authentication\Factory\Context\SecurityContextFactory;
 use App\Infrastructure\Common\Http\JsonFormattedResponse;
 use Exception;
@@ -13,10 +13,10 @@ use Swagger\Annotations as SWG;
 
 class LookupTokenController extends BaseController
 {
-    private TokenLookupHandler $handler;
+    private UserAccountLookupHandler $handler;
     private SecurityContextFactory $authFactory;
 
-    public function __construct(TokenLookupHandler $handler, SecurityContextFactory $authFactory)
+    public function __construct(UserAccountLookupHandler $handler, SecurityContextFactory $authFactory)
     {
         $this->handler = $handler;
         $this->authFactory = $authFactory;

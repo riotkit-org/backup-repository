@@ -60,14 +60,14 @@ class UserDoctrineRepository extends CommonTokenRepository implements UserReposi
         return $qb->getQuery()->getResult();
     }
 
-    public function findTokensBy(string $pattern, int $page = 1, int $count = 50, bool $searchById = true): array
+    public function findUsersBy(string $pattern, int $page = 1, int $count = 50, bool $searchById = true): array
     {
         $qb = $this->createQueryFindTokensBy($pattern, $searchById);
 
         return $this->paginate($qb, $page, $count)->getQuery()->getResult();
     }
 
-    public function findMaxPagesTokensBy(string $pattern, int $limit = 50, bool $searchById = true): int
+    public function findMaxPagesOfUsersBy(string $pattern, int $limit = 50, bool $searchById = true): int
     {
         $qb = $this->createQueryFindTokensBy($pattern);
         $qb->select('COUNT(token)');

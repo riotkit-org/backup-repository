@@ -33,7 +33,7 @@ class UserCRUDResponse extends NormalResponse
         return $response;
     }
 
-    public static function createTokenFoundResponse(Token $token)
+    public static function createFoundResponse(Token $token)
     {
         $response = new UserCRUDResponse();
         $response->status   = true;

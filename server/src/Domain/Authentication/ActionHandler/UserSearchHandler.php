@@ -8,7 +8,7 @@ use App\Domain\Authentication\Repository\UserRepository;
 use App\Domain\Authentication\Response\UserSearchResponse;
 use App\Domain\Authentication\Security\Context\AuthenticationManagementContext;
 
-class TokenSearchHandler
+class UserSearchHandler
 {
     private UserRepository $repository;
 
@@ -46,11 +46,11 @@ class TokenSearchHandler
         }
 
         return UserSearchResponse::createResultsResponse(
-            $this->repository->findTokensBy($pattern, $page, $limit, !$ctx->cannotSeeFullTokenIds()),
+            $this->repository->findUsersBy($pattern, $page, $limit, !$ctx->cannotSeeFullUserIds()),
             $page,
             $limit,
-            $this->repository->findMaxPagesTokensBy($pattern, $limit),
-            $ctx->cannotSeeFullTokenIds()
+            $this->repository->findMaxPagesOfUsersBy($pattern, $limit),
+            $ctx->cannotSeeFullUserIds()
         );
     }
 
@@ -61,9 +61,9 @@ class TokenSearchHandler
      */
     private function assertHasRights(AuthenticationManagementContext $context): void
     {
-        if (!$context->canSearchForTokens()) {
+        if (!$context->canSearchForUsers()) {
             throw new AuthenticationException(
-                'Current token does not allow to browse or lookup other tokens',
+                'Current token does not allow to browse or lookup other users',
                 AuthenticationException::CODES['not_authenticated']
             );
         }

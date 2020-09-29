@@ -2,7 +2,7 @@
 
 namespace App\Command\Authentication;
 
-use App\Domain\Authentication\ActionHandler\TokenGenerationHandler;
+use App\Domain\Authentication\ActionHandler\UserCreationHandler;
 use App\Domain\Authentication\Exception\ValidationException;
 use App\Domain\Authentication\Factory\Context\SecurityContextFactory;
 use App\Domain\Authentication\Form\AuthForm;
@@ -16,10 +16,10 @@ class GenerateTokenCommand extends Command
 {
     public const NAME = 'auth:create-token';
 
-    private TokenGenerationHandler $handler;
+    private UserCreationHandler $handler;
     private SecurityContextFactory $authFactory;
 
-    public function __construct(TokenGenerationHandler $handler, SecurityContextFactory $authFactory)
+    public function __construct(UserCreationHandler $handler, SecurityContextFactory $authFactory)
     {
         $this->handler     = $handler;
         $this->authFactory = $authFactory;

@@ -36,7 +36,7 @@ class AuthenticationManagementContext
         $this->cannotSeeFullTokenIds             = $cannotSeeFullTokenIds;
     }
 
-    public function canLookupAnyToken(): bool
+    public function canLookupAnyUserAccount(): bool
     {
         if ($this->isAdministrator) {
             return true;
@@ -45,13 +45,13 @@ class AuthenticationManagementContext
         return $this->canLookup;
     }
 
-    public function canSearchForTokens(): bool
+    public function canSearchForUsers(): bool
     {
         if ($this->isAdministrator) {
             return true;
         }
 
-        return $this->canLookupAnyToken() && $this->canSearchForTokens;
+        return $this->canLookupAnyUserAccount() && $this->canSearchForTokens;
     }
 
     public function canGenerateNewToken(): bool
@@ -95,7 +95,7 @@ class AuthenticationManagementContext
         return $this->canCreateTokensWithPredictableIds;
     }
 
-    public function cannotSeeFullTokenIds(): bool
+    public function cannotSeeFullUserIds(): bool
     {
         return $this->cannotSeeFullTokenIds;
     }

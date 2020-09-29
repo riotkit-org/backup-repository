@@ -8,7 +8,7 @@ use App\Domain\Authentication\Repository\UserRepository;
 use App\Domain\Authentication\Response\UserCRUDResponse;
 use App\Domain\Authentication\Security\Context\AuthenticationManagementContext;
 
-class TokenLookupHandler
+class UserAccountLookupHandler
 {
     private UserRepository $repository;
 
@@ -18,23 +18,23 @@ class TokenLookupHandler
     }
 
     /**
-     * @param string $tokenStringToLookup
+     * @param string $uidToLookup
      * @param AuthenticationManagementContext $context
      *
      * @return null|UserCRUDResponse
      *
      * @throws AuthenticationException
      */
-    public function handle(string $tokenStringToLookup, AuthenticationManagementContext $context): ?UserCRUDResponse
+    public function handle(string $uidToLookup, AuthenticationManagementContext $context): ?UserCRUDResponse
     {
-        $token = $this->repository->findUserByUserId($tokenStringToLookup);
+        $user = $this->repository->findUserByUserId($uidToLookup);
         $this->assertHasRights($context);
 
-        if (!$token instanceof Token) {
+        if (!$user instanceof Token) {
             return null;
         }
 
-        return UserCRUDResponse::createTokenFoundResponse($token);
+        return UserCRUDResponse::createFoundResponse($user);
     }
 
     /**
@@ -44,9 +44,9 @@ class TokenLookupHandler
      */
     private function assertHasRights(AuthenticationManagementContext $context): void
     {
-        if (!$context->canLookupAnyToken()) {
+        if (!$context->canLookupAnyUserAccount()) {
             throw new AuthenticationException(
-                'Current token does not allow to lookup other tokens',
+                'Current token does not allow to lookup other users',
                 AuthenticationException::CODES['not_authenticated']
             );
         }

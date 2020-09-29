@@ -3,7 +3,7 @@
 namespace App\Controller\Authentication;
 
 use App\Controller\BaseController;
-use App\Domain\Authentication\ActionHandler\TokenSearchHandler;
+use App\Domain\Authentication\ActionHandler\UserSearchHandler;
 use App\Domain\Authentication\Factory\Context\SecurityContextFactory;
 use App\Infrastructure\Common\Http\JsonFormattedResponse;
 use Exception;
@@ -14,10 +14,10 @@ use Swagger\Annotations as SWG;
 
 class TokenSearchController extends BaseController
 {
-    private TokenSearchHandler $handler;
+    private UserSearchHandler $handler;
     private SecurityContextFactory $authFactory;
 
-    public function __construct(TokenSearchHandler $handler, SecurityContextFactory $authFactory)
+    public function __construct(UserSearchHandler $handler, SecurityContextFactory $authFactory)
     {
         $this->handler     = $handler;
         $this->authFactory = $authFactory;

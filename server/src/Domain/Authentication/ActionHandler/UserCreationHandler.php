@@ -5,7 +5,6 @@ namespace App\Domain\Authentication\ActionHandler;
 use App\Domain\Authentication\Exception\AuthenticationException;
 use App\Domain\Authentication\Exception\InvalidTokenIdException;
 use App\Domain\Authentication\Exception\UserAlreadyExistsException;
-use App\Domain\Authentication\Exception\ValidationException;
 use App\Domain\Authentication\Form\AuthForm;
 use App\Domain\Authentication\Manager\UserManager;
 use App\Domain\Authentication\Response\UserCRUDResponse;
@@ -13,7 +12,7 @@ use App\Domain\Authentication\Security\Context\AuthenticationManagementContext;
 use App\Domain\Common\Exception\DomainAssertionFailure;
 use Exception;
 
-class TokenGenerationHandler
+class UserCreationHandler
 {
     private UserManager $tokenManager;
 
