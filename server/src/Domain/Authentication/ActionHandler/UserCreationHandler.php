@@ -3,7 +3,7 @@
 namespace App\Domain\Authentication\ActionHandler;
 
 use App\Domain\Authentication\Exception\AuthenticationException;
-use App\Domain\Authentication\Exception\InvalidTokenIdException;
+use App\Domain\Authentication\Exception\InvalidUserIdException;
 use App\Domain\Authentication\Exception\UserAlreadyExistsException;
 use App\Domain\Authentication\Form\AuthForm;
 use App\Domain\Authentication\Manager\UserManager;
@@ -52,7 +52,7 @@ class UserCreationHandler
                 $form->id
             );
         }
-        catch (InvalidTokenIdException $exception) {
+        catch (InvalidUserIdException $exception) {
             throw DomainAssertionFailure::fromErrors([$exception]);
         }
 

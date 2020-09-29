@@ -4,7 +4,7 @@ namespace App\Domain\Authentication\Manager;
 
 use App\Domain\Authentication\Configuration\PasswordHashingConfiguration;
 use App\Domain\Authentication\Entity\Token;
-use App\Domain\Authentication\Exception\InvalidTokenIdException;
+use App\Domain\Authentication\Exception\InvalidUserIdException;
 use App\Domain\Authentication\Repository\UserRepository;
 use App\Domain\Authentication\Service\UuidValidator;
 use App\Domain\Common\Exception\DomainAssertionFailure;
@@ -39,7 +39,7 @@ class UserManager
      *
      * @return Token
      *
-     * @throws InvalidTokenIdException
+     * @throws InvalidUserIdException
      * @throws DomainAssertionFailure
      */
     public function generateNewToken(array $roles, ?string $expirationTime, array $details, ?string $email,
@@ -48,11 +48,11 @@ class UserManager
     {
         if ($customId) {
             if (!$this->uuidValidator->isValid($customId)) {
-                throw new InvalidTokenIdException();
+                throw new InvalidUserIdException();
             }
         }
 
-        $token = Token::createFrom(
+        $user = Token::createFrom(
             $roles,
             $expirationTime,
             $details,
@@ -64,19 +64,19 @@ class UserManager
             $this->defaultExpirationTime
         );
 
-        $this->repository->persist($token);
+        $this->repository->persist($user);
 
         if ($customId) {
-            $token->setId($customId);
-            $this->repository->persist($token);
+            $user->setId($customId);
+            $this->repository->persist($user);
         }
 
-        return $token;
+        return $user;
     }
 
-    public function revokeAccessForUser(Token $token): void
+    public function revokeAccessForUser(Token $user): void
     {
-        $this->repository->remove($token);
+        $this->repository->remove($user);
     }
 
     public function flushAll(): void

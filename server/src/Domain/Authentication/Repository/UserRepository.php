@@ -13,7 +13,7 @@ interface UserRepository extends \App\Domain\Common\Repository\TokenRepository
     /**
      * @return Token[]
      */
-    public function getExpiredTokens(): array;
+    public function getExpiredUserAccounts(): array;
 
     /**
      * @param string $pattern

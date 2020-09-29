@@ -4,7 +4,7 @@ namespace App\Domain\Authentication\Form;
 
 use App\Domain\Common\SharedEntity\Token;
 
-class TokenDetailsForm
+class DetailsForm
 {
     /**
      * @var array

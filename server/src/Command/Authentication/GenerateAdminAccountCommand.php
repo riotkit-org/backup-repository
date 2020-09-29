@@ -9,17 +9,17 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class GenerateAdminTokenCommand extends Command
+class GenerateAdminAccountCommand extends Command
 {
-    public const NAME = 'auth:generate-admin-token';
+    public const NAME = 'auth:generate-admin-account';
 
     protected function configure()
     {
         $this->setName(static::NAME)
-            ->setDescription('Generate administrative token')
+            ->setDescription('Generate administrative user account')
             ->addOption('expires', null, InputOption::VALUE_REQUIRED)
             ->addOption('id', 'i', InputOption::VALUE_OPTIONAL)
-            ->addOption('ignore-error-if-token-exists', null, InputOption::VALUE_NONE,
+            ->addOption('ignore-error-if-already-exists', null, InputOption::VALUE_NONE,
                 'Exit with success if token already exists. Does not check strictly permissions and other attributes, just the id.')
             ->setHelp('With admin token you have unlimited access to the application');
     }
@@ -34,10 +34,10 @@ class GenerateAdminTokenCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $command = $this->getApplication()->find(GenerateTokenCommand::NAME);
+        $command = $this->getApplication()->find(CreateUserCommand::NAME);
 
         $opts = [
-            'command'   => GenerateTokenCommand::NAME,
+            'command'   => CreateUserCommand::NAME,
             '--roles'   => Roles::ROLE_ADMINISTRATOR,
             '--expires' => $input->getOption('expires') ?? '+10 years',
             '--id'      => $input->getOption('id') ?? ''

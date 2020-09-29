@@ -15,7 +15,7 @@ class AuthForm
     public $roles;
 
     /**
-     * @var TokenDetailsForm
+     * @var DetailsForm
      */
     public $data;
 

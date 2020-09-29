@@ -11,14 +11,14 @@ use App\Domain\Roles;
 /**
  * @codeCoverageIgnore
  */
-class SingleFileTokenCommand implements CommandHandler
+class SingleFileUploadAccessCommand implements CommandHandler
 {
     private UserManager $tokenManager;
     private UserRepository $repository;
 
-    public function __construct(UserManager $tokenManager, UserRepository $repository)
+    public function __construct(UserManager $userManager, UserRepository $repository)
     {
-        $this->tokenManager = $tokenManager;
+        $this->tokenManager = $userManager;
         $this->repository   = $repository;
     }
 
@@ -30,17 +30,17 @@ class SingleFileTokenCommand implements CommandHandler
      */
     public function handle($input, string $path): void
     {
-        $token = $this->repository->findUserByUserId($input[0] ?? '');
+        $user = $this->repository->findUserByUserId($input[0] ?? '');
 
-        if (!$token) {
+        if (!$user) {
             throw new \LogicException('Incorrectly passed parameters to event EVENT_STORAGE_UPLOADED_OK');
         }
 
         // the event is executing right after successful upload
         // and revoking the token after a upload is done,
         // when ROLE_UPLOAD_ONLY_ONCE_SUCCESSFUL role is present in the token
-        if ($token->hasRole(Roles::ROLE_UPLOAD_ONLY_ONCE_SUCCESSFUL)) {
-            $this->tokenManager->revokeAccessForUser($token);
+        if ($user->hasRole(Roles::ROLE_UPLOAD_ONLY_ONCE_SUCCESSFUL)) {
+            $this->tokenManager->revokeAccessForUser($user);
             $this->tokenManager->flushAll();
         }
     }

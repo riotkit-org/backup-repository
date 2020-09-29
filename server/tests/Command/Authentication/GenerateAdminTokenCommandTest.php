@@ -2,8 +2,8 @@
 
 namespace Tests\Command\Authentication;
 
-use App\Command\Authentication\GenerateAdminTokenCommand;
-use App\Command\Authentication\GenerateTokenCommand;
+use App\Command\Authentication\GenerateAdminAccountCommand;
+use App\Command\Authentication\CreateUserCommand;
 use App\Domain\Authentication\ActionHandler\UserCreationHandler;
 use App\Domain\Authentication\Factory\Context\SecurityContextFactory;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
@@ -20,12 +20,12 @@ class GenerateAdminTokenCommandTest extends FunctionalTestCase
         $client = self::createClient();
         $kernel = $client->getKernel();
         $application = new Application($kernel);
-        $application->add(new GenerateTokenCommand(
+        $application->add(new CreateUserCommand(
             $kernel->getContainer()->get(UserCreationHandler::class),
             $kernel->getContainer()->get(SecurityContextFactory::class)
         ));
 
-        $command = $client->getContainer()->get(GenerateAdminTokenCommand::class);
+        $command = $client->getContainer()->get(GenerateAdminAccountCommand::class);
         $command->setApplication($application);
 
         $commandTester = new CommandTester($command);

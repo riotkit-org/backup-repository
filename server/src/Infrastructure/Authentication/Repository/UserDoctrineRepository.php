@@ -4,7 +4,7 @@ namespace App\Infrastructure\Authentication\Repository;
 
 use App\Domain\Authentication\Entity\Token;
 use App\Domain\Authentication\Exception\UserAlreadyExistsException;
-use App\Domain\Authentication\Helper\TokenSecrets;
+use App\Domain\Authentication\Helper\IdHidingHelper;
 use App\Domain\Authentication\Repository\UserRepository;
 use App\Infrastructure\Common\Repository\TokenDoctrineRepository as CommonTokenRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
@@ -51,7 +51,7 @@ class UserDoctrineRepository extends CommonTokenRepository implements UserReposi
         $this->persist($token);
     }
 
-    public function getExpiredTokens(): array
+    public function getExpiredUserAccounts(): array
     {
         $qb = $this->createQueryBuilder('token');
         $qb->where('token.expirationDate.value <= :now')
@@ -85,7 +85,7 @@ class UserDoctrineRepository extends CommonTokenRepository implements UserReposi
         }
 
         // search only in allowed parts of token "*****f40-**87-**7c-**bb-********e8c0" when user does not have permissions to see full tokens
-        $qb->andWhere(TokenSecrets::generateDQLConcatString('token.id') . ' LIKE :pattern OR token.id = :token_id');
+        $qb->andWhere(IdHidingHelper::generateDQLConcatString('token.id') . ' LIKE :pattern OR token.id = :token_id');
         $qb->orWhere('CAST(token.roles.value as STRING) LIKE :pattern');
 
         $qb->setParameters(['pattern' => '%' . $pattern . '%', 'token_id' => $pattern]);

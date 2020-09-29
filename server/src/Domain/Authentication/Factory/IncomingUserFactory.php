@@ -6,12 +6,9 @@ use App\Domain\Authentication\Entity\Token;
 use App\Domain\Authentication\Exception\AuthenticationException;
 use App\Domain\Authentication\Repository\UserRepository;
 
-class IncomingTokenFactory
+class IncomingUserFactory
 {
-    /**
-     * @var UserRepository $repository
-     */
-    private $repository;
+    private UserRepository $repository;
 
     public function __construct(UserRepository $repository)
     {
@@ -19,24 +16,24 @@ class IncomingTokenFactory
     }
 
     /**
-     * @param string      $tokenString
+     * @param string      $userId
      * @param string|null $className
      *
      * @return Token
      *
      * @throws AuthenticationException
      */
-    public function createFromString(string $tokenString, string $className = Token::class)
+    public function createFromString(string $userId, string $className = Token::class)
     {
-        $persistedToken = $this->repository->findUserByUserId($tokenString, $className);
+        $persistedUser = $this->repository->findUserByUserId($userId, $className);
 
-        if (!$persistedToken) {
+        if (!$persistedUser) {
             throw new AuthenticationException(
                 'Invalid token, cannot find token id in the persistent database',
                 AuthenticationException::CODES['not_authenticated']
             );
         }
 
-        return $persistedToken;
+        return $persistedUser;
     }
 }

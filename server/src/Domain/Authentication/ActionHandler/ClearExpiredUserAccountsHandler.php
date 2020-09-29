@@ -36,7 +36,7 @@ class ClearExpiredUserAccountsHandler
 
         $log = [];
 
-        foreach ($this->repository->getExpiredTokens() as $user) {
+        foreach ($this->repository->getExpiredUserAccounts() as $user) {
             $notifier(
                 '[' . $user->getExpirationDate()->format('Y-m-d H:i:s') . '] ' .
                 '<comment>Removing user account ' . $user->getId() . '</comment>'

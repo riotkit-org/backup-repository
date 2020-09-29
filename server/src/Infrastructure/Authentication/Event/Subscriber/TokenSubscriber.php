@@ -4,7 +4,7 @@ namespace App\Infrastructure\Authentication\Event\Subscriber;
 
 use App\Domain\Authentication\Entity\Token;
 use App\Domain\Authentication\Exception\AuthenticationException;
-use App\Domain\Authentication\Factory\IncomingTokenFactory;
+use App\Domain\Authentication\Factory\IncomingUserFactory;
 use App\Domain\Roles;
 use App\Infrastructure\Authentication\Token\TokenTransport;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -17,11 +17,11 @@ class TokenSubscriber implements EventSubscriberInterface
 {
     public const EVENT_PRIORITY = 0;
 
-    private IncomingTokenFactory $factory;
+    private IncomingUserFactory $factory;
     private TokenStorageInterface $tokenStorage;
     private bool $isDev;
 
-    public function __construct(IncomingTokenFactory $factory, TokenStorageInterface $tokenStorage, bool $isDev)
+    public function __construct(IncomingUserFactory $factory, TokenStorageInterface $tokenStorage, bool $isDev)
     {
         $this->factory = $factory;
         $this->tokenStorage = $tokenStorage;

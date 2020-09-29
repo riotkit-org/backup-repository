@@ -6,7 +6,7 @@ use App\Domain\Common\Exception\DomainInputValidationConstraintViolatedError;
 use App\Domain\Errors;
 use Throwable;
 
-class InvalidTokenIdException extends DomainInputValidationConstraintViolatedError
+class InvalidUserIdException extends DomainInputValidationConstraintViolatedError
 {
     public function __construct(Throwable $previous = null)
     {

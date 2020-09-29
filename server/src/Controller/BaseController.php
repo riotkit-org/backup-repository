@@ -3,7 +3,7 @@
 namespace App\Controller;
 
 use App\Domain\Authentication\Entity\Token;
-use App\Domain\Authentication\Factory\IncomingTokenFactory;
+use App\Domain\Authentication\Factory\IncomingUserFactory;
 use App\Domain\Common\Exception\AuthenticationException;
 use App\Domain\Common\Exception\CommonValidationException;
 use App\Domain\Common\Exception\ReadOnlyException;
@@ -42,7 +42,7 @@ abstract class BaseController implements ContainerAwareInterface
         }
 
         if ($className) {
-            return $this->get(IncomingTokenFactory::class)->createFromString($token->getId(), $className);
+            return $this->get(IncomingUserFactory::class)->createFromString($token->getId(), $className);
         }
 
         return $token;

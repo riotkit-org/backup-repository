@@ -3,7 +3,7 @@
 namespace Tests\Domain\Authentication\Entity;
 
 use App\Domain\Authentication\Entity\Token;
-use App\Domain\Authentication\Helper\TokenSecrets;
+use App\Domain\Authentication\Helper\IdHidingHelper;
 use App\Infrastructure\Authentication\Repository\UserDoctrineRepository;
 use Doctrine\ORM\AbstractQuery;
 use Ramsey\Uuid\Uuid;
@@ -12,14 +12,14 @@ use Tests\BaseTestCase;
 class TokenSecretsTest extends BaseTestCase
 {
     /**
-     * @see TokenSecrets::generateDQLConcatString()
-     * @see TokenSecrets::getStrippedOutToken()
+     * @see IdHidingHelper::generateDQLConcatString()
+     * @see IdHidingHelper::getStrippedOutToken()
      */
     public function testGenerateDQLConcatString()
     {
         $uuid = '16f63f40-0087-467c-bebb-5c6b82e8e8c0';
-        $generated = TokenSecrets::generateDQLConcatString('\'' . $uuid . '\'');
-        $strippedInPHP = TokenSecrets::getStrippedOutToken($uuid);
+        $generated = IdHidingHelper::generateDQLConcatString('\'' . $uuid . '\'');
+        $strippedInPHP = IdHidingHelper::getStrippedOutToken($uuid);
 
         // prepare Symfony DI
         self::bootKernel();

@@ -2,7 +2,7 @@
 
 namespace App\Domain\Common\SharedEntity;
 
-use App\Domain\Authentication\Helper\TokenSecrets;
+use App\Domain\Authentication\Helper\IdHidingHelper;
 use App\Domain\Common\ValueObject\Roles;
 
 class Token
@@ -29,7 +29,7 @@ class Token
     public function getCensoredId(): ?string
     {
         if ($this->getId()) {
-            return TokenSecrets::getStrippedOutToken($this->getId());
+            return IdHidingHelper::getStrippedOutToken($this->getId());
         }
 
         return null;

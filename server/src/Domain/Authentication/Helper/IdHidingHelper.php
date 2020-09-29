@@ -2,7 +2,7 @@
 
 namespace App\Domain\Authentication\Helper;
 
-final class TokenSecrets
+final class IdHidingHelper
 {
     /**
      * Describes how many characters should be hidden in each part of the token
@@ -19,7 +19,7 @@ final class TokenSecrets
     public static function getStrippedOutToken(string $id): string
     {
         $parts = explode('-', $id);
-        $ranges = TokenSecrets::TOKEN_CENSORSHIP_RANGE;
+        $ranges = IdHidingHelper::TOKEN_CENSORSHIP_RANGE;
 
         foreach ($parts as $num => $value) {
             $parts[$num] = str_replace(

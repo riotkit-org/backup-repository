@@ -6,13 +6,13 @@ use App\Domain\Authentication\ActionHandler\UserCreationHandler;
 use App\Domain\Authentication\Exception\ValidationException;
 use App\Domain\Authentication\Factory\Context\SecurityContextFactory;
 use App\Domain\Authentication\Form\AuthForm;
-use App\Domain\Authentication\Form\TokenDetailsForm;
+use App\Domain\Authentication\Form\DetailsForm;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class GenerateTokenCommand extends Command
+class CreateUserCommand extends Command
 {
     public const NAME = 'auth:create-token';
 
@@ -55,7 +55,7 @@ class GenerateTokenCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $form = new AuthForm();
-        $form->data = new TokenDetailsForm();
+        $form->data = new DetailsForm();
         $form->data->tags                       = $this->getMultipleValueOption($input, 'tags');
         $form->data->allowedMimeTypes           = $this->getMultipleValueOption($input, 'mimes');
         $form->data->maxAllowedFileSize         = (int) $input->getOption('max-file-size');
