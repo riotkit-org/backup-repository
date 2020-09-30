@@ -100,7 +100,7 @@ class DeleteController extends BaseController
         return $this->wrap(
             function () use ($form, $request) {
                 $securityContext = $this->authFactory->createCollectionManagementContext(
-                    $this->getLoggedUserToken()
+                    $this->getLoggedUser()
                 );
 
                 $response = $this->handler->handle($form, $securityContext);

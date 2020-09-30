@@ -24,7 +24,7 @@ class AuthFormType extends AbstractType
             ->add('organization', TextType::class)
             ->add('email', EmailType::class)
             ->add('expires', TextType::class)
-            ->add('data',    TokenDetailsFormType::class)
+            ->add('data',    DetailsFormType::class)
             ->add('id', TextType::class);
     }
 

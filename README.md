@@ -34,6 +34,7 @@ Backup Repository Todo
 - [ ] FEATURE: Bump Symfony 4 to Symfony 5 (at the end of refactoring?)
 - [ ] FEATURE: Add a frontend in React or Vue.js
 - [ ] FEATURE: Check if there is enough declared space to define a backup (or modify existing)
+- [ ] Drop user id (previously token id) censorship as the user will be using e-mail anyway to log-in
 
 #### For installation, guides and more information please check he documentation: https://file-repository.readthedocs.io/en/latest/index.html
 

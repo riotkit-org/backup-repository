@@ -8,7 +8,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Request\ParamConverter\ParamConverterInte
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Security;
 
-class TokenResolver implements ParamConverterInterface
+class ControllerUserResolver implements ParamConverterInterface
 {
     /**
      * @var Security

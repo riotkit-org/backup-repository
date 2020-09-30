@@ -95,7 +95,7 @@ class FilesListingController extends BaseController
         }
 
         $securityContext = $this->authFactory
-            ->createListingContextFromTokenAndForm($this->getLoggedUserToken(), $form);
+            ->createListingContextFromTokenAndForm($this->getLoggedUser(), $form);
 
         return $this->wrap(
             function () use ($form, $securityContext) {

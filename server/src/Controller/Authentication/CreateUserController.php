@@ -14,7 +14,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Swagger\Annotations as SWG;
 
-class GenerateTokenController extends BaseController
+class CreateUserController extends BaseController
 {
     private UserCreationHandler $handler;
     private SecurityContextFactory $authFactory;
@@ -26,7 +26,7 @@ class GenerateTokenController extends BaseController
     }
 
     /**
-     * Create a new token, assign roles, set expiration, upload policy
+     * Create a new user, assign roles, set optional expiration, upload policy
      *
      * @SWG\Post(
      *     description="Request to create a new access token",
@@ -44,6 +44,8 @@ class GenerateTokenController extends BaseController
      *             @SWG\Property(property="id", example="ca6a2635-d2cb-4682-ba81-3879dd0e8a77", type="string"),
      *             @SWG\Property(property="password", example="aNti_cap.italiSM", type="string"),
      *             @SWG\Property(property="email", example="example@riseup.net", type="string"),
+     *             @SWG\Property(property="about", example="A member of the collective. Technically website administrator.", type="string"),
+     *             @SWG\Property(property="organization", example="Food not bombs", type="string"),
      *             @SWG\Property(property="roles", example={"collections.create_new", "collections.manage_tokens_in_allowed_collections"}, type="array", @SWG\Items(type="string")),
      *             @SWG\Property(property="expires", type="string", example="2021-05-01 01:06:01"),
      *             @SWG\Property(property="data", ref=@Model(type=\App\Domain\Authentication\Entity\Docs\TokenData::class))
@@ -53,7 +55,7 @@ class GenerateTokenController extends BaseController
      *
      * @SWG\Response(
      *     response="201",
-     *     description="Token was successfuly created",
+     *     description="User was successfuly created",
      *     @SWG\Schema(
      *         type="object",
      *         @SWG\Property(
@@ -76,7 +78,7 @@ class GenerateTokenController extends BaseController
      *         @SWG\Property(
      *             property="message",
      *             type="string",
-     *             example="Token created"
+     *             example="User created"
      *         ),
      *         @SWG\Property(
      *             property="token",
@@ -110,7 +112,7 @@ class GenerateTokenController extends BaseController
                 return new JsonFormattedResponse(
                     $this->handler->handle(
                         $form,
-                        $this->authFactory->createFromToken($this->getLoggedUserToken())
+                        $this->authFactory->createFromUserAccount($this->getLoggedUser())
                     ),
                     JsonFormattedResponse::HTTP_CREATED
                 );

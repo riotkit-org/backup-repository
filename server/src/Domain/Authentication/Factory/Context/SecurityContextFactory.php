@@ -8,7 +8,7 @@ use App\Domain\Roles;
 
 class SecurityContextFactory
 {
-    public function createFromToken(Token $access): AuthenticationManagementContext
+    public function createFromUserAccount(Token $access): AuthenticationManagementContext
     {
         return new AuthenticationManagementContext(
             $access->hasRole(Roles::ROLE_LOOKUP_TOKENS),

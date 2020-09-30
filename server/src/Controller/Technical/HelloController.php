@@ -65,7 +65,7 @@ class HelloController extends BaseController
      */
     public function showVersionAction(): JsonResponse
     {
-        if ($this->getLoggedUserToken()->isAnonymous()) {
+        if ($this->getLoggedUser()->isAnonymous()) {
             throw new AccessDeniedHttpException();
         }
 

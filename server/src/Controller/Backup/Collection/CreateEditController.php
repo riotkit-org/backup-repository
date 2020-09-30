@@ -154,7 +154,7 @@ class CreateEditController extends BaseController
             function () use ($form, $request, $isCreation) {
                 $response = $this->handle(
                     $form,
-                    $this->authFactory->createCollectionManagementContext($this->getLoggedUserToken()),
+                    $this->authFactory->createCollectionManagementContext($this->getLoggedUser()),
                     $isCreation
                 );
 

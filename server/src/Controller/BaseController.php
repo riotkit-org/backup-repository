@@ -29,7 +29,7 @@ abstract class BaseController implements ContainerAwareInterface
         return $this->container->getParameter($name);
     }
 
-    protected function getLoggedUserToken(?string $className = null)
+    protected function getLoggedUser(?string $className = null)
     {
         /**
          * @var TokenTransport $sessionToken
@@ -51,13 +51,14 @@ abstract class BaseController implements ContainerAwareInterface
     protected function getLoggedUserOrAnonymousToken(?string $className = null)
     {
         try {
-            return $this->getLoggedUserToken($className);
+            return $this->getLoggedUser($className);
 
         } catch (AccessDeniedHttpException $exception) {
             return Token::createAnonymousToken();
         }
     }
 
+    // @todo: https://github.com/riotkit-org/file-repository/issues/114
     protected function submitFormFromJsonRequest(Request $request, $formObject, string $formType): FormInterface
     {
         $arrayForm = \json_decode($request->getContent(), true);
@@ -77,6 +78,7 @@ abstract class BaseController implements ContainerAwareInterface
         return $infrastructureForm;
     }
 
+    // @todo: https://github.com/riotkit-org/file-repository/issues/114
     protected function submitFormFromRequestQuery(Request $request, $formObject, string $formType): FormInterface
     {
         $infrastructureForm = $this->createForm($formType, $formObject);
@@ -87,6 +89,7 @@ abstract class BaseController implements ContainerAwareInterface
         return $infrastructureForm;
     }
 
+    // @todo: https://github.com/riotkit-org/file-repository/issues/115
     protected function createValidationErrorResponse(FormInterface $form): JsonFormattedResponse
     {
         return new JsonFormattedResponse(
@@ -100,6 +103,7 @@ abstract class BaseController implements ContainerAwareInterface
         );
     }
 
+    // @todo: https://github.com/riotkit-org/file-repository/issues/115
     protected function createAccessDeniedResponse($message = 'Forbidden'): JsonFormattedResponse
     {
         return new JsonFormattedResponse(
@@ -112,6 +116,7 @@ abstract class BaseController implements ContainerAwareInterface
         );
     }
 
+    // @todo: https://github.com/riotkit-org/file-repository/issues/115
     protected function createNotFoundResponse(string $message = 'Not found'): JsonFormattedResponse
     {
         return new JsonFormattedResponse(
@@ -124,6 +129,7 @@ abstract class BaseController implements ContainerAwareInterface
         );
     }
 
+    // @todo: https://github.com/riotkit-org/file-repository/issues/115
     public function createAPIReadOnlyResponse(): JsonFormattedResponse
     {
         return new JsonFormattedResponse(
@@ -136,6 +142,7 @@ abstract class BaseController implements ContainerAwareInterface
         );
     }
 
+    // @todo: https://github.com/riotkit-org/file-repository/issues/115
     public function createRequestExceptionResponse(RequestException $requestException): JsonFormattedResponse
     {
         return new JsonFormattedResponse(
@@ -228,6 +235,7 @@ abstract class BaseController implements ContainerAwareInterface
         throw new \InvalidArgumentException('Invalid data type "' . \gettype($value) . '" specified, cannot parse boolean');
     }
 
+    // @todo: https://github.com/riotkit-org/file-repository/issues/114
     private function collectErrorsForForm(FormInterface $form, string $inputName, array $errors = []): array
     {
         $errorsForField = [];

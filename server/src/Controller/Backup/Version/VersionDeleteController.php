@@ -51,7 +51,7 @@ class VersionDeleteController extends BaseController
             function () use ($form, $request) {
                 $response = $this->handler->handle(
                     $form,
-                    $this->authFactory->createVersioningContext($this->getLoggedUserToken()),
+                    $this->authFactory->createVersioningContext($this->getLoggedUser()),
                     strtolower((string) $request->get('simulate')) !== 'true'
                 );
 

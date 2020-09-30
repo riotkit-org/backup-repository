@@ -113,13 +113,13 @@ class FetchController extends BaseController
         }
 
         // insert token as input, so the domain can pass it to the redirect
-        $form->token = $this->getLoggedUserToken()->getId();
+        $form->token = $this->getLoggedUser()->getId();
 
         return $this->wrap(
             function () use ($form) {
                 $response = $this->handler->handle(
                     $form,
-                    $this->authFactory->createVersioningContext($this->getLoggedUserToken())
+                    $this->authFactory->createVersioningContext($this->getLoggedUser())
                 );
 
                 if ($response->isSuccess()) {

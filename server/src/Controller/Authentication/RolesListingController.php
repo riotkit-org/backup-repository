@@ -81,7 +81,7 @@ class RolesListingController extends BaseController
     public function handle(): Response
     {
         return $this->wrap(function () {
-            $securityContext = $this->authFactory->createFromToken($this->getLoggedUserToken());
+            $securityContext = $this->authFactory->createFromUserAccount($this->getLoggedUser());
 
             return new JsonFormattedResponse($this->handler->handle($securityContext));
         });

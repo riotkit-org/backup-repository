@@ -1,6 +1,6 @@
 authentication.create_user:
     path: /auth/user
-    controller: 'App\Controller\Authentication\GenerateTokenController::generateAction'
+    controller: 'App\Controller\Authentication\CreateUserController::generateAction'
     methods: ['POST']
     defaults:
         _secured: true
@@ -9,21 +9,21 @@ authentication.create_user:
 
 authentication.search:
     path: /auth/user/search
-    controller: '\App\Controller\Authentication\TokenSearchController::searchAction'
+    controller: '\App\Controller\Authentication\UserSearchController::searchAction'
     methods: ['GET']
     defaults:
         _secured: true
 
 authentication.lookup:
     path: /auth/user/by-id/{userId}
-    controller: 'App\Controller\Authentication\LookupTokenController::handle'
+    controller: 'App\Controller\Authentication\LookupUserController::handle'
     methods: ['GET']
     defaults:
         _secured: true
 
 authentication.delete:
     path: /auth/user/by-id/{userId}
-    controller: 'App\Controller\Authentication\DeleteTokenController::handle'
+    controller: 'App\Controller\Authentication\RevokeUserAccountController::handle'
     methods: ['DELETE']
     defaults:
         _secured: true

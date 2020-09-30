@@ -50,7 +50,7 @@ class VersionListingController extends BaseController
             function () use ($form) {
                 $response = $this->handler->handle(
                     $form,
-                    $this->authFactory->createVersioningContext($this->getLoggedUserToken())
+                    $this->authFactory->createVersioningContext($this->getLoggedUser())
                 );
 
                 return new JsonFormattedResponse($response, $response->getExitCode());

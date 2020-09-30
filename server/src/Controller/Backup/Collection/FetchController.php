@@ -98,7 +98,7 @@ class FetchController extends BaseController
         return $this->wrap(
             function () use ($form) {
                 $securityContext = $this->authFactory->createCollectionManagementContext(
-                    $this->getLoggedUserToken()
+                    $this->getLoggedUser()
                 );
 
                 $response = $this->handler->handle($form, $securityContext);

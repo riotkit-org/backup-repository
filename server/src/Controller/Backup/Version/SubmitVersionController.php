@@ -67,8 +67,8 @@ class SubmitVersionController extends BaseController
             function () use ($form, $request) {
                 $response = $this->handler->handle(
                     $form,
-                    $this->authFactory->createVersioningContext($this->getLoggedUserToken()),
-                    $this->getLoggedUserToken()
+                    $this->authFactory->createVersioningContext($this->getLoggedUser()),
+                    $this->getLoggedUser()
                 );
 
                 return new JsonFormattedResponse($response, $response->getExitCode());

@@ -88,7 +88,7 @@ class ListAllowedTokensForCollectionController extends BaseController
             function () use ($form) {
                 $response = $this->handler->handle(
                     $form,
-                    $this->authFactory->createCollectionManagementContext($this->getLoggedUserToken())
+                    $this->authFactory->createCollectionManagementContext($this->getLoggedUser())
                 );
 
                 return new JsonFormattedResponse($response, $response->getHttpCode());

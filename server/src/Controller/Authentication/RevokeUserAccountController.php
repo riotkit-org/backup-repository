@@ -3,7 +3,7 @@
 namespace App\Controller\Authentication;
 
 use App\Controller\BaseController;
-use App\Domain\Authentication\ActionHandler\UserAccountLookupHandler;
+use App\Domain\Authentication\ActionHandler\UserAccountDeleteHandler;
 use App\Domain\Authentication\Factory\Context\SecurityContextFactory;
 use App\Infrastructure\Common\Http\JsonFormattedResponse;
 use Exception;
@@ -11,30 +11,30 @@ use Symfony\Component\HttpFoundation\Response;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Swagger\Annotations as SWG;
 
-class LookupTokenController extends BaseController
+class RevokeUserAccountController extends BaseController
 {
-    private UserAccountLookupHandler $handler;
+    private UserAccountDeleteHandler $handler;
     private SecurityContextFactory $authFactory;
 
-    public function __construct(UserAccountLookupHandler $handler, SecurityContextFactory $authFactory)
+    public function __construct(UserAccountDeleteHandler $handler, SecurityContextFactory $authFactory)
     {
         $this->handler = $handler;
         $this->authFactory = $authFactory;
     }
 
     /**
-     * Retrieve details of a specific user
+     * Revoke an access for given user
      *
      * @SWG\Parameter(
      *     type="string",
      *     in="path",
      *     name="userId",
-     *     description="Id of an user to lookup"
+     *     description="Id of an user that should be deleted"
      * )
      *
      * @SWG\Response(
-     *     response="200",
-     *     description="Shows details about given token",
+     *     response="201",
+     *     description="Token was deleted",
      *     @SWG\Schema(
      *         type="object",
      *         @SWG\Property(
@@ -45,7 +45,7 @@ class LookupTokenController extends BaseController
      *         @SWG\Property(
      *             property="http_code",
      *             type="integer",
-     *             example="200"
+     *             example="201"
      *         ),
      *         @SWG\Property(
      *             property="errors",
@@ -57,7 +57,7 @@ class LookupTokenController extends BaseController
      *         @SWG\Property(
      *             property="message",
      *             type="string",
-     *             example="Token found"
+     *             example="User was deleted"
      *         ),
      *         @SWG\Property(
      *             property="token",
@@ -83,14 +83,13 @@ class LookupTokenController extends BaseController
             function () use ($userId) {
                 $response = $this->handler->handle(
                     $userId,
-                    $this->authFactory->createFromToken($this->getLoggedUserToken())
+                    $this->authFactory->createFromUserAccount($this->getLoggedUser())
                 );
 
-                if ($response === null) {
-                    return $this->createNotFoundResponse();
-                }
-
-                return new JsonFormattedResponse($response, JsonFormattedResponse::HTTP_OK);
+                return new JsonFormattedResponse(
+                    $response,
+                    $response->getHttpCode()
+                );
             }
         );
     }

@@ -12,7 +12,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Swagger\Annotations as SWG;
 
-class TokenSearchController extends BaseController
+class UserSearchController extends BaseController
 {
     private UserSearchHandler $handler;
     private SecurityContextFactory $authFactory;
@@ -24,7 +24,7 @@ class TokenSearchController extends BaseController
     }
 
     /**
-     * Search for tokens
+     * Search for users accounts
      *
      * @SWG\Parameter(
      *     type="string",
@@ -49,7 +49,7 @@ class TokenSearchController extends BaseController
      *
      * @SWG\Response(
      *     response="200",
-     *     description="Search tokens by id and associted fields. Notice: When current token has restriction 'security.cannot_see_full_token_ids', then all tokens will be censored, and search phrase will apply only to non-asterisk characters, example: *****f40-**87-**7c-**bb-********e8c0",
+     *     description="Search users by id and associted fields",
      *     @SWG\Schema(
      *         type="object",
      *         @SWG\Property(
@@ -100,7 +100,7 @@ class TokenSearchController extends BaseController
     {
         return $this->wrap(
             function () use ($request) {
-                $securityContext = $this->authFactory->createFromToken($this->getLoggedUserToken());
+                $securityContext = $this->authFactory->createFromUserAccount($this->getLoggedUser());
 
                 $response = $this->handler->handle(
                     (string) $request->get('q', ''),

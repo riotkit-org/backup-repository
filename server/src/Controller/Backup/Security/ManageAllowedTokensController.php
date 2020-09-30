@@ -67,7 +67,7 @@ class ManageAllowedTokensController extends BaseController
 
                 $response = $this->getHandler($request)->handle(
                     $form,
-                    $this->authFactory->createCollectionManagementContext($this->getLoggedUserToken())
+                    $this->authFactory->createCollectionManagementContext($this->getLoggedUser())
                 );
 
                 if ($request->query->get('simulate') !== 'true') {
