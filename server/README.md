@@ -43,6 +43,9 @@ symfony serve
 # run API test - single test
 ./vendor/bin/codecept run --html=file-repository.html functional AuthenticationCest:generateBasicToken
 
+# run API tests - by group
+./vendor/bin/codecept run --html=file-repository.html -g Domain/Backup
+
 # unit tests (all tests)
 ./vendor/bin/phpunit
 

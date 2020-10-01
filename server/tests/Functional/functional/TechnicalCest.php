@@ -4,6 +4,9 @@ namespace Tests\Functional;
 
 use FunctionalTester;
 
+/**
+ * @group Technical
+ */
 class TechnicalCest
 {
     public function testMainPageWillReturnSuccessResponse(FunctionalTester $I): void

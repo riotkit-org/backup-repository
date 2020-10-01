@@ -5,6 +5,9 @@ namespace Tests\Functional\Features\CollectionsCustomId;
 use FunctionalTester;
 use Ramsey\Uuid\Uuid;
 
+/**
+ * @group Domain/Backup
+ */
 class BackupCollectionCustomIdsCest
 {
     private function createValidCollection(FunctionalTester $I, string $generatedUuidForTest): string
@@ -51,7 +54,7 @@ class BackupCollectionCustomIdsCest
     {
         $I->amAdmin();
         $I->amUser(
-            $I->createUser([
+            $I->createStandardUser([
                 'roles' => [
                     'collections.create_new'
                 ]
@@ -75,7 +78,7 @@ class BackupCollectionCustomIdsCest
 
         $I->amAdmin();
         $I->amUser(
-            $I->createUser([
+            $I->createStandardUser([
                 'roles' => [
                     'collections.create_new', 'collections.create_new.with_custom_id'
                 ]

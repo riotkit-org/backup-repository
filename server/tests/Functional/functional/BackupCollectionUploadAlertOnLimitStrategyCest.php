@@ -4,6 +4,9 @@ namespace Tests\Functional;
 
 use FunctionalTester;
 
+/**
+ * @group Domain/Backup
+ */
 class BackupCollectionUploadAlertOnLimitStrategyCest
 {
     /**
@@ -19,7 +22,7 @@ class BackupCollectionUploadAlertOnLimitStrategyCest
     public function prepareDataForTest(FunctionalTester $I): void
     {
         $I->amAdmin();
-        $this->token = $I->createUser([
+        $this->token = $I->createStandardUser([
             'roles' => [
                 "collections.create_new",
                 "collections.manage_tokens_in_allowed_collections",
@@ -32,13 +35,13 @@ class BackupCollectionUploadAlertOnLimitStrategyCest
         $I->amUser($this->token);
 
         $this->id = $I->createCollection([
-            "maxBackupsCount" => 2,
+            "maxBackupsCount"   => 2,
             "maxOneVersionSize" => "1MB",
             "maxCollectionSize" => "5MB",
-            "strategy" => "alert_when_backup_limit_reached",
+            "strategy"    => "alert_when_backup_limit_reached",
             "description" => "Title: Brighton Solidarity Federation: the first five months of 2018",
-            "password" => "solfed",
-            "filename" => "solfed-state"
+            "password"    => "solfed",
+            "filename"    => "solfed-state"
         ]);
     }
 

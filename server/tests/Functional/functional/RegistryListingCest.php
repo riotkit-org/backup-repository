@@ -4,6 +4,10 @@ namespace Tests\Functional;
 
 use FunctionalTester;
 
+/**
+ * @group Domain/Storage
+ * @group Technical
+ */
 class RegistryListingCest
 {
     // @todo: Check if we can use file:// protocol to simplify the test

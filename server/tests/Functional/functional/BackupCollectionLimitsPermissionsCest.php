@@ -4,6 +4,9 @@ namespace Tests\Functional;
 
 use FunctionalTester;
 
+/**
+ * @group Domain/Backup
+ */
 class BackupCollectionLimitsPermissionsCest
 {
     public function testNotAllowedToCreateInfiniteCollections(FunctionalTester $I): void

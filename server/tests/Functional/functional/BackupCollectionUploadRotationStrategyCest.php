@@ -4,6 +4,9 @@ namespace Tests\Functional;
 
 use FunctionalTester;
 
+/**
+ * @group Domain/Backup
+ */
 class BackupCollectionUploadRotationStrategyCest
 {
     private string $id    = '';
@@ -12,7 +15,7 @@ class BackupCollectionUploadRotationStrategyCest
     public function prepareDataForTest(FunctionalTester $I): void
     {
         $I->amAdmin();
-        $this->token = $I->createUser([
+        $this->token = $I->createStandardUser([
             'roles' => [
                 "collections.create_new",
                 "collections.manage_tokens_in_allowed_collections",

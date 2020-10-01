@@ -4,6 +4,9 @@ namespace Tests\Functional;
 
 use FunctionalTester;
 
+/**
+ * @group Domain/Backup
+ */
 class BackupCollectionAccessControlCest
 {
     public function testGrantingAndDenyingATokenToCollection(FunctionalTester $I): void

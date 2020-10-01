@@ -7,6 +7,9 @@ require_once __DIR__ . '/../Urls.php';
 use FunctionalTester;
 use Tests\Urls;
 
+/**
+ * @group Domain/Authentication
+ */
 class AuthenticationCest
 {
     public function generateBasicUserAccess(FunctionalTester $I): void

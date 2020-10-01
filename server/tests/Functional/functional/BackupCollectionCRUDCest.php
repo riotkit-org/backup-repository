@@ -4,6 +4,9 @@ namespace Tests\Functional;
 
 use FunctionalTester;
 
+/**
+ * @group Domain/Backup
+ */
 class BackupCollectionCRUDCest
 {
     public function testCreateEditDelete(FunctionalTester $I): void

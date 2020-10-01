@@ -5,6 +5,9 @@ namespace Tests\Functional\Features\Security;
 /**
  * FEATURE: GIVEN a token can have assigned a whitelist IP addresses and/or whitelist User Agents
  *          THEN a request to application using this token needs to be performed from allowed IP and/or UA
+ *
+ * @group Domain/Authentication
+ * @group Security
  */
 class FeatureLimitTokenAccessPerIpAndUserAgentCest
 {

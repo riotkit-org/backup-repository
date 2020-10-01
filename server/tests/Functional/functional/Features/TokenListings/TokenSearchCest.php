@@ -6,6 +6,8 @@ use FunctionalTester;
 
 /**
  * FEATURE: Searching tokens by id and by metadata
+ *
+ * @group Domain/Authentication
  */
 class TokenSearchCest
 {

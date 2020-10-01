@@ -4,6 +4,9 @@ namespace Tests\Functional;
 
 use FunctionalTester;
 
+/**
+ * @group Domain/Backup
+ */
 class BackupCollectionValidationCest
 {
     public function testWillValidateFormatOfSubmittedFields(FunctionalTester $I): void
