@@ -111,7 +111,7 @@ class CreateUserCommand extends Command
         $this->debug(json_encode($response, JSON_PRETTY_PRINT), $output);
 
         if (!$output->isVerbose()) {
-            $output->writeln($response->getTokenId() ?? '');
+            $output->writeln($response->getUserId() ?? '');
         }
 
         return 0;

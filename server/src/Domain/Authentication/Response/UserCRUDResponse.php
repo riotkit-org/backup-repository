@@ -63,7 +63,7 @@ class UserCRUDResponse extends NormalResponse
         return $base;
     }
 
-    public function getTokenId(): ?string
+    public function getUserId(): ?string
     {
         return $this->user->getId();
     }

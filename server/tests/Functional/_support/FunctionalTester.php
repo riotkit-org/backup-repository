@@ -1,5 +1,6 @@
 <?php
 
+use Ramsey\Uuid\Uuid;
 use Tests\Urls;
 
 require_once __DIR__ . '/../Urls.php';
@@ -54,13 +55,14 @@ class FunctionalTester extends \Codeception\Actor
     {
         $this->amAdmin();
 
-        $token = $this->createUser(
+        $token = $this->createStandardUser(
             array_merge(
                 ['roles' => $roles],
                 $params
             ),
             $assert
         );
+
         $this->amUser($token);
 
         return $token;
@@ -110,13 +112,31 @@ class FunctionalTester extends \Codeception\Actor
             )
         );
 
-        $status = $this->grabDataFromResponseByJsonPath('.status')[0] ?? '';
-
         if ($assert) {
-            $this->assertNotSame('Validation error', $status);
+            $this->canSeeResponseCodeIs(201);
         }
 
-        return $this->grabDataFromResponseByJsonPath('.token.id')[0] ?? '';
+        return $this->grabDataFromResponseByJsonPath('.user.id')[0] ?? '';
+    }
+
+    /**
+     * Creates a user with standard fields filled up like email, password, organization, about
+     *
+     * @param array $data
+     * @param bool $assert
+     *
+     * @return string
+     */
+    public function createStandardUser(array $data, bool $assert = true): string
+    {
+        $data = array_merge([
+            'password'     => 'food-not-bombs-1980',
+            'email'        => Uuid::uuid4()->getHex() . '@riseup.net',
+            'organization' => 'Food Not Bombs',
+            'about'        => 'A loose-knit group of independent collectives, sharing free vegan and vegetarian food with others. Food Not Bombs\' ideology is that myriad corporate and government priorities are skewed to allow hunger to persist in the midst of abundance. To demonstrate this (and to reduce costs), a large amount of the food served by the group is surplus food from grocery stores, bakeries and markets that would otherwise go to waste (or, occasionally, has already been thrown away). This group exhibits a form of franchise activism.',
+        ], $data);
+
+        return $this->createUser($data, $assert);
     }
 
     public function revokeAccess(string $userId): void

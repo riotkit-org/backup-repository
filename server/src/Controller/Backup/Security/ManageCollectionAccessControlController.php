@@ -20,7 +20,7 @@ use Symfony\Component\HttpFoundation\Response;
 /**
  * Attach/detach a token of given Id to the collection
  */
-class ManageAllowedTokensController extends BaseController
+abstract class ManageCollectionAccessControlController extends BaseController
 {
     private TokenAddHandler $attachingHandler;
     private DisallowTokenHandler $detachingHandler;

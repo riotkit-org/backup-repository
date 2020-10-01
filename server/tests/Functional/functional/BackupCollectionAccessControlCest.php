@@ -9,7 +9,7 @@ class BackupCollectionAccessControlCest
     public function testGrantingAndDenyingATokenToCollection(FunctionalTester $I): void
     {
         $I->amAdmin();
-        $secondTokenId = $I->createUser([
+        $secondTokenId = $I->createStandardUser([
             'roles' => ['upload.all'],
             'data' => [
                 'tags' => ['user_uploads.u123', 'user_uploads'],

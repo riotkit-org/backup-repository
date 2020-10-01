@@ -8,7 +8,7 @@ use App\Domain\Backup\Form\CollectionTokenListingForm;
 use App\Domain\Backup\Response\Collection\AllowedTokensResponse;
 use App\Domain\Backup\Security\CollectionManagementContext;
 
-class ListAllowedTokensForCollectionHandler
+class ListGrantedUsersForCollectionHandler
 {
     /**
      * @param CollectionTokenListingForm  $form

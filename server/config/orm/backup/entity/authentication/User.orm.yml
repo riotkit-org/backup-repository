@@ -1,4 +1,4 @@
-App\Domain\Backup\Entity\Authentication\Token:
+App\Domain\Backup\Entity\Authentication\User:
     type: entity
     table: users
     read_only: true
@@ -13,6 +13,9 @@ App\Domain\Backup\Entity\Authentication\Token:
             generator:
                 strategy: UUID
 
-    fields:
+    embedded:
         roles:
-            type: json
+            # @todo: Move VO also to Backup domain
+            class: App\Domain\Authentication\ValueObject\Roles
+            columnPrefix: false
+

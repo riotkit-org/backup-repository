@@ -29,24 +29,24 @@ backup.collection_listing:
     defaults:
         _secured: true
 
-backup.collection_list_tokens:
-    path: /repository/collection/{id}/token
-    controller: 'App\Controller\Backup\Security\ListAllowedTokensForCollectionController::listTokensAction'
+backup.collection_list_accesses:
+    path: /repository/collection/{id}/access
+    controller: 'App\Controller\Backup\Security\ListGrantedUsersForCollectionController::listTokensAction'
     methods: ['GET']
     defaults:
         _secured: true
 
 backup.collection_add_token:
-    path: /repository/collection/{id}/token
-    controller: 'App\Controller\Backup\Security\GrantTokenToCollectionController::handleAction'
+    path: /repository/collection/{id}/access
+    controller: 'App\Controller\Backup\Security\GrantUserToCollectionController::handleAction'
     methods: ['POST']
     defaults:
         _secured: true
 
 
 backup.collection_delete_token:
-    path: /repository/collection/{id}/token/{tokenId}
-    controller: 'App\Controller\Backup\Security\RevokeTokenFromCollectionController::handleAction'
+    path: /repository/collection/{id}/access/{tokenId}
+    controller: 'App\Controller\Backup\Security\RevokeUserAccessForCollectionController::handleAction'
     methods: ['DELETE']
     defaults:
         _secured: true

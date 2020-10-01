@@ -22,6 +22,9 @@ final class Roles
     public const TEST_TOKEN             = 'test-token-full-permissions';
     public const INTERNAL_CONSOLE_TOKEN = 'internal-console-token';
 
+    /** Recognized user in the system */
+    public const ROLE_USER                       = 'user';
+
     //
     //
     // upload/creation
@@ -145,6 +148,7 @@ final class Roles
     public const ROLE_DELETE_VERSIONS_IN_ALLOWED_COLLECTIONS = 'collections.delete_versions_for_allowed_collections';
 
     public const GRANTS_LIST = [
+        self::ROLE_USER,
         self::ROLE_UPLOAD,
         self::ROLE_LOOKUP_TOKENS,
         self::ROLE_SEARCH_FOR_TOKENS,

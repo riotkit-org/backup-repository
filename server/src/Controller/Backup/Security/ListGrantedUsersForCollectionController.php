@@ -3,7 +3,7 @@
 namespace App\Controller\Backup\Security;
 
 use App\Controller\BaseController;
-use App\Domain\Backup\ActionHandler\Security\ListAllowedTokensForCollectionHandler;
+use App\Domain\Backup\ActionHandler\Security\ListGrantedUsersForCollectionHandler;
 use App\Domain\Backup\Factory\SecurityContextFactory;
 use App\Domain\Backup\Form\CollectionTokenListingForm;
 use App\Infrastructure\Backup\Form\Collection\CollectionTokenListingFormType;
@@ -13,12 +13,12 @@ use Symfony\Component\HttpFoundation\Response;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Swagger\Annotations as SWG;
 
-class ListAllowedTokensForCollectionController extends BaseController
+class ListGrantedUsersForCollectionController extends BaseController
 {
-    private ListAllowedTokensForCollectionHandler $handler;
+    private ListGrantedUsersForCollectionHandler $handler;
     private SecurityContextFactory $authFactory;
 
-    public function __construct(ListAllowedTokensForCollectionHandler $handler, SecurityContextFactory $authFactory)
+    public function __construct(ListGrantedUsersForCollectionHandler $handler, SecurityContextFactory $authFactory)
     {
         $this->handler     = $handler;
         $this->authFactory = $authFactory;
@@ -36,7 +36,7 @@ class ListAllowedTokensForCollectionController extends BaseController
      *
      * @SWG\Response(
      *     response="200",
-     *     description="Lists all toknes assigned to given collection. Notice: Returns censored token ids, when requester has enabled restriction role 'security.cannot_see_full_token_ids'",
+     *     description="Lists all users that are granted access to given collection. Notice: Returns censored token ids, when requester has enabled restriction role 'security.cannot_see_full_token_ids'",
      *     @SWG\Schema(
      *         type="object",
      *         @SWG\Property(

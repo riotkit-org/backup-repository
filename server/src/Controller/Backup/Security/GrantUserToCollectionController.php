@@ -8,13 +8,13 @@ use Symfony\Component\HttpFoundation\Response;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Swagger\Annotations as SWG;
 
-class RevokeTokenFromCollectionController extends ManageAllowedTokensController
+class GrantUserToCollectionController extends ManageCollectionAccessControlController
 {
     /**
-     * Revoke a token from access to collection
+     * Grant token to be able to operate on a collection
      *
-     * @SWG\Delete(
-     *     description="Request revoke access to the token for given collection",
+     * @SWG\Post(
+     *     description="Request to grant access to collection for given token",
      *     consumes={"application/json"},
      *     produces={"application/json"},
      *
@@ -33,15 +33,20 @@ class RevokeTokenFromCollectionController extends ManageAllowedTokensController
      *     ),
      *
      *     @SWG\Parameter(
-     *         type="string",
-     *         in="path",
-     *         name="token",
-     *         description="Token id to revoke access for (subject token)"
+     *         in="body",
+     *         name="body",
+     *         description="JSON payload",
+     *
+     *         @SWG\Schema(
+     *             type="object",
+     *             required={"token"},
+     *             @SWG\Property(property="token", example="ca6a2635-d2cb-4682-ba81-3879dd0e8a77", type="string"),
+     *         )
      *     ),
      *
      *     @SWG\Response(
      *         response="200",
-     *         description="Access to collection was revoked",
+     *         description="Access to collection was granted or revoked",
      *         @SWG\Schema(
      *             type="object",
      *             @SWG\Property(
@@ -71,7 +76,7 @@ class RevokeTokenFromCollectionController extends ManageAllowedTokensController
      *                 @SWG\Property(
      *                     property="tokens_count",
      *                     type="integer",
-     *                     example=4
+     *                     example=5
      *                 )
      *             )
      *         )

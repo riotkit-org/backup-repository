@@ -43,12 +43,12 @@ App\Domain\Backup\Entity\BackupCollection:
 
     manyToMany:
         allowedTokens:
-            targetEntity: App\Domain\Backup\Entity\Authentication\Token
+            targetEntity: App\Domain\Backup\Entity\Authentication\User
             joinTable:
-                name: collection_tokens
+                name: collection_users
                 joinColumns:
                     collection_id:
                         referencedColumnName: id
                 inverseJoinColumns:
-                    token_id:
+                    user_id:
                         referencedColumnName: id

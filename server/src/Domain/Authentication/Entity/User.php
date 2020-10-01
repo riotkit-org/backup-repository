@@ -66,6 +66,8 @@ class User extends \App\Domain\Common\SharedEntity\User implements \JsonSerializ
         $this->creationDate   = new DateTimeImmutable();
         $this->active         = true;
         $this->salt           = base64_encode(random_bytes(32));
+
+        parent::__construct();
     }
 
     /**

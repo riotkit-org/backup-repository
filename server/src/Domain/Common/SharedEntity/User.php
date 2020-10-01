@@ -18,6 +18,11 @@ class User
 
     public const ANONYMOUS_TOKEN_ID = '00000000-0000-0000-0000-000000000000';
 
+    public function __construct()
+    {
+        $this->roles = Roles::fromArray([\App\Domain\Roles::ROLE_USER]);
+    }
+
     /**
      * @return string
      */
