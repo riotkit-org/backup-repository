@@ -17,7 +17,7 @@ class TokenTransport extends AbstractToken
     private $secret;
 
     /**
-     * @var User
+     * @var ?User
      */
     private $user;
 
@@ -68,9 +68,9 @@ class TokenTransport extends AbstractToken
     }
 
     /**
-     * @return User
+     * @return ?User
      */
-    public function getUser(): User
+    public function getUser(): ?User
     {
         return $this->user;
     }
