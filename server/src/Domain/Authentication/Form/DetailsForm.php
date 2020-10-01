@@ -2,7 +2,7 @@
 
 namespace App\Domain\Authentication\Form;
 
-use App\Domain\Common\SharedEntity\Token;
+use App\Domain\Common\SharedEntity\User;
 
 class DetailsForm
 {
@@ -34,10 +34,10 @@ class DetailsForm
     public function toArray(): array
     {
         return [
-            Token::FIELD_TAGS                   => $this->tags,
-            Token::FIELD_MAX_ALLOWED_FILE_SIZE  => $this->maxAllowedFileSize,
-            Token::FIELD_ALLOWED_IPS            => $this->allowedIpAddresses,
-            Token::FIELD_ALLOWED_UAS            => $this->allowedUserAgents
+            User::FIELD_TAGS                   => $this->tags,
+            User::FIELD_MAX_ALLOWED_FILE_SIZE  => $this->maxAllowedFileSize,
+            User::FIELD_ALLOWED_IPS            => $this->allowedIpAddresses,
+            User::FIELD_ALLOWED_UAS            => $this->allowedUserAgents
         ];
     }
 }

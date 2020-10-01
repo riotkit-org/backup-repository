@@ -2,7 +2,7 @@
 
 namespace App\Domain\Authentication\Security\Context;
 
-use App\Domain\Authentication\Entity\Token;
+use App\Domain\Authentication\Entity\User;
 use App\Domain\Roles;
 
 class AuthenticationManagementContext
@@ -72,7 +72,7 @@ class AuthenticationManagementContext
         return $this->canUseTechnicalEndpoints;
     }
 
-    public function canRevokeAccess(Token $token): bool
+    public function canRevokeAccess(User $token): bool
     {
         if ($this->isAdministrator) {
             return true;

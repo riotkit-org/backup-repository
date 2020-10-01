@@ -2,7 +2,7 @@
 
 namespace App\Infrastructure\Backup\Form\Collection;
 
-use App\Domain\Backup\Entity\Authentication\Token;
+use App\Domain\Backup\Entity\Authentication\User;
 use App\Domain\Backup\Entity\BackupCollection;
 use App\Domain\Backup\Form\TokenFormAttachForm;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
@@ -23,7 +23,7 @@ class TokenAttachFormType extends AbstractType
                 'invalid_message' => 'collection_no_longer_exists'
             ])
             ->add('token',        EntityType::class, [
-                'class'           => Token::class,
+                'class'           => User::class,
                 'invalid_message' => 'token_not_found'
             ]);
     }

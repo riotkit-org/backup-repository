@@ -5,7 +5,7 @@ namespace App\Domain\Common\SharedEntity;
 use App\Domain\Authentication\Helper\IdHidingHelper;
 use App\Domain\Common\ValueObject\Roles;
 
-class Token
+class User
 {
     public const FIELD_TAGS                      = 'tags';
     public const FIELD_MAX_ALLOWED_FILE_SIZE     = 'maxAllowedFileSize';
@@ -35,7 +35,7 @@ class Token
         return null;
     }
 
-    public function isSameAs(Token $token): bool
+    public function isSameAs(User $token): bool
     {
         return $token->getId() === $this->getId();
     }

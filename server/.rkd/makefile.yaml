@@ -5,5 +5,5 @@ tasks:
         become: root
         description: Runs a dockerized environment
         steps: |
-            docker-compose -p s3pb -f .infrastructure/docker/docker-compose.yml up -d
-
+            docker rm -f s3pb_db_1
+            docker-compose -p s3pb -f .infrastructure/docker/docker-compose.yml up -d --force-recreate

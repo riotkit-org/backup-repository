@@ -2,7 +2,7 @@
 
 namespace App\Domain\Storage\Manager;
 
-use App\Domain\Authentication\Entity\Token;
+use App\Domain\Authentication\Entity\User;
 use App\Domain\Storage\Entity\StagedFile;
 use App\Domain\Storage\Entity\StoredFile;
 use App\Domain\Storage\Exception\DuplicatedContentException;
@@ -128,7 +128,7 @@ class WriteManager
      * @param UploadForm $form
      * @param InputEncoding $encoding
      * @param Path $path
-     * @param Token $token
+     * @param User $token
      *
      * @return StoredFile
      *
@@ -141,7 +141,7 @@ class WriteManager
         UploadForm            $form,
         InputEncoding         $encoding,
         Path                  $path,
-        Token                 $token
+        User                 $token
     ): StoredFile {
         return $this->submitFileToBothRepositoryAndStorage(
             $stream,

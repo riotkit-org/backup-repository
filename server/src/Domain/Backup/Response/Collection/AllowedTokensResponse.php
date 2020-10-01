@@ -2,7 +2,7 @@
 
 namespace App\Domain\Backup\Response\Collection;
 
-use App\Domain\Backup\Entity\Authentication\Token;
+use App\Domain\Backup\Entity\Authentication\User;
 use App\Domain\Common\Http;
 
 class AllowedTokensResponse implements \JsonSerializable
@@ -14,7 +14,7 @@ class AllowedTokensResponse implements \JsonSerializable
     private array  $tokens;
 
     /**
-     * @param Token[] $tokens
+     * @param User[] $tokens
      * @param bool    $maskIds
      * @param int     $status
      *
@@ -31,7 +31,7 @@ class AllowedTokensResponse implements \JsonSerializable
 
         if ($maskIds) {
             $new->tokens = array_map(
-                function (Token $token) {
+                function (User $token) {
                     return $token->jsonSerialize(true);
                 },
                 $new->tokens

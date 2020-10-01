@@ -2,14 +2,14 @@
 
 namespace App\Domain\Backup\Factory;
 
-use App\Domain\Authentication\Entity\Token;
+use App\Domain\Authentication\Entity\User;
 use App\Domain\Backup\Security\CollectionManagementContext;
 use App\Domain\Backup\Security\VersioningContext;
 use App\Domain\Roles;
 
 class SecurityContextFactory
 {
-    public function createCollectionManagementContext(Token $token): CollectionManagementContext
+    public function createCollectionManagementContext(User $token): CollectionManagementContext
     {
         return new CollectionManagementContext(
             $token->hasRole(Roles::ROLE_COLLECTION_ADD),
@@ -28,7 +28,7 @@ class SecurityContextFactory
         );
     }
 
-    public function createVersioningContext(Token $token): VersioningContext
+    public function createVersioningContext(User $token): VersioningContext
     {
         return new VersioningContext(
             $token->hasRole(Roles::ROLE_COLLECTION_MODIFY_ANY_COLLECTION),

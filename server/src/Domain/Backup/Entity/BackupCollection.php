@@ -2,7 +2,7 @@
 
 namespace App\Domain\Backup\Entity;
 
-use App\Domain\Backup\Entity\Authentication\Token;
+use App\Domain\Backup\Entity\Authentication\User;
 use App\Domain\Backup\ValueObject\BackupStrategy;
 use App\Domain\Backup\ValueObject\Collection\BackupSize;
 use App\Domain\Backup\ValueObject\Collection\CollectionLength;
@@ -53,7 +53,7 @@ class BackupCollection implements \JsonSerializable
     protected $maxCollectionSize;
 
     /**
-     * @var Token[]
+     * @var User[]
      */
     protected $allowedTokens = [];
 
@@ -207,7 +207,7 @@ class BackupCollection implements \JsonSerializable
         return $self;
     }
 
-    public function withTokenAdded(Token $token): BackupCollection
+    public function withTokenAdded(User $token): BackupCollection
     {
         // don't allow to add same token twice
         foreach ($this->getAllowedTokens() as $existingToken) {
@@ -222,12 +222,12 @@ class BackupCollection implements \JsonSerializable
         return $self;
     }
 
-    public function withoutToken(Token $tokenToRevokeAccessToCollection): BackupCollection
+    public function withoutToken(User $tokenToRevokeAccessToCollection): BackupCollection
     {
         $self = clone $this;
         $self->allowedTokens = array_filter(
             $this->getAllowedTokens(),
-            function (Token $token) use ($tokenToRevokeAccessToCollection) {
+            function (User $token) use ($tokenToRevokeAccessToCollection) {
                 return !$token->isSameAs($tokenToRevokeAccessToCollection);
             }
         );
@@ -304,7 +304,7 @@ class BackupCollection implements \JsonSerializable
     }
 
     /**
-     * @return Token[]
+     * @return User[]
      */
     public function getAllowedTokens(): array
     {

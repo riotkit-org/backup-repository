@@ -2,7 +2,7 @@
 
 namespace App\Infrastructure\Common\Repository;
 
-use App\Domain\Authentication\Entity\Token;
+use App\Domain\Authentication\Entity\User;
 use App\Domain\Common\Repository\TokenRepository;
 use App\Domain\Common\ValueObject\Roles as RolesVO;
 use App\Domain\Roles as RolesDomain;
@@ -20,7 +20,7 @@ abstract class TokenDoctrineRepository extends BaseRepository implements TokenRe
 
         if (RolesDomain::isTestToken($id) || RolesDomain::isInternalApplicationToken($id)) {
             /**
-             * @var Token $token
+             * @var User $token
              */
             $token = new $className();
             $token->setId($id);
@@ -32,13 +32,13 @@ abstract class TokenDoctrineRepository extends BaseRepository implements TokenRe
         return $this->_em->find($className, $id);
     }
 
-    public function findApplicationInternalToken(): Token
+    public function findApplicationInternalToken(): User
     {
-        return $this->findUserByUserId(RolesDomain::INTERNAL_CONSOLE_TOKEN, Token::class);
+        return $this->findUserByUserId(RolesDomain::INTERNAL_CONSOLE_TOKEN, User::class);
     }
 
     protected function getTokenClass(): string
     {
-        return Token::class;
+        return User::class;
     }
 }

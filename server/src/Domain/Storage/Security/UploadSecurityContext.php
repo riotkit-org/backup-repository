@@ -2,7 +2,7 @@
 
 namespace App\Domain\Storage\Security;
 
-use App\Domain\Authentication\Entity\Token;
+use App\Domain\Authentication\Entity\User;
 use App\Domain\Storage\Entity\StoredFile;
 use App\Domain\Storage\Form\UploadForm;
 use App\Domain\Storage\ValueObject\Filesize;
@@ -17,7 +17,7 @@ class UploadSecurityContext
     private bool   $enforceNoPassword;
     private bool   $isAdministrator;
     private bool   $canUploadOnlyOnce;
-    private Token  $uploaderToken;
+    private User  $uploaderToken;
 
     public function __construct(
         array $allowedTags,
@@ -28,7 +28,7 @@ class UploadSecurityContext
         bool $enforceNoPassword,
         bool $isAdministrator,
         bool $canUploadOnlyOnce,
-        Token $uploaderToken
+        User $uploaderToken
     ) {
         $this->allowedTags = $allowedTags;
         $this->isAllowedToUpload = $isAllowedToUploadAnything;
@@ -120,7 +120,7 @@ class UploadSecurityContext
         return $this->canUploadOnlyOnce;
     }
 
-    public function getUploaderToken(): Token
+    public function getUploaderToken(): User
     {
         return $this->uploaderToken;
     }

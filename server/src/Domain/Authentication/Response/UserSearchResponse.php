@@ -2,7 +2,7 @@
 
 namespace App\Domain\Authentication\Response;
 
-use App\Domain\Authentication\Entity\Token;
+use App\Domain\Authentication\Entity\User;
 use App\Domain\Common\Http;
 use App\Domain\Common\Response\NormalSearchResponse;
 
@@ -21,7 +21,7 @@ class UserSearchResponse extends NormalSearchResponse
 
         if ($censorIds) {
             $response->data = array_map(
-                function (Token $token) {
+                function (User $token) {
                     return $token->jsonSerialize(true);
                 },
                 $response->data

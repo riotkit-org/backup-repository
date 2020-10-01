@@ -2,7 +2,7 @@
 
 namespace App\Domain\Storage\ActionHandler;
 
-use App\Domain\Authentication\Entity\Token;
+use App\Domain\Authentication\Entity\User;
 use App\Domain\Common\Exception\ValueObjectException;
 use App\Domain\Common\Response\Response;
 use App\Domain\Storage\Entity\StoredFile;
@@ -58,7 +58,7 @@ abstract class AbstractUploadHandler
         $this->notifier         = $notifier;
     }
 
-    public function handle(UploadForm $form, Token $token): Response
+    public function handle(UploadForm $form, User $token): Response
     {
         $context = $this->securityFactory->createUploadContextFromToken($token);
 
@@ -133,7 +133,7 @@ abstract class AbstractUploadHandler
         }
     }
 
-    private function finalize(Response $response, Token $token): Response
+    private function finalize(Response $response, User $token): Response
     {
         $this->staging->deleteAllTemporaryFiles();
 

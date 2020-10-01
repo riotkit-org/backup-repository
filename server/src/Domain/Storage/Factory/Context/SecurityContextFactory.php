@@ -2,7 +2,7 @@
 
 namespace App\Domain\Storage\Factory\Context;
 
-use App\Domain\Authentication\Entity\Token;
+use App\Domain\Authentication\Entity\User;
 use App\Domain\Roles;
 use App\Domain\Storage\Form\DeleteFileForm;
 use App\Domain\Storage\Form\FilesListingForm;
@@ -14,7 +14,7 @@ use App\Domain\Storage\Security\UploadSecurityContext;
 
 class SecurityContextFactory
 {
-    public function createUploadContextFromToken(Token $token): UploadSecurityContext
+    public function createUploadContextFromToken(User $token): UploadSecurityContext
     {
         return new UploadSecurityContext(
             $token->getTags(),
@@ -29,7 +29,7 @@ class SecurityContextFactory
         );
     }
 
-    public function createViewingContextFromTokenAndForm(Token $token, ViewFileForm $form, bool $isFileAlreadyValidated = false): ReadSecurityContext
+    public function createViewingContextFromTokenAndForm(User $token, ViewFileForm $form, bool $isFileAlreadyValidated = false): ReadSecurityContext
     {
         return new ReadSecurityContext(
             $token->hasRole(Roles::ROLE_VIEW_ALL_PROTECTED_FILES),
@@ -43,7 +43,7 @@ class SecurityContextFactory
         );
     }
 
-    public function createListingContextFromTokenAndForm(Token $token, FilesListingForm $form, bool $isFileAlreadyValidated = false): ReadSecurityContext
+    public function createListingContextFromTokenAndForm(User $token, FilesListingForm $form, bool $isFileAlreadyValidated = false): ReadSecurityContext
     {
         return new ReadSecurityContext(
             $token->hasRole(Roles::ROLE_VIEW_ALL_PROTECTED_FILES),
@@ -61,11 +61,11 @@ class SecurityContextFactory
     {
         return new ReadSecurityContext(
             true, true, true, '', [], true,
-            Token::createAnonymousToken(), true
+            User::createAnonymousToken(), true
         );
     }
 
-    public function createDeleteContextFromTokenAndForm(Token $token, DeleteFileForm $form): ManagementSecurityContext
+    public function createDeleteContextFromTokenAndForm(User $token, DeleteFileForm $form): ManagementSecurityContext
     {
         return new ManagementSecurityContext(
             $token->hasRole(Roles::ROLE_DELETE_ALL_FILES),

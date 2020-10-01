@@ -2,16 +2,16 @@
 
 namespace App\Domain\Authentication\Repository;
 
-use App\Domain\Authentication\Entity\Token;
+use App\Domain\Authentication\Entity\User;
 
 interface UserRepository extends \App\Domain\Common\Repository\TokenRepository
 {
-    public function persist(Token $token): void;
-    public function remove(Token $token): void;
-    public function flush(Token $token = null): void;
+    public function persist(User $token): void;
+    public function remove(User $token): void;
+    public function flush(User $token = null): void;
 
     /**
-     * @return Token[]
+     * @return User[]
      */
     public function getExpiredUserAccounts(): array;
 
@@ -21,7 +21,7 @@ interface UserRepository extends \App\Domain\Common\Repository\TokenRepository
      * @param int $count
      * @param bool $searchById
      *
-     * @return Token[]
+     * @return User[]
      */
     public function findUsersBy(string $pattern, int $page = 1, int $count = 50, bool $searchById = true): array;
 

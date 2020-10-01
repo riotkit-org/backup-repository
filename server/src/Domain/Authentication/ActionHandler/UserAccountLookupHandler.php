@@ -2,7 +2,7 @@
 
 namespace App\Domain\Authentication\ActionHandler;
 
-use App\Domain\Authentication\Entity\Token;
+use App\Domain\Authentication\Entity\User;
 use App\Domain\Authentication\Exception\AuthenticationException;
 use App\Domain\Authentication\Repository\UserRepository;
 use App\Domain\Authentication\Response\UserCRUDResponse;
@@ -30,7 +30,7 @@ class UserAccountLookupHandler
         $user = $this->repository->findUserByUserId($uidToLookup);
         $this->assertHasRights($context);
 
-        if (!$user instanceof Token) {
+        if (!$user instanceof User) {
             return null;
         }
 

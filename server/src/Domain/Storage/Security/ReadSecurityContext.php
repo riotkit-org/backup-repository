@@ -2,7 +2,7 @@
 
 namespace App\Domain\Storage\Security;
 
-use App\Domain\Authentication\Entity\Token;
+use App\Domain\Authentication\Entity\User;
 use App\Domain\Storage\Entity\StoredFile;
 
 class ReadSecurityContext
@@ -13,7 +13,7 @@ class ReadSecurityContext
     private array  $allowedTags;
     private bool   $canListAnything;
     private bool   $canSeeAdminMetadata;
-    private Token  $viewerToken;
+    private User  $viewerToken;
     private bool   $internallyAllowedToViewAnyFile;
 
     public function __construct(
@@ -23,7 +23,7 @@ class ReadSecurityContext
         string $requestPassword,
         array $allowedTags,
         bool $canSeeAdminMetadata,
-        Token $viewerToken,
+        User $viewerToken,
         bool $internallyAllowedToViewAnyFile
     ) {
         $this->viewAllProtectedFiles          = $viewAllProtectedFiles;

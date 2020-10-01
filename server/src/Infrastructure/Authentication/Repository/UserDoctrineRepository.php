@@ -2,7 +2,7 @@
 
 namespace App\Infrastructure\Authentication\Repository;
 
-use App\Domain\Authentication\Entity\Token;
+use App\Domain\Authentication\Entity\User;
 use App\Domain\Authentication\Exception\UserAlreadyExistsException;
 use App\Domain\Authentication\Helper\IdHidingHelper;
 use App\Domain\Authentication\Repository\UserRepository;
@@ -18,10 +18,10 @@ class UserDoctrineRepository extends CommonTokenRepository implements UserReposi
 {
     public function __construct(ManagerRegistry $registry, bool $readOnly)
     {
-        parent::__construct($registry, Token::class, $readOnly);
+        parent::__construct($registry, User::class, $readOnly);
     }
 
-    public function persist(Token $token): void
+    public function persist(User $token): void
     {
         if (!$token->canBePersisted()) {
             throw new \LogicException('Attempting to persist a token, that cannot be persisted');
@@ -30,7 +30,7 @@ class UserDoctrineRepository extends CommonTokenRepository implements UserReposi
         $this->_em->persist($token);
     }
 
-    public function flush(Token $token = null): void
+    public function flush(User $token = null): void
     {
         try {
             $this->_em->flush($token);
@@ -40,12 +40,12 @@ class UserDoctrineRepository extends CommonTokenRepository implements UserReposi
         }
     }
 
-    public function remove(Token $token): void
+    public function remove(User $token): void
     {
         $this->_em->remove($token);
     }
 
-    public function deactivate(Token $token): void
+    public function deactivate(User $token): void
     {
         $token->deactivate();
         $this->persist($token);

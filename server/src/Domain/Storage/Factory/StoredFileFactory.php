@@ -2,11 +2,9 @@
 
 namespace App\Domain\Storage\Factory;
 
-use App\Domain\Authentication\Entity\Token;
+use App\Domain\Authentication\Entity\User;
 use App\Domain\Common\ValueObject\Password;
-use App\Domain\Storage\Entity\Attribute;
 use App\Domain\Storage\Entity\StoredFile;
-use App\Domain\Storage\Exception\InvalidAttributeException;
 use App\Domain\Storage\Form\UploadForm;
 use App\Domain\Storage\Repository\TagRepository;
 use App\Domain\Storage\ValueObject\Filename;
@@ -27,13 +25,13 @@ class StoredFileFactory
     /**
      * @param UploadForm $form
      * @param Filename $filename
-     * @param Token $token
+     * @param User $token
      *
      * @return StoredFile
      *
      * @throws InvalidAttributeException
      */
-    public function createFromForm(UploadForm $form, Filename $filename, Token $token): StoredFile
+    public function createFromForm(UploadForm $form, Filename $filename, User $token): StoredFile
     {
         $storedFile = StoredFile::newFromFilename($filename, $token->getId());
         $this->mapFromForm($form, $storedFile);
@@ -46,8 +44,6 @@ class StoredFileFactory
      * @param StoredFile $storedFile
      *
      * @return StoredFile
-     *
-     * @throws InvalidAttributeException
      */
     public function mapFromForm(UploadForm $form, StoredFile $storedFile): StoredFile
     {
@@ -65,33 +61,6 @@ class StoredFileFactory
             $storedFile->addTag($tag);
         }
 
-        // attributes
-        $attributes = $this->createAttributesFromJson($storedFile, $form->getAttributes());
-
-        foreach ($attributes as $attribute) {
-            $storedFile->addAttribute($attribute);
-        }
-
         return $storedFile;
-    }
-
-    private function createAttributesFromJson(StoredFile $storedFile, string $json): array
-    {
-        $asArray    = \json_decode($json, true);
-        $attributes = [];
-
-        if (!is_array($asArray)) {
-            throw new \InvalidArgumentException('Attributes are not a json array');
-        }
-
-        foreach ($asArray as $name => $value) {
-            if (!is_int($value) && !is_string($value) && !is_bool($value)) {
-                throw new \InvalidArgumentException('"' . $name . '" has value of invalid type, accepted only: integer, string, boolean');
-            }
-
-            $attributes[] = new Attribute($storedFile, $name, $value);
-        }
-
-        return $attributes;
     }
 }

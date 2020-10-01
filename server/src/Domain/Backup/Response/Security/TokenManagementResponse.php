@@ -2,7 +2,7 @@
 
 namespace App\Domain\Backup\Response\Security;
 
-use App\Domain\Backup\Entity\Authentication\Token;
+use App\Domain\Backup\Entity\Authentication\User;
 use App\Domain\Backup\Entity\BackupCollection;
 
 class TokenManagementResponse implements \JsonSerializable
@@ -23,7 +23,7 @@ class TokenManagementResponse implements \JsonSerializable
     private $data = [];
 
 
-    public static function createFromResults(Token $token, BackupCollection $collection): TokenManagementResponse
+    public static function createFromResults(User $token, BackupCollection $collection): TokenManagementResponse
     {
         $new = new static();
         $new->status    = 'OK';

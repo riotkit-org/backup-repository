@@ -2,7 +2,7 @@
 
 namespace App\Infrastructure\Authentication\Event\Subscriber;
 
-use App\Domain\Authentication\Entity\Token;
+use App\Domain\Authentication\Entity\User;
 use App\Domain\Authentication\Exception\AuthenticationException;
 use App\Domain\Authentication\Factory\IncomingUserFactory;
 use App\Domain\Roles;
@@ -63,7 +63,7 @@ class TokenSubscriber implements EventSubscriberInterface
         if ($tokenString) {
             try {
                 /**
-                 * @var Token $token
+                 * @var User $token
                  */
                 $token = $this->factory->createFromString($tokenString);
 
@@ -86,7 +86,7 @@ class TokenSubscriber implements EventSubscriberInterface
         // Guest at public endpoints
         if (!$tokenString && $this->isPublicEndpoint($event->getRequest())) {
             $this->tokenStorage->setToken(
-                new TokenTransport('anonymous', new Token())
+                new TokenTransport('anonymous', new User())
             );
             return;
         }
@@ -94,9 +94,9 @@ class TokenSubscriber implements EventSubscriberInterface
         $userAgent = $request->headers->get('User-Agent');
         $ip        = $request->getClientIp();
 
-        if (($token instanceof Token && !$token->isValid($userAgent, $ip)) || !$token instanceof Token) {
+        if (($token instanceof User && !$token->isValid($userAgent, $ip)) || !$token instanceof User) {
             $this->tokenStorage->setToken(
-                new TokenTransport('anonymous', new Token())
+                new TokenTransport('anonymous', new User())
             );
             return;
         }
@@ -126,7 +126,7 @@ class TokenSubscriber implements EventSubscriberInterface
      */
     private function handleTestToken(): void
     {
-        $token = new Token();
+        $token = new User();
         $token->setId(Roles::TEST_TOKEN);
         $token->setRoles(\App\Domain\Authentication\ValueObject\Roles::fromArray([Roles::ROLE_ADMINISTRATOR]));
 

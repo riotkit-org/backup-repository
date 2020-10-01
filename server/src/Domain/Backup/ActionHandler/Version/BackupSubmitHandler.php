@@ -2,7 +2,7 @@
 
 namespace App\Domain\Backup\ActionHandler\Version;
 
-use App\Domain\Authentication\Entity\Token;
+use App\Domain\Authentication\Entity\User;
 use App\Domain\Backup\Entity\BackupCollection;
 use App\Domain\Backup\Exception\AuthenticationException;
 use App\Domain\Backup\Exception\CollectionMappingError;
@@ -27,13 +27,13 @@ class BackupSubmitHandler
     /**
      * @param BackupSubmitForm $form
      * @param VersioningContext $securityContext
-     * @param Token $token
+     * @param User $token
      *
      * @return BackupSubmitResponse
      *
      * @throws AuthenticationException
      */
-    public function handle(BackupSubmitForm $form, VersioningContext $securityContext, Token $token): BackupSubmitResponse
+    public function handle(BackupSubmitForm $form, VersioningContext $securityContext, User $token): BackupSubmitResponse
     {
 
         $this->assertHasPermissions($securityContext, $form->collection);

@@ -2,7 +2,7 @@
 
 namespace App\Domain\Authentication\Factory;
 
-use App\Domain\Authentication\Entity\Token;
+use App\Domain\Authentication\Entity\User;
 use App\Domain\Authentication\Exception\AuthenticationException;
 use App\Domain\Authentication\Repository\UserRepository;
 
@@ -19,11 +19,11 @@ class IncomingUserFactory
      * @param string      $userId
      * @param string|null $className
      *
-     * @return Token
+     * @return User
      *
      * @throws AuthenticationException
      */
-    public function createFromString(string $userId, string $className = Token::class)
+    public function createFromString(string $userId, string $className = User::class)
     {
         $persistedUser = $this->repository->findUserByUserId($userId, $className);
 

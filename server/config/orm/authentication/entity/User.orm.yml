@@ -1,6 +1,6 @@
-App\Domain\Authentication\Entity\Token:
+App\Domain\Authentication\Entity\User:
     type: entity
-    table: tokens
+    table: users
 
     id:
         id:

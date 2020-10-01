@@ -2,13 +2,13 @@
 
 namespace App\Domain\Authentication\Factory\Context;
 
-use App\Domain\Authentication\Entity\Token;
+use App\Domain\Authentication\Entity\User;
 use App\Domain\Authentication\Security\Context\AuthenticationManagementContext;
 use App\Domain\Roles;
 
 class SecurityContextFactory
 {
-    public function createFromUserAccount(Token $access): AuthenticationManagementContext
+    public function createFromUserAccount(User $access): AuthenticationManagementContext
     {
         return new AuthenticationManagementContext(
             $access->hasRole(Roles::ROLE_LOOKUP_TOKENS),

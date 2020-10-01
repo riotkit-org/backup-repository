@@ -3,20 +3,20 @@
 namespace App\Domain\Common\Response;
 
 use App\Domain\Common\Http;
-use App\Domain\Common\SharedEntity\Token;
+use App\Domain\Common\SharedEntity\User;
 
 abstract class AccessDeniedResponse implements Response
 {
-    protected ?Token $token      = null;
+    protected ?User $token      = null;
     protected ?string $message   = '';
 
     /**
      * @param string $message
-     * @param Token|null $token
+     * @param User|null $token
      *
      * @return static
      */
-    public static function createAccessDeniedResponse(string $message = '', ?Token $token = null)
+    public static function createAccessDeniedResponse(string $message = '', ?User $token = null)
     {
         $response = new static();
         $response->token   = $token;

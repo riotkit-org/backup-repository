@@ -2,7 +2,7 @@
 
 namespace App\Domain\Backup\Service;
 
-use App\Domain\Authentication\Entity\Token;
+use App\Domain\Authentication\Entity\User;
 use App\Domain\Backup\Entity\BackupCollection;
 use App\Domain\Backup\Factory\NameFactory;
 use App\Domain\Backup\Response\Internal\StorageUploadResponse;
@@ -28,7 +28,7 @@ class FileUploader
         $this->nameFactory = $nameFactory;
     }
 
-    public function upload(BackupCollection $collection, Token $token, string $attributes): StorageUploadResponse
+    public function upload(BackupCollection $collection, User $token, string $attributes): StorageUploadResponse
     {
         $responseAsArray = $this->bus->call(Bus::STORAGE_UPLOAD, [
             'form' => [

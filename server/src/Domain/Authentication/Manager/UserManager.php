@@ -3,7 +3,7 @@
 namespace App\Domain\Authentication\Manager;
 
 use App\Domain\Authentication\Configuration\PasswordHashingConfiguration;
-use App\Domain\Authentication\Entity\Token;
+use App\Domain\Authentication\Entity\User;
 use App\Domain\Authentication\Exception\InvalidUserIdException;
 use App\Domain\Authentication\Repository\UserRepository;
 use App\Domain\Authentication\Service\UuidValidator;
@@ -37,14 +37,14 @@ class UserManager
      * @param ?string $about
      * @param string|null $customId
      *
-     * @return Token
+     * @return User
      *
      * @throws InvalidUserIdException
      * @throws DomainAssertionFailure
      */
     public function generateNewToken(array $roles, ?string $expirationTime, array $details, ?string $email,
                                      ?string $password, ?string $organizationName, ?string $about,
-                                     ?string $customId = null): Token
+                                     ?string $customId = null): User
     {
         if ($customId) {
             if (!$this->uuidValidator->isValid($customId)) {
@@ -52,7 +52,7 @@ class UserManager
             }
         }
 
-        $user = Token::createFrom(
+        $user = User::createFrom(
             $roles,
             $expirationTime,
             $details,
@@ -74,7 +74,7 @@ class UserManager
         return $user;
     }
 
-    public function revokeAccessForUser(Token $user): void
+    public function revokeAccessForUser(User $user): void
     {
         $this->repository->remove($user);
     }

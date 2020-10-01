@@ -35,13 +35,13 @@ symfony serve
 ./vendor/bin/codecept run
 
 # run API test case from selected directory
-./vendor/bin/codecept run --html=./server/tests/Functional/_output/file-repository.html functional Features/Security/FeatureLimitTokenAccessPerIpAndUserAgentCest
+./vendor/bin/codecept run --html=file-repository.html functional Features/Security/FeatureLimitTokenAccessPerIpAndUserAgentCest
 
 # run API test case from root directory
-./vendor/bin/codecept run --html=./server/tests/Functional/_output/file-repository.html AuthenticationCest
+./vendor/bin/codecept run --html=file-repository.html functional AuthenticationCest
 
 # run API test - single test
-./vendor/bin/codecept run --html=./server/tests/Functional/_output/file-repository.html functional AuthenticationCest:generateBasicToken
+./vendor/bin/codecept run --html=file-repository.html functional AuthenticationCest:generateBasicToken
 
 # unit tests (all tests)
 ./vendor/bin/phpunit

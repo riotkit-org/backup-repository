@@ -14,7 +14,7 @@ use App\Domain\Common\SharedEntity\EntityValidationTrait;
 use DateTimeImmutable;
 use Swagger\Annotations as SWG;
 
-class Token extends \App\Domain\Common\SharedEntity\Token implements \JsonSerializable
+class User extends \App\Domain\Common\SharedEntity\User implements \JsonSerializable
 {
     use EntityValidationTrait;
 
@@ -116,7 +116,7 @@ class Token extends \App\Domain\Common\SharedEntity\Token implements \JsonSerial
         return $new;
     }
 
-    public function setId(string $id): Token
+    public function setId(string $id): User
     {
         $this->id = $id;
         return $this;
@@ -141,55 +141,55 @@ class Token extends \App\Domain\Common\SharedEntity\Token implements \JsonSerial
         return $this->expirationDate->getValue();
     }
 
-    public function setCreationDate(DateTimeImmutable $creationDate): Token
+    public function setCreationDate(DateTimeImmutable $creationDate): User
     {
         $this->creationDate = $creationDate;
         return $this;
     }
 
-    public function setExpirationDate(ExpirationDate $expirationDate): Token
+    public function setExpirationDate(ExpirationDate $expirationDate): User
     {
         $this->expirationDate = $expirationDate;
         return $this;
     }
 
-    private function setEmail(Email $email): Token
+    private function setEmail(Email $email): User
     {
         $this->email = $email;
         return $this;
     }
 
-    private function setPassword(Password $password): Token
+    private function setPassword(Password $password): User
     {
         $this->password = $password;
         return $this;
     }
 
-    private function setOrganization(Organization $organization): Token
+    private function setOrganization(Organization $organization): User
     {
         $this->organization = $organization;
         return $this;
     }
 
-    private function setAbout(About $about): Token
+    private function setAbout(About $about): User
     {
         $this->about = $about;
         return $this;
     }
 
-    public function activate(): Token
+    public function activate(): User
     {
         $this->active = true;
         return $this;
     }
 
-    public function deactivate(): Token
+    public function deactivate(): User
     {
         $this->active = false;
         return $this;
     }
 
-    public function setData(array $data): Token
+    public function setData(array $data): User
     {
         $this->data = $data;
         return $this;

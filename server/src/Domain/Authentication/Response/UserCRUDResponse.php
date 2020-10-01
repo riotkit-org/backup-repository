@@ -2,16 +2,16 @@
 
 namespace App\Domain\Authentication\Response;
 
-use App\Domain\Authentication\Entity\Token;
+use App\Domain\Authentication\Entity\User;
 use App\Domain\Common\Http;
 use App\Domain\Common\Response\NormalResponse;
 
 class UserCRUDResponse extends NormalResponse
 {
-    protected ?Token $user = null;
+    protected ?User $user = null;
     private int $exitCode;
 
-    public static function createDeletedResponse(Token $token): UserCRUDResponse
+    public static function createDeletedResponse(User $token): UserCRUDResponse
     {
         $response = new UserCRUDResponse();
         $response->status   = true;
@@ -22,7 +22,7 @@ class UserCRUDResponse extends NormalResponse
         return $response;
     }
 
-    public static function createTokenCreatedResponse(Token $token): UserCRUDResponse
+    public static function createTokenCreatedResponse(User $token): UserCRUDResponse
     {
         $response = new UserCRUDResponse();
         $response->status   = true;
@@ -33,7 +33,7 @@ class UserCRUDResponse extends NormalResponse
         return $response;
     }
 
-    public static function createFoundResponse(Token $token)
+    public static function createFoundResponse(User $token)
     {
         $response = new UserCRUDResponse();
         $response->status   = true;

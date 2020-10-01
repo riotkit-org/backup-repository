@@ -2,7 +2,7 @@
 
 namespace App\Domain\Backup\Form;
 
-use App\Domain\Backup\Entity\Authentication\Token;
+use App\Domain\Backup\Entity\Authentication\User;
 use App\Domain\Backup\Entity\BackupCollection;
 
 class CollectionAddDeleteTokenForm
@@ -13,7 +13,7 @@ class CollectionAddDeleteTokenForm
     public $collection;
 
     /**
-     * @var Token
+     * @var User
      */
     public $token;
 }

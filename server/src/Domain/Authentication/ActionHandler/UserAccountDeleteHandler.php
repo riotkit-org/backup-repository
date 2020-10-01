@@ -2,7 +2,7 @@
 
 namespace App\Domain\Authentication\ActionHandler;
 
-use App\Domain\Authentication\Entity\Token;
+use App\Domain\Authentication\Entity\User;
 use App\Domain\Authentication\Exception\AuthenticationException;
 use App\Domain\Authentication\Manager\UserManager;
 use App\Domain\Authentication\Repository\UserRepository;
@@ -32,7 +32,7 @@ class UserAccountDeleteHandler
     {
         $user = $this->repository->findUserByUserId($userId);
 
-        if (!$user instanceof Token) {
+        if (!$user instanceof User) {
             return UserCRUDResponse::createNotFoundResponse();
         }
 
@@ -46,11 +46,11 @@ class UserAccountDeleteHandler
 
     /**
      * @param AuthenticationManagementContext $context
-     * @param Token                           $user
+     * @param User                           $user
      *
      * @throws AuthenticationException
      */
-    private function assertHasRights(AuthenticationManagementContext $context, Token $user): void
+    private function assertHasRights(AuthenticationManagementContext $context, User $user): void
     {
         if (!$context->canRevokeAccess($user)) {
             throw new AuthenticationException(

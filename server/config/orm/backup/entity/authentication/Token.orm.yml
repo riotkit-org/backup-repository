@@ -1,6 +1,6 @@
 App\Domain\Backup\Entity\Authentication\Token:
     type: entity
-    table: tokens
+    table: users
     read_only: true
 
     id:

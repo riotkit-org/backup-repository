@@ -2,7 +2,7 @@
 
 namespace App\Controller;
 
-use App\Domain\Authentication\Entity\Token;
+use App\Domain\Authentication\Entity\User;
 use App\Domain\Authentication\Factory\IncomingUserFactory;
 use App\Domain\Common\Exception\AuthenticationException;
 use App\Domain\Common\Exception\CommonValidationException;
@@ -22,7 +22,7 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 abstract class BaseController implements ContainerAwareInterface
 {
     use ContainerAwareTrait;
-    use ControllerTrait;
+    use ControllerTrait; // @todo: Remove usage of ControllerTrait due to deprecation
 
     protected function getParameter(string $name)
     {
@@ -35,7 +35,7 @@ abstract class BaseController implements ContainerAwareInterface
          * @var TokenTransport $sessionToken
          */
         $sessionToken = $this->get('security.token_storage')->getToken();
-        $token = $sessionToken->getToken();
+        $token = $sessionToken->getUser();
 
         if (!$token->getId()) {
             throw new AccessDeniedHttpException('No active token found');
@@ -54,7 +54,7 @@ abstract class BaseController implements ContainerAwareInterface
             return $this->getLoggedUser($className);
 
         } catch (AccessDeniedHttpException $exception) {
-            return Token::createAnonymousToken();
+            return User::createAnonymousToken();
         }
     }
 

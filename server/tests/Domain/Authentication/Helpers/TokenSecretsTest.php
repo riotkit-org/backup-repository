@@ -2,7 +2,7 @@
 
 namespace Tests\Domain\Authentication\Entity;
 
-use App\Domain\Authentication\Entity\Token;
+use App\Domain\Authentication\Entity\User;
 use App\Domain\Authentication\Helper\IdHidingHelper;
 use App\Infrastructure\Authentication\Repository\UserDoctrineRepository;
 use Doctrine\ORM\AbstractQuery;
@@ -43,7 +43,7 @@ class TokenSecretsTest extends BaseTestCase
 
     private function populateDatabaseWithExampleToken(UserDoctrineRepository $repository): void
     {
-        $testToken = new Token();
+        $testToken = new User();
         $testToken->setId(Uuid::uuid4()->toString());
         $repository->persist($testToken);
         $repository->flush();
