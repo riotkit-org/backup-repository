@@ -39,3 +39,8 @@
 
 # lcm
 /little-copy-machine-client/src/database.db
+/bahub-client/.eggs/
+/bahub-client/src/bahub.egg-info/
+/server/tests/Functional/_output/
+
+!.gitkeep
