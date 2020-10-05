@@ -3,35 +3,39 @@
 namespace App\Infrastructure\Authentication\Event\Subscriber;
 
 use App\Domain\Authentication\Entity\User;
-use App\Domain\Authentication\Factory\IncomingUserFactory;
 use App\Infrastructure\Authentication\Token\TokenTransport;
-use Symfony\Component\HttpKernel\Event\RequestEvent;
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+use Symfony\Component\Security\Http\Event\InteractiveLoginEvent;
 
-class TokenRestrictionsSubscriber
+class TokenRestrictionsSubscriber implements EventSubscriberInterface
 {
-    // @todo: Launch event after user is already logged in (after JWT parsing)
-    public const EVENT_PRIORITY = 0;
+    public const EVENT_PRIORITY = -30;
 
-    private IncomingUserFactory $factory;
     private TokenStorageInterface $tokenStorage;
 
-    public function __construct(IncomingUserFactory $factory, TokenStorageInterface $tokenStorage)
+    public function __construct(TokenStorageInterface $tokenStorage)
     {
-        $this->factory = $factory;
         $this->tokenStorage = $tokenStorage;
     }
 
-    // @todo: Attach to event subscriber
+    public static function getSubscribedEvents()
+    {
+        return [
+            'security.interactive_login' => [
+                ['handleRequestRestrictions', self::EVENT_PRIORITY]
+            ]
+        ];
+    }
 
-    public function handle(RequestEvent $event)
+    public function handleRequestRestrictions(InteractiveLoginEvent $event)
     {
         $request   = $event->getRequest();
         $userAgent = $request->headers->get('User-Agent');
         $ip        = $request->getClientIp();
-        $user      = $request->getUser();
+        $user      = $event->getAuthenticationToken() ? $event->getAuthenticationToken()->getUser() : null;
 
-        if (($user instanceof User && !$user->isValid($userAgent, $ip)) || !$user instanceof User) {
+        if (($user instanceof User && !$user->isValid($userAgent, $ip))) {
             $this->tokenStorage->setToken(
                 new TokenTransport('anonymous', new User())
             );

@@ -75,7 +75,7 @@ class FunctionalTester extends \Codeception\Actor
             $assert
         );
 
-        $this->amUser($token);
+        $this->amUser($this->grabDataFromResponseByJsonPath('user.email')[0], 'food-not-bombs-1980');
 
         return $token;
     }
