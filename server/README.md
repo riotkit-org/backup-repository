@@ -18,8 +18,11 @@ Developing
 ----------
 
 ```bash
-# run dependencies
+# run dependencies - database, cache
 rkd :docker:up
+
+# generate required keys for JWT authorization
+rkd :create:keys
 
 # migrate database
 ./bin/console doctrine:migrations:migrate -vv

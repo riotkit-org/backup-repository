@@ -12,11 +12,6 @@ class DetailsForm
     public $tags = [];
 
     /**
-     * @var string[] Empty means all are allowed
-     */
-    public $allowedMimeTypes = [];
-
-    /**
      * @var int
      */
     public $maxAllowedFileSize = 0;

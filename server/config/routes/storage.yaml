@@ -3,14 +3,14 @@
 #
 
 storage.list_files:
-    path: /repository
+    path: /api/stable/repository
     controller: 'App\Controller\Storage\FilesListingController::handleListing'
     methods: ['GET']
     defaults:
         _secured: true
 
 storage.get_file:
-    path: /repository/file/{filename}
+    path: /api/stable/repository/file/{filename}
     controller: '\App\Controller\Storage\ViewFileController::handle'
     methods: ['GET']
     defaults:

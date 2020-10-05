@@ -25,12 +25,16 @@ App\Domain\Authentication\Entity\User:
             type: datetime_immutable
             column: creation_date
 
+        salt:
+            type: string
+            column: password_salt
+
     embedded:
         email:
             class: App\Domain\Authentication\ValueObject\Email
             columnPrefix: false
 
-        password:
+        passphrase:
             class: App\Domain\Authentication\ValueObject\Password
             columnPrefix: false
 

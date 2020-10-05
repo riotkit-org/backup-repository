@@ -19,6 +19,8 @@ class GenerateAdminAccountCommand extends Command
             ->setDescription('Generate administrative user account')
             ->addOption('expires', null, InputOption::VALUE_REQUIRED)
             ->addOption('id', 'i', InputOption::VALUE_OPTIONAL)
+            ->addOption('email', 'm', InputOption::VALUE_REQUIRED)
+            ->addOption('password', 'p', InputOption::VALUE_REQUIRED)
             ->addOption('ignore-error-if-already-exists', null, InputOption::VALUE_NONE,
                 'Exit with success if token already exists. Does not check strictly permissions and other attributes, just the id.')
             ->setHelp('With admin token you have unlimited access to the application');
@@ -37,13 +39,15 @@ class GenerateAdminAccountCommand extends Command
         $command = $this->getApplication()->find(CreateUserCommand::NAME);
 
         $opts = [
-            'command'   => CreateUserCommand::NAME,
-            '--roles'   => Roles::ROLE_ADMINISTRATOR,
-            '--expires' => $input->getOption('expires') ?? '+10 years',
-            '--id'      => $input->getOption('id') ?? ''
+            'command'    => CreateUserCommand::NAME,
+            '--roles'    => Roles::ROLE_ADMINISTRATOR,
+            '--expires'  => $input->getOption('expires') ?? '+10 years',
+            '--id'       => $input->getOption('id') ?? '',
+            '--email'    => $input->getOption('email'),
+            '--password' => $input->getOption('password')
         ];
 
-        if ($input->getOption('ignore-error-if-token-exists')) {
+        if ($input->getOption('ignore-error-if-already-exists')) {
             $opts['--ignore-error-if-token-exists'] = true;
         }
 

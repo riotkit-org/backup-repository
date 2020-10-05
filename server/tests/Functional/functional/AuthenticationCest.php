@@ -32,6 +32,30 @@ class AuthenticationCest
         $I->storeIdAs('.user.id', 'BASIC_USER_ACCESS_ID');
     }
 
+    /**
+     * Whole APIv1 endpoints should be disabled
+     * This rule is configured on the Symfony Firewall
+     *
+     * @param FunctionalTester $I
+     */
+    public function shouldNotBeAbleToAccessAPIEndpointsAsGuest(FunctionalTester $I): void
+    {
+        $expectedHttpCode = 401; // HTTP/1.1 Unauthorized
+
+        foreach ([Urls::URL_USER_CREATE] as $address) {
+            $I->sendPOST($address, []);
+            $I->canSeeResponseCodeIs($expectedHttpCode);
+        }
+
+        foreach ([Urls::URL_USER_LOOKUP, Urls::URL_TOKEN_SEARCH] as $address) {
+            $I->sendGET($I->fill($address, ['userId' => 'test']));
+            $I->canSeeResponseCodeIs($expectedHttpCode);
+        }
+
+        $I->sendDELETE($I->fill(Urls::URL_TOKEN_DELETE, ['userId' => 'test']));
+        $I->canSeeResponseCodeIs($expectedHttpCode);
+    }
+
     public function verifyUserAccessWasGenerated(FunctionalTester $I): void
     {
         $I->amAdmin();
@@ -70,6 +94,8 @@ class AuthenticationCest
         ], false);
         $I->canSeeResponseCodeIs(201);
         $I->storeIdAs('.user.id', 'LIMITED_USER_ACCESS_ID');
+        $I->storeIdAs('.user.email', 'LIMITED_USER_EMAIL');
+        $I->store('anarchist-book-fair-1936', 'LIMITED_USER_PASSWORD');
     }
 
     public function verifyTheLimitedUserAccess(FunctionalTester $I): void
@@ -110,7 +136,11 @@ class AuthenticationCest
 
     public function testCannotCreateUsersWhenRoleDoesNotAllowCreatingOnes(FunctionalTester $I): void
     {
-        $I->amUser($I->getPreviouslyStoredIdOf('LIMITED_USER_ACCESS_ID'));
+        $I->amUser(
+            $I->getPreviouslyStoredIdOf('LIMITED_USER_EMAIL'),
+            $I->getPreviouslyStoredIdOf('LIMITED_USER_PASSWORD')
+        );
+
         $I->createUser([
             'password'     => 'anarchist-book-fair-1936',
             'email'        => 'example-3@riseup.net',
@@ -123,13 +153,17 @@ class AuthenticationCest
                 'maxAllowedFileSize' => 100
             ]
         ], false);
+
         $I->canSeeResponseCodeIs(403);
         $I->canSeeResponseContains('Current access does not allow to create users');
     }
 
     public function testCannotLookupUsersWhenHaveNoRightsGrantedToLookupUsers(FunctionalTester $I): void
     {
-        $I->amUser($I->getPreviouslyStoredIdOf('LIMITED_USER_ACCESS_ID'));
+        $I->amUser(
+            $I->getPreviouslyStoredIdOf('LIMITED_USER_EMAIL'),
+            $I->getPreviouslyStoredIdOf('LIMITED_USER_PASSWORD')
+        );
         $I->lookupUser($I->getPreviouslyStoredIdOf('BASIC_USER_ACCESS_ID'));
         $I->canSeeResponseCodeIs(403);
     }
@@ -143,18 +177,27 @@ class AuthenticationCest
 
     public function testCanListRolesDocumentationWhenNonAdmin(FunctionalTester $I): void
     {
-        $I->amUser($I->getPreviouslyStoredIdOf('LIMITED_USER_ACCESS_ID'));
+        $I->amUser(
+            $I->getPreviouslyStoredIdOf('LIMITED_USER_EMAIL'),
+            $I->getPreviouslyStoredIdOf('LIMITED_USER_PASSWORD')
+        );
         $I->sendGET(Urls::ROLES_LISTING);
         $I->canSeeResponseCodeIs(403);
     }
 
     public function testTryToCreateUsersAsNotAuthorizedUserToDeleteUsers(FunctionalTester $I): void
     {
-        $I->amUser($I->getPreviouslyStoredIdOf('LIMITED_USER_ACCESS_ID'));
+        $I->amUser(
+            $I->getPreviouslyStoredIdOf('LIMITED_USER_EMAIL'),
+            $I->getPreviouslyStoredIdOf('LIMITED_USER_PASSWORD')
+        );
         $I->revokeAccess($I->getPreviouslyStoredIdOf('LIMITED_USER_ACCESS_ID'));
         $I->canSeeResponseCodeIs(403);
 
-        $I->amUser($I->getPreviouslyStoredIdOf('LIMITED_USER_ACCESS_ID'));
+        $I->amUser(
+            $I->getPreviouslyStoredIdOf('LIMITED_USER_EMAIL'),
+            $I->getPreviouslyStoredIdOf('LIMITED_USER_PASSWORD')
+        );
         $I->revokeAccess($I->getPreviouslyStoredIdOf('BASIC_USER_ACCESS_ID'));
         $I->canSeeResponseCodeIs(403);
     }
@@ -184,11 +227,9 @@ class AuthenticationCest
             'organization' => 'Wolna Biblioteka',
             'about'        => 'A libertarian library',
 
-            'roles' => [
-                'upload.all'
-            ],
-            'data' => [],
-            'id'   => '1c2c84f2-d488-4ea0-9c88-d25aab139ac4'
+            'roles' => ['upload.all'],
+            'data'  => [],
+            'id'    => '1c2c84f2-d488-4ea0-9c88-d25aab139ac4'
         ], false);
         $I->canSeeResponseCodeIs(201);
     }
@@ -328,7 +369,7 @@ class AuthenticationCest
      *
      * @param FunctionalTester $I
      */
-    public function testNoRightsToUseIdFieldWhenGeneratingUserWithoutSufficientPermissions(FunctionalTester $I): void
+    public function testNoRightsToSetCustomUserIdWhenCurrentUserDoesNotHaveSufficientPermissions(FunctionalTester $I): void
     {
         // create a limited user account at first
         $I->amAdmin();
@@ -344,34 +385,38 @@ class AuthenticationCest
             'data' => []
         ]);
         $I->storeIdAs('.user.id', 'LIMITED_USER_ACCESS_ID_NO_PREDICTABLE_IDS');
+        $I->storeIdAs('.user.email', 'LIMITED_USER_EMAIL_NO_PREDICTABLE_IDS');
+        $I->store('anarchist-book-fair-1936', 'LIMITED_USER_PASSWORD_NO_PREDICTABLE_IDS');
 
         // then use such access to test "access denied"
-        $I->amUser($I->getPreviouslyStoredIdOf('LIMITED_USER_ACCESS_ID_NO_PREDICTABLE_IDS'));
+        $I->amUser(
+            $I->getPreviouslyStoredIdOf('LIMITED_USER_EMAIL_NO_PREDICTABLE_IDS'),
+            $I->getPreviouslyStoredIdOf('LIMITED_USER_PASSWORD_NO_PREDICTABLE_IDS')
+        );
         $I->createUser([
             'password'     => 'anarchist-book-fair-1936',
             'email'        => 'example-9@riseup.net',
             'organization' => 'Wolna Biblioteka',
             'about'        => 'A libertarian library',
 
-            'roles' => [
-                'upload.all'
-            ],
+            'roles' => ['upload.all'],
             'data' => [],
             'id'   => 'international-workers-association'
         ], false);
         $I->canSeeResponseCodeIs(403);
 
         // then check that has permissions to create user accounts at all, but without specifying "id"
-        $I->amUser($I->getPreviouslyStoredIdOf('LIMITED_USER_ACCESS_ID_NO_PREDICTABLE_IDS'));
+        $I->amUser(
+            $I->getPreviouslyStoredIdOf('LIMITED_USER_EMAIL_NO_PREDICTABLE_IDS'),
+            $I->getPreviouslyStoredIdOf('LIMITED_USER_PASSWORD_NO_PREDICTABLE_IDS')
+        );
         $I->createUser([
             'password'     => 'anarchist-book-fair-1936',
             'email'        => 'example-10@riseup.net',
             'organization' => 'Wolna Biblioteka',
             'about'        => 'A libertarian library',
 
-            'roles' => [
-                'upload.all'
-            ],
+            'roles' => ['upload.all'],
             'data' => []
             // case: no "id" there
         ], false);
@@ -381,7 +426,7 @@ class AuthenticationCest
     public function listAllAvailableRoles(FunctionalTester $I): void
     {
         $I->amAdmin();
-        $I->sendGET('/auth/roles');
+        $I->sendGET('/api/stable/auth/roles');
 
         $I->canSeeResponseContainsJson([
             'data' => [

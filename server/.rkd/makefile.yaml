@@ -1,5 +1,9 @@
 version: org.riotkit.rkd/yaml/v1
 imports: []
+
+env_file:
+    - ../.env
+
 tasks:
     :docker:up:
         become: root
@@ -7,3 +11,10 @@ tasks:
         steps: |
             docker rm -f s3pb_db_1
             docker-compose -p s3pb -f .infrastructure/docker/docker-compose.yml up -d --force-recreate
+
+    :create:keys:
+        description: Create JWT encryption keys
+        steps:
+            - mkdir -p config/jwt
+            - openssl genpkey -out config/jwt/private.pem -aes256 -pass pass:$JWT_PASSPHRASE -algorithm rsa -pkeyopt rsa_keygen_bits:4096
+            - openssl pkey -in config/jwt/private.pem -out config/jwt/public.pem -pubout -passin pass:$JWT_PASSPHRASE

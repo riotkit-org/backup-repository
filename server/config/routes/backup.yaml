@@ -1,5 +1,5 @@
 backup.collection_create_and_edit:
-    path: /repository/collection
+    path: /api/stable/repository/collection
     controller: 'App\Controller\Backup\Collection\CreateEditController::handleAction'
     methods: ['POST', 'PUT']
     defaults:
@@ -7,7 +7,7 @@ backup.collection_create_and_edit:
 
 
 backup.collection_delete:
-    path: /repository/collection/{id}
+    path: /api/stable/repository/collection/{id}
     controller: 'App\Controller\Backup\Collection\DeleteController::handleAction'
     methods: ['DELETE']
     defaults:
@@ -15,7 +15,7 @@ backup.collection_delete:
 
 
 backup.collection_fetch:
-    path: /repository/collection/{id}
+    path: /api/stable/repository/collection/{id}
     controller: 'App\Controller\Backup\Collection\FetchController::handleAction'
     methods: ['GET']
     defaults:
@@ -23,21 +23,21 @@ backup.collection_fetch:
 
 
 backup.collection_listing:
-    path: /repository/collection
+    path: /api/stable/repository/collection
     controller: 'App\Controller\Backup\Collection\ListingController::handleAction'
     methods: ['GET']
     defaults:
         _secured: true
 
 backup.collection_list_accesses:
-    path: /repository/collection/{id}/access
+    path: /api/stable/repository/collection/{id}/access
     controller: 'App\Controller\Backup\Security\ListGrantedUsersForCollectionController::listTokensAction'
     methods: ['GET']
     defaults:
         _secured: true
 
 backup.collection_add_token:
-    path: /repository/collection/{id}/access
+    path: /api/stable/repository/collection/{id}/access
     controller: 'App\Controller\Backup\Security\GrantUserToCollectionController::handleAction'
     methods: ['POST']
     defaults:
@@ -45,7 +45,7 @@ backup.collection_add_token:
 
 
 backup.collection_delete_token:
-    path: /repository/collection/{id}/access/{tokenId}
+    path: /api/stable/repository/collection/{id}/access/{tokenId}
     controller: 'App\Controller\Backup\Security\RevokeUserAccessForCollectionController::handleAction'
     methods: ['DELETE']
     defaults:
@@ -53,7 +53,7 @@ backup.collection_delete_token:
 
 
 backup.submit_version:
-    path: /repository/collection/{collectionId}/{naming}
+    path: /api/stable/repository/collection/{collectionId}/{naming}
     controller: 'App\Controller\Backup\Version\SubmitVersionController::handleAction'
     methods: ['POST']
     defaults:
@@ -61,7 +61,7 @@ backup.submit_version:
         naming: (backup|version)
 
 backup.list_versions:
-    path: /repository/collection/{collectionId}/{naming}
+    path: /api/stable/repository/collection/{collectionId}/{naming}
     controller: 'App\Controller\Backup\Version\VersionListingController::handleAction'
     methods: ['GET']
     defaults:
@@ -70,7 +70,7 @@ backup.list_versions:
         naming: (backup|version)
 
 backup.delete_version:
-    path: /repository/collection/{collectionId}/{naming}/{backupId}
+    path: /api/stable/repository/collection/{collectionId}/{naming}/{backupId}
     controller: 'App\Controller\Backup\Version\VersionDeleteController::handleAction'
     methods: ['DELETE']
     defaults:
@@ -79,7 +79,7 @@ backup.delete_version:
         naming: (backup|version)
 
 backup.fetch_version:
-    path: /repository/collection/{collectionId}/{naming}/{backupId}
+    path: /api/stable/repository/collection/{collectionId}/{naming}/{backupId}
     controller: 'App\Controller\Backup\Version\FetchController::handleAction'
     methods: ['GET']
     defaults:

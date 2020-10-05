@@ -41,7 +41,7 @@ class UserCreationHandler
         $this->assertHasRights($context, $form);
 
         try {
-            $token = $this->tokenManager->generateNewToken(
+            $token = $this->tokenManager->createUser(
                 $form->roles,
                 $form->expires,
                 $form->data->toArray(),

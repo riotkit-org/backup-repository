@@ -33,13 +33,12 @@ class CreateUserCommand extends Command
             ->setDescription('Creates an authentication token')
             ->addOption('roles', null, InputOption::VALUE_REQUIRED)
             ->addOption('tags', null, InputOption::VALUE_REQUIRED)
-            ->addOption('mimes', null, InputOption::VALUE_REQUIRED)
             ->addOption('max-file-size', null, InputOption::VALUE_REQUIRED)
-            ->addOption('securecopy-encryption-method', null, InputOption::VALUE_OPTIONAL)
-            ->addOption('securecopy-passphrase', null, InputOption::VALUE_OPTIONAL)
             ->addOption('id', 'i', InputOption::VALUE_OPTIONAL)
+            ->addOption('email', 'm', InputOption::VALUE_REQUIRED)
+            ->addOption('password', 'p', InputOption::VALUE_REQUIRED)
             ->addOption('expires', null, InputOption::VALUE_REQUIRED, 'Example: 2020-05-01 or +10 years')
-            ->addOption('ignore-error-if-token-exists', null, InputOption::VALUE_NONE,
+            ->addOption('ignore-error-if-user-exists', null, InputOption::VALUE_NONE,
                 'Exit with success if token already exists. Does not check strictly permissions and other attributes, just the id.')
             ->setHelp('Allows to generate a token you can use later to authenticate in application for a specific thing');
     }
@@ -56,23 +55,18 @@ class CreateUserCommand extends Command
     {
         $form = new AuthForm();
         $form->data = new DetailsForm();
-        $form->data->tags                       = $this->getMultipleValueOption($input, 'tags');
-        $form->data->allowedMimeTypes           = $this->getMultipleValueOption($input, 'mimes');
-        $form->data->maxAllowedFileSize         = (int) $input->getOption('max-file-size');
-        $form->data->secureCopyEncryptionKey    = (string) $input->getOption('securecopy-passphrase');
-        $form->data->secureCopyEncryptionMethod = (string) $input->getOption('securecopy-encryption-method');
-        $form->expires                          = $input->getOption('expires');
-        $form->roles                            = $this->getMultipleValueOption($input, 'roles');
-        $form->id                               = $input->getOption('id');
+        $form->data->tags               = $this->getMultipleValueOption($input, 'tags');
+        $form->data->maxAllowedFileSize = (int) $input->getOption('max-file-size');
+        $form->expires                  = $input->getOption('expires');
+        $form->roles                    = $this->getMultipleValueOption($input, 'roles');
+        $form->id                       = $input->getOption('id');
+        $form->email                    = $input->getOption('email');
+        $form->password                 = $input->getOption('password');
 
         $this->debug('Form:', $output);
 
         foreach ($form->data->tags as $tag) {
             $this->debug(' [Tag] -> ' . $tag, $output);
-        }
-
-        foreach ($form->data->allowedMimeTypes as $mimes) {
-            $this->debug(' [Mime] -> ' . $mimes, $output);
         }
 
         foreach ($form->roles as $role) {
@@ -85,7 +79,7 @@ class CreateUserCommand extends Command
                 $this->authFactory->createShellContext()
             );
         } catch (ValidationException $validationException) {
-            if ($input->getOption('ignore-error-if-token-exists')
+            if ($input->getOption('ignore-error-if-user-exists')
                 && $validationException->hasOnlyError('id_already_exists_please_select_other_one')) {
 
                 $output->writeln($form->id);

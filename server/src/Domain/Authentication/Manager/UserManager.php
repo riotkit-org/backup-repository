@@ -42,9 +42,9 @@ class UserManager
      * @throws InvalidUserIdException
      * @throws DomainAssertionFailure
      */
-    public function generateNewToken(array $roles, ?string $expirationTime, array $details, ?string $email,
-                                     ?string $password, ?string $organizationName, ?string $about,
-                                     ?string $customId = null): User
+    public function createUser(array $roles, ?string $expirationTime, array $details, ?string $email,
+                               ?string $password, ?string $organizationName, ?string $about,
+                               ?string $customId = null): User
     {
         if ($customId) {
             if (!$this->uuidValidator->isValid($customId)) {

@@ -21,19 +21,19 @@ class UserDoctrineRepository extends CommonTokenRepository implements UserReposi
         parent::__construct($registry, User::class, $readOnly);
     }
 
-    public function persist(User $token): void
+    public function persist(User $user): void
     {
-        if (!$token->canBePersisted()) {
-            throw new \LogicException('Attempting to persist a token, that cannot be persisted');
+        if (!$user->canBePersisted()) {
+            throw new \LogicException('Attempting to persist a user, that cannot be persisted');
         }
 
-        $this->_em->persist($token);
+        $this->_em->persist($user);
     }
 
-    public function flush(User $token = null): void
+    public function flush(): void
     {
         try {
-            $this->_em->flush($token);
+            $this->_em->flush();
 
         } catch (UniqueConstraintViolationException $exception) {
             throw new UserAlreadyExistsException($exception);

@@ -10,15 +10,23 @@ class DomainAssertionFailure extends ApplicationException
     protected array $constraintsViolated = [];
 
     /**
-     * @param array $violations
+     * @param DomainInputValidationConstraintViolatedError[] $violations
      * @param string $message
      * @param int $code
      *
      * @return DomainAssertionFailure|static
      */
-    public static function fromErrors(array $violations, string $message = 'Domain validation not passed',
+    public static function fromErrors(array $violations, string $message = '',
                                       int $code = 0): DomainAssertionFailure
     {
+        if (!$message) {
+            $message = 'Domain validation failure; ';
+
+            foreach ($violations as $violation) {
+                $message .= $violation->getMessage() . "\n";
+            }
+        }
+
         $new = new static($message, $code);
         $new->constraintsViolated = $violations;
 

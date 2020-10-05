@@ -35,17 +35,16 @@ abstract class BaseController implements ContainerAwareInterface
          * @var TokenTransport $sessionToken
          */
         $sessionToken = $this->get('security.token_storage')->getToken();
-        $token = $sessionToken->getUser();
 
-        if (!$token->getId()) {
+        if (!$sessionToken || !$sessionToken->getUser() || !$sessionToken->getUser()->getId()) {
             throw new AccessDeniedHttpException('No active token found');
         }
 
         if ($className) {
-            return $this->get(IncomingUserFactory::class)->createFromString($token->getId(), $className);
+            return $this->get(IncomingUserFactory::class)->createFromString($sessionToken->getUser()->getId(), $className);
         }
 
-        return $token;
+        return $sessionToken->getUser();
     }
 
     protected function getLoggedUserOrAnonymousToken(?string $className = null)

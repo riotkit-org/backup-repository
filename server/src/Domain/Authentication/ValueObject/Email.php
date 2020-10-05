@@ -5,7 +5,7 @@ namespace App\Domain\Authentication\ValueObject;
 use App\Domain\Common\Exception\DomainInputValidationConstraintViolatedError;
 use App\Domain\Errors;
 
-class Email
+class Email implements \JsonSerializable
 {
     private string $value;
     protected static string $field = 'email';
@@ -35,5 +35,20 @@ class Email
     public function getValue(): string
     {
         return $this->value;
+    }
+
+    public function jsonSerialize()
+    {
+        return $this->getValue();
+    }
+
+    public function __serialize()
+    {
+        return $this->getValue();
+    }
+
+    public function __toString()
+    {
+        return $this->getValue();
     }
 }

@@ -13,3 +13,8 @@
 *__pycache__*
 /.venv
 .venv-setup.log
+
+###> lexik/jwt-authentication-bundle ###
+/config/jwt/*.pem
+###< lexik/jwt-authentication-bundle ###
+/src/uploads/

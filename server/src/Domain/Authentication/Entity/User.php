@@ -13,8 +13,9 @@ use App\Domain\Common\Exception\DomainAssertionFailure;
 use App\Domain\Common\SharedEntity\EntityValidationTrait;
 use DateTimeImmutable;
 use Swagger\Annotations as SWG;
+use Symfony\Component\Security\Core\User\UserInterface;
 
-class User extends \App\Domain\Common\SharedEntity\User implements \JsonSerializable
+class User extends \App\Domain\Common\SharedEntity\User implements \JsonSerializable, UserInterface
 {
     use EntityValidationTrait;
 
@@ -44,11 +45,11 @@ class User extends \App\Domain\Common\SharedEntity\User implements \JsonSerializ
      */
     protected $data = [];
 
-    protected string       $salt;
-    protected Password     $password;
-    protected Email        $email;
-    protected Organization $organization;
-    protected About        $about;
+    protected string        $salt;
+    protected Password      $passphrase;
+    protected Email         $email;
+    protected Organization  $organization;
+    protected About         $about;
 
     /**
      * @SWG\Property(type="boolean")
@@ -65,7 +66,8 @@ class User extends \App\Domain\Common\SharedEntity\User implements \JsonSerializ
         $this->expirationDate = ExpirationDate::fromString('now', 'now');
         $this->creationDate   = new DateTimeImmutable();
         $this->active         = true;
-        $this->salt           = base64_encode(random_bytes(32));
+        $this->salt           = substr(base64_encode(random_bytes(32)), 0, 32);
+        $this->passphrase     = new Password();
 
         parent::__construct();
     }
@@ -105,7 +107,7 @@ class User extends \App\Domain\Common\SharedEntity\User implements \JsonSerializ
                 $new->setEmail(Email::fromString((string) $email));
             },
             static function () use ($new, $password, $configuration) {
-                $new->setPassword(Password::fromString((string) $password, $new->salt, $configuration));
+                $new->setPassphrase(Password::fromString((string) $password, $new->salt, $configuration));
             },
             static function () use ($new, $organizationName) {
                 $new->setOrganization(Organization::fromString((string) $organizationName));
@@ -161,9 +163,9 @@ class User extends \App\Domain\Common\SharedEntity\User implements \JsonSerializ
         return $this;
     }
 
-    private function setPassword(Password $password): User
+    private function setPassphrase(Password $password): User
     {
-        $this->password = $password;
+        $this->passphrase = $password;
         return $this;
     }
 
@@ -272,5 +274,24 @@ class User extends \App\Domain\Common\SharedEntity\User implements \JsonSerializ
             'roles'        => $this->getRoles(),
             'idIsCensored' => $censorId
         ];
+    }
+
+    public function getPassword()
+    {
+        return $this->passphrase->getValue();
+    }
+
+    public function getSalt()
+    {
+        return $this->salt;
+    }
+
+    public function getUsername()
+    {
+        return $this->email;
+    }
+
+    public function eraseCredentials()
+    {
     }
 }

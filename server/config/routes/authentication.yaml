@@ -1,5 +1,5 @@
 authentication.create_user:
-    path: /auth/user
+    path: /api/stable/auth/user
     controller: 'App\Controller\Authentication\CreateUserController::generateAction'
     methods: ['POST']
     defaults:
@@ -8,21 +8,21 @@ authentication.create_user:
 # @todo: Edit user...
 
 authentication.search:
-    path: /auth/user/search
+    path: /api/stable/auth/user/search
     controller: '\App\Controller\Authentication\UserSearchController::searchAction'
     methods: ['GET']
     defaults:
         _secured: true
 
 authentication.lookup:
-    path: /auth/user/by-id/{userId}
+    path: /api/stable/auth/user/by-id/{userId}
     controller: 'App\Controller\Authentication\LookupUserController::handle'
     methods: ['GET']
     defaults:
         _secured: true
 
 authentication.delete:
-    path: /auth/user/by-id/{userId}
+    path: /api/stable/auth/user/by-id/{userId}
     controller: 'App\Controller\Authentication\RevokeUserAccountController::handle'
     methods: ['DELETE']
     defaults:
@@ -30,7 +30,7 @@ authentication.delete:
 
 # documentation: roles listing
 authentication.roles_listing:
-    path: /auth/roles
+    path: /api/stable/auth/roles
     controller: 'App\Controller\Authentication\RolesListingController::handle'
     methods: ['GET']
     defaults:

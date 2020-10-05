@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 use Ramsey\Uuid\Uuid;
 use Tests\Urls;
@@ -28,7 +28,7 @@ class FunctionalTester extends \Codeception\Actor
 
     public function amAdmin(): void
     {
-        $this->amUser('test-token-full-permissions');
+        $this->haveHttpHeader('Test-Token', 'test-token-full-permissions');
     }
 
     public function amGuest(): void
@@ -36,9 +36,21 @@ class FunctionalTester extends \Codeception\Actor
         $this->deleteHeader('token');
     }
 
-    public function amUser(string $token): void
+    public function amUser(string $email, string $password): void
+    {
+        $this->haveHttpHeader('Content-Type', 'application/json');
+        $this->sendPOST(Urls::URL_JWT_AUTH_LOGIN, [
+            'username' => $email,
+            'password' => $password
+        ]);
+
+        $this->iHaveToken($this->grabDataFromResponseByJsonPath('.token')[0] ?? '');
+    }
+
+    public function iHaveToken(string $token): void
     {
         $this->haveHttpHeader('token', $token);
+        $this->amBearerAuthenticated($token);
     }
 
     public function assertSame($expected, $actual, $message = '')
@@ -149,22 +161,6 @@ class FunctionalTester extends \Codeception\Actor
         );
     }
 
-    public function readFileAttributes(string $filename): void
-    {
-        $this->sendGET(Urls::URL_REPOSITORY_READ_ATTRIBUTES, ['filename' => $filename]);
-    }
-
-    public function deleteFile(string $filename, array $params = []): void
-    {
-        $this->sendDELETE(
-            $this->fill(
-                Urls::URL_REPOSITORY_DELETE_FILE,
-                ['fileName' => $filename]
-            ),
-            $params
-        );
-    }
-
     public function fetchFile(string $filename, array $params = []): void
     {
         $this->sendGET(
@@ -174,22 +170,6 @@ class FunctionalTester extends \Codeception\Actor
             ),
             $params
         );
-    }
-
-    public function receiveListOfElementsFromSecureCopy(string $type): void
-    {
-        $this->sendGET($this->fill(Urls::URL_SECURE_COPY, ['type' => $type]));
-    }
-
-    public function downloadFileFromSecureCopy(string $fileId): string
-    {
-        $this->sendGET($this->fill(Urls::URL_SECURE_COPY_DOWNLOAD_FILE, ['file' => $fileId]));
-        return $this->grabResponse();
-    }
-
-    public function retrieveFileMetadataFromSecureCopy(string $filename): void
-    {
-        $this->sendGET($this->fill(Urls::URL_SECURE_COPY_RETRIEVE_FILE_METADATA, ['file' => $filename]));
     }
 
     public function listFiles(array $params = []): void

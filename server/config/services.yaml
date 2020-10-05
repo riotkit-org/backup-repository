@@ -17,6 +17,7 @@ parameters:
     env(BASE_URL): ''
     env(PASSWD_ALGORITHM): 'sha256'
     env(PASSWD_ITERATIONS): '90000'
+    env(JWT_LIFETIME): '2 hours'
 
 services:
     # default configuration for services in *this* file
@@ -49,7 +50,7 @@ services:
             $manager: '@App\Domain\Authentication\Manager\UserManager'
             $expirationTime: '%env(TOKEN_EXPIRATION_TIME)%'
 
-    App\Infrastructure\Authentication\Event\Subscriber\TokenSubscriber:
+    App\Infrastructure\Authentication\Event\Subscriber\DevelopmentTokenSubscriber:
         autowire: true
         autoconfigure: true
         arguments:
@@ -103,10 +104,6 @@ services:
             $fs: '@App\Domain\Backup\Service\Filesystem'
             $readOnly: '%env(bool:READ_ONLY)%'
 
-    App\Domain\Authentication\Factory\IncomingTokenFactory:
-        public: true
-        autowire: true
-
     App\Domain\Storage\Factory\PublicUrlFactory:
         autowire: true
         arguments:
@@ -156,3 +153,11 @@ services:
         arguments:
             $algorithm: '%env(PASSWD_ALGORITHM)%'
             $iterations: '%env(int:PASSWD_ITERATIONS)%'
+
+    App\Domain\Authentication\Configuration\ApplicationInfo:
+        arguments:
+            $environmentType: '%kernel.environment%'
+
+    App\Domain\Authentication\Configuration\JWTConfiguration:
+        arguments:
+            $lifetime: '%env(JWT_LIFETIME)%'

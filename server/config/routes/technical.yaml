@@ -8,7 +8,7 @@ technical.hello:
 
 
 technical.version:
-    path: /version
+    path: /api/stable/version
     controller: 'App\Controller\Technical\HelloController::showVersionAction'
     methods: ['GET']
     defaults:
