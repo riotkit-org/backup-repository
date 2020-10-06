@@ -63,11 +63,11 @@ class FunctionalTester extends \Codeception\Actor
         \PHPUnit\Framework\Assert::assertTrue($condition, $message);
     }
 
-    public function haveRoles(array $roles, array $params = [], bool $assert = true): string
+    public function haveRoles(array $roles, array $params = [], bool $assert = true): User
     {
         $this->amAdmin();
 
-        $token = $this->createStandardUser(
+        $user = $this->createStandardUser(
             array_merge(
                 ['roles' => $roles],
                 $params
@@ -75,9 +75,9 @@ class FunctionalTester extends \Codeception\Actor
             $assert
         );
 
-        $this->amUser($this->grabDataFromResponseByJsonPath('user.email')[0], 'food-not-bombs-1980');
+        $this->amUser($user->email, $user->password);
 
-        return $token;
+        return $user;
     }
 
     public function postJson(string $url, $params = null, $files = []): void
@@ -112,7 +112,7 @@ class FunctionalTester extends \Codeception\Actor
         );
     }
 
-    public function createUser(array $data, bool $assert = true): string
+    public function createUser(array $data, bool $assert = true): User
     {
         $this->postJson(Urls::URL_USER_CREATE,
             \array_merge(
@@ -128,7 +128,11 @@ class FunctionalTester extends \Codeception\Actor
             $this->canSeeResponseCodeIs(201);
         }
 
-        return $this->grabDataFromResponseByJsonPath('.user.id')[0] ?? '';
+        return new User(
+            $this->grabDataFromResponseByJsonPath('.user.id')[0] ?? '',
+            $this->grabDataFromResponseByJsonPath('.user.email')[0] ?? '',
+            $data['password'] ?? ''
+        );
     }
 
     /**
@@ -137,9 +141,9 @@ class FunctionalTester extends \Codeception\Actor
      * @param array $data
      * @param bool $assert
      *
-     * @return string
+     * @return User
      */
-    public function createStandardUser(array $data, bool $assert = true): string
+    public function createStandardUser(array $data, bool $assert = true): User
     {
         $data = array_merge([
             'password'     => 'food-not-bombs-1980',
@@ -286,5 +290,20 @@ class FunctionalTester extends \Codeception\Actor
                 ]
             )
         );
+    }
+}
+
+
+class User
+{
+    public string $id;
+    public string $email;
+    public string $password;
+
+    public function __construct(string $id, string $email, string $password)
+    {
+        $this->id       = $id;
+        $this->email    = $email;
+        $this->password = $password;
     }
 }

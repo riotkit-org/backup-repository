@@ -54,13 +54,6 @@ class FilesListingController extends BaseController
      *     @SWG\Items(type="string")
      * )
      *
-     * @SWG\Parameter(
-     *     name="mimes",
-     *     in="query",
-     *     type="array",
-     *     @SWG\Items(type="string")
-     * )
-     *
      * @SWG\Response(
      *     response="200",
      *     description="Returns a list of files in the storage, matching given search criteria",

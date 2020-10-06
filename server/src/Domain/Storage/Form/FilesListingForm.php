@@ -25,19 +25,9 @@ class FilesListingForm
     public $tags = [];
 
     /**
-     * @var string[]
-     */
-    public $mimes = [];
-
-    /**
      * @var string
      */
     public $password = '';
-
-    /**
-     * @var bool
-     */
-    public $public;
 
     public function getPage(): int
     {
@@ -56,9 +46,7 @@ class FilesListingForm
             'limit'       => $this->getLimit(),
             'searchQuery' => $this->searchQuery,
             'tags'        => $this->tags,
-            'mimes'       => $this->mimes,
-            'password'    => $this->password,
-            'public'      => $this->public
+            'password'    => $this->password
         ];
     }
 }

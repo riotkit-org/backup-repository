@@ -43,7 +43,6 @@ class UploadSecurityContextTest extends TestCase
     }
 
     /**
-     * @see UploadSecurityContext::canSetPassword()
      * @see UploadSecurityContext::isTagAllowed()
      * @see UploadSecurityContext::isFileSizeOk()
      *
@@ -96,8 +95,6 @@ class UploadSecurityContextTest extends TestCase
         );
 
         $formWithInvalidPassword = new UploadForm();
-        $formWithInvalidPassword->password      = 'this-password-does-not-match-hello-password';
-        $formWithInvalidPassword->fileOverwrite = true;
 
         $formWithMatchingPassword = new UploadForm();
         $formWithMatchingPassword->password      = 'hello';

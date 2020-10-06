@@ -17,27 +17,9 @@ class UploadForm extends ApplicationForm
 
     /**
      * @internal ApplicationForm::typeInSchema string
-     * @var string|Password
-     */
-    public $password;
-
-    /**
-     * @internal ApplicationForm::typeInSchema bool
-     * @var bool
-     */
-    public $fileOverwrite = false;
-
-    /**
-     * @internal ApplicationForm::typeInSchema string
      * @var string
      */
     public $backUrl = '';
-
-    /**
-     * @internal ApplicationForm::typeInSchema bool
-     * @var bool
-     */
-    public $public = true;
 
     /**
      * eg. base64 (if the data in body is encoded with base64 and needs to be decoded)
@@ -60,12 +42,9 @@ class UploadForm extends ApplicationForm
 
         // defaults
         $form->backUrl       = '';
-        $form->fileOverwrite = false;
 
         // mapped
         $form->tags          = \array_map(function (Tag $tag) { return $tag->getName(); }, $file->getTags());
-        $form->password      = $file->getPassword();
-        $form->public        = $file->isPublic();
 
         return $form;
     }
@@ -74,10 +53,7 @@ class UploadForm extends ApplicationForm
     {
         return [
             'backUrl'       => $this->backUrl,
-            'fileOverwrite' => $this->fileOverwrite,
             'tags'          => $this->tags,
-            'password'      => $this->password,
-            'public'        => $this->public
         ];
     }
 }

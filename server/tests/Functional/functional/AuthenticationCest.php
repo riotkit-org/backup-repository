@@ -21,7 +21,7 @@ class AuthenticationCest
             'organization' => 'Wolna Biblioteka',
             'about'        => 'A libertarian library',
             'roles' => [
-                'upload.all', 'upload.enforce_no_password', 'upload.enforce_tags_selected_in_token'
+                'upload.all', 'upload.enforce_tags_selected_in_token'
             ],
             'data' => [
                 'tags' => ['gallery']

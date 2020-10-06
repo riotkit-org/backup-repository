@@ -34,9 +34,6 @@ final class Roles
     /** Allows to upload files at all */
     public const ROLE_UPLOAD                      = 'upload.all';
 
-    /** Enforce no password for all uploads for this token */
-    public const ROLE_UPLOAD_ENFORCE_NO_PASSWORD  = 'upload.enforce_no_password';
-
     /** Enforce token tags. In result every uploaded file will have tags specified in token regardless if they were sent in request */
     public const ROLE_UPLOAD_ENFORCE_TOKEN_TAGS   = 'upload.enforce_tags_selected_in_token';
 
@@ -90,10 +87,10 @@ final class Roles
     //
     //
 
-    /** Allows to download ANY file, even if a file is password protected*/
-    public const ROLE_VIEW_ALL_PROTECTED_FILES = 'view.any_file';
+    /** Allows to download ANY file */
+    public const ROLE_BROWSE_ALL_FILES = 'view.any_file';
 
-    /** List files from ANY tag that was requested, else the user can list only files by tags allowed in token */
+    /** List files from ANY tag that was requested, else the user can list only files by tags allowed in user profile */
     public const ROLE_BROWSE_LIST_OF_FILES_BY_ANY_TAG = 'view.files_from_all_tags';
 
     /** Define that the user can use the listing endpoint (basic usage) */
@@ -156,7 +153,7 @@ final class Roles
         self::ROLE_GENERATE_TOKENS,
         self::ROLE_USE_TECHNICAL_ENDPOINTS,
         self::ROLE_DELETE_ALL_FILES,
-        self::ROLE_VIEW_ALL_PROTECTED_FILES,
+        self::ROLE_BROWSE_ALL_FILES,
         self::ROLE_BROWSE_LIST_OF_FILES_BY_ANY_TAG,
         self::ROLE_ACCESS_LISTING_ENDPOINT,
         self::ROLE_CAN_SEE_EXTRA_ADMIN_METADATA,
@@ -180,7 +177,6 @@ final class Roles
     ];
 
     public const RESTRICTIONS_LIST = [
-        self::ROLE_UPLOAD_ENFORCE_NO_PASSWORD,
         self::ROLE_UPLOAD_ENFORCE_TOKEN_TAGS,
         self::ROLE_UPLOAD_ONLY_ONCE_SUCCESSFUL,
         self::ROLE_CANNOT_SEE_FULL_TOKEN_ID

@@ -38,13 +38,7 @@ class DeleteCommand implements CommandHandler
         $form->filename = $input['form']['filename'] ?? '';
         $form->password = '';
 
-        $securityContext = new ManagementSecurityContext(
-            // can delete all files without knowing the password
-            true,
-
-            // password can be empty
-            ''
-        );
+        $securityContext = new ManagementSecurityContext(true);
 
         return (bool) $this->handler->handle($form, $securityContext);
     }

@@ -25,10 +25,6 @@ class FilesListingFormType extends AbstractType
             ->add('tags',        CollectionType::class, [
                 'allow_add'    => true,
                 'allow_delete' => true
-            ])
-            ->add('mimes',       CollectionType::class, [
-                'allow_add'    => true,
-                'allow_delete' => true
             ]);
     }
 

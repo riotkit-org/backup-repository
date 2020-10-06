@@ -12,6 +12,14 @@ tasks:
             docker rm -f s3pb_db_1
             docker-compose -p s3pb -f .infrastructure/docker/docker-compose.yml up -d --force-recreate
 
+    :dev:
+        description: Prepare development environment
+        steps: |
+            %RKD% :docker:up
+            sleep 10
+            composer install
+            ./bin/console doctrine:migrations:migrate -n
+
     :create:keys:
         description: Create JWT encryption keys
         steps:

@@ -5,7 +5,6 @@ namespace App\Domain\Storage\Manager;
 use App\Domain\Storage\Aggregate\FileRetrievedFromStorage;
 use App\Domain\Storage\Entity\StoredFile;
 use App\Domain\Storage\Exception\FileUploadedTwiceException;
-use App\Domain\Storage\Exception\InvalidAttributeException;
 use App\Domain\Storage\Exception\StorageException;
 use App\Domain\Storage\Form\UploadForm;
 use App\Domain\Storage\Repository\FileRepository;
@@ -56,7 +55,6 @@ class StorageManager
      * @return StoredFile
      *
      * @throws StorageException
-     * @throws InvalidAttributeException
      * @throws FileUploadedTwiceException
      */
     public function store(
@@ -74,17 +72,9 @@ class StorageManager
         $existsOnDisk           = $this->fs->fileExist($path);
         $existsBothDbAndDisk    = $existingFromRepository && $existsOnDisk;
 
-        // policies
-        $canOverwriteFile = $existingFromRepository ? $securityContext->canOverwriteFile($existingFromRepository, $form) : false;
-
         // case: file exists in both repository and on the disk, but we do not allow overwriting (VERIFIED BY FILENAME)
-        if ($existsBothDbAndDisk && !$canOverwriteFile) {
+        if ($existsBothDbAndDisk) {
             throw FileUploadedTwiceException::create($existingFromRepository);
-        }
-
-        // case: overwriting a file
-        if ($existsBothDbAndDisk && $canOverwriteFile) {
-            return $this->writeManager->overwriteFile($existingFromRepository, $stream, $securityContext, $encoding);
         }
 
         // case: somehow file was lost in the repository, entry will be rewritten

@@ -298,4 +298,9 @@ class User extends \App\Domain\Common\SharedEntity\User implements \JsonSerializ
     public function eraseCredentials()
     {
     }
+
+    public function getEmail(): Email
+    {
+        return $this->email;
+    }
 }

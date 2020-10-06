@@ -19,21 +19,6 @@ App\Domain\Storage\Form\UploadForm:
                         pattern: '/^[a-z0-9\.\-\_]+$/i'
                         message: "Tag should not have any special characters"
 
-        fileOverwrite:
-            - Type:
-                  type: bool
-                  message: "File overwrite flag should be a boolean"
-
-        password:
-            - Type:
-                  type: string
-
-            - Length:
-                  min: 0
-                  max: 250
-                  minMessage: "Password should be at least 0 characters"
-                  maxMessage: "Password should be up to 250 characters"
-
         backUrl:
             - Type:
                   type: string

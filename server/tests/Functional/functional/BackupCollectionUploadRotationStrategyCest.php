@@ -10,12 +10,12 @@ use FunctionalTester;
 class BackupCollectionUploadRotationStrategyCest
 {
     private string $id    = '';
-    private string $token = '';
+    private \User $user;
 
     public function prepareDataForTest(FunctionalTester $I): void
     {
         $I->amAdmin();
-        $this->token = $I->createStandardUser([
+        $this->user = $I->createStandardUser([
             'roles' => [
                 "collections.create_new",
                 "collections.manage_tokens_in_allowed_collections",
@@ -25,7 +25,7 @@ class BackupCollectionUploadRotationStrategyCest
             ]
         ]);
 
-        $I->amUser($this->token);
+        $I->amUser($this->user->email, $this->user->password);
 
         $this->id = $I->createCollection([
             "maxBackupsCount" => 2,
@@ -40,7 +40,7 @@ class BackupCollectionUploadRotationStrategyCest
 
     public function testFirstVersionWasUploaded(FunctionalTester $I): void
     {
-        $I->amUser($this->token);
+        $I->amUser($this->user->email, $this->user->password);
         $I->uploadToCollection($this->id,
             "ZSP-IWA calls for a week of protest action against the repression of workers from the Post Office in Poland");
 
@@ -49,7 +49,7 @@ class BackupCollectionUploadRotationStrategyCest
 
     public function testUploadingFirstVersionCannotBePossible(FunctionalTester $I): void
     {
-        $I->amUser($this->token);
+        $I->amUser($this->user->email, $this->user->password);
         $I->uploadToCollection($this->id,
             "ZSP-IWA calls for a week of protest action against the repression of workers from the Post Office in Poland");
 
@@ -58,7 +58,7 @@ class BackupCollectionUploadRotationStrategyCest
 
     public function testUploadingSecondVersionShouldStoreTheUploadedVersion(FunctionalTester $I): void
     {
-        $I->amUser($this->token);
+        $I->amUser($this->user->email, $this->user->password);
         $I->uploadToCollection($this->id,
             "ZSP-lWA calls for a week of protest action against the repression of workers from the Post Office in Poland
                      ===========================================================================================================
@@ -68,7 +68,7 @@ class BackupCollectionUploadRotationStrategyCest
 
     public function testByUploadingThirdVersionTheFirstIsDeletedByRotation(FunctionalTester $I): void
     {
-        $I->amUser($this->token);
+        $I->amUser($this->user->email, $this->user->password);
 
         // step 4:
         $I->uploadToCollection($this->id,

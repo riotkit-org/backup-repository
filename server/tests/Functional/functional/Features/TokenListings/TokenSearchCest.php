@@ -11,20 +11,22 @@ use FunctionalTester;
  */
 class TokenSearchCest
 {
+    private const USERS_COUNT = 50;
+
     public function seedApplicationWithData(FunctionalTester $I): void
     {
         $I->amAdmin();
 
-        for ($num = 1; $num <= 250; $num++) {
-            $I->createUser([
+        for ($num = 1; $num <= self::USERS_COUNT; $num++) {
+            $I->createStandardUser([
                 'roles' => [
-                    'upload.all', 'upload.enforce_no_password', 'upload.enforce_tags_selected_in_token'
+                    'upload.all', 'upload.enforce_tags_selected_in_token'
                 ],
                 'data' => [
                     'tags' => ['role_generated_' . $num]
                 ]
             ], false);
-            $I->storeIdAs('.token.id', 'TOKEN_' . $num);
+            $I->storeIdAs('.user.id', 'USER_' . $num);
         }
     }
 
@@ -37,7 +39,7 @@ class TokenSearchCest
                 'pagination' => [
                     'page'         => 1,
                     'perPageLimit' => 10,
-                    'maxPages'     => 25
+                    'maxPages'     => 5
                 ]
             ]
         ]);
@@ -47,7 +49,7 @@ class TokenSearchCest
     {
         $I->amAdmin();
 
-        $expectedCount = 250;
+        $expectedCount = self::USERS_COUNT;
         $actual        = 0;
 
         // 26 pages
@@ -75,13 +77,12 @@ class TokenSearchCest
         $I->amAdmin();
 
         // switch token to non-privileged that does not contain a role required for search endpoint
-        $I->amUser(
-            $I->createUser([
-                'roles' => [
-                    'collections.create_new'
-                ]
-            ])
-        );
+        $user = $I->createStandardUser([
+            'roles' => [
+                'collections.create_new'
+            ]
+        ]);
+        $I->amUser($user->email, $user->password);
         $I->searchForUsers('upload.enforce_tags_selected_in_token', 1, 10);
         $I->canSeeResponseCodeIs(403);
     }
@@ -89,14 +90,13 @@ class TokenSearchCest
     public function shouldBeAbleToPerformSearchWithMinimumRequiredPermissions(FunctionalTester $I): void
     {
         $I->amAdmin();
-        $I->amUser(
-            $I->createUser([
-                'roles' => [
-                    'security.search_for_tokens',
-                    'security.authentication_lookup'
-                ]
-            ])
-        );
+        $user = $I->createStandardUser([
+            'roles' => [
+                'security.search_for_tokens',
+                'security.authentication_lookup'
+            ]
+        ]);
+        $I->amUser($user->email, $user->password);
         $I->searchForUsers('', 1, 50);
         $I->canSeeResponseCodeIs(200);
     }

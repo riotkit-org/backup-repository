@@ -53,13 +53,12 @@ class BackupCollectionCustomIdsCest
     public function testCantAssignCustomIdWhenPermissionNotGrantedOnToken(FunctionalTester $I): void
     {
         $I->amAdmin();
-        $I->amUser(
-            $I->createStandardUser([
-                'roles' => [
-                    'collections.create_new'
-                ]
-            ])
-        );
+        $user = $I->createStandardUser([
+            'roles' => [
+                'collections.create_new'
+            ]
+        ]);
+        $I->amUser($user->email, $user->password);
         $I->createCollection([
             'maxBackupsCount'   => 2,
             'maxOneVersionSize' => '50MB',
@@ -77,13 +76,12 @@ class BackupCollectionCustomIdsCest
         $expectedId = Uuid::uuid4()->toString();
 
         $I->amAdmin();
-        $I->amUser(
-            $I->createStandardUser([
-                'roles' => [
-                    'collections.create_new', 'collections.create_new.with_custom_id'
-                ]
-            ])
-        );
+        $user = $I->createStandardUser([
+            'roles' => [
+                'collections.create_new', 'collections.create_new.with_custom_id'
+            ]
+        ]);
+        $I->amUser($user->email, $user->password);
         $I->createCollection([
             'maxBackupsCount'   => 2,
             'maxOneVersionSize' => '50MB',

@@ -11,7 +11,7 @@ namespace Tests\Functional\Features\Security;
  */
 class FeatureLimitTokenAccessPerIpAndUserAgentCest
 {
-    private function createToken(\FunctionalTester $I, array $ua = [], array $ips = []): string
+    private function createUser(\FunctionalTester $I, array $ua = [], array $ips = []): \User
     {
         return $I->haveRoles(['security.authentication_lookup'], [
             'data' => [
@@ -23,41 +23,41 @@ class FeatureLimitTokenAccessPerIpAndUserAgentCest
 
     public function testUserAgentIsCheckedWhenNotPresentInRequest(\FunctionalTester $I): void
     {
-        $token = $this->createToken($I, ['Test UA :)']);
+        $user = $this->createUser($I, ['Test UA :)']);
         $I->seeResponseCodeIsSuccessful();
 
         $I->deleteHeader('User-Agent');
-        $I->lookupUser($token);
+        $I->lookupUser($user->id);
         $I->canSeeResponseCodeIsClientError();
     }
 
     public function testInvalidUserAgentSentInRequest(\FunctionalTester $I): void
     {
-        $token = $this->createToken($I, ['Test UA :)']);
+        $user = $this->createUser($I, ['Test UA :)']);
         $I->seeResponseCodeIsSuccessful();
 
         $I->haveHttpHeader('User-Agent', 'Not a valid UA');
-        $I->lookupUser($token);
+        $I->lookupUser($user->id);
         $I->canSeeResponseCodeIsClientError();
     }
 
     public function testWillAllowToPerformARequestWhenUserAgentMatches(\FunctionalTester $I): void
     {
-        $token = $this->createToken($I, ['Test UA :)']);
+        $user = $this->createUser($I, ['Test UA :)']);
         $I->seeResponseCodeIsSuccessful();
 
         $I->haveHttpHeader('User-Agent', 'Test UA :)');
-        $I->lookupUser($token);
+        $I->lookupUser($user->id);
         $I->canSeeResponseCodeIsSuccessful();
     }
 
     public function testWillWorkWithoutLimitingUserAgentOrIPAddress(\FunctionalTester $I): void
     {
-        $token = $this->createToken($I);
+        $user = $this->createUser($I);
         $I->seeResponseCodeIsSuccessful();
 
         $I->deleteHeader('User-Agent');
-        $I->lookupUser($token);
+        $I->lookupUser($user->id);
         $I->canSeeResponseCodeIsSuccessful();
     }
 }

@@ -11,7 +11,6 @@ class AnonymousFile extends StoredFile
         $self = new static();
         $self->setDateAdded($storedFile->getDateAdded());
         $self->setDateAdded($storedFile->getDateAdded());
-        $self->changePassword($storedFile->isPasswordProtected() ? 'some-password' : '');
 
         return $self;
     }

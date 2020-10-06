@@ -2,8 +2,6 @@
 
 namespace App\Domain\Storage\Entity;
 
-use App\Domain\Common\ValueObject\Password;
-use App\Domain\Storage\Exception\InvalidAttributeException;
 use App\Domain\Storage\ValueObject\Filename;
 use App\Domain\Common\SharedEntity\StoredFile as StoredFileFromCommon;
 use App\Domain\Storage\ValueObject\Path;
@@ -24,21 +22,6 @@ class StoredFile extends StoredFileFromCommon implements \JsonSerializable
      * @var string
      */
     protected $timezone;
-
-    /**
-     * @var string
-     */
-    protected $password = '';
-
-    /**
-     * @var string
-     */
-    protected $mimeType;
-
-    /**
-     * @var bool
-     */
-    protected $public;
 
     /**
      * @var Tag[]
@@ -136,55 +119,9 @@ class StoredFile extends StoredFileFromCommon implements \JsonSerializable
         return $this;
     }
 
-    public function setPublic(bool $public): void
-    {
-        $this->public = $public;
-    }
-
-    public function isPasswordProtected(): bool
-    {
-        return !empty($this->password);
-    }
-
-    public function replaceEncodedPassword(Password $password): void
-    {
-        $this->password = $password->getValue();
-    }
-
-    public function changePassword(?string $newPassword): void
-    {
-        if (!$newPassword) {
-            $this->password = '';
-
-            return;
-        }
-
-        $this->password = $this->encryptPassword($newPassword);
-    }
-
-    public function checkPasswordMatchesWith(string $password): bool
-    {
-        if (!$this->isPasswordProtected()) {
-            return true;
-        }
-
-        return $this->encryptPassword($password) === $this->password;
-    }
-
-    private function encryptPassword(string $password): string
-    {
-        return hash('sha256', $password);
-    }
-
     public function getDateAdded(): \DateTimeImmutable
     {
         return $this->dateAdded;
-    }
-
-
-    public function isPublic(): bool
-    {
-        return $this->public;
     }
 
     public function checkContentHashMatchesEtag(string $etag): bool
@@ -200,11 +137,7 @@ class StoredFile extends StoredFileFromCommon implements \JsonSerializable
             'contentHash' => $this->getContentHash(),
             'dateAdded'   => $this->getDateAdded(),
             'timezone'    => $this->getTimezone(),
-            'tags'        => $this->getTags(),
-            'public'      => $this->public,
-            'attributes'  => [
-                'isPasswordProtected' => $this->isPasswordProtected()
-            ]
+            'tags'        => $this->getTags()
         ];
     }
 
@@ -220,11 +153,6 @@ class StoredFile extends StoredFileFromCommon implements \JsonSerializable
     protected static function getFilenameClass(): string
     {
         return Filename::class;
-    }
-
-    public function getPassword(): string
-    {
-        return $this->password;
     }
 
     /**

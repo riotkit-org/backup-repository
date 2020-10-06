@@ -24,10 +24,10 @@ class FeatureOnlyOneFileAllowedToUploadCest
         ]);
 
         $user = $I->createStandardUser(['roles' => ['upload.all', 'upload.only_once_successful', 'collections.upload_to_allowed_collections']]);
-        $I->grantTokenAccessToCollection($collection, $user);
+        $I->grantTokenAccessToCollection($collection, $user->id);
 
         // switch to limited user
-        $I->amUser($user);
+        $I->amUser($user->email, $user->password);
         $I->stopFollowingRedirects();
 
         // upload first time
@@ -43,6 +43,6 @@ class FeatureOnlyOneFileAllowedToUploadCest
             "ZSP-IWA calls for a week of protest action against the repression of workers from the Post Office in Poland"
         );
 
-        $I->canSeeResponseCodeIs(403);
+        $I->canSeeResponseCodeIs(401);
     }
 }

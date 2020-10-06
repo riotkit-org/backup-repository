@@ -12,7 +12,7 @@ class BackupCollectionAccessControlCest
     public function testGrantingAndDenyingATokenToCollection(FunctionalTester $I): void
     {
         $I->amAdmin();
-        $secondTokenId = $I->createStandardUser([
+        $secondUser = $I->createStandardUser([
             'roles' => ['upload.all'],
             'data' => [
                 'tags' => ['user_uploads.u123', 'user_uploads'],
@@ -29,10 +29,10 @@ class BackupCollectionAccessControlCest
             'filename'          => 'zsp.net.pl_database.tar.gz'
         ]);
 
-        $I->grantTokenAccessToCollection($collectionId, $secondTokenId);
+        $I->grantTokenAccessToCollection($collectionId, $secondUser->id);
         $I->canSeeResponseCodeIsSuccessful();
 
-        $I->revokeAccessToCollection($collectionId, $secondTokenId);
+        $I->revokeAccessToCollection($collectionId, $secondUser->id);
         $I->canSeeResponseCodeIsSuccessful();
     }
 }

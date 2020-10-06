@@ -28,15 +28,6 @@ App\Domain\Storage\Entity\StoredFile:
             column: timezone
             length: 48
 
-        password:
-            type: string
-            length: 254
-            column: password
-
-        public:
-            type: boolean
-            column: public
-
         storagePath:
             type: string
             length: 1024

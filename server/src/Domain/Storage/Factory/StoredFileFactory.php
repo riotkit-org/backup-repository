@@ -28,8 +28,6 @@ class StoredFileFactory
      * @param User $token
      *
      * @return StoredFile
-     *
-     * @throws InvalidAttributeException
      */
     public function createFromForm(UploadForm $form, Filename $filename, User $token): StoredFile
     {
@@ -47,13 +45,6 @@ class StoredFileFactory
      */
     public function mapFromForm(UploadForm $form, StoredFile $storedFile): StoredFile
     {
-        // fields
-        $form->password instanceof Password
-            ? $storedFile->replaceEncodedPassword($form->password)
-            : $storedFile->changePassword($form->password);
-
-        $storedFile->setPublic($form->public);
-
         // related tags
         $tags = $this->tagRepository->findOrCreateTagsByNames($form->tags);
 
