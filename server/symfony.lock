@@ -152,11 +152,25 @@
     "jean85/pretty-package-versions": {
         "version": "1.2"
     },
-    "jsq/psr7-stream-encryption": {
-        "version": "0.4.0"
+    "jms/metadata": {
+        "version": "2.3.0"
     },
-    "justinrainbow/json-schema": {
-        "version": "5.2.9"
+    "jms/serializer": {
+        "version": "3.9.0"
+    },
+    "jms/serializer-bundle": {
+        "version": "3.0",
+        "recipe": {
+            "repo": "github.com/symfony/recipes-contrib",
+            "branch": "master",
+            "version": "3.0",
+            "ref": "384cec52df45f3bfd46a09930d6960a58872b268"
+        },
+        "files": [
+            "config/packages/dev/jms_serializer.yaml",
+            "config/packages/jms_serializer.yaml",
+            "config/packages/prod/jms_serializer.yaml"
+        ]
     },
     "laminas/laminas-code": {
         "version": "3.4.1"
@@ -332,9 +346,6 @@
     },
     "ramsey/uuid": {
         "version": "3.8.0"
-    },
-    "scienta/doctrine-json-functions": {
-        "version": "4.1.2"
     },
     "sebastian/code-unit-reverse-lookup": {
         "version": "1.0.1"
@@ -611,19 +622,6 @@
     },
     "symfony/test-pack": {
         "version": "v1.0.5"
-    },
-    "symfony/translation": {
-        "version": "3.3",
-        "recipe": {
-            "repo": "github.com/symfony/recipes",
-            "branch": "master",
-            "version": "3.3",
-            "ref": "1fb02a6e1c8f3d4232cce485c9afa868d63b115a"
-        },
-        "files": [
-            "config/packages/translation.yaml",
-            "translations/.gitignore"
-        ]
     },
     "symfony/translation-contracts": {
         "version": "v2.2.0"
