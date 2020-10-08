@@ -40,5 +40,8 @@ class DomainValidationErrorSubscriber implements EventSubscriberInterface
             $event->setResponse(new JsonFormattedResponse($exc->jsonSerialize(), $exc->getHttpCode()));
             return;
         }
+
+        // @todo: Show 500 if Exception::canBeDisplayedPublic() does not return true
+        // @todo: Add a stacktrace, when env is test or dev - maybe in separate listener with lower priority? Or there?
     }
 }
