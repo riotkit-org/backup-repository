@@ -2,7 +2,7 @@
 
 namespace App\Infrastructure\Authentication\Form;
 
-use App\Domain\Authentication\Form\DetailsForm;
+use App\Domain\Authentication\Form\RestrictionsForm;
 use App\Domain\Common\SharedEntity\User;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
@@ -33,7 +33,7 @@ class DetailsFormType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         return $resolver->setDefaults([
-            'data_class'           => DetailsForm::class,
+            'data_class'           => RestrictionsForm::class,
             'csrf_protection'      => false,
             'extra_fields_message' => 'This request does not support extra parameters such as {{ extra_fields }}'
         ]);

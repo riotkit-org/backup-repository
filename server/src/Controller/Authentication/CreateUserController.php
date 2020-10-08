@@ -6,7 +6,6 @@ use App\Controller\BaseController;
 use App\Domain\Authentication\ActionHandler\UserCreationHandler;
 use App\Domain\Authentication\Factory\Context\SecurityContextFactory;
 use App\Domain\Authentication\Form\AuthForm;
-use App\Infrastructure\Authentication\Form\AuthFormType;
 use App\Infrastructure\Common\Http\JsonFormattedResponse;
 use Exception;
 use Symfony\Component\HttpFoundation\Request;
@@ -64,11 +63,6 @@ class CreateUserController extends BaseController
      *             example="true"
      *         ),
      *         @SWG\Property(
-     *             property="http_code",
-     *             type="integer",
-     *             example="201"
-     *         ),
-     *         @SWG\Property(
      *             property="errors",
      *             type="array",
      *             @SWG\Items(
@@ -100,23 +94,17 @@ class CreateUserController extends BaseController
      */
     public function generateAction(Request $request): Response
     {
-        $form = new AuthForm();
-        $infrastructureForm = $this->submitFormFromJsonRequest($request, $form, AuthFormType::class);
+        /**
+         * @var AuthForm
+         */
+        $form = $this->decodeRequestIntoDTO($request, AuthForm::class);
 
-        if (!$infrastructureForm->isValid()) {
-            return $this->createValidationErrorResponse($infrastructureForm);
-        }
-
-        return $this->wrap(
-            function () use ($form) {
-                return new JsonFormattedResponse(
-                    $this->handler->handle(
-                        $form,
-                        $this->authFactory->createFromUserAccount($this->getLoggedUser())
-                    ),
-                    JsonFormattedResponse::HTTP_CREATED
-                );
-            }
+        return new JsonFormattedResponse(
+            $this->handler->handle(
+                $form,
+                $this->authFactory->createFromUserAccount($this->getLoggedUser())
+            ),
+            JsonFormattedResponse::HTTP_CREATED
         );
     }
 }

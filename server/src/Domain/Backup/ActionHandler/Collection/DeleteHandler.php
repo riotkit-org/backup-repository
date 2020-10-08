@@ -70,10 +70,7 @@ class DeleteHandler
     private function assertHasRights(CollectionManagementContext $securityContext, DeleteForm $form): void
     {
         if (!$securityContext->canDeleteCollection($form)) {
-            throw new AuthenticationException(
-                'Current token does not allow to delete this collection',
-                AuthenticationException::CODES['not_authenticated']
-            );
+            throw AuthenticationException::fromDeletionProhibited();
         }
     }
 }

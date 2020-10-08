@@ -53,10 +53,7 @@ class VersionsListingHandler
     private function assertHasRights(VersioningContext $securityContext, BackupCollection $collection): void
     {
         if (!$securityContext->canListCollectionVersions($collection)) {
-            throw new AuthenticationException(
-                'Current token does not allow to list versions in this collection',
-                AuthenticationException::CODES['not_authenticated']
-            );
+            throw AuthenticationException::fromListingBackupsDenied();
         }
     }
 }

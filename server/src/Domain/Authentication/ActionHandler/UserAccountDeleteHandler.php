@@ -53,10 +53,7 @@ class UserAccountDeleteHandler
     private function assertHasRights(AuthenticationManagementContext $context, User $user): void
     {
         if (!$context->canRevokeAccess($user)) {
-            throw new AuthenticationException(
-                'Current token does not allow to revoke this token or just any other token',
-                AuthenticationException::CODES['not_authenticated']
-            );
+            throw AuthenticationException::fromDeletionProhibited();
         }
     }
 }

@@ -1,13 +1,12 @@
 jms_serializer:
+    property_naming:
+        id: 'jms_serializer.camel_case_naming_strategy'
     visitors:
         xml_serialization:
             format_output: '%kernel.debug%'
-#    metadata:
-#        auto_detection: false
-#        directories:
-#            any-name:
-#                namespace_prefix: "My\\FooBundle"
-#                path: "@MyFooBundle/Resources/config/serializer"
-#            another-name:
-#                namespace_prefix: "My\\BarBundle"
-#                path: "@MyBarBundle/Resources/config/serializer"
+    metadata:
+        auto_detection: false
+        directories:
+            application:
+                namespace_prefix: "App\\Domain"
+                path: "%kernel.project_dir%/config/serializer/domain"

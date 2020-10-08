@@ -4,7 +4,7 @@ namespace App\Domain\Authentication\Form;
 
 use App\Domain\Common\SharedEntity\User;
 
-class DetailsForm
+class RestrictionsForm
 {
     /**
      * @var array

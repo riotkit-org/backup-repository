@@ -48,16 +48,12 @@ class FilesListingHandler
 
     /**
      * @param ReadSecurityContext $securityContext
-     *
-     * @throws AuthenticationException
+     * @throws \App\Domain\Common\Exception\AuthenticationException
      */
     private function assertHasRightsToListAnything(ReadSecurityContext $securityContext): void
     {
         if (!$securityContext->canListAnything()) {
-            throw new AuthenticationException(
-                'Current token does not allow user to delete the file',
-                AuthenticationException::CODES['auth_cannot_delete_file']
-            );
+            throw AuthenticationException::fromListingDenied();
         }
     }
 }

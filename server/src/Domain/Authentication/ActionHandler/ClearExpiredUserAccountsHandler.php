@@ -66,10 +66,7 @@ class ClearExpiredUserAccountsHandler
     private function assertHasRights(AuthenticationManagementContext $context): void
     {
         if (!$context->canUseTechnicalEndpoints()) {
-            throw new AuthenticationException(
-                'Current token does not allow access to technical endpoints',
-                AuthenticationException::CODES['not_authenticated']
-            );
+            throw AuthenticationException::fromPermissionDeniedToUseTechnicalEndpoints();
         }
     }
 }

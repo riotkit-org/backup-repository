@@ -53,10 +53,7 @@ class DisallowTokenHandler
     private function assertHasRights(CollectionManagementContext $securityContext, BackupCollection $collection): void
     {
         if (!$securityContext->canRevokeAccessToCollection($collection)) {
-            throw new AuthenticationException(
-                'Current token does not allow to revoke tokens at this collection',
-                AuthenticationException::CODES['not_authenticated']
-            );
+            throw AuthenticationException::fromCollectionAccessManagementDenied();
         }
     }
 }

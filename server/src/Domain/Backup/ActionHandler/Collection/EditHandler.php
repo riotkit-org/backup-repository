@@ -83,10 +83,7 @@ class EditHandler
     private function assertHasRights(CollectionManagementContext $securityContext, EditForm $form): void
     {
         if (!$securityContext->canModifyCollection($form)) {
-            throw new AuthenticationException(
-                'Current token does not allow to modify this collection',
-                AuthenticationException::CODES['not_authenticated']
-            );
+            throw AuthenticationException::fromEditProhibited();
         }
     }
 }

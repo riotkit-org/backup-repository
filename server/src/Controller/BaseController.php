@@ -10,6 +10,7 @@ use App\Domain\Common\Exception\ReadOnlyException;
 use App\Domain\Common\Exception\RequestException;
 use App\Domain\Storage\Exception\StorageException;
 use App\Infrastructure\Authentication\Token\TokenTransport;
+use App\Infrastructure\Common\Exception\JsonRequestException;
 use App\Infrastructure\Common\Http\JsonFormattedResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\ControllerTrait;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
@@ -27,6 +28,24 @@ abstract class BaseController implements ContainerAwareInterface
     protected function getParameter(string $name)
     {
         return $this->container->getParameter($name);
+    }
+
+    /**
+     * @param Request $request
+     * @param string $DTOClassName
+     *
+     * @return ${DTOClassName}
+     *
+     * @throws JsonRequestException
+     */
+    protected function decodeRequestIntoDTO(Request $request, string $DTOClassName)
+    {
+        try {
+            return $this->container->get('jms_serializer.public')
+                ->deserialize($request->getContent(false), $DTOClassName, 'json');
+        } catch (\ErrorException $exception) {
+            throw JsonRequestException::fromJsonToFormMappingError($exception);
+        }
     }
 
     protected function getLoggedUser(?string $className = null)

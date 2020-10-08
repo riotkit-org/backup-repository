@@ -52,11 +52,8 @@ class TokenAddHandler
      */
     private function assertHasRights(CollectionManagementContext $securityContext, BackupCollection $collection): void
     {
-        if (!$securityContext->canAddTokensToCollection($collection)) {
-            throw new AuthenticationException(
-                'Current token does not allow to add tokens to this collection',
-                AuthenticationException::CODES['not_authenticated']
-            );
+        if (!$securityContext->canRevokeAccessToCollection($collection)) {
+            throw AuthenticationException::fromCollectionAccessManagementDenied();
         }
     }
 }

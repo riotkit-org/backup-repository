@@ -28,10 +28,7 @@ class IncomingUserFactory
         $persistedUser = $this->repository->findUserByUserId($userId, $className);
 
         if (!$persistedUser) {
-            throw new AuthenticationException(
-                'Invalid token, cannot find token id in the persistent database',
-                AuthenticationException::CODES['not_authenticated']
-            );
+            throw AuthenticationException::fromUsersCreationProhibition();
         }
 
         return $persistedUser;

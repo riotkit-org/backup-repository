@@ -100,17 +100,11 @@ class CreationHandler
     private function assertHasRights(CollectionManagementContext $securityContext, CreationForm $form): void
     {
         if (!$securityContext->canCreateCollection($form)) {
-            throw new AuthenticationException(
-                'Current token does not allow to create this collection',
-                AuthenticationException::CODES['not_authenticated']
-            );
+            throw AuthenticationException::fromCreationAccessDenied();
         }
 
         if ($form->id && !$securityContext->canCreateCollectionWithCustomId($form)) {
-            throw new AuthenticationException(
-                'Current token does not allow to create collection with custom id',
-                AuthenticationException::CODES['no_permission_to_assign_custom_id']
-            );
+            throw AuthenticationException::fromAccessDeniedToAssignCustomIds();
         }
     }
 }

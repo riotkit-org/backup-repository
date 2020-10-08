@@ -6,7 +6,7 @@ use App\Domain\Authentication\ActionHandler\UserCreationHandler;
 use App\Domain\Authentication\Exception\ValidationException;
 use App\Domain\Authentication\Factory\Context\SecurityContextFactory;
 use App\Domain\Authentication\Form\AuthForm;
-use App\Domain\Authentication\Form\DetailsForm;
+use App\Domain\Authentication\Form\RestrictionsForm;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -54,7 +54,7 @@ class CreateUserCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $form = new AuthForm();
-        $form->data = new DetailsForm();
+        $form->data = new RestrictionsForm();
         $form->data->tags               = $this->getMultipleValueOption($input, 'tags');
         $form->data->maxAllowedFileSize = (int) $input->getOption('max-file-size');
         $form->expires                  = $input->getOption('expires');

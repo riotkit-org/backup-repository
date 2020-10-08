@@ -3,6 +3,7 @@
 namespace App\Infrastructure\Common\Http;
 
 use App\Domain\Common\Exception\DomainAssertionFailure;
+use App\Domain\Errors;
 
 class ValidationErrorResponse extends JsonFormattedResponse
 {
@@ -17,7 +18,7 @@ class ValidationErrorResponse extends JsonFormattedResponse
 
     public static function getResponseType(): string
     {
-        return 'validation.error';
+        return Errors::TYPE_VALIDATION_ERROR;
     }
 
     private static function aggregateFieldsIntoHash(array $fields): array

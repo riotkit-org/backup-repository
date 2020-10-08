@@ -92,10 +92,7 @@ class BackupSubmitHandler
     private function assertHasPermissions(VersioningContext $securityContext, BackupCollection $collection): void
     {
         if (!$securityContext->canUploadToCollection($collection)) {
-            throw new AuthenticationException(
-                'Current token does not allow to upload to this collection',
-                AuthenticationException::CODES['not_authenticated']
-            );
+            throw AuthenticationException::fromBackupUploadActionDisallowed();
         }
     }
 }

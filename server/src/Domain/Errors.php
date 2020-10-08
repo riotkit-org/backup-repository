@@ -4,6 +4,10 @@ namespace App\Domain;
 
 final class Errors
 {
+    //
+    // Domain and Validation errors
+    //
+
     public const ERR_USER_EXISTS     = 40001;
     public const ERR_MSG_USER_EXISTS = 'User already exists';
 
@@ -66,4 +70,79 @@ final class Errors
 
     public const ERR_USERID_FORMAT_INVALID                 = 40021;
     public const ERR_MSG_USERID_FORMAT_INVALID             = 'User ID format invalid, should be a uuidv4 format';
+
+    //
+    // Permission errors
+    //
+
+    public const ERR_PERMISSION_CANNOT_CREATE_USERS        = 40300;
+    public const ERR_MSG_PERMISSION_CANNOT_CREATE_USERS    = 'Current access does not allow to create users';
+
+    public const ERR_REQUEST_PREDICTABLE_ID_FORBIDDEN      = 40301;
+    public const ERR_MSG_REQUEST_PREDICTABLE_ID_FORBIDDEN  = 'Current access does not allow setting predictable identifiers for users';
+
+    public const ERR_MSG_REQUEST_READ_ACCESS_DENIED        = 40302;
+    public const ERR_REQUEST_READ_ACCESS_DENIED            = 'Got access denied while trying to access the object';
+
+    public const ERR_REQUEST_CANNOT_DELETE                 = 40303;
+    public const ERR_MSG_REQUEST_CANNOT_DELETE             = 'No permissions to delete this object';
+
+    public const ERR_LISTING_ENDPOINT_ACCESS_DENIED        = 40304;
+    public const ERR_MSG_LISTING_ENDPOINT_ACCESS_DENIED    = 'Cannot access listing endpoint, no enough permissions assigned';
+
+    public const ERR_CANNOT_ASSIGN_CUSTOM_IDS              = 40305;
+    public const ERR_MSG_CANNOT_ASSIGN_CUSTOM_IDS          = 'No permissions to assign predictable id';
+
+    public const ERR_PERMISSION_CANNOT_CREATE              = 40306;
+    public const ERR_PERMISSION_MSG_CANNOT_CREATE          = 'Current permissions does not allow to create this object';
+
+    public const ERR_PERMISSION_CANNOT_MODIFY              = 40307;
+    public const ERR_MSG_PERMISSION_CANNOT_MODIFY          = 'No permissions to modify this object';
+
+    public const ERR_PERMISSION_COLLECTION_ACCESS_MANAGEMENT_NO_PERMISSION     = 40308;
+    public const ERR_MSG_PERMISSION_COLLECTION_ACCESS_MANAGEMENT_NO_PERMISSION = 'No permissions to grant and/or revoke access for other users in this collection';
+
+    public const ERR_PERMISSION_CANNOT_LIST_TOKENS_ASSOCIATED_TO_COLLECTION     = 40307;
+    public const ERR_MSG_PERMISSION_CANNOT_LIST_TOKENS_ASSOCIATED_TO_COLLECTION = 'Current token does not allow to list tokens of this collection';
+
+    public const ERR_PERMISSION_NO_BACKUP_UPLOAD_ALLOWED     = 40308;
+    public const ERR_MSG_PERMISSION_NO_BACKUP_UPLOAD_ALLOWED = 'Current access does not grant you a possibility to upload to this backup collection';
+
+    public const ERR_PERMISSION_NO_BACKUP_DELETION_ALLOWED     = 40309;
+    public const ERR_MSG_PERMISSION_NO_BACKUP_DELETION_ALLOWED = 'Current access does not allow you to delete existing backups';
+
+    public const ERR_PERMISSION_NO_BACKUP_DOWNLOAD_ALLOWED     = 40310;
+    public const ERR_MSG_PERMISSION_NO_BACKUP_DOWNLOAD_ALLOWED = 'Current access does not allow you to download any backup from this collection';
+
+    public const ERR_PERMISSION_NO_BACKUP_LISTING_ALLOWED     = 40311;
+    public const ERR_MSG_PERMISSION_NO_BACKUP_LISTING_ALLOWED = 'Current roles does not grant you a possibility to list files in this backup collection';
+
+    public const ERR_PERMISSION_NO_ACCESS_TO_TECHNICAL_ENDPOINTS     = 40312;
+    public const ERR_MSG_PERMISSION_NO_ACCESS_TO_TECHNICAL_ENDPOINTS = 'You don\'t have enough permissions to use technical endpoints';
+
+    public const ERR_PERMISSION_NO_ACCESS_TO_LOOKUP_USER     = 40313;
+    public const ERR_MSG_PERMISSION_NO_ACCESS_TO_LOOKUP_USER = 'No permission to lookup a user';
+
+    public const ERR_PERMISSION_NO_ACCESS_TO_SEARCH_USERS     = 40314;
+    public const ERR_MSG_PERMISSION_NO_ACCESS_TO_SEARCH_USERS = 'No permission to search for users';
+
+    //
+    // Request errors
+    //
+
+    public const ERR_REQUEST_CANNOT_PARSE_JSON             = 50000;
+    public const ERR_MSG_REQUEST_CANNOT_PARSE_JSON         = 'Cannot parse JSON, details: {{ details }}';
+
+    public const ERR_REQUEST_NO_VALID_USER_FOUND           = 50001;
+    public const ERR_MSG_REQUEST_NO_VALID_USER_FOUND       = 'Invalid credentials, cannot find user by id';
+
+
+    //
+    // Types of error responses
+    //
+
+    public const TYPE_VALIDATION_ERROR     = 'validation.error';
+    public const TYPE_REQUEST_FORMAT_ERROR = 'request.format-error';
+    public const TYPE_AUTH_ERROR           = 'request.auth-error';
+    public const TYPE_APP_FATAL_ERROR      = 'app.fatal-error';
 }

@@ -92,6 +92,7 @@ class AuthenticationCest
                 'maxAllowedFileSize' => 14579
             ]
         ], false);
+
         $I->canSeeResponseCodeIs(201);
         $I->storeIdAs('.user.id', 'LIMITED_USER_ACCESS_ID');
         $I->storeIdAs('.user.email', 'LIMITED_USER_EMAIL');
@@ -131,7 +132,8 @@ class AuthenticationCest
             ]
         ], false);
         $I->canSeeResponseCodeIs(400);
-        $I->canSeeResponseContains('Please select valid roles');
+        $I->canSeeResponseContains('Invalid role selected');
+        $I->canSeeResponseContains('validation.error');
     }
 
     public function testCannotCreateUsersWhenRoleDoesNotAllowCreatingOnes(FunctionalTester $I): void

@@ -35,6 +35,7 @@ class TokenRestrictionsSubscriber implements EventSubscriberInterface
         $ip        = $request->getClientIp();
         $user      = $event->getAuthenticationToken() ? $event->getAuthenticationToken()->getUser() : null;
 
+        // @todo: Support for DNS resolving
         if (($user instanceof User && !$user->isValid($userAgent, $ip))) {
             $this->tokenStorage->setToken(
                 new TokenTransport('anonymous', new User())

@@ -45,10 +45,7 @@ class UserAccountLookupHandler
     private function assertHasRights(AuthenticationManagementContext $context): void
     {
         if (!$context->canLookupAnyUserAccount()) {
-            throw new AuthenticationException(
-                'Current token does not allow to lookup other users',
-                AuthenticationException::CODES['not_authenticated']
-            );
+            throw AuthenticationException::fromNoPermissionToLookupUser();
         }
     }
 }

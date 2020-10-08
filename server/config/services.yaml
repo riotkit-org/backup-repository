@@ -50,6 +50,11 @@ services:
             $manager: '@App\Domain\Authentication\Manager\UserManager'
             $expirationTime: '%env(TOKEN_EXPIRATION_TIME)%'
 
+    # Should be accessible in controllers via ContainerInterface
+    jms_serializer.public:
+        alias: jms_serializer.serializer
+        public: true
+
     App\Infrastructure\Authentication\Event\Subscriber\DevelopmentTokenSubscriber:
         autowire: true
         autoconfigure: true
@@ -161,3 +166,4 @@ services:
     App\Domain\Authentication\Configuration\JWTConfiguration:
         arguments:
             $lifetime: '%env(JWT_LIFETIME)%'
+

@@ -2,7 +2,9 @@
 
 namespace App\Infrastructure\Common\Event\Subscriber;
 
+use App\Domain\Common\Exception\ApplicationException;
 use App\Domain\Common\Exception\DomainAssertionFailure;
+use App\Infrastructure\Common\Http\JsonFormattedResponse;
 use App\Infrastructure\Common\Http\ValidationErrorResponse;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
@@ -31,6 +33,12 @@ class DomainValidationErrorSubscriber implements EventSubscriberInterface
 
         if ($exc instanceof DomainAssertionFailure) {
             $event->setResponse(ValidationErrorResponse::createFromException($exc));
+            return;
+        }
+
+        if ($exc instanceof ApplicationException) {
+            $event->setResponse(new JsonFormattedResponse($exc->jsonSerialize(), $exc->getHttpCode()));
+            return;
         }
     }
 }

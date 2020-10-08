@@ -12,15 +12,8 @@ use App\Domain\Storage\ValueObject\Filename;
 
 class DeleteFileHandler
 {
-    /**
-     * @var StorageManager
-     */
-    private $storageManager;
-
-    /**
-     * @var FileRepository
-     */
-    private $repository;
+    private StorageManager $storageManager;
+    private FileRepository $repository;
 
     public function __construct(StorageManager $storageManager, FileRepository $repository)
     {
@@ -50,7 +43,7 @@ class DeleteFileHandler
      * @param Filename $filename
      * @param ManagementSecurityContext $securityContext
      *
-     * @throws AuthenticationException
+     * @throws \App\Domain\Common\Exception\AuthenticationException
      */
     private function assertHasRights(Filename $filename, ManagementSecurityContext $securityContext): void
     {
@@ -62,10 +55,7 @@ class DeleteFileHandler
         }
 
         if (!$securityContext->canDeleteElement($file)) {
-            throw new AuthenticationException(
-                'Current token does not allow user to delete the file',
-                AuthenticationException::CODES['auth_cannot_delete_file']
-            );
+            throw AuthenticationException::fromDeletionProhibited();
         }
     }
 }

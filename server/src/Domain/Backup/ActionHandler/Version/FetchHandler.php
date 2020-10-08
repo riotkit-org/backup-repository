@@ -92,10 +92,7 @@ class FetchHandler
     private function assertHasRights(VersioningContext $securityContext, BackupCollection $collection): void
     {
         if (!$securityContext->canFetchSingleVersion($collection)) {
-            throw new AuthenticationException(
-                'Current token does not allow to browse a single version in this collection',
-                AuthenticationException::CODES['not_authenticated']
-            );
+            throw AuthenticationException::fromBackupDownloadDisallowed();
         }
     }
 }

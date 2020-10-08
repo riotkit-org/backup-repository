@@ -74,17 +74,11 @@ class UserCreationHandler
     private function assertHasRights(AuthenticationManagementContext $context, AuthForm $form): void
     {
         if (!$context->canGenerateNewToken()) {
-            throw new AuthenticationException(
-                'Current access does not allow to create users',
-                AuthenticationException::CODES['not_authenticated']
-            );
+            throw AuthenticationException::fromUsersCreationProhibition();
         }
 
         if ($form->id && !$context->canCreateTokensWithPredictableIdentifiers()) {
-            throw new AuthenticationException(
-                'Current access does not allow setting predictable identifiers for users',
-                AuthenticationException::CODES['no_permissions_for_predictable_ids']
-            );
+            throw AuthenticationException::fromPredictableIdSelectionProhibition();
         }
     }
 }

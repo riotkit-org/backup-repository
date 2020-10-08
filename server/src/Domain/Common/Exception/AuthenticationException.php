@@ -2,66 +2,101 @@
 
 namespace App\Domain\Common\Exception;
 
+use App\Domain\Errors;
+
 /**
  * @codeCoverageIgnore
  */
 class AuthenticationException extends ApplicationException
 {
-    private const NOT_AUTHENTICATED = 403;
-
-
-    public const CODES = [
-        'not_authenticated'                  => 403,
-        'no_read_access_or_invalid_password' => 401,
-        'auth_cannot_delete_file'            => 4031,
-        'no_permission_to_assign_custom_id'  => 4032,
-        'token_invalid'                      => 40000001,
-        'no_permissions_for_predictable_ids' => 40000002,
-        'no_permissions_to_see_other_tokens' => 40000003
-    ];
-
     /**
      * @return static
      */
-    public static function createNotAuthenticatedError()
+    public static function fromFileReadAccessDenied()
     {
-        return new static('not_authenticated', 403);
+        return new static(
+            Errors::ERR_MSG_REQUEST_READ_ACCESS_DENIED,
+            Errors::ERR_REQUEST_READ_ACCESS_DENIED
+        );
     }
 
     /**
      * @return static
      */
-    public static function createNoReadAccessOrInvalidPasswordError()
+    public static function fromDeletionProhibited()
     {
-        return new static('No access to read the file, maybe invalid password?', 401);
+        return new static(
+            Errors::ERR_MSG_REQUEST_CANNOT_DELETE,
+            Errors::ERR_REQUEST_CANNOT_DELETE
+        );
     }
 
     /**
      * @return static
      */
-    public static function createCannotDeleteFileError()
+    public static function fromEditProhibited()
     {
-        return new static('auth_cannot_delete_file', 4031);
+        return new static(
+            Errors::ERR_MSG_PERMISSION_CANNOT_MODIFY,
+            Errors::ERR_PERMISSION_CANNOT_MODIFY
+        );
     }
 
-    public static function createCannotAssignCustomIdError()
+    /**
+     * @return static
+     */
+    public static function fromListingDenied()
     {
-        return new static('no_permission_to_assign_custom_id', 4032);
+        return new static(
+            Errors::ERR_MSG_LISTING_ENDPOINT_ACCESS_DENIED,
+            Errors::ERR_LISTING_ENDPOINT_ACCESS_DENIED
+        );
     }
 
-    public static function createTokenInvalidError()
+    /**
+     * @return static
+     */
+    public static function fromAccessDeniedToAssignCustomIds()
     {
-        return new static('token_invalid', 40000001);
+        return new static(
+            Errors::ERR_MSG_CANNOT_ASSIGN_CUSTOM_IDS,
+            Errors::ERR_CANNOT_ASSIGN_CUSTOM_IDS
+        );
     }
 
-    // @todo: Verify if this is the same as createCannotAssignCustomIdError()
-    public static function createNoPermissionToAssignPredictableIdsError()
+    /**
+     * @return static
+     */
+    public static function fromCreationAccessDenied()
     {
-        return new static('no_permissions_for_predictable_ids', 40000002);
+        return new static(
+            Errors::ERR_PERMISSION_MSG_CANNOT_CREATE,
+            Errors::ERR_PERMISSION_CANNOT_CREATE
+        );
     }
 
-    public static function createNoPermissionToViewOtherTokens()
+    /**
+     * @return static
+     */
+    public static function fromPermissionDeniedToUseTechnicalEndpoints()
     {
-        return new static('no_permissions_to_see_other_tokens', 40000003);
+        return new static(
+            Errors::ERR_MSG_PERMISSION_NO_ACCESS_TO_TECHNICAL_ENDPOINTS,
+            Errors::ERR_PERMISSION_NO_ACCESS_TO_TECHNICAL_ENDPOINTS
+        );
+    }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'error' => $this->getMessage(),
+            'code'  => $this->getCode(),
+            'type'  => Errors::TYPE_AUTH_ERROR
+        ];
+    }
+
+    public function getHttpCode(): int
+    {
+        return 403;
     }
 }

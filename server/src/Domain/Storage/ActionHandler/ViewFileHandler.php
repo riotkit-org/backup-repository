@@ -61,10 +61,7 @@ class ViewFileHandler
         }
 
         if (!$securityContext->isAbleToViewFile($file->getStoredFile())) {
-            throw new AuthenticationException(
-                'No access to read the file, maybe invalid password?',
-                AuthenticationException::CODES['no_read_access_or_invalid_password']
-            );
+            throw AuthenticationException::fromFileReadAccessDenied();
         }
 
         [$code, $headers, $outputStream, $contentFlushCallback] = $this->createStreamHandler($file, $form);

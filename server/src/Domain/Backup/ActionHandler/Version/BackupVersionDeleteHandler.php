@@ -58,10 +58,7 @@ class BackupVersionDeleteHandler
     private function assertHasPermissions(VersioningContext $securityContext, BackupCollection $collection): void
     {
         if (!$securityContext->canDeleteVersionsFromCollection($collection)) {
-            throw new AuthenticationException(
-                'Current token does not allow to delete versions in this collection',
-                AuthenticationException::CODES['not_authenticated']
-            );
+            throw AuthenticationException::fromBackupVersionDeletionDisallowed();
         }
     }
 }

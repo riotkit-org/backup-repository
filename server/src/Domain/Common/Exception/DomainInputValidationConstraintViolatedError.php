@@ -16,7 +16,7 @@ class DomainInputValidationConstraintViolatedError extends ApplicationException 
         return $new;
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return ['field' => $this->field, 'message' => $this->message, 'code' => $this->code];
     }

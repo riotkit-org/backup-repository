@@ -3,7 +3,64 @@
 namespace App\Domain\Authentication\Exception;
 
 use App\Domain\Common\Exception\AuthenticationException as ExceptionFromCommon;
+use App\Domain\Errors;
 
 class AuthenticationException extends ExceptionFromCommon
 {
+    /**
+     * @param ?string $details
+     *
+     * @return static
+     */
+    public static function fromUsersCreationProhibition(string $details = 'No details')
+    {
+        return new static(
+            str_replace('{{ details }}', $details, Errors::ERR_MSG_REQUEST_CANNOT_PARSE_JSON),
+            Errors::ERR_REQUEST_CANNOT_PARSE_JSON
+        );
+    }
+
+    /**
+     * @return static
+     */
+    public static function fromPredictableIdSelectionProhibition()
+    {
+        return new static(
+            Errors::ERR_MSG_REQUEST_PREDICTABLE_ID_FORBIDDEN,
+            Errors::ERR_REQUEST_PREDICTABLE_ID_FORBIDDEN,
+        );
+    }
+
+    /**
+     * @return static
+     */
+    public static function fromCredentialsNotFoundIssue()
+    {
+        return new static(
+            Errors::ERR_MSG_REQUEST_NO_VALID_USER_FOUND,
+            Errors::ERR_REQUEST_NO_VALID_USER_FOUND,
+        );
+    }
+
+    /**
+     * @return static
+     */
+    public static function fromNoPermissionToLookupUser()
+    {
+        return new static(
+            Errors::ERR_MSG_PERMISSION_NO_ACCESS_TO_LOOKUP_USER,
+            Errors::ERR_PERMISSION_NO_ACCESS_TO_LOOKUP_USER,
+        );
+    }
+
+    /**
+     * @return static
+     */
+    public static function fromNoPermissionToSearchForUsers()
+    {
+        return new static(
+            Errors::ERR_MSG_PERMISSION_NO_ACCESS_TO_SEARCH_USERS,
+            Errors::ERR_PERMISSION_NO_ACCESS_TO_SEARCH_USERS,
+        );
+    }
 }

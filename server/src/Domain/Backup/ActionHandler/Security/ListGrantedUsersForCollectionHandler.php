@@ -35,10 +35,7 @@ class ListGrantedUsersForCollectionHandler
     private function assertHasRights(CollectionManagementContext $securityContext, BackupCollection $collection): void
     {
         if (!$securityContext->canListCollectionTokens($collection)) {
-            throw new AuthenticationException(
-                'Current token does not allow to list tokens of this collection',
-                AuthenticationException::CODES['no_permissions_to_see_other_tokens']
-            );
+            throw AuthenticationException::fromForbiddenTokenListingInCollectionCause();
         }
     }
 }

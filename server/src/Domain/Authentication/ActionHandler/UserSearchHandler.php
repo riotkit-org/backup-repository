@@ -62,10 +62,7 @@ class UserSearchHandler
     private function assertHasRights(AuthenticationManagementContext $context): void
     {
         if (!$context->canSearchForUsers()) {
-            throw new AuthenticationException(
-                'Current token does not allow to browse or lookup other users',
-                AuthenticationException::CODES['not_authenticated']
-            );
+            throw AuthenticationException::fromNoPermissionToSearchForUsers();
         }
     }
 }
