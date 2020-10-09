@@ -57,6 +57,8 @@ class ErrorFormattingSubscriber implements EventSubscriberInterface
 
             return;
         }
+
+        // @todo: Support for 404 + 403, rest = 500
     }
 
     private function postProcessResponse(JsonFormattedResponse $response, ApplicationException $exception): JsonFormattedResponse
