@@ -40,4 +40,9 @@ class DomainAssertionFailure extends ApplicationException
     {
         return $this->constraintsViolated;
     }
+
+    public function canBeDisplayedPublic(): bool
+    {
+        return true;
+    }
 }

@@ -136,6 +136,9 @@ final class Errors
     public const ERR_REQUEST_NO_VALID_USER_FOUND           = 50001;
     public const ERR_MSG_REQUEST_NO_VALID_USER_FOUND       = 'Invalid credentials, cannot find user by id';
 
+    public const ERR_REQUEST_INTERNAL_SERVER_ERROR         = 500;
+    public const ERR_MSG_REQUEST_INTERNAL_SERVER_ERROR     = 'Internal server error';
+
 
     //
     // Types of error responses

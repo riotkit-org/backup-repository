@@ -19,4 +19,9 @@ class ApplicationException extends \Exception implements \JsonSerializable
     {
         return 500;
     }
+
+    public function canBeDisplayedPublic(): bool
+    {
+        return false;
+    }
 }

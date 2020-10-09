@@ -61,6 +61,12 @@ services:
         arguments:
             $isDev: '%kernel.debug%'
 
+    App\Infrastructure\Common\Event\Subscriber\ErrorFormattingSubscriber:
+        autowire: true
+        autoconfigure: true
+        arguments:
+            $isDev: '%kernel.debug%'
+
     App\Domain\Storage\Repository\StagingAreaRepository:
         class: App\Domain\Storage\Repository\StagingAreaRepository
         arguments:

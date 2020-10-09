@@ -99,4 +99,9 @@ class AuthenticationException extends ApplicationException
     {
         return 403;
     }
+
+    public function canBeDisplayedPublic(): bool
+    {
+        return true;
+    }
 }

@@ -15,8 +15,8 @@ class AuthenticationException extends ExceptionFromCommon
     public static function fromUsersCreationProhibition(string $details = 'No details')
     {
         return new static(
-            str_replace('{{ details }}', $details, Errors::ERR_MSG_REQUEST_CANNOT_PARSE_JSON),
-            Errors::ERR_REQUEST_CANNOT_PARSE_JSON
+            Errors::ERR_MSG_PERMISSION_CANNOT_CREATE_USERS,
+            Errors::ERR_PERMISSION_CANNOT_CREATE_USERS
         );
     }
 
