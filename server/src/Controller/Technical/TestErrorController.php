@@ -2,7 +2,7 @@
 
 namespace App\Controller\Technical;
 
-use App\Infrastructure\Common\Exception\FatalErrorException;
+use App\Infrastructure\Common\Exception\HttpError;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 
 /**
@@ -12,6 +12,6 @@ class TestErrorController extends AbstractController
 {
     public function serveInternalServerError()
     {
-        throw FatalErrorException::fromInternalServerError();
+        throw HttpError::fromInternalServerError();
     }
 }

@@ -4,11 +4,13 @@ namespace App\Infrastructure\Common\Event\Subscriber;
 
 use App\Domain\Common\Exception\ApplicationException;
 use App\Domain\Common\Exception\DomainAssertionFailure;
-use App\Infrastructure\Common\Exception\FatalErrorException;
+use App\Infrastructure\Common\Exception\HttpError;
 use App\Infrastructure\Common\Http\JsonFormattedResponse;
 use App\Infrastructure\Common\Http\ValidationErrorResponse;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Messenger\Exception\HandlerFailedException;
 
 /**
@@ -38,9 +40,15 @@ class ErrorFormattingSubscriber implements EventSubscriberInterface
     {
         $exc = $event->getThrowable();
 
+        // get real exception
         while ($exc instanceof HandlerFailedException && $exc->getPrevious()) {
             $exc = $exc->getPrevious();
         }
+
+        //
+        // Logic Errors
+        // (Are formatted always to JSON regardless of dev/test/prod environment)
+        //
 
         if ($exc instanceof DomainAssertionFailure) {
             $event->setResponse(
@@ -50,7 +58,7 @@ class ErrorFormattingSubscriber implements EventSubscriberInterface
             return;
         }
 
-        if ($exc instanceof ApplicationException) {
+        elseif ($exc instanceof ApplicationException) {
             $event->setResponse(
                 $this->postProcessResponse(new JsonFormattedResponse($exc->jsonSerialize(), $exc->getHttpCode()), $exc)
             );
@@ -58,13 +66,35 @@ class ErrorFormattingSubscriber implements EventSubscriberInterface
             return;
         }
 
-        // @todo: Support for 404 + 403, rest = 500
+        //
+        // Infrastructure / routing / http / internal errors
+        // (Are formatted only on PROD environment. On dev/test are shown as raised exception for debugging)
+        //
+
+        if (!$this->isDevEnvironment) {
+            if ($exc instanceof NotFoundHttpException) {
+                $event->setResponse(
+                    new JsonFormattedResponse(HttpError::fromInternalServerError()->jsonSerialize(), 404)
+                );
+
+                return;
+            } elseif ($exc instanceof AccessDeniedHttpException) {
+                $event->setResponse(
+                    new JsonFormattedResponse(HttpError::fromAccessDeniedError()->jsonSerialize(), 403)
+                );
+
+                return;
+            }
+
+            // default formatting for 500 error
+            $event->setResponse(new JsonFormattedResponse(HttpError::fromInternalServerError()->jsonSerialize()));
+        }
     }
 
     private function postProcessResponse(JsonFormattedResponse $response, ApplicationException $exception): JsonFormattedResponse
     {
         if (!$exception->canBeDisplayedPublic() && !$this->isDevEnvironment) {
-            return new JsonFormattedResponse(FatalErrorException::fromInternalServerError()->jsonSerialize());
+            return new JsonFormattedResponse(HttpError::fromInternalServerError()->jsonSerialize());
         }
 
         if ($this->isDevEnvironment) {

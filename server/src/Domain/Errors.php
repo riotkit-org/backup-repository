@@ -139,6 +139,12 @@ final class Errors
     public const ERR_REQUEST_INTERNAL_SERVER_ERROR         = 500;
     public const ERR_MSG_REQUEST_INTERNAL_SERVER_ERROR     = 'Internal server error';
 
+    public const ERR_REQUEST_NOT_FOUND                     = 404;
+    public const ERR_MSG_REQUEST_NOT_FOUND                 = 'Route or resource not found';
+
+    public const ERR_REQUEST_ACCESS_DENIED                 = 403;
+    public const ERR_MSG_REQUEST_ACCESS_DENIED             = 'Access denied for given route or resource';
+
 
     //
     // Types of error responses
