@@ -12,6 +12,7 @@ use App\Domain\Storage\Exception\StorageException;
 use App\Infrastructure\Authentication\Token\TokenTransport;
 use App\Infrastructure\Common\Exception\JsonRequestException;
 use App\Infrastructure\Common\Http\JsonFormattedResponse;
+use App\Infrastructure\Common\Service\Http\FormTypeCaster;
 use Symfony\Bundle\FrameworkBundle\Controller\ControllerTrait;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
@@ -19,6 +20,7 @@ use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\Serializer\Exception\NotEncodableValueException;
 
 abstract class BaseController implements ContainerAwareInterface
 {
@@ -31,19 +33,26 @@ abstract class BaseController implements ContainerAwareInterface
     }
 
     /**
-     * @param Request $request
+     * @param Request|array $request
      * @param string $DTOClassName
      *
      * @return ${DTOClassName}
      *
      * @throws JsonRequestException
      */
-    protected function decodeRequestIntoDTO(Request $request, string $DTOClassName)
+    protected function decodeRequestIntoDTO($request, string $DTOClassName)
     {
+        if (is_array($request)) {
+            $request = FormTypeCaster::recast($request, $DTOClassName);
+        }
+
+        $data = $request instanceof Request ? $request->getContent(false) : json_encode($request);
+
         try {
-            return $this->container->get('jms_serializer.public')
-                ->deserialize($request->getContent(false), $DTOClassName, 'json');
-        } catch (\ErrorException $exception) {
+            return $this->container->get('serializer')
+                ->deserialize($data, $DTOClassName, 'json');
+
+        } catch (\ErrorException | NotEncodableValueException $exception) {
             throw JsonRequestException::fromJsonToFormMappingError($exception);
         }
     }
@@ -74,26 +83,6 @@ abstract class BaseController implements ContainerAwareInterface
         } catch (AccessDeniedHttpException $exception) {
             return User::createAnonymousToken();
         }
-    }
-
-    // @todo: https://github.com/riotkit-org/file-repository/issues/114
-    protected function submitFormFromJsonRequest(Request $request, $formObject, string $formType): FormInterface
-    {
-        $arrayForm = \json_decode($request->getContent(), true);
-
-        if (!\is_array($arrayForm)) {
-            throw new RequestException('Missing content');
-        }
-
-        // dirty fix: normalize attributes form, allow array submission as part of JSON payload
-        if (isset($arrayForm['attributes']) && \is_array($arrayForm['attributes'])) {
-            $arrayForm['attributes'] = json_encode($arrayForm['attributes']);
-        }
-
-        $infrastructureForm = $this->createForm($formType, $formObject);
-        $infrastructureForm->submit($arrayForm);
-
-        return $infrastructureForm;
     }
 
     // @todo: https://github.com/riotkit-org/file-repository/issues/114

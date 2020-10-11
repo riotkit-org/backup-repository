@@ -103,7 +103,7 @@ class BackupCollection implements \JsonSerializable
     }
 
     /**
-     * @immutable
+     * Immutable
      *
      * @param CollectionLength $param
      *
@@ -118,7 +118,7 @@ class BackupCollection implements \JsonSerializable
     }
 
     /**
-     * @immutable
+     * Immutable
      *
      * @param BackupSize $param
      *
@@ -133,7 +133,7 @@ class BackupCollection implements \JsonSerializable
     }
 
     /**
-     * @immutable
+     * Immutable
      *
      * @param CollectionSize $param
      *
@@ -148,7 +148,7 @@ class BackupCollection implements \JsonSerializable
     }
 
     /**
-     * @immutable
+     * Immutable
      *
      * @param BackupStrategy $param
      *
@@ -163,7 +163,7 @@ class BackupCollection implements \JsonSerializable
     }
 
     /**
-     * @immutable
+     * Immutable
      *
      * @param Description $param
      *
@@ -178,7 +178,7 @@ class BackupCollection implements \JsonSerializable
     }
 
     /**
-     * @immutable
+     * Immutable
      *
      * @param Password $password
      *
@@ -193,7 +193,7 @@ class BackupCollection implements \JsonSerializable
     }
 
     /**
-     * @immutable
+     * Immutable
      *
      * @param Filename $filename
      *

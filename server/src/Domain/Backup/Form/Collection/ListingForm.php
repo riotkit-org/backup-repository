@@ -4,35 +4,12 @@ namespace App\Domain\Backup\Form\Collection;
 
 class ListingForm
 {
-    /**
-     * @var string
-     */
-    public $searchQuery;
-
-    /**
-     * @var string[]
-     */
-    public $allowedTokens;
-
-    /**
-     * @var \DateTimeImmutable
-     */
-    public $createdFrom;
-
-    /**
-     * @var \DateTimeImmutable
-     */
-    public $createdTo;
-
-    /**
-     * @var int
-     */
-    public $page;
-
-    /**
-     * @var int
-     */
-    public $limit;
+    public ?string $searchQuery  = '';
+    public ?array $allowedTokens = [];
+    public ?\DateTimeImmutable $createdFrom = null;
+    public ?\DateTimeImmutable $createdTo   = null;
+    public ?int $page  = 1;
+    public ?int $limit = 20;
 
     public function toArray(): array
     {
@@ -51,7 +28,11 @@ class ListingForm
      */
     public function getPage(): int
     {
-        return \is_numeric($this->page) && $this->page > 0 ? (int) $this->page : 1;
+        if ($this->page < 1) {
+            return 1;
+        }
+
+        return $this->page;
     }
 
     /**
@@ -59,6 +40,10 @@ class ListingForm
      */
     public function getLimit(): int
     {
-        return \is_numeric($this->limit) && $this->limit > 0 ? (int) $this->limit : 20;
+        if ($this->limit < 1 || $this->limit >= 1000) {
+            return 20;
+        }
+
+        return $this->limit;
     }
 }

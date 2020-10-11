@@ -139,32 +139,22 @@ class CreateEditController extends BaseController
     {
         $isCreation = strtoupper($request->getMethod()) === 'POST';
 
-        $form = $isCreation ? new CreationForm() : new EditForm();
-        $infrastructureForm = $this->submitFormFromJsonRequest(
-            $request,
+        /**
+         * @var CreationForm|EditForm $form
+         */
+        $form = $this->decodeRequestIntoDTO($request, $isCreation ? CreationForm::class : EditForm::class);
+
+        $response = $this->handle(
             $form,
-            $isCreation ? CreationFormType::class : EditFormType::class
+            $this->authFactory->createCollectionManagementContext($this->getLoggedUser()),
+            $isCreation
         );
 
-        if (!$infrastructureForm->isValid()) {
-            return $this->createValidationErrorResponse($infrastructureForm);
+        if ($request->query->get('simulate') !== 'true') {
+            $this->createHandler->flush();
         }
 
-        return $this->wrap(
-            function () use ($form, $request, $isCreation) {
-                $response = $this->handle(
-                    $form,
-                    $this->authFactory->createCollectionManagementContext($this->getLoggedUser()),
-                    $isCreation
-                );
-
-                if ($request->query->get('simulate') !== 'true') {
-                    $this->createHandler->flush();
-                }
-
-                return new JsonFormattedResponse($response, $response->getHttpCode());
-            }
-        );
+        return new JsonFormattedResponse($response, $response->getHttpCode());
     }
 
     /**

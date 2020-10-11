@@ -6,7 +6,6 @@ use App\Controller\BaseController;
 use App\Domain\Backup\ActionHandler\Collection\DeleteHandler;
 use App\Domain\Backup\Factory\SecurityContextFactory;
 use App\Domain\Backup\Form\Collection\DeleteForm;
-use App\Infrastructure\Backup\Form\Collection\DeleteFormType;
 use App\Infrastructure\Common\Http\JsonFormattedResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -87,30 +86,18 @@ class DeleteController extends BaseController
      */
     public function handleAction(Request $request, string $id): Response
     {
-        $form = new DeleteForm();
-        $infrastructureForm = $this->createForm(DeleteFormType::class, $form);
-        $infrastructureForm->submit([
-            'collection' => $id
-        ]);
+        /**
+         * @var DeleteForm $form
+         */
+        $form = $this->decodeRequestIntoDTO(['collection' => $id], DeleteForm::class);
 
-        if (!$infrastructureForm->isValid()) {
-            return $this->createValidationErrorResponse($infrastructureForm);
+        $securityContext = $this->authFactory->createCollectionManagementContext($this->getLoggedUser());
+        $response = $this->handler->handle($form, $securityContext);
+
+        if (trim(strtolower((string) $request->query->get('simulate'))) !== 'true') {
+            $this->handler->flush();
         }
 
-        return $this->wrap(
-            function () use ($form, $request) {
-                $securityContext = $this->authFactory->createCollectionManagementContext(
-                    $this->getLoggedUser()
-                );
-
-                $response = $this->handler->handle($form, $securityContext);
-
-                if ($request->query->get('simulate') !== 'true') {
-                    $this->handler->flush();
-                }
-
-                return new JsonFormattedResponse($response, $response->getHttpCode());
-            }
-        );
+        return new JsonFormattedResponse($response, $response->getHttpCode());
     }
 }

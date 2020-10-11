@@ -17,15 +17,8 @@ use Doctrine\DBAL\Driver\PDOException;
 
 class CreationHandler
 {
-    /**
-     * @var CollectionManager
-     */
-    private $manager;
-
-    /**
-     * @var CollectionMapper
-     */
-    private $mapper;
+    private CollectionManager $manager;
+    private CollectionMapper $mapper;
 
     public function __construct(CollectionManager $manager, CollectionMapper $mapper)
     {
@@ -83,6 +76,7 @@ class CreationHandler
             $this->manager->flush();
 
         } catch (CollectionIdNotUniqueException $exception) {
+            // @todo: Exception unification
             throw ValidationException::createFromFieldError(
                 'id_not_unique',
                 'id',

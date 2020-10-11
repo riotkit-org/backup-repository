@@ -15,12 +15,12 @@ class CreationForm
     public $maxBackupsCount;
 
     /**
-     * @var int
+     * @var string
      */
     public $maxOneVersionSize;
 
     /**
-     * @var int
+     * @var string
      */
     public $maxCollectionSize;
 

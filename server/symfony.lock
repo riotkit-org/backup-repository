@@ -152,26 +152,6 @@
     "jean85/pretty-package-versions": {
         "version": "1.2"
     },
-    "jms/metadata": {
-        "version": "2.3.0"
-    },
-    "jms/serializer": {
-        "version": "3.9.0"
-    },
-    "jms/serializer-bundle": {
-        "version": "3.0",
-        "recipe": {
-            "repo": "github.com/symfony/recipes-contrib",
-            "branch": "master",
-            "version": "3.0",
-            "ref": "384cec52df45f3bfd46a09930d6960a58872b268"
-        },
-        "files": [
-            "config/packages/dev/jms_serializer.yaml",
-            "config/packages/jms_serializer.yaml",
-            "config/packages/prod/jms_serializer.yaml"
-        ]
-    },
     "laminas/laminas-code": {
         "version": "3.4.1"
     },
@@ -613,6 +593,12 @@
             "version": "3.3",
             "ref": "f8a63faa0d9521526499c0a8f403c9964ecb0527"
         }
+    },
+    "symfony/serializer": {
+        "version": "v4.4.15"
+    },
+    "symfony/serializer-pack": {
+        "version": "v1.0.3"
     },
     "symfony/service-contracts": {
         "version": "v2.2.0"

@@ -38,7 +38,7 @@ class FetchHandler
     private function assertHasRights(CollectionManagementContext $securityContext, DeleteForm $form): void
     {
         if (!$securityContext->canViewCollection($form)) {
-            throw AuthenticationException::fromDeletionProhibited();
+            throw AuthenticationException::fromFileReadAccessDenied();
         }
     }
 }

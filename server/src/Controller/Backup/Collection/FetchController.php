@@ -6,7 +6,6 @@ use App\Controller\BaseController;
 use App\Domain\Backup\ActionHandler\Collection\FetchHandler;
 use App\Domain\Backup\Factory\SecurityContextFactory;
 use App\Domain\Backup\Form\Collection\DeleteForm;
-use App\Infrastructure\Backup\Form\Collection\DeleteFormType;
 use App\Infrastructure\Common\Http\JsonFormattedResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Nelmio\ApiDocBundle\Annotation\Model;
@@ -85,26 +84,14 @@ class FetchController extends BaseController
      */
     public function handleAction(string $id): Response
     {
-        $form = new DeleteForm();
-        $infrastructureForm = $this->createForm(DeleteFormType::class, $form);
-        $infrastructureForm->submit([
-            'collection' => $id
-        ]);
+        /**
+         * @var DeleteForm $form
+         */
+        $form = $this->decodeRequestIntoDTO(['collection' => $id], DeleteForm::class);
 
-        if (!$infrastructureForm->isValid()) {
-            return $this->createValidationErrorResponse($infrastructureForm);
-        }
+        $securityContext = $this->authFactory->createCollectionManagementContext($this->getLoggedUser());
+        $response = $this->handler->handle($form, $securityContext);
 
-        return $this->wrap(
-            function () use ($form) {
-                $securityContext = $this->authFactory->createCollectionManagementContext(
-                    $this->getLoggedUser()
-                );
-
-                $response = $this->handler->handle($form, $securityContext);
-
-                return new JsonFormattedResponse($response, $response->getHttpCode());
-            }
-        );
+        return new JsonFormattedResponse($response, $response->getHttpCode());
     }
 }

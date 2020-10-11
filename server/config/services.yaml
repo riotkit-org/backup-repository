@@ -50,10 +50,17 @@ services:
             $manager: '@App\Domain\Authentication\Manager\UserManager'
             $expirationTime: '%env(TOKEN_EXPIRATION_TIME)%'
 
-    # Should be accessible in controllers via ContainerInterface
-    jms_serializer.public:
-        alias: jms_serializer.serializer
-        public: true
+    App\Infrastructure\Common\Service\SerializerORMEntityNormalizer:
+        public: false
+        autowire: true
+        autoconfigure: true
+        tags:
+            - { name: serializer.normalizer }
+
+    datetime_normalizer:
+        class: Symfony\Component\Serializer\Normalizer\DateTimeNormalizer
+        public: false
+        tags: [ serializer.normalizer ]
 
     App\Infrastructure\Authentication\Event\Subscriber\DevelopmentTokenSubscriber:
         autowire: true

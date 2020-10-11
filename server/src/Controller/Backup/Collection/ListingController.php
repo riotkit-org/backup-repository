@@ -6,7 +6,6 @@ use App\Controller\BaseController;
 use App\Domain\Backup\ActionHandler\Collection\ListingHandler;
 use App\Domain\Backup\Factory\SecurityContextFactory;
 use App\Domain\Backup\Form\Collection\ListingForm;
-use App\Infrastructure\Backup\Form\Collection\ListingFormType;
 use App\Infrastructure\Common\Http\JsonFormattedResponse;
 use Exception;
 use Symfony\Component\HttpFoundation\Request;
@@ -119,23 +118,14 @@ class ListingController extends BaseController
      */
     public function handleAction(Request $request): Response
     {
-        $form = new ListingForm();
-        $infrastructureForm = $this->submitFormFromRequestQuery($request, $form, ListingFormType::class);
+        /**
+         * @var ListingForm $form
+         */
+        $form = $this->decodeRequestIntoDTO($request->query->all(), ListingForm::class);
 
-        if (!$infrastructureForm->isValid()) {
-            return $this->createValidationErrorResponse($infrastructureForm);
-        }
+        $securityContext = $this->authFactory->createCollectionManagementContext($this->getLoggedUser());
+        $response = $this->handler->handle($form, $securityContext);
 
-        return $this->wrap(
-            function () use ($form) {
-                $securityContext = $this->authFactory->createCollectionManagementContext(
-                    $this->getLoggedUser()
-                );
-
-                $response = $this->handler->handle($form, $securityContext);
-
-                return new JsonFormattedResponse($response, $response->getHttpCode());
-            }
-        );
+        return new JsonFormattedResponse($response, $response->getHttpCode());
     }
 }
