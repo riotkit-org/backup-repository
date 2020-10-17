@@ -6,9 +6,7 @@ use App\Controller\BaseController;
 use App\Domain\Backup\ActionHandler\Version\FetchHandler;
 use App\Domain\Backup\Factory\SecurityContextFactory;
 use App\Domain\Backup\Form\Version\FetchVersionForm;
-use App\Infrastructure\Backup\Form\Version\FetchVersionFormType;
 use App\Infrastructure\Common\Http\JsonFormattedResponse;
-use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Swagger\Annotations as SWG;
@@ -99,35 +97,27 @@ class FetchController extends BaseController
      */
     public function handleAction(Request $request, string $collectionId, string $backupId): Response
     {
-        $form = new FetchVersionForm();
-        $infraForm = $this->createForm(FetchVersionFormType::class, $form);
-        $infraForm->submit([
+        $requestData = [
             'collection' => $collectionId,
             'versionId'  => $backupId,
             'redirect'   => $this->toBoolean($request->get('redirect'), true) !== false,
             'password'   => (string) $request->get('password')
-        ]);
+        ];
 
-        if (!$infraForm->isValid()) {
-            return $this->createValidationErrorResponse($infraForm);
-        }
+        $form = $this->decodeRequestIntoDTO($requestData, FetchVersionForm::class);
 
         // insert token as input, so the domain can pass it to the redirect
         $form->token = $this->getLoggedUser()->getId();
 
-        return $this->wrap(
-            function () use ($form) {
-                $response = $this->handler->handle(
-                    $form,
-                    $this->authFactory->createVersioningContext($this->getLoggedUser())
-                );
-
-                if ($response->isSuccess()) {
-                    return new StreamedResponse($response->getCallback(), $response->getExitCode());
-                }
-
-                return new JsonFormattedResponse($response, $response->getExitCode());
-            }
+        $response = $this->handler->handle(
+            $form,
+            $this->authFactory->createVersioningContext($this->getLoggedUser())
         );
+
+        if ($response->isSuccess()) {
+            return new StreamedResponse($response->getCallback(), $response->getExitCode());
+        }
+
+        return new JsonFormattedResponse($response, $response->getExitCode());
     }
 }

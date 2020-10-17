@@ -6,7 +6,6 @@ use App\Controller\BaseController;
 use App\Domain\Backup\ActionHandler\Version\BackupSubmitHandler;
 use App\Domain\Backup\Factory\SecurityContextFactory;
 use App\Domain\Backup\Form\BackupSubmitForm;
-use App\Infrastructure\Backup\Form\Version\BackupSubmitFormType;
 use App\Infrastructure\Common\Http\JsonFormattedResponse;
 use Exception;
 use Symfony\Component\HttpFoundation\Request;

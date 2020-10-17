@@ -31,7 +31,6 @@ class FileUploadedResponse extends NormalResponse implements \JsonSerializable
 
     /**
      * @param Url $url
-     * @param Url $backUrl
      * @param string|int $id
      * @param Filename $filename
      *

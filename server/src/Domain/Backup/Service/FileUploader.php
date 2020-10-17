@@ -36,7 +36,6 @@ class FileUploader
                 'fileOverwrite'  => false,
                 'password'       => $collection->getPassword(),
                 'tags'           => [],
-                'backUrl'        => '',
                 'public'         => false
             ],
 

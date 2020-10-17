@@ -19,13 +19,6 @@ App\Domain\Storage\Form\UploadForm:
                         pattern: '/^[a-z0-9\.\-\_]+$/i'
                         message: "Tag should not have any special characters"
 
-        backUrl:
-            - Type:
-                  type: string
-
-            - Url:
-                  message: "backUrl should be empty or a valid URL"
-
 
 App\Domain\Storage\Form\UploadByPostForm:
     properties:
