@@ -52,8 +52,7 @@ class ViewFileHandler
             $file = $this->storageManager->retrieve(new Filename((string) $form->filename));
 
         } catch (StorageException $exception) {
-
-            if ($exception->getCode() === StorageException::codes['file_not_found']) {
+            if ($exception->isFileNotFoundError()) {
                 return new FileDownloadResponse(false, $exception->getMessage(), 404);
             }
 

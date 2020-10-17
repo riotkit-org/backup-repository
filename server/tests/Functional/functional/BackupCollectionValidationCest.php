@@ -38,7 +38,12 @@ class BackupCollectionValidationCest
             'filename'          => 'zsp-net-pl.sql.gz'
         ]);
 
-        $I->canSeeResponseContains('max_collection_size_is_lower_than_single_element_size');
+        $I->canSeeResponseContainsJson([
+            "error" => "Collection size cannot be smaller than single version size",
+            "code"  => 40105,
+            "type"  => "validation.error"
+        ]);
+
         $I->canSeeResponseCodeIs(400);
     }
 
@@ -54,8 +59,12 @@ class BackupCollectionValidationCest
             'filename'          => 'zsp-net-pl.sql.gz'
         ]);
 
-        $I->canSeeResponseContains('max_one_version_size_too_big');
-        $I->canSeeResponseContains('"max": "4.00GB"');
+        $I->canSeeResponseContainsJson([
+            "error" => "Maximum file size of 4.00GB reached",
+            "code"  => 40103,
+            "type"  => "validation.error"
+        ]);
+
         $I->canSeeResponseCodeIs(400);
     }
 
@@ -71,8 +80,12 @@ class BackupCollectionValidationCest
             'filename'          => 'zsp-net-pl.sql.gz'
         ]);
 
-        $I->canSeeResponseContains('max_collection_size_too_big');
-        $I->canSeeResponseContains('"max": "15.00GB"');
+        $I->canSeeResponseContainsJson([
+            "error" => "Maximum collection size cannot exceed 15.00GB",
+            "code"  => 40104,
+            "type"  => "validation.error"
+        ]);
+
         $I->canSeeResponseCodeIs(400);
     }
 
@@ -88,8 +101,12 @@ class BackupCollectionValidationCest
             'filename'          => 'zsp-net-pl.sql.gz'
         ]);
 
-        $I->canSeeResponseContains('max_backups_count_too_many');
-        $I->canSeeResponseContains('"max": 5');
+        $I->canSeeResponseContainsJson([
+            "error" => "Maximum count of 5 files reached",
+            "code"  => 40102,
+            "type"  => "validation.error"
+        ]);
+
         $I->canSeeResponseCodeIs(400);
     }
 
@@ -105,8 +122,12 @@ class BackupCollectionValidationCest
             'filename'          => 'zsp-net-pl.sql.gz'
         ]);
 
-        $I->canSeeResponseContains('max_collection_size_will_have_not_enough_space_to_keep_max_number_of_items');
-        $I->canSeeResponseContains('"needsAtLeastValue": "25.00MB"');
+        $I->canSeeResponseContainsJson([
+            "error" => "Collection maximum size is too small, requires at least 25.00MB",
+            "code"  => 40106,
+            "type"  => "validation.error"
+        ]);
+
         $I->canSeeResponseCodeIs(400);
     }
 }

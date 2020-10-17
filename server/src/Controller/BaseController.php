@@ -5,9 +5,7 @@ namespace App\Controller;
 use App\Domain\Authentication\Entity\User;
 use App\Domain\Authentication\Factory\IncomingUserFactory;
 use App\Domain\Common\Exception\AuthenticationException;
-use App\Domain\Common\Exception\CommonValidationException;
 use App\Domain\Common\Exception\ReadOnlyException;
-use App\Domain\Common\Exception\RequestException;
 use App\Domain\Storage\Exception\StorageException;
 use App\Infrastructure\Authentication\Token\TokenTransport;
 use App\Infrastructure\Common\Exception\JsonRequestException;
@@ -21,6 +19,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\Serializer\Exception\NotEncodableValueException;
+use Symfony\Component\Serializer\Exception\NotNormalizableValueException;
 
 abstract class BaseController implements ContainerAwareInterface
 {
@@ -52,7 +51,7 @@ abstract class BaseController implements ContainerAwareInterface
             return $this->container->get('serializer')
                 ->deserialize($data, $DTOClassName, 'json');
 
-        } catch (\ErrorException | NotEncodableValueException $exception) {
+        } catch (\ErrorException | NotEncodableValueException | NotNormalizableValueException $exception) {
             throw JsonRequestException::fromJsonToFormMappingError($exception);
         }
     }
@@ -85,7 +84,10 @@ abstract class BaseController implements ContainerAwareInterface
         }
     }
 
-    // @todo: https://github.com/riotkit-org/file-repository/issues/114
+    /**
+     * @deprecated
+     * @todo: https://github.com/riotkit-org/file-repository/issues/114
+     */
     protected function submitFormFromRequestQuery(Request $request, $formObject, string $formType): FormInterface
     {
         $infrastructureForm = $this->createForm($formType, $formObject);
@@ -96,7 +98,10 @@ abstract class BaseController implements ContainerAwareInterface
         return $infrastructureForm;
     }
 
-    // @todo: https://github.com/riotkit-org/file-repository/issues/115
+    /**
+     * @deprecated
+     * @todo: https://github.com/riotkit-org/file-repository/issues/115
+     */
     protected function createValidationErrorResponse(FormInterface $form): JsonFormattedResponse
     {
         return new JsonFormattedResponse(
@@ -110,7 +115,10 @@ abstract class BaseController implements ContainerAwareInterface
         );
     }
 
-    // @todo: https://github.com/riotkit-org/file-repository/issues/115
+    /**
+     * @deprecated
+     * @todo: https://github.com/riotkit-org/file-repository/issues/115
+     */
     protected function createAccessDeniedResponse($message = 'Forbidden'): JsonFormattedResponse
     {
         return new JsonFormattedResponse(
@@ -123,7 +131,10 @@ abstract class BaseController implements ContainerAwareInterface
         );
     }
 
-    // @todo: https://github.com/riotkit-org/file-repository/issues/115
+    /**
+     * @todo: https://github.com/riotkit-org/file-repository/issues/115
+     * @deprecated
+     */
     protected function createNotFoundResponse(string $message = 'Not found'): JsonFormattedResponse
     {
         return new JsonFormattedResponse(
@@ -136,7 +147,10 @@ abstract class BaseController implements ContainerAwareInterface
         );
     }
 
-    // @todo: https://github.com/riotkit-org/file-repository/issues/115
+    /**
+     * @todo: https://github.com/riotkit-org/file-repository/issues/115
+     * @deprecated
+     */
     public function createAPIReadOnlyResponse(): JsonFormattedResponse
     {
         return new JsonFormattedResponse(
@@ -146,19 +160,6 @@ abstract class BaseController implements ContainerAwareInterface
                 'http_code'  => 500
             ],
             JsonFormattedResponse::HTTP_INTERNAL_SERVER_ERROR
-        );
-    }
-
-    // @todo: https://github.com/riotkit-org/file-repository/issues/115
-    public function createRequestExceptionResponse(RequestException $requestException): JsonFormattedResponse
-    {
-        return new JsonFormattedResponse(
-            [
-                'status' => $requestException->getMessage(),
-                'error_code' => 400,
-                'http_code'  => 400
-            ],
-            JsonFormattedResponse::HTTP_BAD_REQUEST
         );
     }
 
@@ -180,6 +181,8 @@ abstract class BaseController implements ContainerAwareInterface
     }
 
     /**
+     * @deprecated
+     *
      * @param callable $code
      *
      * @return Response
@@ -194,19 +197,8 @@ abstract class BaseController implements ContainerAwareInterface
         } catch (AuthenticationException $exception) {
             return $this->createAccessDeniedResponse($exception->getMessage());
 
-        } catch (CommonValidationException $exception) {
-            return new JsonFormattedResponse(
-                [
-                    'status' => 'Validation error',
-                    'http_code' => 400,
-                    'exit_code' => 400,
-                    'fields' => $exception->getFields()
-                ],
-                JsonFormattedResponse::HTTP_BAD_REQUEST
-            );
-
         } catch (StorageException $storageException) {
-            if ($storageException->getCode() === StorageException::codes['file_not_found']) {
+            if ($storageException->isFileNotFoundError()) {
                 return $this->createNotFoundResponse('File not found in the storage');
             }
 
@@ -242,7 +234,10 @@ abstract class BaseController implements ContainerAwareInterface
         throw new \InvalidArgumentException('Invalid data type "' . \gettype($value) . '" specified, cannot parse boolean');
     }
 
-    // @todo: https://github.com/riotkit-org/file-repository/issues/114
+    /**
+     * @todo: https://github.com/riotkit-org/file-repository/issues/114
+     * @deprecated
+     */
     private function collectErrorsForForm(FormInterface $form, string $inputName, array $errors = []): array
     {
         $errorsForField = [];

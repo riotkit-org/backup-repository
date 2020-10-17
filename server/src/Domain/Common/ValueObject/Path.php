@@ -2,17 +2,12 @@
 
 namespace App\Domain\Common\ValueObject;
 
+use App\Domain\Common\Exception\CommonStorageException;
+
 class Path extends BaseValueObject
 {
-    /**
-     * @var string
-     */
-    private $dir;
-
-    /**
-     * @var Filename
-     */
-    protected $filename;
+    private string $dir;
+    protected ?Filename $filename;
 
     public function __construct(string $dir, Filename $filename = null)
     {
@@ -20,7 +15,7 @@ class Path extends BaseValueObject
         $this->filename = $filename;
 
         if (!preg_match('/([A-Za-z0-9\-_\+\.\,\@\!\~\=\+\/]+)/', $this->getValue())) {
-            throw new \InvalidArgumentException('Invalid path format: "' . $this->getValue() . '"');
+            throw CommonStorageException::fromInvalidPathFormat($this->getValue());
         }
     }
 

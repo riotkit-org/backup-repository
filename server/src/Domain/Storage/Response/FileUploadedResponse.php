@@ -15,11 +15,6 @@ class FileUploadedResponse extends NormalResponse implements \JsonSerializable
     private $url;
 
     /**
-     * @var null|Url
-     */
-    private $backUrl;
-
-    /**
      * @var int|null
      */
     private $id;
@@ -42,13 +37,12 @@ class FileUploadedResponse extends NormalResponse implements \JsonSerializable
      *
      * @return FileUploadedResponse
      */
-    public static function createWithMeaningFileWasUploaded(Url $url, Url $backUrl, $id, Filename $filename, Filename $requestedFilename): FileUploadedResponse
+    public static function createWithMeaningFileWasUploaded(Url $url, $id, Filename $filename, Filename $requestedFilename): FileUploadedResponse
     {
         $new = new static();
         $new->status   = true;
         $new->httpCode = Http::HTTP_OK;
         $new->url      = $url;
-        $new->backUrl  = $backUrl->withVar('back', $url->getValue());
         $new->id       = $id;
         $new->filename = $filename->getValue();
         $new->requestedFilename = $requestedFilename->getValue();
@@ -80,7 +74,6 @@ class FileUploadedResponse extends NormalResponse implements \JsonSerializable
     {
         $data = parent::jsonSerialize();
         $data['url']                = $this->url;
-        $data['backUrl']            = $this->backUrl;
         $data['id']                 = $this->id;
         $data['filename']           = $this->filename;
         $data['requested_filename'] = $this->requestedFilename;

@@ -30,7 +30,7 @@ abstract class AccessDeniedResponse implements Response
         return [
             'status'                      => 403,
             'message'                     => $this->message,
-            'potentially_required_roles'  => $this->token->getRequestedRolesList()
+            'potentially_required_roles'  => $this->token ? $this->token->getRequestedRolesList() : []
         ];
     }
 

@@ -2,13 +2,14 @@
 
 namespace App\Domain\Common\ValueObject\Numeric;
 
+use App\Domain\Common\Exception\CommonValueException;
+
 class PositiveNumberOrZero extends PositiveNumber
 {
     protected function setValue($number): void
     {
         if ($number < 0) {
-            $exceptionType = static::getExceptionType();
-            throw new $exceptionType('number_cannot_be_negative_value');
+            throw CommonValueException::fromNumberCannotBeNegative($number);
         }
 
         $this->value = $number;

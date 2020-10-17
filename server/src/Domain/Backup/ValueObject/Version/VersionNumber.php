@@ -7,8 +7,4 @@ use App\Domain\Common\ValueObject\Numeric\PositiveNumber;
 
 class VersionNumber extends PositiveNumber
 {
-    protected static function getExceptionType(): string
-    {
-        return ValueObjectException::class;
-    }
 }

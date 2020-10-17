@@ -4,15 +4,8 @@ namespace App\Domain\Common\Security;
 
 class SecurityCheckResult
 {
-    /**
-     * @var bool
-     */
-    private $status;
-
-    /**
-     * @var string
-     */
-    private $reason;
+    private bool $status;
+    private string $reason;
 
     public function __construct(bool $status, string $reason = '')
     {

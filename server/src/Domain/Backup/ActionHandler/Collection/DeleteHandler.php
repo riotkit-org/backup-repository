@@ -3,7 +3,6 @@
 namespace App\Domain\Backup\ActionHandler\Collection;
 
 use App\Domain\Backup\Exception\AuthenticationException;
-use App\Domain\Backup\Exception\ValidationException;
 use App\Domain\Backup\Form\Collection\DeleteForm;
 use App\Domain\Backup\Manager\CollectionManager;
 use App\Domain\Backup\Response\Collection\CrudResponse;
@@ -34,18 +33,7 @@ class DeleteHandler
         }
 
         $this->assertHasRights($securityContext, $form);
-
-        try {
-            $this->manager->delete($form->collection);
-
-        } catch (ValidationException $validationException) {
-            return CrudResponse::createWithDomainError(
-                $validationException->getMessage(),
-                $validationException->getField(),
-                $validationException->getCode(),
-                $validationException->getReference()
-            );
-        }
+        $this->manager->delete($form->collection);
 
         return CrudResponse::deletionSuccessfulResponse($form->collection);
     }

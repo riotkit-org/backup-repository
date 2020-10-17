@@ -4,7 +4,7 @@ namespace App\Domain\Backup\Manager;
 
 use App\Domain\Backup\Entity\BackupCollection;
 use App\Domain\Backup\Entity\StoredVersion;
-use App\Domain\Backup\Exception\ValidationException;
+use App\Domain\Backup\Exception\BackupLogicException;
 use App\Domain\Backup\Factory\VersionFactory;
 use App\Domain\Backup\Repository\StorageRepository;
 use App\Domain\Backup\Repository\VersionRepository;
@@ -15,40 +15,13 @@ use App\Domain\Backup\Validation\CollectionValidator;
 
 class BackupManager
 {
-    /**
-     * @var VersionRepository
-     */
-    protected $versionRepository;
-
-    /**
-     * @var VersionFactory
-     */
-    protected $versionFactory;
-
-    /**
-     * @var StorageRepository
-     */
-    protected $storageRepository;
-
-    /**
-     * @var BackupValidator
-     */
-    protected $versionValidator;
-
-    /**
-     * @var CollectionValidator
-     */
-    protected $collectionValidator;
-
-    /**
-     * @var CollectionRotator
-     */
-    protected $collectionRotator;
-
-    /**
-     * @var FileUploader
-     */
-    protected $fileUploader;
+    protected VersionRepository   $versionRepository;
+    protected VersionFactory      $versionFactory;
+    protected StorageRepository   $storageRepository;
+    protected BackupValidator     $versionValidator;
+    protected CollectionValidator $collectionValidator;
+    protected CollectionRotator   $collectionRotator;
+    protected FileUploader        $fileUploader;
 
     public function __construct(
         VersionRepository   $repository,
@@ -74,7 +47,7 @@ class BackupManager
      *
      * @return StoredVersion
      *
-     * @throws ValidationException
+     * @throws BackupLogicException
      */
     public function submitNewVersion(BackupCollection $collection, $fileId): StoredVersion
     {
@@ -106,7 +79,7 @@ class BackupManager
      *
      * @return callable Use this callable to push changes to the database
      *
-     * @throws ValidationException
+     * @throws BackupLogicException
      */
     public function deleteVersion(StoredVersion $version, BackupCollection $collection): callable
     {

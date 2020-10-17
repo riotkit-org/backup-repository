@@ -3,7 +3,6 @@
 namespace App\Domain\Backup\Mapper;
 
 use App\Domain\Backup\Entity\BackupCollection;
-use App\Domain\Backup\Exception\CollectionMappingError;
 use App\Domain\Backup\Exception\ValueObjectException;
 use App\Domain\Backup\Form\Collection\CreationForm;
 use App\Domain\Backup\Repository\TokenRepository;
@@ -14,13 +13,13 @@ use App\Domain\Backup\ValueObject\Collection\CollectionSize;
 use App\Domain\Backup\ValueObject\Collection\Description;
 use App\Domain\Backup\ValueObject\Filename;
 use App\Domain\Backup\ValueObject\Password;
+use App\Domain\Common\Exception\DomainAssertionFailure;
+use App\Domain\Common\Exception\DomainInputValidationConstraintViolatedError;
+use App\Domain\Errors;
 
 class CollectionMapper
 {
-    /**
-     * @var TokenRepository
-     */
-    private $tokenRepository;
+    private TokenRepository $tokenRepository;
 
     public function __construct(TokenRepository $tokenRepository)
     {
@@ -28,13 +27,15 @@ class CollectionMapper
     }
 
     /**
+     * Maps FORM into internal DTO and ValueObjects
+     *
      * @param CreationForm     $form
      * @param BackupCollection $collection
      *
      * @return BackupCollection
      *
      * @throws \Exception
-     * @throws CollectionMappingError
+     * @throws DomainAssertionFailure
      */
     public function mapFormIntoCollection(CreationForm $form, BackupCollection $collection): BackupCollection
     {
@@ -46,16 +47,23 @@ class CollectionMapper
                 $mapper();
 
             } catch (ValueObjectException $exception) {
-                $mappingErrors[$formField] = $exception->getMessage();
+                $mappingErrors[] = $exception;
 
+            // generic typing errors
             } catch (\TypeError $exception) {
                 preg_match('/the type ([a-z]+),/', $exception->getMessage(), $matches);
-                $mappingErrors[$formField] = $matches ? 'expected_' . $matches[1] . '_type' : 'invalid_format';
+
+                $mappingErrors[] = DomainInputValidationConstraintViolatedError::fromString(
+                    $formField,
+                    Errors::ERR_MSG_REQUEST_INPUT_GENERIC_INVALID_FORMAT,
+                    Errors::ERR_REQUEST_INPUT_GENERIC_INVALID_FORMAT,
+                    $exception
+                );
             }
         }
 
         if ($mappingErrors) {
-            throw CollectionMappingError::createFromErrors($mappingErrors);
+            throw DomainAssertionFailure::fromErrors($mappingErrors);
         }
 
         return $collection;
@@ -75,7 +83,6 @@ class CollectionMapper
     /**
      * @param BackupCollection $collection The reference needs to be there. PHP is loosing the reference without it.
      * @param CreationForm $form
-     * @param bool $isNewElement
      *
      * @return array
      */
@@ -95,7 +102,7 @@ class CollectionMapper
                 $collection = $collection->withStrategy(new BackupStrategy($form->strategy));
             },
             'description'       => function () use (&$collection, $form) {
-                $collection = $collection->withDescription(new Description((string) $form->description));
+                $collection = $collection->withDescription(Description::fromString((string) $form->description));
             },
             'password'          => function () use (&$collection, $form) {
                 $collection = $collection->withPassword(new Password((string) $form->password));

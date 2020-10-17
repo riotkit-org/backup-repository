@@ -11,6 +11,7 @@ namespace App\Infrastructure\Common\Service\Http;
  */
 class FormTypeCaster
 {
+    // @todo: Unit tests
     public static function recast(array $data, string $className): array
     {
         $ref = new \ReflectionClass($className);
@@ -29,7 +30,7 @@ class FormTypeCaster
 
             if ($property->getType()->isBuiltin() && (string) $property->getType() === 'int') {
                 // cast numeric value into to integer
-                if (isset($data[$name]) && is_string($data[$name]) && is_numeric($data[$name])) {
+                if (isset($data[$name]) && is_string($data[$name]) && preg_match("/^\d+$/", $data[$name])) {
                     $data[$name] = (integer) $data[$name];
                 }
             }

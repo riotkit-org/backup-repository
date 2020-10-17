@@ -3,10 +3,11 @@
 namespace App\Command\Authentication;
 
 use App\Domain\Authentication\ActionHandler\UserCreationHandler;
-use App\Domain\Authentication\Exception\ValidationException;
+use App\Domain\Authentication\Exception\UserAlreadyExistsException;
 use App\Domain\Authentication\Factory\Context\SecurityContextFactory;
 use App\Domain\Authentication\Form\AuthForm;
 use App\Domain\Authentication\Form\RestrictionsForm;
+use App\Domain\Common\Exception\DomainAssertionFailure;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -78,23 +79,20 @@ class CreateUserCommand extends Command
                 $form,
                 $this->authFactory->createShellContext()
             );
-        } catch (ValidationException $validationException) {
-            if ($input->getOption('ignore-error-if-user-exists')
-                && $validationException->hasOnlyError('id_already_exists_please_select_other_one')) {
 
+        } catch (DomainAssertionFailure $assertionFailure) {
+            if ($input->getOption('ignore-error-if-user-exists')
+                && $assertionFailure->isContainingViolationByCode(UserAlreadyExistsException::getUserAlreadyExistsCode())) {
                 $output->writeln($form->id);
+
                 return 0;
             }
 
             $this->debug("", $output);
             $output->writeln('Validation error:');
 
-            foreach ($validationException->getFields() as $field => $errors) {
-                $output->writeln(' Field "' . $field . '":');
-
-                foreach ($errors as $error) {
-                    $output->writeln(' - ' . $error);
-                }
+            foreach ($assertionFailure->getConstraintsViolated() as $error) {
+                $output->writeln(' Field "' . $error->getField() . '": ' . $error->getMessage() . ' (code: ' . $error->getCode() . ')');
             }
 
             return 1;

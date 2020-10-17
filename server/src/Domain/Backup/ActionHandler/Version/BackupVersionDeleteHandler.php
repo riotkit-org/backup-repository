@@ -4,7 +4,7 @@ namespace App\Domain\Backup\ActionHandler\Version;
 
 use App\Domain\Backup\Entity\BackupCollection;
 use App\Domain\Backup\Exception\AuthenticationException;
-use App\Domain\Backup\Exception\ValidationException;
+use App\Domain\Backup\Exception\BackupLogicException;
 use App\Domain\Backup\Form\Version\VersionDeleteForm;
 use App\Domain\Backup\Manager\BackupManager;
 use App\Domain\Backup\Response\Version\BackupDeleteResponse;
@@ -12,10 +12,7 @@ use App\Domain\Backup\Security\VersioningContext;
 
 class BackupVersionDeleteHandler
 {
-    /**
-     * @var BackupManager
-     */
-    private $manager;
+    private BackupManager $manager;
 
     public function __construct(BackupManager $manager)
     {
@@ -30,7 +27,7 @@ class BackupVersionDeleteHandler
      * @return BackupDeleteResponse
      *
      * @throws AuthenticationException
-     * @throws ValidationException
+     * @throws BackupLogicException
      */
     public function handle(VersionDeleteForm $form, VersioningContext $context, bool $commitChanges): BackupDeleteResponse
     {

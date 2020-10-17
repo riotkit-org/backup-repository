@@ -49,18 +49,11 @@ class FlysystemFilesystemManager implements FilesystemManager
             $resource = $this->fs->readStream($name->getValue());
 
         } catch (FileNotFoundException $exception) {
-            throw new StorageException(
-                'Read error, file not found',
-                StorageException::codes['file_not_found'],
-                $exception
-            );
+            throw StorageException::fromFileNotFoundCause($exception);
         }
 
         if (!\is_resource($resource)) {
-            throw new StorageException(
-                'Read error, the file may be not readable due to permission error or i/o error',
-                StorageException::codes['io_perm_error']
-            );
+            throw StorageException::fromPermissionsErrorCause();
         }
 
         return new Stream($resource);
@@ -117,10 +110,13 @@ class FlysystemFilesystemManager implements FilesystemManager
     {
     }
 
+    /**
+     * @throws ReadOnlyException
+     */
     private function assertCanWrite(): void
     {
         if ($this->ro) {
-            throw new ReadOnlyException('Filesystem is read-only');
+            throw ReadOnlyException::fromStorageReadOnlyCause();
         }
     }
 
@@ -136,11 +132,7 @@ class FlysystemFilesystemManager implements FilesystemManager
             return $callback();
 
         } catch (S3Exception | ConnectException | FlysystemException $exception) {
-            throw new StorageException(
-                'Storage reported an error: ' . $exception->getMessage(),
-                StorageException::codes['storage_unavailable'],
-                $exception
-            );
+            throw StorageException::fromStorageNotAvailableErrorCause($exception);
         }
     }
 }

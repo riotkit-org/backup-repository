@@ -47,18 +47,6 @@ class CrudResponse implements \JsonSerializable
         return $new;
     }
 
-    public static function createWithDomainError(string $status, string $fieldName, int $code, $context): CrudResponse
-    {
-        $new = new static();
-        $new->status    = 'Logic validation error';
-        $new->errorCode = $code;
-        $new->exitCode  = 400;
-        $new->errors    = [$fieldName => $status];
-        $new->context = $context;
-
-        return $new;
-    }
-
     public static function createWithNotFoundError(): CrudResponse
     {
         $new = new static();

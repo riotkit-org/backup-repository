@@ -55,6 +55,11 @@ class BackupCollectionUploadAlertOnLimitStrategyCest
         $I->seeResponseCodeIsSuccessful();
 
         $I->uploadToCollection($this->id, "............... Cannot upload v3, only two versions allowed");
-        $I->canSeeResponseContains('max_backups_count_too_many');
+        $I->canSeeResponseCodeIsClientError();
+        $I->canSeeResponseContainsJson([
+            "error" => "Maximum count of files reached in the collection. Any of previous files should be deleted before uploading new",
+            "code" => 41012,
+            "type" => "validation.error"
+        ]);
     }
 }

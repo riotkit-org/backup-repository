@@ -91,17 +91,13 @@ class SeparatedReadWriteFilesystemManager implements FilesystemManager
             return;
 
         } catch (StorageException $exception) {
-            throw new StorageException(
-                'Storage seems to be unhealthy, problem occurred: ' . $exception->getMessage(),
-                StorageException::codes['storage_unavailable'],
-                $exception
-            );
+            throw StorageException::fromStorageNotAvailableErrorCause($exception);
         }
 
         $this->delete($testPath);
 
         if ($verification !== $testStr) {
-            throw new StorageException('Read-write test failed, the read string does not match written');
+            throw StorageException::fromInconsistentWriteCause();
         }
     }
 }

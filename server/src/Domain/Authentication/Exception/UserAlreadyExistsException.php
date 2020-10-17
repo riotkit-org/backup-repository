@@ -11,10 +11,15 @@ class UserAlreadyExistsException extends DomainInputValidationConstraintViolated
     {
         parent::__construct(
             Errors::ERR_MSG_USER_EXISTS,
-            Errors::ERR_USER_EXISTS,
+            static::getUserAlreadyExistsCode(),
             $previous
         );
 
         $this->field = 'id';
+    }
+
+    public static function getUserAlreadyExistsCode(): int
+    {
+        return Errors::ERR_USER_EXISTS;
     }
 }

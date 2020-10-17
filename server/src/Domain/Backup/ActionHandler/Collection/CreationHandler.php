@@ -4,16 +4,13 @@ namespace App\Domain\Backup\ActionHandler\Collection;
 
 use App\Domain\Backup\Entity\BackupCollection;
 use App\Domain\Backup\Exception\AuthenticationException;
+use App\Domain\Backup\Exception\BackupLogicException;
 use App\Domain\Backup\Exception\CollectionIdNotUniqueException;
-use App\Domain\Backup\Exception\CollectionMappingError;
-use App\Domain\Backup\Exception\DatabaseException;
-use App\Domain\Backup\Exception\ValidationException;
 use App\Domain\Backup\Form\Collection\CreationForm;
 use App\Domain\Backup\Manager\CollectionManager;
 use App\Domain\Backup\Mapper\CollectionMapper;
 use App\Domain\Backup\Response\Collection\CrudResponse;
 use App\Domain\Backup\Security\CollectionManagementContext;
-use Doctrine\DBAL\Driver\PDOException;
 
 class CreationHandler
 {
@@ -39,30 +36,17 @@ class CreationHandler
     {
         $this->assertHasRights($securityContext, $form);
 
-        try {
-            // maps form into entity
-            // in case the value objects will raise an exception it will be converted into a CollectionMappingError
-            // and raised there. This is a first stage validation of the possible options and format
-            $collection = $this->mapper->mapFormIntoCollection($form, new BackupCollection());
+        // maps form into entity
+        // in case the value objects will raise an exception it will be converted into a CollectionMappingError
+        // and raised there. This is a first stage validation of the possible options and format
+        $collection = $this->mapper->mapFormIntoCollection($form, new BackupCollection());
 
-            // person/token who creates the collection needs to be allowed to later edit it :-)
-            if ($securityContext->hasTokenAttached()) {
-                $collection = $this->mapper->mapTokenIntoCollection($collection, $securityContext->getTokenId());
-            }
-
-            $collection = $this->manager->create($collection, $form->id);
-
-        } catch (CollectionMappingError $mappingError) {
-            return CrudResponse::createWithValidationErrors($mappingError->getErrors());
-
-        } catch (ValidationException $validationException) {
-            return CrudResponse::createWithDomainError(
-                $validationException->getMessage(),
-                $validationException->getField(),
-                $validationException->getCode(),
-                $validationException->getReference()
-            );
+        // person/token who creates the collection needs to be allowed to later edit it :-)
+        if ($securityContext->hasTokenAttached()) {
+            $collection = $this->mapper->mapTokenIntoCollection($collection, $securityContext->getTokenId());
         }
+
+        $collection = $this->manager->create($collection, $form->id);
 
         return CrudResponse::createSuccessfulResponse($collection);
     }
@@ -76,12 +60,7 @@ class CreationHandler
             $this->manager->flush();
 
         } catch (CollectionIdNotUniqueException $exception) {
-            // @todo: Exception unification
-            throw ValidationException::createFromFieldError(
-                'id_not_unique',
-                'id',
-                ValidationException::COLLECTION_ID_NOT_UNIQUE
-            );
+            throw BackupLogicException::fromDuplicatedIdCause($exception);
         }
     }
 

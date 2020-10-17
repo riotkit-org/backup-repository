@@ -21,6 +21,10 @@ class BackupCollectionLimitsPermissionsCest
         // attempt to create an infinite collection
         $this->createInfiniteCollection($I);
         $I->canSeeResponseCodeIs(403);
+        $I->canSeeResponseContainsJson([
+            'error' => 'Current permissions does not allow to create this object',
+            "code"  => 40306
+        ]);
     }
 
     public function testUserCanCreateANormalCollection(FunctionalTester $I): void
@@ -67,7 +71,7 @@ class BackupCollectionLimitsPermissionsCest
     {
         $I->createCollection([
             'maxBackupsCount'   => 5,
-            'maxOneVersionSize' => 0,
+            'maxOneVersionSize' => '0',
             'maxCollectionSize' => '5MB',
             'strategy'          => 'delete_oldest_when_adding_new',
             'filename'          => 'solfed.org.uk_database.tar.gz'

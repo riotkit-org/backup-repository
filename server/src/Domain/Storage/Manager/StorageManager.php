@@ -166,11 +166,11 @@ class StorageManager
     private function assertFileExists(?StoredFile $storedFile)
     {
         if (!$storedFile) {
-            throw new StorageException('File not found in the storage', StorageException::codes['file_not_found']);
+            throw StorageException::fromFileNotFoundCause();
         }
 
         if (!$this->fs->fileExist($storedFile->getStoragePath())) {
-            throw new StorageException('File not found on disk', StorageException::codes['consistency_not_found_on_disk']);
+            throw StorageException::fromFileNotFoundOnDiskButFoundInRegistry();
         }
     }
 }

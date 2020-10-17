@@ -2,7 +2,7 @@
 
 namespace App\Domain\Authentication\ValueObject;
 
-use App\Domain\Authentication\Exception\ValidationException;
+use App\Domain\Authentication\Exception\ExpirationDateInvalidError;
 
 class ExpirationDate
 {
@@ -11,6 +11,14 @@ class ExpirationDate
 
     private \DateTimeImmutable $value;
 
+    /**
+     * @param string|null $modifier
+     * @param string $default
+     *
+     * @return static
+     *
+     * @throws ExpirationDateInvalidError
+     */
     public static function fromString(?string $modifier, string $default)
     {
         $new = new static();
@@ -21,17 +29,21 @@ class ExpirationDate
         }
 
         if (\in_array($modifier, static::DATE_MODIFIER_NEVER, true)) {
-            $new->value = (new \DateTimeImmutable())->modify('+40 years');
+            $new->value = (new \DateTimeImmutable())->modify('+90 years');
             return $new;
         }
 
         if (!\strtotime($modifier)) {
-            throw ValidationException::createFromFieldsList([
-                'expires' => ['invalid_date_format_and_not_an_expression']
-            ]);
+            throw ExpirationDateInvalidError::fromInvalidFormatCause();
         }
 
-        $new->value = new \DateTimeImmutable($modifier);
+        try {
+            $new->value = new \DateTimeImmutable($modifier);
+
+        } catch (\Exception $exception) {
+            throw ExpirationDateInvalidError::fromInvalidFormatCause();
+        }
+
         return $new;
     }
 

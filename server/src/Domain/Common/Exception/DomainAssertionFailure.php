@@ -41,6 +41,22 @@ class DomainAssertionFailure extends ApplicationException
         return $this->constraintsViolated;
     }
 
+    public function isContainingViolationByCode(int $code): bool
+    {
+        foreach ($this->getConstraintsViolated() as $violation) {
+            if ($violation->getCode() === $code) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public function getHttpCode(): int
+    {
+        return 400;
+    }
+
     public function canBeDisplayedPublic(): bool
     {
         return true;

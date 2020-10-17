@@ -2,6 +2,7 @@
 
 namespace App\Domain\Storage\ValueObject;
 
+use App\Domain\Common\Exception\CommonStorageException;
 use App\Domain\Common\ValueObject\BaseValueObject;
 
 class InputEncoding extends BaseValueObject
@@ -18,8 +19,7 @@ class InputEncoding extends BaseValueObject
     public function __construct(?string $value)
     {
         if (!\in_array($value, static::CHOICES, true)) {
-            $exceptionClass = static::getExceptionType();
-            throw new $exceptionClass('Invalid input encoding type');
+            throw CommonStorageException::fromInvalidEncodingCause();
         }
 
         if ($value === 'plain') {

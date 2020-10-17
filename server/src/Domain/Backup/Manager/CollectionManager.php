@@ -4,7 +4,7 @@ namespace App\Domain\Backup\Manager;
 
 use App\Domain\Backup\Entity\Authentication\User;
 use App\Domain\Backup\Entity\BackupCollection;
-use App\Domain\Backup\Exception\ValidationException;
+use App\Domain\Backup\Exception\BackupLogicException;
 use App\Domain\Backup\Repository\CollectionRepository;
 use App\Domain\Backup\Validation\CollectionValidator;
 
@@ -32,7 +32,7 @@ class CollectionManager
      *
      * @return BackupCollection
      *
-     * @throws ValidationException
+     * @throws BackupLogicException
      * @throws \Exception
      */
     public function create(BackupCollection $collection, ?string $customId): BackupCollection
@@ -56,7 +56,7 @@ class CollectionManager
      *
      * @return BackupCollection
      *
-     * @throws ValidationException
+     * @throws BackupLogicException
      */
     public function edit(BackupCollection $collection): BackupCollection
     {
@@ -74,7 +74,7 @@ class CollectionManager
      *
      * @return BackupCollection
      *
-     * @throws ValidationException
+     * @throws BackupLogicException
      */
     public function delete(BackupCollection $collection): BackupCollection
     {

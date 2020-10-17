@@ -31,10 +31,7 @@ class UserUploadProvider
             $file = $_FILES[$filesIndexes[0]];
 
             if ($file['error'] === 1) {
-                throw new FileRetrievalError(
-                    '"upload_max_filesize" in PHP configuration does not allow such big file to be uploaded',
-                    FileRetrievalError::CODE_UPLOAD_MAX_FILESIZE
-                );
+                throw FileRetrievalError::fromUploadMaxFileSizeReachedCause();
             }
 
             return new Stream(fopen($file['tmp_name'], 'rb'));
@@ -45,16 +42,10 @@ class UserUploadProvider
         }
 
         if ($this->isMultipart() && !$this->hasPostedViaPHPUploadMechanism()) {
-            throw new FileRetrievalError(
-                'Multipart was not parsed by PHP, it can be causedby too low value of "post_max_size" in php.ini',
-                FileRetrievalError::CODE_POST_MAX_FILESIZE
-            );
+            throw FileRetrievalError::fromPostMaxSizeReachedCause();
         }
 
-        throw new FileRetrievalError(
-            'User not provided any valid source of file with the HTTP protocol',
-            FileRetrievalError::EMPTY_REQUEST
-        );
+        throw FileRetrievalError::fromEmptyRequestCause();
     }
 
     private function hasPostedViaPHPUploadMechanism(): bool

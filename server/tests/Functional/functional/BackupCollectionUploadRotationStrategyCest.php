@@ -53,7 +53,11 @@ class BackupCollectionUploadRotationStrategyCest
         $I->uploadToCollection($this->id,
             "ZSP-IWA calls for a week of protest action against the repression of workers from the Post Office in Poland");
 
-        $I->canSeeResponseContains('backup_version_uploaded_twice');
+        $I->canSeeResponseContainsJson([
+            "error" => "Content duplication: Uploaded backup file is of same content as one of previous backups",
+            "code"  => 41011,
+            "type"  => "validation.error"
+        ]);
     }
 
     public function testUploadingSecondVersionShouldStoreTheUploadedVersion(FunctionalTester $I): void

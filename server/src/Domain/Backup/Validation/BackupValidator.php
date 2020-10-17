@@ -4,21 +4,14 @@ namespace App\Domain\Backup\Validation;
 
 use App\Domain\Backup\Entity\BackupCollection;
 use App\Domain\Backup\Entity\StoredVersion;
-use App\Domain\Backup\Exception\ValidationException;
+use App\Domain\Backup\Exception\BackupLogicException;
 use App\Domain\Backup\Repository\VersionRepository;
 use App\Domain\Backup\Service\Filesystem;
 
 class BackupValidator
 {
-    /**
-     * @var Filesystem
-     */
-    private $fs;
-
-    /**
-     * @var VersionRepository
-     */
-    private $versionRepository;
+    private Filesystem $fs;
+    private VersionRepository $versionRepository;
 
     public function __construct(Filesystem $fs, VersionRepository $versionRepository)
     {
@@ -29,7 +22,7 @@ class BackupValidator
     /**
      * @param StoredVersion $version
      *
-     * @throws ValidationException
+     * @throws BackupLogicException
      */
     public function validateBeforeAddingBackup(StoredVersion $version): void
     {
@@ -43,7 +36,7 @@ class BackupValidator
      * @param StoredVersion    $version
      * @param BackupCollection $collection
      *
-     * @throws ValidationException
+     * @throws BackupLogicException
      */
     public function validateBeforeDeletingBackup(
         StoredVersion $version,
@@ -55,7 +48,7 @@ class BackupValidator
     /**
      * @param StoredVersion $version
      *
-     * @throws ValidationException
+     * @throws BackupLogicException
      */
     private function validateFileSizeNotExceedsCollectionSingleFileSize(StoredVersion $version): void
     {
@@ -63,19 +56,14 @@ class BackupValidator
         $actual = $this->fs->getFileSize($version->getFile()->getFilename());
 
         if ($actual->isHigherThan($max)) {
-            throw ValidationException::createFromFieldError(
-                'new_version_exceeds_single_element_limit_specified_for_this_collection',
-                'file',
-                ValidationException::CODE_NEW_VERSION_EXCEEDS_SINGLE_ELEMENT_LIMIT,
-                ['max' => $max]
-            );
+            throw BackupLogicException::fromUploadedFileSizeExceedsLimitCause($max, $actual);
         }
     }
 
     /**
      * @param StoredVersion $version
      *
-     * @throws ValidationException
+     * @throws BackupLogicException
      */
     private function validateFileSizeNotExceedsCollectionSummaryLimit(StoredVersion $version): void
     {
@@ -83,19 +71,14 @@ class BackupValidator
         $actual = $this->versionRepository->findCollectionVersions($version->getCollection())->sumAllVersionsDiskSpace();
 
         if ($actual->isHigherThan($max)) {
-            throw ValidationException::createFromFieldError(
-                'new_version_makes_collection_too_big_on_disk',
-                'file',
-                ValidationException::CODE_NEW_VERSION_MAKES_COLLECTION_TOO_BIG_ON_DISK,
-                ['max' => $max]
-            );
+            throw BackupLogicException::fromUploadedFileSizeWouldExceedSummaryCollectionSizeCause($max, $actual);
         }
     }
 
     /**
      * @param StoredVersion $version
      *
-     * @throws ValidationException
+     * @throws BackupLogicException
      */
     private function validateFileIsUnique(StoredVersion $version): void
     {
@@ -103,19 +86,14 @@ class BackupValidator
             ->findCollectionVersions($version->getCollection())->isThereAnyVersionThatHasFile($version->getFile());
 
         if ($isThisFileAlreadyInTheCollection) {
-            throw ValidationException::createFromFieldError(
-                'backup_version_uploaded_twice',
-                'file',
-                ValidationException::CODE_BACKUP_VERSION_DUPLICATED,
-                []
-            );
+            throw BackupLogicException::fromFileNotUniqueCause();
         }
     }
 
     /**
      * @param StoredVersion $version
      *
-     * @throws ValidationException
+     * @throws BackupLogicException
      */
     private function validateMaxCollectionLengthReached(StoredVersion $version): void
     {
@@ -123,12 +101,7 @@ class BackupValidator
         $actual = $this->versionRepository->findCollectionVersions($version->getCollection())->getCount()->incrementVersion();
 
         if ($actual->isHigherThan($max)) {
-            throw ValidationException::createFromFieldError(
-                'max_backups_count_too_many',
-                'maxBackupsCount',
-                ValidationException::CODE_MAX_BACKUPS_COUNT_EXCEEDED,
-                ['max' => $max]
-            );
+            throw BackupLogicException::fromMaxCollectionLengthReached($max, $actual);
         }
     }
 
@@ -136,17 +109,14 @@ class BackupValidator
      * @param StoredVersion    $version
      * @param BackupCollection $collection
      *
-     * @throws ValidationException
+     * @throws BackupLogicException
      */
     private function validateCollectionMatches(StoredVersion $version, BackupCollection $collection): void
     {
         if (!$version->getCollection() || !$version->getCollection()->isSameAsCollection($collection)) {
-            throw ValidationException::createFromFieldError(
-                'version_collection_mismatch',
-                'collection',
-                ValidationException::CODE_VERSION_COLLECTION_DOES_NOT_MATCH_SUBMITTED_COLLECTION,
-                []
-            );
+            throw BackupLogicException::fromCollectingNotMatchingCause();
         }
     }
+
+    // @todo: Add time-based validation - "You cannot upload next backup now, next closest backup window is at H:i:s Y-m-d"
 }

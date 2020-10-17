@@ -2,6 +2,11 @@
 
 namespace App\Domain\Backup\Exception;
 
-class ValueObjectException extends \App\Domain\Common\Exception\ValueObjectException
+use App\Domain\Common\Exception\DomainInputValidationConstraintViolatedError;
+
+/**
+ * Validation errors in ValueObjects
+ */
+class ValueObjectException extends DomainInputValidationConstraintViolatedError
 {
 }

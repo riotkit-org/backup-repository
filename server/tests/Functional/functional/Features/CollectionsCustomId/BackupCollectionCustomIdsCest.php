@@ -46,8 +46,12 @@ class BackupCollectionCustomIdsCest
             'id'                => 'this-is-not-a-valid-uuid'
         ]);
 
-        $I->canSeeResponseContains('custom_id_is_not_uuid_format');
         $I->canSeeResponseCodeIs(400);
+        $I->canSeeResponseContainsJson([
+            "error" => "Collection ID is not a valid uuidv4 formatted string",
+            "code" => 40101,
+            "type" => "validation.error"
+        ]);
     }
 
     public function testCantAssignCustomIdWhenPermissionNotGrantedOnToken(FunctionalTester $I): void
@@ -106,6 +110,10 @@ class BackupCollectionCustomIdsCest
         $this->createValidCollection($I, $generatedUuidForTest);
 
         $I->canSeeResponseCodeIs(400);
-        $I->canSeeResponseContains('id_not_unique');
+        $I->canSeeResponseContainsJson([
+            "error" => "Collection ID is reserved already by other Collection",
+            "code" => 40100,
+            "type" => "validation.error"
+        ]);
     }
 }
