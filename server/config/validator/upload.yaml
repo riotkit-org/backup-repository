@@ -44,17 +44,3 @@ App\Domain\Storage\Form\UploadByPostForm:
                   minMessage: "FIle name is too short, minimum 6 characters are allowed"
 
 
-App\Domain\Storage\Form\UploadByUrlForm:
-    properties:
-        fileUrl:
-            - Type:
-                  type: string
-
-            #- Url:
-            #      message: "Expected a valid URL"
-
-            - Length:
-                  min: 10
-                  max: 250
-                  maxMessage: "URL is too long, allowed up to 250 characters"
-                  minMessage: "URL is too short"

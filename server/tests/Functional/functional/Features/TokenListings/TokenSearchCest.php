@@ -106,7 +106,15 @@ class TokenSearchCest
         $I->amAdmin();
         $I->searchForUsers('', 1, 2000);
         $I->canSeeResponseCodeIs(400);
-        $I->canSeeResponseContains('query_limit_too_high_use_pagination');
+        $I->canSeeResponseContainsJson([
+            "fields" => [
+                "query" => [
+                    "message" => "Limit is too high",
+                    "code"    => 50003
+                ]
+            ],
+            "type" => "validation.error"
+        ]);
     }
 
     public function validateThePageParameter(FunctionalTester $I): void
@@ -114,7 +122,15 @@ class TokenSearchCest
         $I->amAdmin();
         $I->searchForUsers('', -5, 5);
         $I->canSeeResponseCodeIs(400);
-        $I->canSeeResponseContains('invalid_page_value');
+        $I->canSeeResponseContainsJson([
+            "fields" => [
+                "page" => [
+                    "message" => "Page cannot be negative",
+                    "code"    => 50005
+                ]
+            ],
+            "type" => "validation.error"
+        ]);
     }
 
     public function validateLimitCannotBeNegative(FunctionalTester $I): void
@@ -122,6 +138,34 @@ class TokenSearchCest
         $I->amAdmin();
         $I->searchForUsers('', 1, -10);
         $I->canSeeResponseCodeIs(400);
-        $I->canSeeResponseContains('value_cannot_be_negative');
+        $I->canSeeResponseContainsJson([
+            "fields" => [
+                "query" => [
+                    "message" => "Limit is too low",
+                    "code"    => 50004
+                ]
+            ],
+            "type" => "validation.error"
+        ]);
+    }
+
+    public function validateMultipleParametersAreCheckedAtOnce(FunctionalTester $I): void
+    {
+        $I->amAdmin();
+        $I->searchForUsers('', -10, -10);
+        $I->canSeeResponseCodeIs(400);
+        $I->canSeeResponseContainsJson([
+            "fields" => [
+                "query" => [
+                    "message" => "Limit is too low",
+                    "code"    => 50004
+                ],
+                "page" => [
+                    "message" => "Page cannot be negative",
+                    "code"    => 50005
+                ]
+            ],
+            "type" => "validation.error"
+        ]);
     }
 }

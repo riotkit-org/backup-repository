@@ -4,6 +4,7 @@ namespace App\Infrastructure\Common\Event\Subscriber;
 
 use App\Domain\Common\Exception\ApplicationException;
 use App\Domain\Common\Exception\DomainAssertionFailure;
+use App\Domain\Common\Exception\DomainInputValidationConstraintViolatedError;
 use App\Infrastructure\Common\Exception\HttpError;
 use App\Infrastructure\Common\Http\JsonFormattedResponse;
 use App\Infrastructure\Common\Http\ValidationErrorResponse;
@@ -56,9 +57,11 @@ class ErrorFormattingSubscriber implements EventSubscriberInterface
             );
 
             return;
-        }
 
-        elseif ($exc instanceof ApplicationException) {
+        } elseif ($exc instanceof DomainInputValidationConstraintViolatedError) {
+            throw $exc;
+
+        } elseif ($exc instanceof ApplicationException) {
             $event->setResponse(
                 $this->postProcessResponse(new JsonFormattedResponse($exc->jsonSerialize(), $exc->getHttpCode()), $exc)
             );

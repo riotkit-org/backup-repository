@@ -20,9 +20,23 @@ class BackupCollectionValidationCest
             'filename'          => 'valid-filname.txt'
         ]);
 
-        $I->canSeeResponseContains('"maxBackupsCount": "number_cannot_be_negative_value"');
-        $I->canSeeResponseContains('"maxOneVersionSize": "cannot_parse_disk_space_check_format"');
-        $I->canSeeResponseContains('"unknown_strategy_allowed___delete_oldest_when_adding_new___or__alert_when_backup_limit_reached"');
+        $I->canSeeResponseContainsJson([
+            "fields" => [
+                "maxBackupsCount" => [
+                    "message" => "Number cannot be negative, got -5",
+                    "code" => 42016
+                ],
+                "maxOneVersionSize" => [
+                    "message" => "Disk space format parsing error",
+                    "code" => 42010
+                ],
+                "strategy" => [
+                    "message" => "Invalid collection strategy picked \"invalid_strategy\". Choices: delete_oldest_when_adding_new, alert_when_backup_limit_reached",
+                    "code" => 42021
+                ]
+            ],
+            "type" => "validation.error"
+        ]);
         $I->canSeeResponseCodeIs(400);
     }
 

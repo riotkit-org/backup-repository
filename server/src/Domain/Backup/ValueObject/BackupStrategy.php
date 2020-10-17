@@ -27,9 +27,7 @@ class BackupStrategy implements \JsonSerializable
     public function __construct(string $strategy)
     {
         if (!\in_array($strategy, self::STRATEGIES, true)) {
-            throw new ValueObjectException(
-                'unknown_strategy_allowed___delete_oldest_when_adding_new___or__alert_when_backup_limit_reached'
-            );
+            throw ValueObjectException::fromBackupStrategyInvalid($strategy, self::STRATEGIES);
         }
 
         $this->value = $strategy;

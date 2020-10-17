@@ -13,6 +13,8 @@ use App\Domain\Backup\ValueObject\Collection\CollectionSize;
 use App\Domain\Backup\ValueObject\Collection\Description;
 use App\Domain\Backup\ValueObject\Filename;
 use App\Domain\Backup\ValueObject\Password;
+use App\Domain\Common\Exception\CommonStorageException;
+use App\Domain\Common\Exception\CommonValueException;
 use App\Domain\Common\Exception\DomainAssertionFailure;
 use App\Domain\Common\Exception\DomainInputValidationConstraintViolatedError;
 use App\Domain\Errors;
@@ -46,8 +48,16 @@ class CollectionMapper
             try {
                 $mapper();
 
-            } catch (ValueObjectException $exception) {
+            } catch (DomainInputValidationConstraintViolatedError $exception) {
                 $mappingErrors[] = $exception;
+
+            } catch (CommonValueException | CommonStorageException | ValueObjectException $exception) {
+                $mappingErrors[] = $mappingErrors[] = DomainInputValidationConstraintViolatedError::fromString(
+                    $formField,
+                    $exception->getMessage(),
+                    $exception->getCode(),
+                    $exception
+                );
 
             // generic typing errors
             } catch (\TypeError $exception) {

@@ -179,6 +179,9 @@ final class Errors
     public const ERR_UNSUPPORTED_CHECKSUM_TYPE          = 42020;
     public const ERR_MSG_UNSUPPORTED_CHECKSUM_TYPE      = 'Unsupported checksum type';
 
+    public const ERR_COLLECTION_STRATEGY_INVALID        = 42021;
+    public const ERR_MSG_COLLECTION_STRATEGY_INVALID    = 'Invalid collection strategy picked "{{ actual }}". Choices: {{ choices }}';
+
 
     //
     // Permission errors

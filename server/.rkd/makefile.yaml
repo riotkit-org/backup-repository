@@ -34,4 +34,4 @@ tasks:
                 help: "Execute only selected test case. Examples: Features/Security/FeatureOnlyOneFileAllowedToUploadCest, BackupCollectionListingCest, RegistryListingCest:testListingAllFiles"
 
         steps: |
-            ./vendor/bin/codecept run --html=file-repository.html functional ${ARG_FILTER}
+            SYMFONY_DEPRECATIONS_HELPER=weak ./vendor/bin/codecept run --html=file-repository.html functional ${ARG_FILTER}
