@@ -7,7 +7,11 @@ use App\Domain\Common\Exception\CommonStorageException;
 class Path extends BaseValueObject
 {
     private string $dir;
-    protected ?Filename $filename;
+
+    /**
+     * @var Filename|null
+     */
+    protected $filename;
 
     public function __construct(string $dir, Filename $filename = null)
     {
