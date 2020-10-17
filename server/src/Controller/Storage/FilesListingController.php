@@ -80,26 +80,17 @@ class FilesListingController extends BaseController
      */
     public function handleListing(Request $request): Response
     {
-        $form = new FilesListingForm();
-        $infrastructureForm = $this->submitFormFromRequestQuery($request, $form, FilesListingFormType::class);
-
-        if (!$infrastructureForm->isValid()) {
-            return $this->createValidationErrorResponse($infrastructureForm);
-        }
+        $form = $this->decodeRequestIntoDTO($request->query->all(), FilesListingForm::class);
 
         $securityContext = $this->authFactory
             ->createListingContextFromTokenAndForm($this->getLoggedUser(), $form);
 
-        return $this->wrap(
-            function () use ($form, $securityContext) {
-                return new JsonFormattedResponse(
-                    $this->handler->handle(
-                        $form,
-                        $securityContext
-                    ),
-                    JsonFormattedResponse::HTTP_OK
-                );
-            }
+        return new JsonFormattedResponse(
+            $this->handler->handle(
+                $form,
+                $securityContext
+            ),
+            JsonFormattedResponse::HTTP_OK
         );
     }
 }

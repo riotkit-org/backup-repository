@@ -2,6 +2,7 @@
 
 namespace App\Domain\Storage\ActionHandler;
 
+use App\Domain\Common\Exception\CommonStorageException;
 use App\Domain\Storage\Exception\AuthenticationException;
 use App\Domain\Storage\Exception\StorageException;
 use App\Domain\Storage\Form\DeleteFileForm;
@@ -28,7 +29,7 @@ class DeleteFileHandler
      * @return bool
      *
      * @throws AuthenticationException
-     * @throws StorageException
+     * @throws StorageException|CommonStorageException
      */
     public function handle(DeleteFileForm $form, ManagementSecurityContext $securityContext): bool
     {
@@ -43,7 +44,7 @@ class DeleteFileHandler
      * @param Filename $filename
      * @param ManagementSecurityContext $securityContext
      *
-     * @throws \App\Domain\Common\Exception\AuthenticationException
+     * @throws AuthenticationException
      */
     private function assertHasRights(Filename $filename, ManagementSecurityContext $securityContext): void
     {

@@ -48,7 +48,8 @@ class FilesListingHandler
 
     /**
      * @param ReadSecurityContext $securityContext
-     * @throws \App\Domain\Common\Exception\AuthenticationException
+     *
+     * @throws AuthenticationException
      */
     private function assertHasRightsToListAnything(ReadSecurityContext $securityContext): void
     {

@@ -4,30 +4,15 @@ namespace App\Domain\Storage\Form;
 
 class FilesListingForm
 {
-    /**
-     * @var int
-     */
-    public $page = 1;
-
-    /**
-     * @var int
-     */
-    public $limit = 20;
-
-    /**
-     * @var string
-     */
-    public $searchQuery = '';
+    public int $page = 1;
+    public int $limit = 20;
+    public string $searchQuery = '';
 
     /**
      * @var string[]
      */
-    public $tags = [];
-
-    /**
-     * @var string
-     */
-    public $password = '';
+    public array $tags = [];
+    public string $password = '';
 
     public function getPage(): int
     {
