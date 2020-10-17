@@ -48,53 +48,30 @@ abstract class ManageCollectionAccessControlController extends BaseController
      */
     public function handleAction(Request $request, string $id): Response
     {
-        $form = $this->createDomainForm($request);
-        $infrastructureForm = $this->createInfrastructureForm($request, $form);
-        $infrastructureForm->submit([
+        $formData = [
             'collection' => $id,
             'token'      => $this->getTokenIdFromRequest($request)
-        ]);
+        ];
 
-        if (!$infrastructureForm->isValid()) {
-            return $this->createValidationErrorResponse($infrastructureForm);
+        /**
+         * @var TokenFormAttachForm|TokenDeleteForm $form
+         */
+        if ($this->isDeletionRequest($request)) {
+            $form = $this->decodeRequestIntoDTO($formData,TokenDeleteForm::class);
+        } else {
+            $form = $this->decodeRequestIntoDTO($formData,TokenFormAttachForm::class);
         }
 
-        return $this->wrap(
-            function () use ($form, $request) {
-                /**
-                 * @var TokenFormAttachForm|TokenDeleteForm $form
-                 */
-
-                $response = $this->getHandler($request)->handle(
-                    $form,
-                    $this->authFactory->createCollectionManagementContext($this->getLoggedUser())
-                );
-
-                if ($request->query->get('simulate') !== 'true') {
-                    $this->getHandler($request)->flush();
-                }
-
-                return new JsonFormattedResponse($response, $response->getHttpCode());
-            }
+        $response = $this->getHandler($request)->handle(
+            $form,
+            $this->authFactory->createCollectionManagementContext($this->getLoggedUser())
         );
-    }
 
-    private function createDomainForm(Request $request): CollectionAddDeleteTokenForm
-    {
-        if ($this->isDeletionRequest($request)) {
-            return new TokenDeleteForm();
+        if ($request->query->get('simulate') !== 'true') {
+            $this->getHandler($request)->flush();
         }
 
-        return new TokenFormAttachForm();
-    }
-
-    private function createInfrastructureForm(Request $request, CollectionAddDeleteTokenForm $form): FormInterface
-    {
-        if ($this->isDeletionRequest($request)) {
-            return $this->createForm(TokenDeleteFormType::class, $form);
-        }
-
-        return $this->createForm(TokenAttachFormType::class, $form);
+        return new JsonFormattedResponse($response, $response->getHttpCode());
     }
 
     /**

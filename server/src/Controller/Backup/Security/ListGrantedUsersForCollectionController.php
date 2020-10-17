@@ -67,32 +67,21 @@ class ListGrantedUsersForCollectionController extends BaseController
      *     )
      * )
      *
-     * @param Request $request
      * @param string $id
      *
      * @return Response
      *
      * @throws \Exception
      */
-    public function listTokensAction(Request $request, string $id): Response
+    public function listTokensAction(string $id): Response
     {
-        $form = new CollectionTokenListingForm();
-        $infrastructureForm = $this->createForm(CollectionTokenListingFormType::class, $form);
-        $infrastructureForm->submit(['collection' => $id]);
+        $form = $this->decodeRequestIntoDTO(['collection' => $id], CollectionTokenListingForm::class);
 
-        if (!$infrastructureForm->isValid()) {
-            return $this->createValidationErrorResponse($infrastructureForm);
-        }
-
-        return $this->wrap(
-            function () use ($form) {
-                $response = $this->handler->handle(
-                    $form,
-                    $this->authFactory->createCollectionManagementContext($this->getLoggedUser())
-                );
-
-                return new JsonFormattedResponse($response, $response->getHttpCode());
-            }
+        $response = $this->handler->handle(
+            $form,
+            $this->authFactory->createCollectionManagementContext($this->getLoggedUser())
         );
+
+        return new JsonFormattedResponse($response, $response->getHttpCode());
     }
 }

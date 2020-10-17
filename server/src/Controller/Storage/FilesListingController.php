@@ -80,6 +80,9 @@ class FilesListingController extends BaseController
      */
     public function handleListing(Request $request): Response
     {
+        /**
+         * @var FilesListingForm $form
+         */
         $form = $this->decodeRequestIntoDTO($request->query->all(), FilesListingForm::class);
 
         $securityContext = $this->authFactory

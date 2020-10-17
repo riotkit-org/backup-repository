@@ -80,53 +80,48 @@ class ViewFileController extends BaseController
      */
     public function handle(Request $request, string $filename): Response
     {
-        $form = new ViewFileForm();
-        $infrastructureForm = $this->submitFormFromRequestQuery($request, $form, ViewFileFormType::class);
+        /**
+         * @var ViewFileForm $form
+         */
+        $form = $this->decodeRequestIntoDTO($request->query->all(), ViewFileForm::class);
+
         $form->filename   = $filename;
         $form->bytesRange = $request->headers->get('Range', '');
 
-        if (!$infrastructureForm->isValid()) {
-            return $this->createValidationErrorResponse($infrastructureForm);
+        $response = $this->handler->handle(
+            $form,
+            $this->createPermissionsContext($form),
+        );
+
+        //
+        // Flush a file: headers + body
+        // In headers we expect bytes range, caching etc.
+        //
+        if ($response instanceof FileDownloadResponse && $response->isFlushingFile()) {
+            return new StreamedResponse(
+                static function () use ($response) {
+                    $input = $response->getResponseStream()->detach();
+                    $output = fopen('php://output', 'wb');
+
+                    // headers first
+                    $headers = $response->getHeaders();
+
+                    foreach ($headers as $header => $value) {
+                        @header($header . ': ' . $value);
+                    }
+
+                    // flush the content, including the HTTP-like behavior (bytes range support etc.)
+                    $contentFlush = $response->getContentFlushCallback();
+                    $contentFlush($input, $output);
+
+                    @fclose($input);
+                    @fclose($output);
+                },
+                $response->getCode()
+            );
         }
 
-        return $this->wrap(
-            function () use ($form, $request) {
-                $response = $this->handler->handle(
-                    $form,
-                    $this->createPermissionsContext($form),
-                );
-
-                //
-                // Flush a file: headers + body
-                // In headers we expect bytes range, caching etc.
-                //
-                if ($response instanceof FileDownloadResponse && $response->isFlushingFile()) {
-                    return new StreamedResponse(
-                        static function () use ($response) {
-                            $input = $response->getResponseStream()->detach();
-                            $output = fopen('php://output', 'wb');
-
-                            // headers first
-                            $headers = $response->getHeaders();
-
-                            foreach ($headers as $header => $value) {
-                                @header($header . ': ' . $value);
-                            }
-
-                            // flush the content, including the HTTP-like behavior (bytes range support etc.)
-                            $contentFlush = $response->getContentFlushCallback();
-                            $contentFlush($input, $output);
-
-                            @fclose($input);
-                            @fclose($output);
-                        },
-                        $response->getCode()
-                    );
-                }
-
-                return new JsonFormattedResponse($response, $response->getCode());
-            }
-        );
+        return new JsonFormattedResponse($response, $response->getCode());
     }
 
     private function createPermissionsContext(ViewFileForm $form): ReadSecurityContext
