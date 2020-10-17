@@ -465,9 +465,6 @@
             "ref": "e921bdbfe20cdefa3b82f379d1cd36df1bc8d115"
         }
     },
-    "symfony/form": {
-        "version": "v4.1.4"
-    },
     "symfony/framework-bundle": {
         "version": "3.3",
         "recipe": {
@@ -490,9 +487,6 @@
         "version": "v4.1.4"
     },
     "symfony/inflector": {
-        "version": "v4.1.4"
-    },
-    "symfony/intl": {
         "version": "v4.1.4"
     },
     "symfony/messenger": {
@@ -536,9 +530,6 @@
             "version": "4.1",
             "ref": "0e548dd90adba18fabd4ef419b14d361fe4d6c74"
         }
-    },
-    "symfony/polyfill-intl-icu": {
-        "version": "v1.9.0"
     },
     "symfony/polyfill-intl-idn": {
         "version": "v1.11.0"
