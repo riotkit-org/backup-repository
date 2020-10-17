@@ -31,7 +31,7 @@ class SubmitVersionController extends BaseController
      *
      * @return Response
      *
-     * @throws Exception
+     * @throws Exception|\Throwable
      */
     public function handleAction(Request $request, string $collectionId): Response
     {
@@ -48,31 +48,21 @@ class SubmitVersionController extends BaseController
      *
      * @return Response
      *
-     * @throws Exception
+     * @throws Exception|\Throwable
      */
     private function handleInternally(Request $request, string $collectionId): Response
     {
-        $form = new BackupSubmitForm();
-        $infrastructureForm = $this->createForm(BackupSubmitFormType::class, $form);
-        $infrastructureForm->submit([
-            'collection' => $collectionId,
-            'attributes' => $request->get('kv', '{}')
-        ]);
+        /**
+         * @var BackupSubmitForm $form
+         */
+        $form = $this->decodeRequestIntoDTO(['collection' => $collectionId], BackupSubmitForm::class);
 
-        if (!$infrastructureForm->isValid()) {
-            return $this->createValidationErrorResponse($infrastructureForm);
-        }
-
-        return $this->wrap(
-            function () use ($form, $request) {
-                $response = $this->handler->handle(
-                    $form,
-                    $this->authFactory->createVersioningContext($this->getLoggedUser()),
-                    $this->getLoggedUser()
-                );
-
-                return new JsonFormattedResponse($response, $response->getExitCode());
-            }
+        $response = $this->handler->handle(
+            $form,
+            $this->authFactory->createVersioningContext($this->getLoggedUser()),
+            $this->getLoggedUser()
         );
+
+        return new JsonFormattedResponse($response, $response->getExitCode());
     }
 }

@@ -39,7 +39,6 @@ class BackupSubmitHandler
      */
     public function handle(BackupSubmitForm $form, VersioningContext $securityContext, User $token): BackupSubmitResponse
     {
-
         $this->assertHasPermissions($securityContext, $form->collection);
         $result = null;
 
@@ -51,7 +50,7 @@ class BackupSubmitHandler
         //
 
         try {
-            $result = $this->fileUploader->upload($form->collection, $token, $form->attributes);
+            $result = $this->fileUploader->upload($form->collection, $token);
 
             if ($result->isSuccess()) {
                 $backup = $this->backupManager->submitNewVersion($form->collection, $result->getFileId());
