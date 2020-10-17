@@ -6,7 +6,6 @@ use App\Controller\BaseController;
 use App\Domain\Backup\ActionHandler\Version\VersionsListingHandler;
 use App\Domain\Backup\Factory\SecurityContextFactory;
 use App\Domain\Backup\Form\Version\VersionsListingForm;
-use App\Infrastructure\Backup\Form\Version\VersionListingFormType;
 use App\Infrastructure\Common\Http\JsonFormattedResponse;
 use Exception;
 use Symfony\Component\HttpFoundation\Response;
@@ -36,25 +35,16 @@ class VersionListingController extends BaseController
      */
     public function handleAction(string $collectionId): Response
     {
-        $form = new VersionsListingForm();
-        $infrastructureForm = $this->createForm(VersionListingFormType::class, $form);
-        $infrastructureForm->submit([
-            'collection' => $collectionId
-        ]);
+        /**
+         * @var VersionsListingForm $form
+         */
+        $form = $this->decodeRequestIntoDTO(['collection' => $collectionId], VersionsListingForm::class);
 
-        if (!$infrastructureForm->isValid()) {
-            return $this->createValidationErrorResponse($infrastructureForm);
-        }
-
-        return $this->wrap(
-            function () use ($form) {
-                $response = $this->handler->handle(
-                    $form,
-                    $this->authFactory->createVersioningContext($this->getLoggedUser())
-                );
-
-                return new JsonFormattedResponse($response, $response->getExitCode());
-            }
+        $response = $this->handler->handle(
+            $form,
+            $this->authFactory->createVersioningContext($this->getLoggedUser())
         );
+
+        return new JsonFormattedResponse($response, $response->getExitCode());
     }
 }

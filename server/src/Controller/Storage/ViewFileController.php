@@ -9,7 +9,6 @@ use App\Domain\Storage\Form\ViewFileForm;
 use App\Domain\Storage\Response\FileDownloadResponse;
 use App\Domain\Storage\Security\ReadSecurityContext;
 use App\Infrastructure\Common\Http\JsonFormattedResponse;
-use App\Infrastructure\Storage\Form\ViewFileFormType;
 use Exception;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
