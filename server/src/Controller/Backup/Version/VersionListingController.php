@@ -4,6 +4,7 @@ namespace App\Controller\Backup\Version;
 
 use App\Controller\BaseController;
 use App\Domain\Backup\ActionHandler\Version\VersionsListingHandler;
+use App\Domain\Backup\Entity\Authentication\User;
 use App\Domain\Backup\Factory\SecurityContextFactory;
 use App\Domain\Backup\Form\Version\VersionsListingForm;
 use App\Infrastructure\Common\Http\JsonFormattedResponse;
@@ -40,9 +41,14 @@ class VersionListingController extends BaseController
          */
         $form = $this->decodeRequestIntoDTO(['collection' => $collectionId], VersionsListingForm::class);
 
+        /**
+         * @var User $user
+         */
+        $user = $this->getLoggedUser(User::class);
+
         $response = $this->handler->handle(
             $form,
-            $this->authFactory->createVersioningContext($this->getLoggedUser())
+            $this->authFactory->createVersioningContext($user, $form->collection)
         );
 
         return new JsonFormattedResponse($response, $response->getExitCode());

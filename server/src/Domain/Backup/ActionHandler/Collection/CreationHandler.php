@@ -11,6 +11,8 @@ use App\Domain\Backup\Manager\CollectionManager;
 use App\Domain\Backup\Mapper\CollectionMapper;
 use App\Domain\Backup\Response\Collection\CrudResponse;
 use App\Domain\Backup\Security\CollectionManagementContext;
+use App\Domain\Backup\ValueObject\CollectionSpecificRoles;
+use App\Domain\Common\Service\Security\RolesInformationProvider;
 
 class CreationHandler
 {
@@ -39,14 +41,16 @@ class CreationHandler
         // maps form into entity
         // in case the value objects will raise an exception it will be converted into a CollectionMappingError
         // and raised there. This is a first stage validation of the possible options and format
-        $collection = $this->mapper->mapFormIntoCollection($form, new BackupCollection());
+        $collection = $this->manager->create($this->mapper->mapFormIntoCollection($form, new BackupCollection()), $form->id);
 
-        // person/token who creates the collection needs to be allowed to later edit it :-)
+        // person who creates the collection needs to be allowed to later edit it :-)
         if ($securityContext->hasTokenAttached()) {
-            $collection = $this->mapper->mapTokenIntoCollection($collection, $securityContext->getTokenId());
+            $this->manager->appendUser(
+                $securityContext->getUser(),
+                $collection,
+                CollectionSpecificRoles::fromAllRolesGranted()
+            );
         }
-
-        $collection = $this->manager->create($collection, $form->id);
 
         return CrudResponse::createSuccessfulResponse($collection);
     }

@@ -268,14 +268,20 @@ class FunctionalTester extends \Codeception\Actor
         $this->assertEquals($expectedAmount, \count($elements));
     }
 
-    public function grantTokenAccessToCollection(string $collectionId, string $tokenId): void
+    public function grantTokenAccessToCollection(string $collectionId, string $tokenId, array $roles = null): void
     {
+        $payload = ['token' => $tokenId];
+
+        if ($roles !== null) {
+            $payload['roles'] = $roles;
+        }
+
         $this->postJson(
             $this->fill(
                 Urls::URL_COLLECTION_GRANT_TOKEN,
                 ['collectionId' => $collectionId]
             ),
-            ['token' => $tokenId]
+            $payload
         );
     }
 

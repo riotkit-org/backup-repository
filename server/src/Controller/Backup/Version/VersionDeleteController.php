@@ -4,6 +4,7 @@ namespace App\Controller\Backup\Version;
 
 use App\Controller\BaseController;
 use App\Domain\Backup\ActionHandler\Version\BackupVersionDeleteHandler;
+use App\Domain\Backup\Entity\Authentication\User;
 use App\Domain\Backup\Factory\SecurityContextFactory;
 use App\Domain\Backup\Form\Version\VersionDeleteForm;
 use App\Infrastructure\Common\Http\JsonFormattedResponse;
@@ -39,11 +40,20 @@ class VersionDeleteController extends BaseController
             'collection' => $collectionId,
             'version'    => $backupId
         ];
+
+        /**
+         * @var VersionDeleteForm $form
+         */
         $form = $this->decodeRequestIntoDTO($requestData, VersionDeleteForm::class);
+
+        /**
+         * @var User $user
+         */
+        $user = $this->getLoggedUser(User::class);
 
         $response = $this->handler->handle(
             $form,
-            $this->authFactory->createVersioningContext($this->getLoggedUser()),
+            $this->authFactory->createVersioningContext($user, $form->collection),
             strtolower((string) $request->get('simulate')) !== 'true'
         );
 

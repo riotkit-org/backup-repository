@@ -4,6 +4,7 @@ namespace App\Controller\Backup\Version;
 
 use App\Controller\BaseController;
 use App\Domain\Backup\ActionHandler\Version\FetchHandler;
+use App\Domain\Backup\Entity\Authentication\User;
 use App\Domain\Backup\Factory\SecurityContextFactory;
 use App\Domain\Backup\Form\Version\FetchVersionForm;
 use App\Infrastructure\Common\Http\JsonFormattedResponse;
@@ -104,14 +105,22 @@ class FetchController extends BaseController
             'password'   => (string) $request->get('password')
         ];
 
+        /**
+         * @var FetchVersionForm $form
+         */
         $form = $this->decodeRequestIntoDTO($requestData, FetchVersionForm::class);
 
         // insert token as input, so the domain can pass it to the redirect
         $form->token = $this->getLoggedUser()->getId();
 
+        /**
+         * @var User $user
+         */
+        $user = $this->getLoggedUser(User::class);
+
         $response = $this->handler->handle(
             $form,
-            $this->authFactory->createVersioningContext($this->getLoggedUser())
+            $this->authFactory->createVersioningContext($user, $form->collection)
         );
 
         if ($response->isSuccess()) {

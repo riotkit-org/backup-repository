@@ -2,6 +2,6 @@
 
 namespace App\Domain\Backup\Form;
 
-class TokenDeleteForm extends CollectionAddDeleteTokenForm
+class UserAccessRevokeForm extends CollectionAddDeleteUserForm
 {
 }

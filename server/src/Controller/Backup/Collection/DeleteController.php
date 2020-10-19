@@ -4,6 +4,7 @@ namespace App\Controller\Backup\Collection;
 
 use App\Controller\BaseController;
 use App\Domain\Backup\ActionHandler\Collection\DeleteHandler;
+use App\Domain\Backup\Entity\Authentication\User;
 use App\Domain\Backup\Factory\SecurityContextFactory;
 use App\Domain\Backup\Form\Collection\DeleteForm;
 use App\Infrastructure\Common\Http\JsonFormattedResponse;
@@ -91,7 +92,12 @@ class DeleteController extends BaseController
          */
         $form = $this->decodeRequestIntoDTO(['collection' => $id], DeleteForm::class);
 
-        $securityContext = $this->authFactory->createCollectionManagementContext($this->getLoggedUser());
+        /**
+         * @var User $user
+         */
+        $user = $this->getLoggedUser(User::class);
+
+        $securityContext = $this->authFactory->createCollectionManagementContext($user);
         $response = $this->handler->handle($form, $securityContext);
 
         if (trim(strtolower((string) $request->query->get('simulate'))) !== 'true') {

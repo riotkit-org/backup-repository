@@ -5,6 +5,7 @@ namespace App\Controller\Backup\Collection;
 use App\Controller\BaseController;
 use App\Domain\Backup\ActionHandler\Collection\CreationHandler;
 use App\Domain\Backup\ActionHandler\Collection\EditHandler;
+use App\Domain\Backup\Entity\Authentication\User;
 use App\Domain\Backup\Exception\AuthenticationException;
 use App\Domain\Backup\Factory\SecurityContextFactory;
 use App\Domain\Backup\Form\Collection\CreationForm;
@@ -142,9 +143,14 @@ class CreateEditController extends BaseController
          */
         $form = $this->decodeRequestIntoDTO($request, $isCreation ? CreationForm::class : EditForm::class);
 
+        /**
+         * @var User $user
+         */
+        $user = $this->getLoggedUser(User::class);
+
         $response = $this->handle(
             $form,
-            $this->authFactory->createCollectionManagementContext($this->getLoggedUser()),
+            $this->authFactory->createCollectionManagementContext($user, ($isCreation ? null : $form->collection)),
             $isCreation
         );
 

@@ -5,15 +5,15 @@ namespace App\Domain\Backup\Form;
 use App\Domain\Backup\Entity\Authentication\User;
 use App\Domain\Backup\Entity\BackupCollection;
 
-class CollectionAddDeleteTokenForm
+class CollectionAddDeleteUserForm
 {
     /**
-     * @var BackupCollection
+     * @var ?BackupCollection
      */
-    public $collection;
+    public ?BackupCollection $collection = null;
 
     /**
-     * @var User
+     * @var ?User
      */
-    public $token;
+    public ?User $user = null;
 }

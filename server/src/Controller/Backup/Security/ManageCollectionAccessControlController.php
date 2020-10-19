@@ -4,11 +4,12 @@ namespace App\Controller\Backup\Security;
 
 use App\Controller\BaseController;
 use App\Domain\Backup\ActionHandler\Security\DisallowTokenHandler;
-use App\Domain\Backup\ActionHandler\Security\TokenAddHandler;
+use App\Domain\Backup\ActionHandler\Security\GrantUserToCollection;
+use App\Domain\Backup\Entity\Authentication\User;
 use App\Domain\Backup\Factory\SecurityContextFactory;
-use App\Domain\Backup\Form\CollectionAddDeleteTokenForm;
-use App\Domain\Backup\Form\TokenFormAttachForm;
-use App\Domain\Backup\Form\TokenDeleteForm;
+use App\Domain\Backup\Form\CollectionAddDeleteUserForm;
+use App\Domain\Backup\Form\UserAccessAttachForm;
+use App\Domain\Backup\Form\UserAccessRevokeForm;
 use App\Infrastructure\Backup\Form\Collection\TokenAttachFormType;
 use App\Infrastructure\Backup\Form\Collection\TokenDeleteFormType;
 use App\Infrastructure\Common\Http\JsonFormattedResponse;
@@ -22,18 +23,18 @@ use Symfony\Component\HttpFoundation\Response;
  */
 abstract class ManageCollectionAccessControlController extends BaseController
 {
-    private TokenAddHandler $attachingHandler;
+    private GrantUserToCollection $attachingHandler;
     private DisallowTokenHandler $detachingHandler;
     private SecurityContextFactory $authFactory;
 
     public function __construct(
-        TokenAddHandler $attachingHandler,
+        GrantUserToCollection $attachingHandler,
         DisallowTokenHandler $detachingHandler,
         SecurityContextFactory $authFactory
     ) {
         $this->attachingHandler = $attachingHandler;
         $this->detachingHandler = $detachingHandler;
-        $this->authFactory = $authFactory;
+        $this->authFactory      = $authFactory;
     }
 
     /**
@@ -48,24 +49,28 @@ abstract class ManageCollectionAccessControlController extends BaseController
      */
     public function handleAction(Request $request, string $id): Response
     {
+        $decoded = json_decode($request->getContent(), true);
+
         $formData = [
             'collection' => $id,
-            'token'      => $this->getTokenIdFromRequest($request)
+            'user'       => $decoded['token'] ?? '', // @todo change to user
+            'roles'      => $decoded['roles'] ?? []
         ];
 
         /**
-         * @var TokenFormAttachForm|TokenDeleteForm $form
+         * @var UserAccessAttachForm|UserAccessRevokeForm $form
          */
         if ($this->isDeletionRequest($request)) {
-            $form = $this->decodeRequestIntoDTO($formData,TokenDeleteForm::class);
+            $form = $this->decodeRequestIntoDTO($formData,UserAccessRevokeForm::class);
         } else {
-            $form = $this->decodeRequestIntoDTO($formData,TokenFormAttachForm::class);
+            $form = $this->decodeRequestIntoDTO($formData,UserAccessAttachForm::class);
         }
 
-        $response = $this->getHandler($request)->handle(
-            $form,
-            $this->authFactory->createCollectionManagementContext($this->getLoggedUser())
-        );
+        /**
+         * @var User $user
+         */
+        $user = $this->getLoggedUser(User::class);
+        $response = $this->getHandler($request)->handle($form, $this->authFactory->createCollectionManagementContext($user, $form->collection));
 
         if ($request->query->get('simulate') !== 'true') {
             $this->getHandler($request)->flush();
@@ -77,7 +82,7 @@ abstract class ManageCollectionAccessControlController extends BaseController
     /**
      * @param Request $request
      *
-     * @return DisallowTokenHandler|TokenAddHandler
+     * @return DisallowTokenHandler|GrantUserToCollection
      */
     private function getHandler(Request $request)
     {
@@ -91,16 +96,5 @@ abstract class ManageCollectionAccessControlController extends BaseController
     private function isDeletionRequest(Request $request): bool
     {
         return $request->getMethod() === 'DELETE';
-    }
-
-    private function getTokenIdFromRequest(Request $request): string
-    {
-        if ($request->attributes->get('tokenId')) {
-            return $request->attributes->get('tokenId');
-        }
-
-        $json = json_decode($request->getContent(false), true);
-
-        return isset($json['token']) ? (string)$json['token'] : '';
     }
 }

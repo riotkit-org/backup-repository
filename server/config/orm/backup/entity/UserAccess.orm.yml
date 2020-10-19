@@ -1,0 +1,15 @@
+App\Domain\Backup\Entity\UserAccess:
+    type: entity
+    table: collection_users
+
+    id:
+        collectionId:
+            type: string
+
+        userId:
+            type: string
+
+    embedded:
+        roles:
+            class: \App\Domain\Backup\ValueObject\CollectionSpecificRoles
+            columnPrefix: false

@@ -26,7 +26,7 @@ class Roles implements \JsonSerializable
      */
     public static function fromArray(array $roles, string $fieldName = 'roles')
     {
-        $availableRoles = RolesConst::getRolesList();
+        $availableRoles = static::getAvailableRoles();
 
         foreach ($roles as $role) {
             if (!\in_array($role, $availableRoles, true)) {
@@ -57,9 +57,17 @@ class Roles implements \JsonSerializable
         return $this->value;
     }
 
+    /**
+     * @param Roles $roles
+     *
+     * @return static
+     */
     public function mergeWith(Roles $roles)
     {
-        $this->value = array_unique(array_merge($this->value, $roles->value));
+        $new = clone $this;
+        $new->value = array_unique(array_merge($this->value, $roles->value));
+
+        return $new;
     }
 
     public function getAsList(): array
@@ -87,6 +95,11 @@ class Roles implements \JsonSerializable
     public function getRequestedRolesList(): array
     {
         return $this->requestedRoles;
+    }
+
+    protected static function getAvailableRoles(): array
+    {
+        return RolesConst::getRolesList();
     }
 
     private function recordRoleRequest(string $roleName): void

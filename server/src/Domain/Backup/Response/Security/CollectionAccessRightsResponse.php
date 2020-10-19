@@ -5,7 +5,7 @@ namespace App\Domain\Backup\Response\Security;
 use App\Domain\Backup\Entity\Authentication\User;
 use App\Domain\Backup\Entity\BackupCollection;
 
-class TokenManagementResponse implements \JsonSerializable
+class CollectionAccessRightsResponse implements \JsonSerializable
 {
     /**
      * @var string
@@ -23,7 +23,7 @@ class TokenManagementResponse implements \JsonSerializable
     private $data = [];
 
 
-    public static function createFromResults(User $token, BackupCollection $collection): TokenManagementResponse
+    public static function createFromResults(User $token, BackupCollection $collection): CollectionAccessRightsResponse
     {
         $new = new static();
         $new->status    = 'OK';
@@ -37,7 +37,7 @@ class TokenManagementResponse implements \JsonSerializable
         return $new;
     }
 
-    public static function createWithNotFoundError(): TokenManagementResponse
+    public static function createWithNotFoundError(): CollectionAccessRightsResponse
     {
         $new = new static();
         $new->status    = 'Object not found';

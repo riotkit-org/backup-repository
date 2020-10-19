@@ -5,11 +5,13 @@ namespace App\Domain\Backup\ActionHandler\Security;
 use App\Domain\Backup\Entity\BackupCollection;
 use App\Domain\Backup\Exception\AuthenticationException;
 use App\Domain\Backup\Manager\CollectionManager;
-use App\Domain\Backup\Response\Security\TokenManagementResponse;
+use App\Domain\Backup\Response\Security\CollectionAccessRightsResponse;
 use App\Domain\Backup\Security\CollectionManagementContext;
-use App\Domain\Backup\Form\TokenFormAttachForm;
+use App\Domain\Backup\Form\UserAccessAttachForm;
+use App\Domain\Backup\ValueObject\CollectionSpecificRoles;
+use App\Domain\Common\Exception\DomainInputValidationConstraintViolatedError;
 
-class TokenAddHandler
+class GrantUserToCollection
 {
     private CollectionManager $manager;
 
@@ -19,24 +21,24 @@ class TokenAddHandler
     }
 
     /**
-     * @param TokenFormAttachForm $form
+     * @param UserAccessAttachForm $form
      * @param CollectionManagementContext $securityContext
      *
-     * @throws AuthenticationException
+     * @return CollectionAccessRightsResponse
      *
-     * @return TokenManagementResponse
+     * @throws AuthenticationException
+     * @throws DomainInputValidationConstraintViolatedError
      */
-    public function handle(TokenFormAttachForm $form, CollectionManagementContext $securityContext): TokenManagementResponse
+    public function handle(UserAccessAttachForm $form, CollectionManagementContext $securityContext): CollectionAccessRightsResponse
     {
-        if (!$form->collection || !$form->token) {
-            return TokenManagementResponse::createWithNotFoundError();
+        if (!$form->collection || !$form->user) {
+            return CollectionAccessRightsResponse::createWithNotFoundError();
         }
 
         $this->assertHasRights($securityContext, $form->collection);
+        $collection = $this->manager->appendUser($form->user, $form->collection, CollectionSpecificRoles::fromArray($form->roles));
 
-        $collection = $this->manager->appendToken($form->token, $form->collection);
-
-        return TokenManagementResponse::createFromResults($form->token, $collection);
+        return CollectionAccessRightsResponse::createFromResults($form->user, $collection);
     }
 
     public function flush(): void

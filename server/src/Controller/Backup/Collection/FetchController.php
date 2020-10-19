@@ -4,6 +4,7 @@ namespace App\Controller\Backup\Collection;
 
 use App\Controller\BaseController;
 use App\Domain\Backup\ActionHandler\Collection\FetchHandler;
+use App\Domain\Backup\Entity\Authentication\User;
 use App\Domain\Backup\Factory\SecurityContextFactory;
 use App\Domain\Backup\Form\Collection\DeleteForm;
 use App\Infrastructure\Common\Http\JsonFormattedResponse;
@@ -89,7 +90,12 @@ class FetchController extends BaseController
          */
         $form = $this->decodeRequestIntoDTO(['collection' => $id], DeleteForm::class);
 
-        $securityContext = $this->authFactory->createCollectionManagementContext($this->getLoggedUser());
+        /**
+         * @var User $user
+         */
+        $user = $this->getLoggedUser(User::class);
+
+        $securityContext = $this->authFactory->createCollectionManagementContext($user);
         $response = $this->handler->handle($form, $securityContext);
 
         return new JsonFormattedResponse($response, $response->getHttpCode());

@@ -4,6 +4,7 @@ namespace App\Controller\Backup\Version;
 
 use App\Controller\BaseController;
 use App\Domain\Backup\ActionHandler\Version\BackupSubmitHandler;
+use App\Domain\Backup\Entity\Authentication\User;
 use App\Domain\Backup\Factory\SecurityContextFactory;
 use App\Domain\Backup\Form\BackupSubmitForm;
 use App\Infrastructure\Common\Http\JsonFormattedResponse;
@@ -56,9 +57,14 @@ class SubmitVersionController extends BaseController
          */
         $form = $this->decodeRequestIntoDTO(['collection' => $collectionId], BackupSubmitForm::class);
 
+        /**
+         * @var User $user
+         */
+        $user = $this->getLoggedUser(User::class);
+
         $response = $this->handler->handle(
             $form,
-            $this->authFactory->createVersioningContext($this->getLoggedUser()),
+            $this->authFactory->createVersioningContext($user, $form->collection),
             $this->getLoggedUser()
         );
 

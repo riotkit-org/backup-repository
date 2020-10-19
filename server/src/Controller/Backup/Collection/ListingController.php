@@ -4,6 +4,7 @@ namespace App\Controller\Backup\Collection;
 
 use App\Controller\BaseController;
 use App\Domain\Backup\ActionHandler\Collection\ListingHandler;
+use App\Domain\Backup\Entity\Authentication\User;
 use App\Domain\Backup\Factory\SecurityContextFactory;
 use App\Domain\Backup\Form\Collection\ListingForm;
 use App\Infrastructure\Common\Http\JsonFormattedResponse;
@@ -123,7 +124,12 @@ class ListingController extends BaseController
          */
         $form = $this->decodeRequestIntoDTO($request->query->all(), ListingForm::class);
 
-        $securityContext = $this->authFactory->createCollectionManagementContext($this->getLoggedUser());
+        /**
+         * @var User $user
+         */
+        $user = $this->getLoggedUser(User::class);
+
+        $securityContext = $this->authFactory->createCollectionManagementContext($user);
         $response = $this->handler->handle($form, $securityContext);
 
         return new JsonFormattedResponse($response, $response->getHttpCode());

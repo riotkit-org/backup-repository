@@ -207,7 +207,7 @@ class BackupCollection implements \JsonSerializable
         return $self;
     }
 
-    public function withTokenAdded(User $token): BackupCollection
+    public function withUserGranted(User $token): BackupCollection
     {
         // don't allow to add same token twice
         foreach ($this->getAllowedTokens() as $existingToken) {

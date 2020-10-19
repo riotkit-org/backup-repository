@@ -62,6 +62,11 @@ class User
         return $this->roles->getAsList();
     }
 
+    public function getRolesAsValueObject(): Roles
+    {
+        return $this->roles;
+    }
+
     public function hasRole(string $roleName): bool
     {
         return $this->roles->hasRole($roleName);

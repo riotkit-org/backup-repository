@@ -4,9 +4,12 @@ namespace App\Domain\Backup\Manager;
 
 use App\Domain\Backup\Entity\Authentication\User;
 use App\Domain\Backup\Entity\BackupCollection;
+use App\Domain\Backup\Entity\UserAccess;
 use App\Domain\Backup\Exception\BackupLogicException;
 use App\Domain\Backup\Repository\CollectionRepository;
+use App\Domain\Backup\Repository\UserAccessRepository;
 use App\Domain\Backup\Validation\CollectionValidator;
+use App\Domain\Backup\ValueObject\CollectionSpecificRoles;
 
 /**
  * Manages the collections
@@ -17,13 +20,16 @@ class CollectionManager
 {
     private CollectionValidator $validator;
     private CollectionRepository $repository;
+    private UserAccessRepository $userAccessRepository;
 
     public function __construct(
         CollectionValidator $validator,
-        CollectionRepository $repository
+        CollectionRepository $repository,
+        UserAccessRepository $userAccess
     ) {
         $this->validator  = $validator;
         $this->repository = $repository;
+        $this->userAccessRepository = $userAccess;
     }
 
     /**
@@ -90,15 +96,19 @@ class CollectionManager
         $this->repository->flushAll();
     }
 
-    public function appendToken(User $token, BackupCollection $collection): BackupCollection
+    public function appendUser(User $user, BackupCollection $collection, CollectionSpecificRoles $roles): BackupCollection
     {
-        $modifiedCollection = $collection->withTokenAdded($token);
+        $userAccess = $this->userAccessRepository->findForCollectionAndUser($collection, $user);
 
-        $this->repository->persist(
-            $this->repository->merge($modifiedCollection)
-        );
+        if (!$userAccess) {
+            $userAccess = UserAccess::createFrom($collection, $user);
+        }
 
-        return $modifiedCollection;
+        // replace roles in existing UserAccess or set roles in new UserAccess
+        $userAccess->setRoles($roles);
+        $this->userAccessRepository->persist($userAccess);
+
+        return $collection;
     }
 
     public function revokeToken(User $token, BackupCollection $collection): BackupCollection
@@ -110,5 +120,13 @@ class CollectionManager
         );
 
         return $modifiedCollection;
+    }
+
+    public function replaceUserRoles(User $user, BackupCollection $collection, CollectionSpecificRoles $roles)
+    {
+        $access = $this->userAccessRepository->findForCollectionAndUser($collection, $user);
+        $access->setRoles($roles);
+
+        $this->userAccessRepository->persist($access);
     }
 }

@@ -91,6 +91,11 @@ services:
         arguments:
             $readOnly: '%env(bool:READ_ONLY)%'
 
+    App\Infrastructure\Backup\Repository\UserAccessDoctrineRepository:
+        autowire: true
+        arguments:
+            $readOnly: '%env(bool:READ_ONLY)%'
+
     App\Infrastructure\Storage\Repository\FileDoctrineRepository:
         autowire: true
         arguments:
@@ -148,6 +153,10 @@ services:
         arguments:
             $readFS: '@ro_fs'
             $writeFS: '@rw_fs'
+
+    App\Domain\Authentication\Factory\IncomingUserFactory:
+        autowire: true
+        public: true
 
     App\Infrastructure\Common\Test\Database\RestoreDBInterface:
         alias: App\Infrastructure\Common\Test\Database\StateManager

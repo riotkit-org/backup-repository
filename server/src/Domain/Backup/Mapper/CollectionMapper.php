@@ -87,7 +87,7 @@ class CollectionMapper
             return $collection;
         }
 
-        return $collection->withTokenAdded($token);
+        return $collection->withUserGranted($token);
     }
 
     /**
