@@ -59,6 +59,23 @@ class CommonValueException extends ApplicationException
         );
     }
 
+    public static function fromInvalidRolesSelected()
+    {
+        return new static(
+            Errors::ERR_MSG_USER_ROLE_INVALID,
+            Errors::ERR_USER_ROLE_INVALID
+        );
+    }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'error' => $this->getMessage(),
+            'code'  => $this->getCode(),
+            'type'  => Errors::TYPE_VALIDATION_ERROR
+        ];
+    }
+
     public function canBeDisplayedPublic(): bool
     {
         return true;

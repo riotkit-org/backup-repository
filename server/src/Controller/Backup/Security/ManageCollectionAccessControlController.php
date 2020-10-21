@@ -7,14 +7,10 @@ use App\Domain\Backup\ActionHandler\Security\DisallowTokenHandler;
 use App\Domain\Backup\ActionHandler\Security\GrantUserToCollection;
 use App\Domain\Backup\Entity\Authentication\User;
 use App\Domain\Backup\Factory\SecurityContextFactory;
-use App\Domain\Backup\Form\CollectionAddDeleteUserForm;
 use App\Domain\Backup\Form\UserAccessAttachForm;
 use App\Domain\Backup\Form\UserAccessRevokeForm;
-use App\Infrastructure\Backup\Form\Collection\TokenAttachFormType;
-use App\Infrastructure\Backup\Form\Collection\TokenDeleteFormType;
 use App\Infrastructure\Common\Http\JsonFormattedResponse;
 use Exception;
-use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -42,18 +38,19 @@ abstract class ManageCollectionAccessControlController extends BaseController
      *
      * @param Request $request
      * @param string  $id
+     * @param string  $uid
      *
      * @return Response
      *
      * @throws Exception
      */
-    public function handleAction(Request $request, string $id): Response
+    public function handleAction(Request $request, string $id, string $uid = ''): Response
     {
         $decoded = json_decode($request->getContent(), true);
 
         $formData = [
             'collection' => $id,
-            'user'       => $decoded['token'] ?? '', // @todo change to user
+            'user'       => isset($decoded['user']) ? $decoded['user'] : $uid,
             'roles'      => $decoded['roles'] ?? []
         ];
 
@@ -70,6 +67,7 @@ abstract class ManageCollectionAccessControlController extends BaseController
          * @var User $user
          */
         $user = $this->getLoggedUser(User::class);
+
         $response = $this->getHandler($request)->handle($form, $this->authFactory->createCollectionManagementContext($user, $form->collection));
 
         if ($request->query->get('simulate') !== 'true') {

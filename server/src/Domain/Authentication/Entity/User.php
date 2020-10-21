@@ -120,12 +120,6 @@ class User extends \App\Domain\Common\SharedEntity\User implements \JsonSerializ
         return $new;
     }
 
-    public function setId(string $id): User
-    {
-        $this->id = $id;
-        return $this;
-    }
-
     public function isNotExpired(DateTimeImmutable $currentDate = null): bool
     {
         if (!$currentDate instanceof DateTimeImmutable) {

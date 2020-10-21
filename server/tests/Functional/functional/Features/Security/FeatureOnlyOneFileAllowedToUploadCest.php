@@ -24,7 +24,7 @@ class FeatureOnlyOneFileAllowedToUploadCest
         ]);
 
         $user = $I->createStandardUser(['roles' => ['upload.all', 'upload.only_once_successful', 'collections.upload_to_allowed_collections']]);
-        $I->grantTokenAccessToCollection($collection, $user->id);
+        $I->grantUserAccessToCollection($collection, $user->id);
 
         // switch to limited user
         $I->amUser($user->email, $user->password);

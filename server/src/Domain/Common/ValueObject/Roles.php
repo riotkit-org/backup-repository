@@ -2,6 +2,7 @@
 
 namespace App\Domain\Common\ValueObject;
 
+use App\Domain\Common\Exception\CommonValueException;
 use App\Domain\Common\Exception\DomainInputValidationConstraintViolatedError;
 use App\Domain\Errors;
 use App\Domain\Roles as RolesConst;
@@ -18,23 +19,18 @@ class Roles implements \JsonSerializable
 
     /**
      * @param array $roles
-     * @param string $fieldName
      *
      * @return static
      *
-     * @throws DomainInputValidationConstraintViolatedError
+     * @throws CommonValueException
      */
-    public static function fromArray(array $roles, string $fieldName = 'roles')
+    public static function fromArray(array $roles)
     {
         $availableRoles = static::getAvailableRoles();
 
         foreach ($roles as $role) {
             if (!\in_array($role, $availableRoles, true)) {
-                throw DomainInputValidationConstraintViolatedError::fromString(
-                    $fieldName,
-                    Errors::ERR_MSG_USER_ROLE_INVALID,
-                    Errors::ERR_USER_ROLE_INVALID
-                );
+                throw CommonValueException::fromInvalidRolesSelected();
             }
         }
 

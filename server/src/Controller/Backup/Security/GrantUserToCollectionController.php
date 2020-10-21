@@ -39,8 +39,8 @@ class GrantUserToCollectionController extends ManageCollectionAccessControlContr
      *
      *         @SWG\Schema(
      *             type="object",
-     *             required={"token"},
-     *             @SWG\Property(property="token", example="ca6a2635-d2cb-4682-ba81-3879dd0e8a77", type="string"),
+     *             required={"user"},
+     *             @SWG\Property(property="user", example="ca6a2635-d2cb-4682-ba81-3879dd0e8a77", type="string"),
      *         )
      *     ),
      *
@@ -69,12 +69,12 @@ class GrantUserToCollectionController extends ManageCollectionAccessControlContr
      *                 ),
      *
      *                 @SWG\Property(
-     *                     property="token",
+     *                     property="user",
      *                     ref=@Model(type=\App\Domain\Backup\Entity\Docs\Token::class)
      *                 ),
      *
      *                 @SWG\Property(
-     *                     property="tokens_count",
+     *                     property="users_count",
      *                     type="integer",
      *                     example=5
      *                 )
@@ -85,13 +85,14 @@ class GrantUserToCollectionController extends ManageCollectionAccessControlContr
      *
      * @param Request $request
      * @param string $id
+     * @param string $uid
      *
      * @return Response
      *
      * @throws \Exception
      */
-    public function handleAction(Request $request, string $id): Response
+    public function handleAction(Request $request, string $id, string $uid = ''): Response
     {
-        return parent::handleAction($request, $id);
+        return parent::handleAction($request, $id, $uid);
     }
 }

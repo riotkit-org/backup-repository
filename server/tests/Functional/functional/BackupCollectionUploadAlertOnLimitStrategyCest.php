@@ -25,7 +25,7 @@ class BackupCollectionUploadAlertOnLimitStrategyCest
         $this->user = $I->createStandardUser([
             'roles' => [
                 "collections.create_new",
-                "collections.manage_tokens_in_allowed_collections",
+                "collections.manage_users_in_allowed_collections",
                 "collections.upload_to_allowed_collections",
                 "collections.list_versions_for_allowed_collections",
                 "upload.all"

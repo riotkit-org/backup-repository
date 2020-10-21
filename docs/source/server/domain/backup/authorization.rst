@@ -25,7 +25,7 @@ Legend:
 
 Required permissions:
 
-    - collections.manage_tokens_in_allowed_collections
+    - collections.manage_users_in_allowed_collections
 
 Revoking access to the collection for given token
 -------------------------------------------------
@@ -43,4 +43,4 @@ Legend:
 
 Required permissions:
 
-    - collections.manage_tokens_in_allowed_collections
+    - collections.manage_users_in_allowed_collections

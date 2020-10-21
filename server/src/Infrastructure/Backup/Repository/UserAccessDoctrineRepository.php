@@ -30,4 +30,9 @@ class UserAccessDoctrineRepository extends BaseRepository implements UserAccessR
     {
         $this->_em->persist($userAccess);
     }
+
+    public function remove(UserAccess $userAccess): void
+    {
+        $this->_em->remove($userAccess);
+    }
 }

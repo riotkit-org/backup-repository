@@ -79,17 +79,6 @@ class CollectionMapper
         return $collection;
     }
 
-    public function mapTokenIntoCollection(BackupCollection $collection, string $tokenId): BackupCollection
-    {
-        $token = $this->tokenRepository->findTokenById($tokenId);
-
-        if (!$token) {
-            return $collection;
-        }
-
-        return $collection->withUserGranted($token);
-    }
-
     /**
      * @param BackupCollection $collection The reference needs to be there. PHP is loosing the reference without it.
      * @param CreationForm $form

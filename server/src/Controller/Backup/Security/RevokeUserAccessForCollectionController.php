@@ -35,8 +35,8 @@ class RevokeUserAccessForCollectionController extends ManageCollectionAccessCont
      *     @SWG\Parameter(
      *         type="string",
      *         in="path",
-     *         name="token",
-     *         description="Token id to revoke access for (subject token)"
+     *         name="user",
+     *         description="User id to revoke access for (subject token)"
      *     ),
      *
      *     @SWG\Response(
@@ -64,12 +64,12 @@ class RevokeUserAccessForCollectionController extends ManageCollectionAccessCont
      *                 ),
      *
      *                 @SWG\Property(
-     *                     property="token",
+     *                     property="uid",
      *                     ref=@Model(type=\App\Domain\Backup\Entity\Docs\Token::class)
      *                 ),
      *
      *                 @SWG\Property(
-     *                     property="tokens_count",
+     *                     property="users_count",
      *                     type="integer",
      *                     example=4
      *                 )
@@ -80,13 +80,14 @@ class RevokeUserAccessForCollectionController extends ManageCollectionAccessCont
      *
      * @param Request $request
      * @param string $id
+     * @param string $uid
      *
      * @return Response
      *
      * @throws \Exception
      */
-    public function handleAction(Request $request, string $id): Response
+    public function handleAction(Request $request, string $id, string $uid = ''): Response
     {
-        return parent::handleAction($request, $id);
+        return parent::handleAction($request, $id, $uid);
     }
 }

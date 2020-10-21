@@ -30,7 +30,7 @@ id                                  Custom UUIDv4 (requires: *security.create_pr
     POST /auth/token/generate?_token=your-admin-token-there
 
     {
-        "roles": ["collections.create_new", "collections.manage_tokens_in_allowed_collections"],
+        "roles": ["collections.create_new", "collections.manage_users_in_allowed_collections"],
         "data": {
             "tags": [],
             "allowedMimeTypes": ["image/jpeg", "image/png", "image/gif"],
@@ -193,7 +193,7 @@ Example response:
                 },
                 "roles": [
                     "collections.create_new",
-                    "collections.manage_tokens_in_allowed_collections"
+                    "collections.manage_users_in_allowed_collections"
                 ]
             }
         ]
@@ -259,7 +259,7 @@ Example response:
                 "collections.modify_details_of_allowed_collections",
                 "collections.view_all_collections",
                 "collections.can_use_listing_endpoint",
-                "collections.manage_tokens_in_allowed_collections",
+                "collections.manage_users_in_allowed_collections",
                 "collections.upload_to_allowed_collections",
                 "collections.list_versions_for_allowed_collections",
                 "collections.delete_versions_for_allowed_collections",
@@ -330,7 +330,7 @@ Example response:
                 "collections.modify_details_of_allowed_collections",
                 "collections.view_all_collections",
                 "collections.can_use_listing_endpoint",
-                "collections.manage_tokens_in_allowed_collections",
+                "collections.manage_users_in_allowed_collections",
                 "collections.upload_to_allowed_collections",
                 "collections.list_versions_for_allowed_collections",
                 "collections.delete_versions_for_allowed_collections",

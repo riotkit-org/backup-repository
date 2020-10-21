@@ -7,31 +7,19 @@ use App\Domain\Backup\Entity\BackupCollection;
 
 class CollectionAccessRightsResponse implements \JsonSerializable
 {
-    /**
-     * @var string
-     */
-    private $status = '';
+    private string $status = '';
+    private int $exitCode = 0;
+    private array $data = [];
 
-    /**
-     * @var int
-     */
-    private $exitCode = 0;
-
-    /**
-     * @var array
-     */
-    private $data = [];
-
-
-    public static function createFromResults(User $token, BackupCollection $collection): CollectionAccessRightsResponse
+    public static function createFromResults(User $user, BackupCollection $collection): CollectionAccessRightsResponse
     {
         $new = new static();
         $new->status    = 'OK';
         $new->exitCode  = 200;
         $new->data      = [
-            'token'        => $token,
+            'user'         => $user,
             'collection'   => $collection,
-            'tokens_count' => \count($collection->getAllowedTokens())
+            'users_count'  => \count($collection->getAllowedUsers())
         ];
 
         return $new;

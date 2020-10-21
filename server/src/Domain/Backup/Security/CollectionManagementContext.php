@@ -169,6 +169,10 @@ class CollectionManagementContext
 
     public function canAddTokensToCollection(BackupCollection $collection): bool
     {
+        if ($this->isSystemAdmin) {
+            return true;
+        }
+
         if (!$this->canManageTokensInAllowedCollections) {
             return false;
         }
@@ -182,6 +186,10 @@ class CollectionManagementContext
 
     public function canRevokeAccessToCollection(BackupCollection $collection): bool
     {
+        if ($this->isSystemAdmin) {
+            return true;
+        }
+
         if (!$this->canManageTokensInAllowedCollections) {
             return false;
         }

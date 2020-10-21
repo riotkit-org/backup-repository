@@ -111,15 +111,15 @@ class CollectionManager
         return $collection;
     }
 
-    public function revokeToken(User $token, BackupCollection $collection): BackupCollection
+    public function revokeToken(User $user, BackupCollection $collection): BackupCollection
     {
-        $modifiedCollection = $collection->withoutToken($token);
+        $userAccess = $this->userAccessRepository->findForCollectionAndUser($collection, $user);
 
-        $this->repository->persist(
-            $this->repository->merge($modifiedCollection)
-        );
+        if ($userAccess) {
+            $this->userAccessRepository->remove($userAccess);
+        }
 
-        return $modifiedCollection;
+        return $collection;
     }
 
     public function replaceUserRoles(User $user, BackupCollection $collection, CollectionSpecificRoles $roles)

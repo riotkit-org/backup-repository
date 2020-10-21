@@ -45,7 +45,7 @@ class CreateUserController extends BaseController
      *             @SWG\Property(property="email", example="example@riseup.net", type="string"),
      *             @SWG\Property(property="about", example="A member of the collective. Technically website administrator.", type="string"),
      *             @SWG\Property(property="organization", example="Food not bombs", type="string"),
-     *             @SWG\Property(property="roles", example={"collections.create_new", "collections.manage_tokens_in_allowed_collections"}, type="array", @SWG\Items(type="string")),
+     *             @SWG\Property(property="roles", example={"collections.create_new", "collections.manage_users_in_allowed_collections"}, type="array", @SWG\Items(type="string")),
      *             @SWG\Property(property="expires", type="string", example="2021-05-01 01:06:01"),
      *             @SWG\Property(property="data", ref=@Model(type=\App\Domain\Authentication\Entity\Docs\TokenData::class))
      *         )

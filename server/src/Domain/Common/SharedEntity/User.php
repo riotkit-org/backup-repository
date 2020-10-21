@@ -31,6 +31,12 @@ class User
         return $this->id;
     }
 
+    public function setId(string $id)
+    {
+        $this->id = $id;
+        return $this;
+    }
+
     public function getCensoredId(): ?string
     {
         if ($this->getId()) {

@@ -45,7 +45,7 @@ backup.collection_add_token:
 
 
 backup.collection_delete_token:
-    path: /api/stable/repository/collection/{id}/access/{tokenId}
+    path: /api/stable/repository/collection/{id}/access/{uid}
     controller: 'App\Controller\Backup\Security\RevokeUserAccessForCollectionController::handleAction'
     methods: ['DELETE']
     defaults:

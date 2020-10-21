@@ -54,7 +54,7 @@ class GrantUserToCollection
      */
     private function assertHasRights(CollectionManagementContext $securityContext, BackupCollection $collection): void
     {
-        if (!$securityContext->canRevokeAccessToCollection($collection)) {
+        if (!$securityContext->canAddTokensToCollection($collection)) {
             throw AuthenticationException::fromCollectionAccessManagementDenied();
         }
     }

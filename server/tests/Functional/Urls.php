@@ -27,6 +27,6 @@ class Urls
     public const URL_COLLECTION_DOWNLOAD_VERSION = '/api/stable/repository/collection/{{ collectionId }}/version/{{ version }}';
     public const URL_COLLECTION_DELETE_VERSION   = '/api/stable/repository/collection/{{ collectionId }}/version/{{ version }}';
 
-    public const URL_COLLECTION_GRANT_TOKEN  = '/api/stable/repository/collection/{{ collectionId }}/access';
-    public const URL_COLLECTION_REVOKE_TOKEN = '/api/stable/repository/collection/{{ collectionId }}/access/{{ tokenId }}';
+    public const URL_COLLECTION_GRANT_TOKEN  = '/api/stable/repository/collection/{{ collection }}/access';
+    public const URL_COLLECTION_REVOKE_TOKEN = '/api/stable/repository/collection/{{ collection }}/access/{{ user }}';
 }

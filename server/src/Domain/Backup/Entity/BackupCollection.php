@@ -207,34 +207,6 @@ class BackupCollection implements \JsonSerializable
         return $self;
     }
 
-    public function withUserGranted(User $token): BackupCollection
-    {
-        // don't allow to add same token twice
-        foreach ($this->getAllowedTokens() as $existingToken) {
-            if ($existingToken->getId() === $token->getId()) {
-                return $this;
-            }
-        }
-
-        $self = clone $this;
-        $self->allowedTokens[] = $token;
-
-        return $self;
-    }
-
-    public function withoutToken(User $tokenToRevokeAccessToCollection): BackupCollection
-    {
-        $self = clone $this;
-        $self->allowedTokens = array_filter(
-            $this->getAllowedTokens(),
-            function (User $token) use ($tokenToRevokeAccessToCollection) {
-                return !$token->isSameAs($tokenToRevokeAccessToCollection);
-            }
-        );
-
-        return $self;
-    }
-
     public function jsonSerialize()
     {
         return [
@@ -306,7 +278,7 @@ class BackupCollection implements \JsonSerializable
     /**
      * @return User[]
      */
-    public function getAllowedTokens(): array
+    public function getAllowedUsers(): array
     {
         if (\is_object($this->allowedTokens)) {
             return $this->allowedTokens->toArray();

@@ -13,7 +13,7 @@ class BackupCollectionCRUDCest
     {
         $I->haveRoles([
             'collections.create_new',
-            'collections.manage_tokens_in_allowed_collections',
+            'collections.manage_users_in_allowed_collections',
             'collections.delete_allowed_collections',
             'collections.modify_details_of_allowed_collections'
         ], [

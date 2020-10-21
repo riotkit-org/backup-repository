@@ -11,4 +11,6 @@ interface UserAccessRepository
     public function findForCollectionAndUser(BackupCollection $collection, User $user): ?UserAccess;
 
     public function persist(UserAccess $userAccess): void;
+
+    public function remove(UserAccess $userAccess): void;
 }

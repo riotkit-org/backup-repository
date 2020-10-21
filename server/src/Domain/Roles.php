@@ -124,7 +124,7 @@ final class Roles
     public const ROLE_CAN_USE_LISTING_COLLECTION_ENDPOINT = 'collections.can_use_listing_endpoint';
 
     /** Manage tokens in the collections where our current token is already added as allowed */
-    public const ROLE_CAN_MANAGE_TOKENS_IN_ALLOWED_COLLECTIONS = 'collections.manage_tokens_in_allowed_collections';
+    public const ROLE_CAN_MANAGE_USERS_IN_ALLOWED_COLLECTIONS = 'collections.manage_users_in_allowed_collections';
 
     /** Delete collections where token is added as allowed */
     public const ROLE_CAN_DELETE_ALLOWED_COLLECTIONS = 'collections.delete_allowed_collections';
@@ -167,7 +167,7 @@ final class Roles
         self::ROLE_MODIFY_ALLOWED_COLLECTIONS,
         self::ROLE_COLLECTION_VIEW_ANY_COLLECTION,
         self::ROLE_CAN_USE_LISTING_COLLECTION_ENDPOINT,
-        self::ROLE_CAN_MANAGE_TOKENS_IN_ALLOWED_COLLECTIONS,
+        self::ROLE_CAN_MANAGE_USERS_IN_ALLOWED_COLLECTIONS,
         self::ROLE_CAN_UPLOAD_TO_ALLOWED_COLLECTIONS,
         self::ROLE_LIST_VERSIONS_FOR_ALLOWED_COLLECTIONS,
         self::ROLE_DELETE_VERSIONS_IN_ALLOWED_COLLECTIONS
@@ -181,7 +181,7 @@ final class Roles
         self::ROLE_CAN_LIST_TOKENS_IN_COLLECTION,
         self::ROLE_MODIFY_ALLOWED_COLLECTIONS,
         self::ROLE_CAN_USE_LISTING_COLLECTION_ENDPOINT,
-        self::ROLE_CAN_MANAGE_TOKENS_IN_ALLOWED_COLLECTIONS,
+        self::ROLE_CAN_MANAGE_USERS_IN_ALLOWED_COLLECTIONS,
         self::ROLE_CAN_UPLOAD_TO_ALLOWED_COLLECTIONS,
         self::ROLE_LIST_VERSIONS_FOR_ALLOWED_COLLECTIONS,
         self::ROLE_DELETE_VERSIONS_IN_ALLOWED_COLLECTIONS

@@ -28,16 +28,21 @@ class FunctionalTester extends \Codeception\Actor
 
     public function amAdmin(): void
     {
+        $this->amGuest();
         $this->haveHttpHeader('Test-Token', 'test-token-full-permissions');
     }
 
     public function amGuest(): void
     {
         $this->deleteHeader('token');
+        $this->deleteHeader('Test-Token');
+        $this->deleteHeader('authorization');
     }
 
     public function amUser(string $email, string $password): void
     {
+        $this->amGuest();
+
         $this->haveHttpHeader('Content-Type', 'application/json');
         $this->sendPOST(Urls::URL_JWT_AUTH_LOGIN, [
             'username' => $email,
@@ -49,6 +54,8 @@ class FunctionalTester extends \Codeception\Actor
 
     public function iHaveToken(string $token): void
     {
+        $this->amGuest();
+
         $this->haveHttpHeader('token', $token);
         $this->amBearerAuthenticated($token);
     }
@@ -268,9 +275,9 @@ class FunctionalTester extends \Codeception\Actor
         $this->assertEquals($expectedAmount, \count($elements));
     }
 
-    public function grantTokenAccessToCollection(string $collectionId, string $tokenId, array $roles = null): void
+    public function grantUserAccessToCollection(string $collectionId, string $tokenId, array $roles = null): void
     {
-        $payload = ['token' => $tokenId];
+        $payload = ['user' => $tokenId];
 
         if ($roles !== null) {
             $payload['roles'] = $roles;
@@ -279,7 +286,7 @@ class FunctionalTester extends \Codeception\Actor
         $this->postJson(
             $this->fill(
                 Urls::URL_COLLECTION_GRANT_TOKEN,
-                ['collectionId' => $collectionId]
+                ['collection' => $collectionId]
             ),
             $payload
         );
@@ -291,11 +298,77 @@ class FunctionalTester extends \Codeception\Actor
             $this->fill(
                 Urls::URL_COLLECTION_REVOKE_TOKEN,
                 [
-                    'collectionId' => $collectionId,
-                    'tokenId' => $tokenId
+                    'collection' => $collectionId,
+                    'user'       => $tokenId
                 ]
             )
         );
+    }
+
+    public function canSeeResponseOfRevokedAccessIsSuccessful(): void
+    {
+        $this->canSeeResponseCodeIsSuccessful();
+        $this->canSeeResponseContainsJson([
+            "status" => "OK",
+            'data' => [
+                'user'       => [],
+                'collection' => []
+            ]
+        ]);
+    }
+
+    public function canSeeResponseOfGrantedAccessIsSuccessful(): void
+    {
+        // it is the same
+        $this->canSeeResponseOfRevokedAccessIsSuccessful();
+    }
+
+    public function canSeeResponseCannotGrantAccessToCollection(): void
+    {
+        $this->canSeeErrorResponse(
+            'No permissions to grant and/or revoke access for other users in this collection',
+            40308,
+            'request.auth-error'
+        );
+
+        $this->canSeeResponseCodeIsClientError();
+    }
+
+    public function canSeeResponseCannotUploadToCollection(): void
+    {
+        $this->canSeeResponseContainsJson([
+            "error" => "Current access does not grant you a possibility to upload to this backup collection",
+            "code"  => 40308,
+            "type"  => "request.auth-error"
+        ]);
+
+        $this->canSeeResponseCodeIsClientError();
+    }
+
+    public function canSeeResponseOfUploadingToCollectionIsSuccessful(): void
+    {
+        $this->canSeeResponseContainsJson([
+            "status"     => "OK",
+            'version'    => [],
+            'collection' => []
+        ]);
+
+        $this->canSeeResponseCodeIsSuccessful();
+    }
+
+    public function canSeeErrorResponse(string $error, int $code, string $type): void
+    {
+        $this->canSeeResponseContainsJson([
+            "error" => $error,
+            "code"  => $code,
+            "type"  => $type
+        ]);
+    }
+
+    public function amCollectionManager(): void
+    {
+        $this->amAdmin();
+        $this->haveRoles(['collections.create_new', 'collections.manage_users_in_allowed_collections']);
     }
 }
 

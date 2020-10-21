@@ -27,7 +27,7 @@ class ListGrantedUsersForCollectionHandler
         $this->assertHasRights($ctx, $form->collection);
 
         return AllowedTokensResponse::createSuccessfulResponse(
-            $form->collection->getAllowedTokens(),
+            $form->collection->getAllowedUsers(),
             $ctx->cannotSeeFullTokenIds()
         );
     }

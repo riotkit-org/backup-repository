@@ -31,7 +31,7 @@ class SecurityContextFactory
             $roles->hasRole(Roles::ROLE_COLLECTION_MODIFY_ANY_COLLECTION),
             $roles->hasRole(Roles::ROLE_COLLECTION_VIEW_ANY_COLLECTION),
             $roles->hasRole(Roles::ROLE_CAN_USE_LISTING_COLLECTION_ENDPOINT),
-            $roles->hasRole(Roles::ROLE_CAN_MANAGE_TOKENS_IN_ALLOWED_COLLECTIONS),
+            $roles->hasRole(Roles::ROLE_CAN_MANAGE_USERS_IN_ALLOWED_COLLECTIONS),
             $roles->hasRole(Roles::ROLE_CAN_DELETE_ALLOWED_COLLECTIONS),
             $roles->hasRole(Roles::ROLE_CAN_LIST_TOKENS_IN_COLLECTION),
             $roles->hasRole(Roles::ROLE_CANNOT_SEE_FULL_TOKEN_ID),
