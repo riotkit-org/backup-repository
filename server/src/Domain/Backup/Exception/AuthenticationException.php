@@ -7,9 +7,6 @@ use App\Domain\Errors;
 
 class AuthenticationException extends ExceptionFromCommon
 {
-    /**
-     * @return static
-     */
     public static function fromForbiddenTokenListingInCollectionCause()
     {
         return new static(
@@ -18,9 +15,6 @@ class AuthenticationException extends ExceptionFromCommon
         );
     }
 
-    /**
-     * @return static
-     */
     public static function fromCollectionAccessManagementDenied()
     {
         return new static(
@@ -29,9 +23,6 @@ class AuthenticationException extends ExceptionFromCommon
         );
     }
 
-    /**
-     * @return static
-     */
     public static function fromBackupUploadActionDisallowed()
     {
         return new static(
@@ -40,9 +31,6 @@ class AuthenticationException extends ExceptionFromCommon
         );
     }
 
-    /**
-     * @return static
-     */
     public static function fromBackupVersionDeletionDisallowed()
     {
         return new static(
@@ -51,9 +39,6 @@ class AuthenticationException extends ExceptionFromCommon
         );
     }
 
-    /**
-     * @return static
-     */
     public static function fromBackupDownloadDisallowed()
     {
         return new static(
@@ -62,14 +47,19 @@ class AuthenticationException extends ExceptionFromCommon
         );
     }
 
-    /**
-     * @return static
-     */
     public static function fromListingBackupsDenied()
     {
         return new static(
             Errors::ERR_MSG_PERMISSION_NO_BACKUP_LISTING_ALLOWED,
             Errors::ERR_PERMISSION_NO_BACKUP_LISTING_ALLOWED
+        );
+    }
+
+    public static function fromCollectionAccessManagementCannotAssignMoreRoles()
+    {
+        return new static(
+            Errors::ERR_MSG_PERMISSION_CANNOT_ASSIGN_MORE_ROLES_THAN_HAVE,
+            Errors::ERR_PERMISSION_CANNOT_ASSIGN_MORE_ROLES_THAN_HAVE
         );
     }
 }

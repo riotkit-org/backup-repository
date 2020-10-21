@@ -238,6 +238,9 @@ final class Errors
     public const ERR_PERMISSION_NO_ACCESS_TO_SEARCH_USERS     = 40314;
     public const ERR_MSG_PERMISSION_NO_ACCESS_TO_SEARCH_USERS = 'No permission to search for users';
 
+    public const ERR_PERMISSION_CANNOT_ASSIGN_MORE_ROLES_THAN_HAVE     = 40315;
+    public const ERR_MSG_PERMISSION_CANNOT_ASSIGN_MORE_ROLES_THAN_HAVE = 'Cannot give roles to other user that current context user does not have';
+
     //
     // Request errors
     //

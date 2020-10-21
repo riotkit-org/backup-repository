@@ -7,6 +7,7 @@ use App\Domain\Backup\Entity\BackupCollection;
 use App\Domain\Backup\Form\Collection\CreationForm;
 use App\Domain\Backup\Form\Collection\DeleteForm;
 use App\Domain\Backup\Form\Collection\EditForm;
+use App\Domain\Backup\ValueObject\CollectionSpecificRoles;
 
 class CollectionManagementContext
 {
@@ -17,7 +18,7 @@ class CollectionManagementContext
     private bool $canModifyAnyCollection;
     private bool $canUseListingEndpointToFindCollections;
     private bool $canAccessAnyCollection;
-    private bool $canManageTokensInAllowedCollections;
+    private bool $canManageUsersInAllowedCollections;
     private bool $canDeleteAllowedCollections;
     private bool $canSeeTokensInCollection;
     private bool $cannotSeeFullTokenIds;
@@ -48,7 +49,7 @@ class CollectionManagementContext
         $this->canModifyAnyCollection           = $canModifyAnyCollection;
         $this->canAccessAnyCollection           = $canAccessAnyCollection;
         $this->canUseListingEndpointToFindCollections = $canUseListingEndpoint;
-        $this->canManageTokensInAllowedCollections    = $canManageTokensInAllowedCollections;
+        $this->canManageUsersInAllowedCollections    = $canManageTokensInAllowedCollections;
         $this->canDeleteAllowedCollections            = $canDeleteAllowedCollections;
         $this->canSeeTokensInCollection         = $canSeeTokensInCollection;
         $this->cannotSeeFullTokenIds            = $cannotSeeFullTokenIds;
@@ -167,13 +168,31 @@ class CollectionManagementContext
         return $collection->isTokenIdAllowed($this->userId);
     }
 
+    public function canAssignThoseRolesToUsersInCollection(CollectionSpecificRoles $roles): bool
+    {
+        if ($this->isSystemAdmin) {
+            return true;
+        }
+
+        $allowed = $this->user->getRoles();
+
+        foreach ($roles->getAsList() as $role) {
+            if (!in_array($role, $allowed, true)) {
+                dump('ROLE NOT ALLOWED', $role, 'allowed list', $allowed);
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     public function canAddTokensToCollection(BackupCollection $collection): bool
     {
         if ($this->isSystemAdmin) {
             return true;
         }
 
-        if (!$this->canManageTokensInAllowedCollections) {
+        if (!$this->canManageUsersInAllowedCollections) {
             return false;
         }
 
@@ -190,7 +209,7 @@ class CollectionManagementContext
             return true;
         }
 
-        if (!$this->canManageTokensInAllowedCollections) {
+        if (!$this->canManageUsersInAllowedCollections) {
             return false;
         }
 

@@ -61,7 +61,7 @@ class BackupCollectionAccessControlCest
         // verify: We cannot assign a role that we do not have as $secondUser
         $I->amUser($secondUser->email, $secondUser->password); // re-log as second user
         $I->grantUserAccessToCollection($collectionId, $thirdUser->id, ['collections.list_versions_for_allowed_collections']);
-        $I->canSeeResponseCannotGrantAccessToCollection();
+        $I->canSeeResponseCannotGrantTooMuchAccessThanWeHave();
     }
 
     /**

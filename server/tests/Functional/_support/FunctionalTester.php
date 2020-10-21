@@ -342,6 +342,17 @@ class FunctionalTester extends \Codeception\Actor
         $this->canSeeResponseCodeIsClientError();
     }
 
+    public function canSeeResponseCannotGrantTooMuchAccessThanWeHave(): void
+    {
+        $this->canSeeErrorResponse(
+            'Cannot give roles to other user that current context user does not have',
+            40315,
+            'request.auth-error'
+        );
+
+        $this->canSeeResponseCodeIsClientError();
+    }
+
     public function canSeeResponseCannotUploadToCollection(): void
     {
         $this->canSeeResponseContainsJson([
@@ -376,7 +387,13 @@ class FunctionalTester extends \Codeception\Actor
     public function amCollectionManager(): void
     {
         $this->amAdmin();
-        $this->haveRoles(['collections.create_new', 'collections.manage_users_in_allowed_collections']);
+        $this->haveRoles([
+            'upload.all',
+            'collections.create_new',
+            'collections.manage_users_in_allowed_collections',
+            'collections.upload_to_allowed_collections',
+            'collections.list_versions_for_allowed_collections'
+        ]);
     }
 }
 

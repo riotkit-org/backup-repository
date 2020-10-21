@@ -35,8 +35,10 @@ class GrantUserToCollection
             return CollectionAccessRightsResponse::createWithNotFoundError();
         }
 
-        $this->assertHasRights($securityContext, $form->collection);
-        $collection = $this->manager->appendUser($form->user, $form->collection, CollectionSpecificRoles::fromArray($form->roles));
+        $roles = CollectionSpecificRoles::fromArray($form->roles);
+
+        $this->assertHasRights($securityContext, $form->collection, $roles);
+        $collection = $this->manager->appendUser($form->user, $form->collection, $roles);
 
         return CollectionAccessRightsResponse::createFromResults($form->user, $collection);
     }
@@ -48,14 +50,20 @@ class GrantUserToCollection
 
     /**
      * @param CollectionManagementContext $securityContext
-     * @param BackupCollection $collection
+     * @param BackupCollection            $collection
+     * @param CollectionSpecificRoles     $roles
      *
      * @throws AuthenticationException
      */
-    private function assertHasRights(CollectionManagementContext $securityContext, BackupCollection $collection): void
+    private function assertHasRights(CollectionManagementContext $securityContext, BackupCollection $collection,
+                                     CollectionSpecificRoles $roles): void
     {
         if (!$securityContext->canAddTokensToCollection($collection)) {
             throw AuthenticationException::fromCollectionAccessManagementDenied();
+        }
+
+        if (!$securityContext->canAssignThoseRolesToUsersInCollection($roles)) {
+            throw AuthenticationException::fromCollectionAccessManagementCannotAssignMoreRoles();
         }
     }
 }
