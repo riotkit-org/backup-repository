@@ -223,6 +223,14 @@ class FunctionalTester extends \Codeception\Actor
         );
     }
 
+    public function canSeeResponseOfICanBrowseCollectionVersions(): void
+    {
+        $this->seeResponseContainsJson([
+            'status'   => 'OK',
+            'versions' => []
+        ]);
+    }
+
     public function downloadCollectionVersion(string $id, string $version): void
     {
         $this->sendGET(

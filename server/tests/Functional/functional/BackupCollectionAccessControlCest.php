@@ -37,39 +37,69 @@ class BackupCollectionAccessControlCest
         $I->canSeeResponseCannotGrantAccessToCollection();
     }
 
-//    /**
-//     * Verify that user who grants rights to other user cannot grant rights that it does not have on its own
-//     *
-//     * @group Security
-//     *
-//     * @param FunctionalTester $I
-//     */
-//    public function testUserCannotGrantMoreThanHave(FunctionalTester $I): void
-//    {
-//        $I->amAdmin();
-//        $secondUser = $I->createStandardUser(['roles' => ['upload.all']]);
-//        $thirdUser = $I->createStandardUser(['roles' => ['upload.all']]);
-//
-//        $I->amCollectionManager();
-//        $collectionId = $this->createExampleCollection($I);
-//        // this time $secondUser has rights to assign other user to collection
-//        $I->grantUserAccessToCollection($collectionId, $secondUser->id, [
-//            'collections.upload_to_allowed_collections',
-//            'collections.manage_users_in_allowed_collections'
-//        ]);
-//
-//        // verify: We cannot assign a role that we do not have as $secondUser
-//        $I->amUser($secondUser->email, $secondUser->password); // re-log as second user
-//        $I->grantUserAccessToCollection($collectionId, $thirdUser->id, ['collections.list_versions_for_allowed_collections']);
-//        $I->canSeeResponseCannotGrantAccessToCollection();
-//    }
-//
-//    public function testGrantedRolesCanBeModified(FunctionalTester $I): void
-//    {
-//
-//    }
-//
-//    // @todo: Test updating roles
+    /**
+     * Verify that user who grants rights to other user cannot grant rights that it does not have on its own
+     *
+     * @group Security
+     *
+     * @param FunctionalTester $I
+     */
+    public function testUserCannotGrantMoreThanHave(FunctionalTester $I): void
+    {
+        $I->amAdmin();
+        $secondUser = $I->createStandardUser(['roles' => ['upload.all']]);
+        $thirdUser = $I->createStandardUser(['roles' => ['upload.all']]);
+
+        $I->amCollectionManager();
+        $collectionId = $this->createExampleCollection($I);
+        // this time $secondUser has rights to assign other user to collection
+        $I->grantUserAccessToCollection($collectionId, $secondUser->id, [
+            'collections.upload_to_allowed_collections',
+            'collections.manage_users_in_allowed_collections'
+        ]);
+
+        // verify: We cannot assign a role that we do not have as $secondUser
+        $I->amUser($secondUser->email, $secondUser->password); // re-log as second user
+        $I->grantUserAccessToCollection($collectionId, $thirdUser->id, ['collections.list_versions_for_allowed_collections']);
+        $I->canSeeResponseCannotGrantAccessToCollection();
+    }
+
+    /**
+     * Verify that user can have modified roles that were previously granted
+     *
+     * @param FunctionalTester $I
+     */
+    public function testGrantedRolesCanBeModified(FunctionalTester $I): void
+    {
+        $I->amAdmin();
+        $secondUser = $I->createStandardUser(['roles' => ['upload.all']]);
+
+        $I->amCollectionManager();
+        $collectionId = $this->createExampleCollection($I);
+
+        // assign two roles
+        $I->grantUserAccessToCollection($collectionId, $secondUser->id, [
+            'collections.upload_to_allowed_collections',
+            'collections.manage_users_in_allowed_collections'
+        ]);
+        $I->canSeeResponseOfGrantedAccessIsSuccessful();
+
+        // then assign three roles
+        // @todo: IMPLEMENT PUT METHOD!
+        $I->grantUserAccessToCollection($collectionId, $secondUser->id, [
+            'collections.upload_to_allowed_collections',
+            'collections.manage_users_in_allowed_collections',
+            'collections.list_versions_for_allowed_collections'
+        ]);
+        $I->canSeeResponseOfGrantedAccessIsSuccessful();
+
+        //
+        // verify that user can use added role 'collections.list_versions_for_allowed_collections'
+        //
+        $I->amUser($secondUser->email, $secondUser->password);
+        $I->browseCollectionVersions($collectionId);
+        $I->canSeeResponseOfICanBrowseCollectionVersions();
+    }
 
     public function testGrantingAndDenyingATokenToCollection(FunctionalTester $I): void
     {
