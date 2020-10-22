@@ -68,7 +68,10 @@ abstract class ManageCollectionAccessControlController extends BaseController
          */
         $user = $this->getLoggedUser(User::class);
 
-        $response = $this->getHandler($request)->handle($form, $this->authFactory->createCollectionManagementContext($user, $form->collection));
+        $response = $this->getHandler($request)->handle(
+            $form,
+            $this->authFactory->createCollectionManagementContext($user, $form->collection)
+        );
 
         if ($request->query->get('simulate') !== 'true') {
             $this->getHandler($request)->flush();

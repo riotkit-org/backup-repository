@@ -129,7 +129,7 @@ class ListingController extends BaseController
          */
         $user = $this->getLoggedUser(User::class);
 
-        $securityContext = $this->authFactory->createCollectionManagementContext($user);
+        $securityContext = $this->authFactory->createCollectionManagementContext($user, null);
         $response = $this->handler->handle($form, $securityContext);
 
         return new JsonFormattedResponse($response, $response->getHttpCode());

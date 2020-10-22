@@ -4,11 +4,10 @@ namespace App\Controller\Backup\Security;
 
 use App\Controller\BaseController;
 use App\Domain\Backup\ActionHandler\Security\ListGrantedUsersForCollectionHandler;
+use App\Domain\Backup\Entity\Authentication\User;
 use App\Domain\Backup\Factory\SecurityContextFactory;
 use App\Domain\Backup\Form\CollectionTokenListingForm;
-use App\Infrastructure\Backup\Form\Collection\CollectionTokenListingFormType;
 use App\Infrastructure\Common\Http\JsonFormattedResponse;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Swagger\Annotations as SWG;
@@ -75,11 +74,19 @@ class ListGrantedUsersForCollectionController extends BaseController
      */
     public function listTokensAction(string $id): Response
     {
+        /**
+         * @var CollectionTokenListingForm $form
+         */
         $form = $this->decodeRequestIntoDTO(['collection' => $id], CollectionTokenListingForm::class);
+
+        /**
+         * @var User $user
+         */
+        $user = $this->getLoggedUser(User::class);
 
         $response = $this->handler->handle(
             $form,
-            $this->authFactory->createCollectionManagementContext($this->getLoggedUser())
+            $this->authFactory->createCollectionManagementContext($user, $form->collection)
         );
 
         return new JsonFormattedResponse($response, $response->getHttpCode());

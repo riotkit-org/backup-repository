@@ -97,7 +97,7 @@ class DeleteController extends BaseController
          */
         $user = $this->getLoggedUser(User::class);
 
-        $securityContext = $this->authFactory->createCollectionManagementContext($user);
+        $securityContext = $this->authFactory->createCollectionManagementContext($user, $form->collection);
         $response = $this->handler->handle($form, $securityContext);
 
         if (trim(strtolower((string) $request->query->get('simulate'))) !== 'true') {
