@@ -3,8 +3,6 @@
 namespace App\Domain\Common\ValueObject;
 
 use App\Domain\Common\Exception\CommonValueException;
-use App\Domain\Common\Exception\DomainInputValidationConstraintViolatedError;
-use App\Domain\Errors;
 use App\Domain\Roles as RolesConst;
 
 class Roles implements \JsonSerializable
@@ -36,6 +34,7 @@ class Roles implements \JsonSerializable
 
         $new = new static();
         $new->value = $roles;
+        $new->prepareAdministrationRole();
 
         return $new;
     }
@@ -62,22 +61,19 @@ class Roles implements \JsonSerializable
     {
         $new = clone $this;
         $new->value = array_unique(array_merge($this->value, $roles->value));
+        $new->prepareAdministrationRole();
 
         return $new;
     }
 
     public function getAsList(): array
     {
-        if (!$this->alreadyGrantedAdminAccess && in_array(RolesConst::ROLE_ADMINISTRATOR, $this->value, true)) {
-            $this->value = array_merge($this->value, RolesConst::GRANTS_LIST);
-            $this->alreadyGrantedAdminAccess = true;
-        }
-
         return $this->value;
     }
 
     public function hasRole(string $roleName): bool
     {
+        $this->prepareAdministrationRole();
         $this->recordRoleRequest($roleName);
 
         return \in_array($roleName, $this->value, true);
@@ -105,5 +101,13 @@ class Roles implements \JsonSerializable
         }
 
         $this->requestedRoles[] = $roleName;
+    }
+
+    private function prepareAdministrationRole(): void
+    {
+        if (!$this->alreadyGrantedAdminAccess && in_array(RolesConst::ROLE_ADMINISTRATOR, $this->value, true)) {
+            $this->value = array_merge($this->value, RolesConst::GRANTS_LIST);
+            $this->alreadyGrantedAdminAccess = true;
+        }
     }
 }
