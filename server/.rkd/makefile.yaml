@@ -19,6 +19,7 @@ tasks:
             sleep 10
             composer install
             ./bin/console doctrine:migrations:migrate -n
+            symfony serve -d
 
     :create:keys:
         description: Create JWT encryption keys
