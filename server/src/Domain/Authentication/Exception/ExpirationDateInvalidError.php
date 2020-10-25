@@ -13,7 +13,7 @@ class ExpirationDateInvalidError extends DomainInputValidationConstraintViolated
     public static function fromInvalidFormatCause()
     {
         return static::fromString(
-            'expiration_date',
+            'expirationDate',
             Errors::ERR_MSG_EXPIRATION_DATE_INVALID_FORMAT,
             Errors::ERR_EXPIRATION_DATE_INVALID_FORMAT
         );

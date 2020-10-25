@@ -17,9 +17,6 @@ final class Errors
     public const ERR_TEXT_FIELD_TOO_LONG       = 40003;
     public const ERR_MSG_TEXT_FIELD_TOO_LONG   = 'Maximum allowed characters exceeded';
 
-    public const ERR_NON_UTF_CHARACTERS        = 40004;
-    public const ERR_MSG_NON_UTF_CHARACTERS    = 'Field should contain only UTF-8 encoded characters';
-
     public const ERR_USER_MAIL_FORMAT_INVALID     = 40005;
     public const ERR_MSG_USER_MAIL_FORMAT_INVALID = 'Invalid e-mail format';
 
@@ -281,4 +278,5 @@ final class Errors
     public const TYPE_REQUEST_FORMAT_ERROR = 'request.format-error';
     public const TYPE_AUTH_ERROR           = 'request.auth-error';
     public const TYPE_APP_FATAL_ERROR      = 'app.fatal-error';
+    public const TYPE_NOT_FOUND            = 'app.not-found';
 }

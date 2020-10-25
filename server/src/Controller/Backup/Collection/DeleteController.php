@@ -10,8 +10,7 @@ use App\Domain\Backup\Form\Collection\DeleteForm;
 use App\Infrastructure\Common\Http\JsonFormattedResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Nelmio\ApiDocBundle\Annotation\Model;
-use Swagger\Annotations as SWG;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class DeleteController extends BaseController
 {
@@ -28,55 +27,6 @@ class DeleteController extends BaseController
 
     /**
      * Delete a collection
-     *
-     * @SWG\Parameter(
-     *     type="string",
-     *     in="path",
-     *     name="id",
-     *     description="Collection id"
-     * )
-     *
-     * @SWG\Response(
-     *     response="200",
-     *     description="Collection was deleted",
-     *     @SWG\Schema(
-     *         type="object",
-     *         @SWG\Property(
-     *             property="status",
-     *             type="boolean",
-     *             example="true"
-     *         ),
-     *         @SWG\Property(
-     *             property="http_code",
-     *             type="integer",
-     *             example="200"
-     *         ),
-     *         @SWG\Property(
-     *             property="error_code",
-     *             type="integer",
-     *             example="50091"
-     *         ),
-     *         @SWG\Property(
-     *             property="errors",
-     *             type="array",
-     *             @SWG\Items(type="string")
-     *         ),
-     *         @SWG\Property(
-     *             property="message",
-     *             type="string",
-     *             example="OK, collection deleted"
-     *         ),
-     *         @SWG\Property(
-     *             property="collection",
-     *             ref=@Model(type=\App\Domain\Backup\Entity\Docs\Collection::class)
-     *         ),
-     *          @SWG\Property(
-     *             property="context",
-     *             type="array",
-     *             @SWG\Items(type="string")
-     *         )
-     *     )
-     * )
      *
      * @param Request $request
      * @param string  $id
@@ -99,6 +49,10 @@ class DeleteController extends BaseController
 
         $securityContext = $this->authFactory->createCollectionManagementContext($user, $form->collection);
         $response = $this->handler->handle($form, $securityContext);
+
+        if (!$response) {
+            throw new NotFoundHttpException();
+        }
 
         if (trim(strtolower((string) $request->query->get('simulate'))) !== 'true') {
             $this->handler->flush();

@@ -77,7 +77,7 @@ class ErrorFormattingSubscriber implements EventSubscriberInterface
         if (!$this->isDevEnvironment) {
             if ($exc instanceof NotFoundHttpException) {
                 $event->setResponse(
-                    new JsonFormattedResponse(HttpError::fromInternalServerError()->jsonSerialize(), 404)
+                    new JsonFormattedResponse(HttpError::fromNotFoundError()->jsonSerialize(), 404)
                 );
 
                 return;

@@ -37,7 +37,7 @@ class ListingResponse implements \JsonSerializable
     public static function createFromResults(array $elements, int $maxPages, int $currentPage, int $perPage): ListingResponse
     {
         $new = new static();
-        $new->status    = 'OK';
+        $new->status    = true;
         $new->exitCode  = 200;
         $new->elements  = $elements;
         $new->maxPages  = $maxPages;
@@ -51,7 +51,6 @@ class ListingResponse implements \JsonSerializable
     {
         return [
             'status'     => $this->status,
-            'http_code'  => (int) $this->exitCode,
             'elements'   => $this->elements,
             'pagination' => [
                 'current' => $this->currentPage,

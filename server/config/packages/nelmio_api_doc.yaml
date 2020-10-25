@@ -2,8 +2,8 @@ nelmio_api_doc:
     models: { use_jms: false }
     documentation:
         info:
-            title: File Repository
-            description: Scalable Storage API, maintained by RiotKit grassroot organization
+            title: Backup Repository
+            description: Specialized ninja for backup storage. Designed to have very low resource requirements.
             version: '%APP_VERSION%'
 
         securityDefinitions:

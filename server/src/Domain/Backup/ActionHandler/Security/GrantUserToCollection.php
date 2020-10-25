@@ -24,15 +24,14 @@ class GrantUserToCollection
      * @param UserAccessAttachForm $form
      * @param CollectionManagementContext $securityContext
      *
-     * @return CollectionAccessRightsResponse
+     * @return ?CollectionAccessRightsResponse
      *
      * @throws AuthenticationException
-     * @throws DomainInputValidationConstraintViolatedError
      */
-    public function handle(UserAccessAttachForm $form, CollectionManagementContext $securityContext): CollectionAccessRightsResponse
+    public function handle(UserAccessAttachForm $form, CollectionManagementContext $securityContext): ?CollectionAccessRightsResponse
     {
         if (!$form->collection || !$form->user) {
-            return CollectionAccessRightsResponse::createWithNotFoundError();
+            return null;
         }
 
         $roles = CollectionSpecificRoles::fromArray($form->roles);

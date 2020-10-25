@@ -22,14 +22,14 @@ class DisallowTokenHandler
      * @param UserAccessRevokeForm             $form
      * @param CollectionManagementContext $securityContext
      *
-     * @return CollectionAccessRightsResponse
-     *@throws AuthenticationException
+     * @return ?CollectionAccessRightsResponse
      *
+     * @throws AuthenticationException
      */
-    public function handle(UserAccessRevokeForm $form, CollectionManagementContext $securityContext): CollectionAccessRightsResponse
+    public function handle(UserAccessRevokeForm $form, CollectionManagementContext $securityContext): ?CollectionAccessRightsResponse
     {
         if (!$form->collection || !$form->user) {
-            return CollectionAccessRightsResponse::createWithNotFoundError();
+            return null;
         }
 
         $this->assertHasRights($securityContext, $form->collection);

@@ -21,15 +21,15 @@ class DeleteHandler
      * @param DeleteForm                  $form
      * @param CollectionManagementContext $securityContext
      *
-     * @return CrudResponse
+     * @return ?CrudResponse
      *
      * @throws \Exception
      * @throws AuthenticationException
      */
-    public function handle(DeleteForm $form, CollectionManagementContext $securityContext): CrudResponse
+    public function handle(DeleteForm $form, CollectionManagementContext $securityContext): ?CrudResponse
     {
         if (!$form->collection) {
-            return CrudResponse::createWithNotFoundError();
+            return null;
         }
 
         $this->assertHasRights($securityContext, $form);

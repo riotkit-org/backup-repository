@@ -11,30 +11,30 @@ class AllowedTokensResponse implements \JsonSerializable
     private int    $exitCode;
     private ?int   $errorCode;
     private ?array $errors;
-    private array  $tokens;
+    private array  $users;
 
     /**
-     * @param User[] $tokens
+     * @param User[] $users
      * @param bool    $maskIds
      * @param int     $status
      *
      * @return AllowedTokensResponse
      */
-    public static function createSuccessfulResponse(array $tokens, bool $maskIds, int $status = 201): AllowedTokensResponse
+    public static function createSuccessfulResponse(array $users, bool $maskIds, int $status = 201): AllowedTokensResponse
     {
         $new = new static();
         $new->status     = 'OK';
         $new->errorCode  = null;
         $new->exitCode   = $status;
         $new->errors     = [];
-        $new->tokens     = $tokens;
+        $new->users      = $users;
 
         if ($maskIds) {
-            $new->tokens = array_map(
+            $new->users = array_map(
                 function (User $token) {
                     return $token->jsonSerialize(true);
                 },
-                $new->tokens
+                $new->users
             );
         }
 
@@ -53,11 +53,8 @@ class AllowedTokensResponse implements \JsonSerializable
     public function jsonSerialize()
     {
         return [
-            'status'     => $this->status,
-            'error_code' => (int) $this->errorCode,
-            'http_code'  => (int) $this->exitCode,
-            'errors'     => $this->errors,
-            'tokens'     => $this->tokens
+            'status' => $this->status,
+            'users'  => $this->users
         ];
     }
 

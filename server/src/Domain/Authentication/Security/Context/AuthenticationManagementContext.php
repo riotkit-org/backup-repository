@@ -72,14 +72,14 @@ class AuthenticationManagementContext
         return $this->canUseTechnicalEndpoints;
     }
 
-    public function canRevokeAccess(User $token): bool
+    public function canRevokeAccess(User $user): bool
     {
         if ($this->isAdministrator) {
             return true;
         }
 
         // a non-administrator cannot revoke access for the administrator
-        if (!$this->isAdministrator && $token->hasRole(Roles::ROLE_ADMINISTRATOR)) {
+        if (!$this->isAdministrator && $user->hasRole(Roles::ROLE_ADMINISTRATOR)) {
             return false;
         }
 

@@ -16,12 +16,12 @@ class ListGrantedUsersForCollectionHandler
      *
      * @throws AuthenticationException
      *
-     * @return AllowedTokensResponse
+     * @return ?AllowedTokensResponse
      */
-    public function handle(CollectionTokenListingForm $form, CollectionManagementContext $ctx): AllowedTokensResponse
+    public function handle(CollectionTokenListingForm $form, CollectionManagementContext $ctx): ?AllowedTokensResponse
     {
         if (!$form->collection) {
-            return AllowedTokensResponse::createWithNotFoundError();
+            return null;
         }
 
         $this->assertHasRights($ctx, $form->collection);

@@ -15,8 +15,7 @@ abstract class NormalResponse implements Response
     {
         return [
             'message'   => $this->message,
-            'status'    => $this->status,
-            'http_code' => $this->httpCode
+            'status'    => $this->status
         ];
     }
 

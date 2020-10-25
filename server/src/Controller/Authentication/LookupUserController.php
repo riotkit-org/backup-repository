@@ -10,6 +10,7 @@ use Exception;
 use Symfony\Component\HttpFoundation\Response;
 use Nelmio\ApiDocBundle\Annotation\Model;
 use Swagger\Annotations as SWG;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class LookupUserController extends BaseController
 {
@@ -79,19 +80,15 @@ class LookupUserController extends BaseController
      */
     public function handle(string $userId): Response
     {
-        return $this->wrap(
-            function () use ($userId) {
-                $response = $this->handler->handle(
-                    $userId,
-                    $this->authFactory->createFromUserAccount($this->getLoggedUser())
-                );
-
-                if ($response === null) {
-                    return $this->createNotFoundResponse();
-                }
-
-                return new JsonFormattedResponse($response, JsonFormattedResponse::HTTP_OK);
-            }
+        $response = $this->handler->handle(
+            $userId,
+            $this->authFactory->createFromUserAccount($this->getLoggedUser())
         );
+
+        if ($response === null) {
+            throw new NotFoundHttpException();
+        }
+
+        return new JsonFormattedResponse($response, JsonFormattedResponse::HTTP_OK);
     }
 }

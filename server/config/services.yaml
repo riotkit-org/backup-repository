@@ -173,6 +173,12 @@ services:
                   key: "%env(FS_AWSS3V3_KEY)%"
                   secret: "%env(FS_AWSS3V3_SECRET)%"
 
+    # SwaggerDocsProvider
+    App\Infrastructure\Technical\Service\SwaggerDocsProvider:
+        autowire: true
+        arguments:
+            $swaggerYamlPath: '%kernel.project_dir%/config/swagger.yaml.j2'
+
     #
     # Configurations (from environment variables)
     #

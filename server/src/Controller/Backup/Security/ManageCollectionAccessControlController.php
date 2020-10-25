@@ -13,6 +13,7 @@ use App\Infrastructure\Common\Http\JsonFormattedResponse;
 use Exception;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * Attach/detach a token of given Id to the collection
@@ -72,6 +73,10 @@ abstract class ManageCollectionAccessControlController extends BaseController
             $form,
             $this->authFactory->createCollectionManagementContext($user, $form->collection)
         );
+
+        if (!$response) {
+            throw new NotFoundHttpException();
+        }
 
         if ($request->query->get('simulate') !== 'true') {
             $this->getHandler($request)->flush();

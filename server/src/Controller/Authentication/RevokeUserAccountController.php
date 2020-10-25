@@ -79,18 +79,14 @@ class RevokeUserAccountController extends BaseController
      */
     public function handle(string $userId): Response
     {
-        return $this->wrap(
-            function () use ($userId) {
-                $response = $this->handler->handle(
-                    $userId,
-                    $this->authFactory->createFromUserAccount($this->getLoggedUser())
-                );
+        $response = $this->handler->handle(
+            $userId,
+            $this->authFactory->createFromUserAccount($this->getLoggedUser())
+        );
 
-                return new JsonFormattedResponse(
-                    $response,
-                    $response->getHttpCode()
-                );
-            }
+        return new JsonFormattedResponse(
+            $response,
+            $response->getHttpCode()
         );
     }
 }

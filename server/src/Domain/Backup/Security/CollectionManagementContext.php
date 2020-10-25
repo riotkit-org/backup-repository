@@ -178,7 +178,6 @@ class CollectionManagementContext
 
         foreach ($roles->getAsList() as $role) {
             if (!in_array($role, $allowed, true)) {
-                dump('ROLE NOT ALLOWED', $role, 'allowed list', $allowed);
                 return false;
             }
         }

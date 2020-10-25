@@ -39,4 +39,15 @@ class HttpError extends ApplicationException
             Errors::ERR_REQUEST_ACCESS_DENIED
         );
     }
+
+    public function jsonSerialize(): array
+    {
+        $data = parent::jsonSerialize();
+
+        if ($this->getCode() === Errors::ERR_REQUEST_NOT_FOUND) {
+            $data['type'] = Errors::TYPE_NOT_FOUND;
+        }
+
+        return $data;
+    }
 }
