@@ -17,11 +17,6 @@ class FetchVersionForm
     public $versionId;
 
     /**
-     * @var bool
-     */
-    public $redirect;
-
-    /**
      * @var string
      */
     public $password;

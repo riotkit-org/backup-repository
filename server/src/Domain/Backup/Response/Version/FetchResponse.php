@@ -35,32 +35,10 @@ class FetchResponse implements \JsonSerializable
         return $new;
     }
 
-    public static function createWithError(string $message, int $errorCode): FetchResponse
-    {
-        $new = new static();
-        $new->status    = $message;
-        $new->errorCode = 400;
-        $new->exitCode  = $errorCode;
-
-        return $new;
-    }
-
-    public static function createWithNotFoundError(): FetchResponse
-    {
-        $new = new static();
-        $new->status    = 'Object not found';
-        $new->errorCode = 404;
-        $new->exitCode  = 404;
-
-        return $new;
-    }
-
     public function jsonSerialize()
     {
         return [
-            'status'     => $this->status,
-            'error_code' => $this->errorCode,
-            'exit_code'  => $this->exitCode,
+            'status'     => $this->status
         ];
     }
 

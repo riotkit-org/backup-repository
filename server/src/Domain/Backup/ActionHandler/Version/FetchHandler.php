@@ -28,15 +28,15 @@ class FetchHandler
      * @param FetchVersionForm $form
      * @param VersioningContext $securityContext
      *
-     * @return FetchResponse
+     * @return ?FetchResponse
      *
      * @throws AuthenticationException
      * @throws BusException
      */
-    public function handle(FetchVersionForm $form, VersioningContext $securityContext): FetchResponse
+    public function handle(FetchVersionForm $form, VersioningContext $securityContext): ?FetchResponse
     {
         if (!$form->collection) {
-            return FetchResponse::createWithNotFoundError();
+            return null;
         }
 
         $this->assertHasRights($securityContext, $form->collection);
@@ -47,7 +47,7 @@ class FetchHandler
                 ->find($form->versionId);
 
         if (!$version) {
-            return FetchResponse::createWithNotFoundError();
+            return null;
         }
 
         $response = $this->domain->call(Bus::STORAGE_VIEW_FILE, [
@@ -80,7 +80,7 @@ class FetchHandler
             );
         }
 
-        return FetchResponse::createWithError($response['status'], $response['code']);
+        throw new \LogicException('Unknown error occurred. Expected that at least exception would be raised by Storage domain');
     }
 
     /**

@@ -57,6 +57,6 @@ class VersionDeleteController extends BaseController
             strtolower((string) $request->get('simulate')) !== 'true'
         );
 
-        return new JsonFormattedResponse($response, $response->getExitCode());
+        return new JsonFormattedResponse($response, $response->getHttpCode());
     }
 }

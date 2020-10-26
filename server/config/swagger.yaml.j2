@@ -116,6 +116,91 @@ schema:
             example: Route or resource not found
 {% endmacro %}
 
+{% macro collection_validation_responses() %}
+"400 - Maximum count of X files reached":
+    description: "Maximum count of X files reached"
+    {{ _self.response_validation_error('maxBackupsCount', 'Maximum count of X files reached', 40102) | indent_by('        ') | raw }}
+"400 - Maximum file size of Y reached":
+    description: "Maximum file size of Y reached"
+    {{ _self.response_validation_error('maxOneVersionSize', 'Maximum file size of Y reached', 40103) | indent_by('        ') | raw }}
+"400 - Maximum collection size cannot exceed Z":
+    description: "Maximum collection size cannot exceed Z"
+    {{ _self.response_validation_error('maxCollectionSize', 'Maximum collection size cannot exceed Z', 40104) | indent_by('        ') | raw }}
+"400 - Collection size cannot be smaller than single version size":
+    description: "Collection size cannot be smaller than single version size"
+    {{ _self.response_validation_error('maxCollectionSize', 'Collection size cannot be smaller than single version size', 40105) | indent_by('        ') | raw }}
+"400 - Collection maximum size is too small, requires at least X mb":
+    description: "Collection maximum size is too small, requires at least X mb"
+    {{ _self.response_validation_error('maxCollectionSize', 'Collection maximum size is too small, requires at least X mb', 40106) | indent_by('        ') | raw }}
+"400 - Invalid collection strategy picked 'X'. Choices: delete_oldest_when_adding_new, alert_when_backup_limit_reached":
+    description: "Invalid collection strategy picked 'X'. Choices: delete_oldest_when_adding_new, alert_when_backup_limit_reached"
+    {{ _self.response_validation_error('strategy', 'Invalid collection strategy picked "X". Choices: delete_oldest_when_adding_new, alert_when_backup_limit_reached', 42021) | indent_by('        ') | raw }}
+"400 - Disk space format parsing error - maxOneVersionSize":
+    description: "Disk space format parsing error"
+    {{ _self.response_validation_error('maxOneVersionSize', 'Disk space format parsing error', 42010) | indent_by('        ') | raw }}
+"400 - Disk space format parsing error - maxCollectionSize":
+    description: "Disk space format parsing error"
+    {{ _self.response_validation_error('maxCollectionSize', 'Disk space format parsing error', 42010) | indent_by('        ') | raw }}
+"400 - Filename cannot be empty":
+    description: "Filename cannot be empty"
+    {{ _self.response_validation_error('filename', 'Filename cannot be empty', 42011) | indent_by('        ') | raw }}
+"400 - Filename is not valid, please normalize it":
+    description: "Disk space format parsing error"
+    {{ _self.response_validation_error('filename', 'Filename is not valid, please normalize it', 42012) | indent_by('        ') | raw }}
+"400 - Number cannot be negative, got X - maxOneVersionSize":
+    description: "Number cannot be negative, got X"
+    {{ _self.response_validation_error('maxOneVersionSize', 'Number cannot be negative, got X', 42016) | indent_by('        ') | raw }}
+"400 - Number cannot be negative, got X - maxCollectionSize":
+    description: "Number cannot be negative, got X"
+    {{ _self.response_validation_error('maxCollectionSize', 'Number cannot be negative, got X', 42016) | indent_by('        ') | raw }}
+{% endmacro %}
+
+# -----------------
+#  Request bodies
+# -----------------
+
+{% macro payload_collection(is_editing) %}
+schema:
+  required:
+      - maxBackupsCount
+      - maxOneVersionSize
+      - maxCollectionSize
+      - strategy
+      - filename
+      - password
+      - description
+  properties:
+
+{%  if not is_editing %}
+      id:
+          type: string
+          example: f9eff6b7-3138-43ca-b4b1-b3f1d61df17b
+{% endif  %}
+
+      maxBackupsCount:
+          type: integer
+          example: 5
+      maxOneVersionSize:
+          type: string
+          example: "100MB"
+      maxCollectionSize:
+          type: string
+          example: "510MB"
+      strategy:
+          type: string
+          example: delete_oldest_when_adding_new
+          description: "Choices: delete_oldest_when_adding_new, alert_when_backup_limit_reached"
+      password:
+          type: string
+          example: ""
+      description:
+          type: string
+          example: "International Workers Association: Database backup of a website"
+      filename:
+          type: string
+          example: "iwa-ait-www-sql.tar.gz"
+{% endmacro %}
+
 # ---------
 #  Routes
 # ---------
@@ -478,11 +563,16 @@ paths:
         post:
             summary: Create (POST), edit (PUT) a versioned file-collection that will keep historic versions of file, and rotate them.
             tags: ['Backup collection management']
+            <<: *json_input_output
             parameters:
                 - name: simulate
                   in: query
                   description: Set to true to only simulate request, without commiting the changes. Optional parameter.
                   type: boolean
+                - name: body
+                  in: body
+                  description: JSON payload
+                  {{ _self.payload_collection(false) | indent_by('                  ') | raw }}
             responses:
                 {{ _self.standard_responses() | indent_by('                ') | raw }}
                 "403 - Current permissions does not allow to create this object":
@@ -491,6 +581,14 @@ paths:
                 "403 - No permissions to assign predictable id":
                     description: "No permissions to assign predictable id"
                     {{ _self.response_validation_error('user', 'No permissions to assign predictable id', 40305) | indent_by('                    ') | raw }}
+                "400 - Collection ID is reserved already by other Collection":
+                    description: "Collection ID is reserved already by other Collection"
+                    {{ _self.response_validation_error('id', 'Collection ID is reserved already by other Collection', 40100) | indent_by('                    ') | raw }}
+                "400 - Collection ID is not a valid uuidv4 formatted string":
+                    description: "Collection ID is not a valid uuidv4 formatted string"
+                    {{ _self.response_validation_error('id', 'Collection ID is not a valid uuidv4 formatted string', 40101) | indent_by('                    ') | raw }}
+                {{ _self.collection_validation_responses() | indent_by('                ') | raw }}
+
                 '201':
                     description: Collection was successfuly created
                     schema:
@@ -503,19 +601,20 @@ paths:
                                 type: string
                             collection:
                                 "$ref": "#/definitions/BackupCollection"
-                            context:
-                                items:
-                                    type: string
-                                type: array
                         type: object
         put:
             summary: Create (POST), edit (PUT) a versioned file-collection that will keep historic versions of file, and rotate them
             tags: ['Backup collection management']
+            <<: *json_input_output
             parameters:
                 - name: simulate
                   in: query
                   description: Set to true to only simulate request, without commiting the changes. Optional parameter.
                   type: boolean
+                - name: body
+                  in: body
+                  description: JSON payload
+                  {{ _self.payload_collection(true) | indent_by('                  ') | raw }}
             responses:
                 {{ _self.standard_responses() | indent_by('                ') | raw }}
                 "403 - No permissions to modify this object":
@@ -524,6 +623,12 @@ paths:
                 '404':
                     description: Not found
                     {{ _self.response_not_found() | indent_by('                ') | raw }}
+                "400 - Current collection size X is bigger than new limit":
+                    description: "Current collection size X is bigger than new limit"
+                    {{ _self.response_validation_error('maxCollectionSize', 'Current collection size X is bigger than new limit', 40101) | indent_by('                    ') | raw }}
+
+                {{ _self.collection_validation_responses() | indent_by('                ') | raw }}
+
                 '200':
                     description: Collection was modified
                     schema:
@@ -596,6 +701,9 @@ paths:
                 '404':
                     description: Not found
                     {{ _self.response_not_found() | indent_by('                ') | raw }}
+
+                # Collection should be empty before it will be deleted
+
                 '200':
                     description: Collection was deleted
                     schema:
@@ -708,10 +816,9 @@ paths:
 
     "/api/stable/repository/collection/{id}/access/{uid}":
         delete:
-            summary: Revoke a token from access to collection
+            summary: Revoke a user access to a given collection
             tags: ['Backup collection access control']
-            description: Request revoke access to the token for given collection
-            <<: *json_input_output
+            description: Revoke a user access to a given collection
             parameters:
                 - name: simulate
                   in: query
@@ -773,21 +880,22 @@ paths:
                   required: true
                   description: Id of a backup, or a version name eg. v1, v2, latest
                   type: string
-                - name: redirect
-                  in: query
-                  description: Should immediately redirect to the backup download URL that points
-                      at storage?
-                  type: boolean
                 - name: password
                   in: query
-                  description: If the file is password protected, then a password needs to be
-                      entered there
+                  description: If the file is password protected, then a password needs to be entered there
                   type: string
                 - name: naming
                   in: path
                   required: true
                   type: string
             responses:
+                {{ _self.standard_responses() | indent_by('                ') | raw }}
+                "403 - Current access does not allow you to download any backup from this collection":
+                    description: "Current access does not allow you to download any backup from this collection"
+                    {{ _self.response_validation_error('user', 'Current access does not allow you to download any backup from this collection', 40310) | indent_by('                    ') | raw }}
+                '404':
+                    description: Not found
+                    {{ _self.response_not_found() | indent_by('                ') | raw }}
                 '200':
                     description: Returns JSON with url to the file download
                     schema:
@@ -795,18 +903,10 @@ paths:
                             status:
                                 example: true
                                 type: boolean
-                            http_code:
-                                example: '200'
-                                type: integer
-                            exit_code:
-                                example: '0'
-                                type: integer
                             url:
                                 example: https://api.storage.iwa-ait.org/repository/file/class-struggle.pdf
                                 type: string
                         type: object
-                '302':
-                    description: Returns a HTTP redirection to storage if ?redirect=true
         delete:
             summary: Delete a version
             tags: ['Backup']
@@ -824,9 +924,61 @@ paths:
                   required: true
                   type: string
             responses:
+                {{ _self.standard_responses() | indent_by('                ') | raw }}
+                "403 - Current access does not allow you to delete existing backups":
+                    description: "Current access does not allow you to delete existing backups"
+                    {{ _self.response_validation_error('user', 'Current access does not allow you to delete existing backups', 40309) | indent_by('                    ') | raw }}
+                '404':
+                    description: Not found
+                    {{ _self.response_not_found() | indent_by('                ') | raw }}
+                '200':
+                    description: Returns JSON with url to the file download
+                    schema:
+                        properties:
+                            status:
+                                example: true
+                                type: boolean
+                            message:
+                                example: "OK, version deleted"
+                                type: string
+                        type: object
+
+    "/api/stable/repository/collection/{collectionId}/{naming}":
+        post:
+            summary: Send a new version to the collection
+            tags: ['Backup']
+            <<: *json_input_output
+            parameters:
+                - name: collectionId
+                  in: path
+                  required: true
+                  type: string
+                - name: naming
+                  in: path
+                  required: true
+                  type: string
+            responses:
+                default:
+                    description: ''
+        get:
+            summary: List versions in a collection
+            tags: ['Backup']
+            parameters:
+                - name: collectionId
+                  in: path
+                  required: true
+                  type: string
+                - name: naming
+                  in: path
+                  required: true
+                  type: string
+            responses:
                 default:
                     description: ''
 
+    # ========================================
+    #  Endpoints: Administration & Technical
+    # ========================================
 
     "/api/stable/repository":
         get:
@@ -851,8 +1003,7 @@ paths:
                   type: array
             responses:
                 '200':
-                    description: Returns a list of files in the storage, matching given search
-                        criteria
+                    description: Returns a list of files in the storage, matching given search criteria
                     schema:
                         properties:
                             results:
@@ -894,42 +1045,6 @@ paths:
             responses:
                 '200':
                     description: Returns file contents
-
-    "/api/stable/repository/collection/{collectionId}/{naming}":
-        post:
-            summary: Send a new version to the collection
-            tags: ['Backup']
-            parameters:
-                - name: collectionId
-                  in: path
-                  required: true
-                  type: string
-                - name: naming
-                  in: path
-                  required: true
-                  type: string
-            responses:
-                default:
-                    description: ''
-        get:
-            summary: List versions in a collection
-            tags: ['Backup']
-            parameters:
-                - name: collectionId
-                  in: path
-                  required: true
-                  type: string
-                - name: naming
-                  in: path
-                  required: true
-                  type: string
-            responses:
-                default:
-                    description: ''
-
-    # =======================
-    #  Endpoints: Technical
-    # =======================
 
     "/api/stable/version":
         get:

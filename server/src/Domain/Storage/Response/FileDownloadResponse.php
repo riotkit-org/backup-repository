@@ -70,8 +70,8 @@ class FileDownloadResponse extends NormalResponse
     public function jsonSerialize(): array
     {
         return [
-            'status' => $this->status,
-            'code'   => $this->httpCode
+            'status'  => $this->status,
+            'message' => $this->message
         ];
     }
 

@@ -2,6 +2,7 @@
 
 namespace App\Domain\Storage\ActionHandler;
 
+use App\Domain\Common\Exception\CommonStorageException;
 use App\Domain\Common\Http;
 use App\Domain\Storage\Aggregate\BytesRangeAggregate;
 use App\Domain\Storage\Aggregate\FileRetrievedFromStorage;
@@ -39,12 +40,14 @@ class ViewFileHandler
     }
 
     /**
-     * @param ViewFileForm        $form
+     * @param ViewFileForm $form
      * @param ReadSecurityContext $securityContext
      *
      * @return FileDownloadResponse
      *
      * @throws AuthenticationException
+     * @throws StorageException
+     * @throws CommonStorageException
      */
     public function handle(ViewFileForm $form, ReadSecurityContext $securityContext): FileDownloadResponse
     {
@@ -56,7 +59,7 @@ class ViewFileHandler
                 return new FileDownloadResponse(false, $exception->getMessage(), 404);
             }
 
-            return new FileDownloadResponse(false, $exception->getMessage(), 500);
+            throw $exception;
         }
 
         if (!$securityContext->isAbleToViewFile($file->getStoredFile())) {

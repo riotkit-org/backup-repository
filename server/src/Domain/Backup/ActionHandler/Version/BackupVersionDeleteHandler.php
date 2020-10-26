@@ -24,15 +24,15 @@ class BackupVersionDeleteHandler
      * @param VersioningContext $context
      * @param bool $commitChanges
      *
-     * @return BackupDeleteResponse
+     * @return ?BackupDeleteResponse
      *
      * @throws AuthenticationException
      * @throws BackupLogicException
      */
-    public function handle(VersionDeleteForm $form, VersioningContext $context, bool $commitChanges): BackupDeleteResponse
+    public function handle(VersionDeleteForm $form, VersioningContext $context, bool $commitChanges): ?BackupDeleteResponse
     {
         if (!$form->collection) {
-            return BackupDeleteResponse::createWithNotFoundError();
+            return null;
         }
 
         $this->assertHasPermissions($context, $form->collection);
