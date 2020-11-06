@@ -60,8 +60,9 @@ class ViewFileCommand implements CommandHandler
         $response = $this->handler->handle($form, $securityContext);
 
         return [
-            'status' => $response->getMessage(),
-            'code'   => $response->getCode(),
+            'status'  => $response->getMessage(),
+            'success' => $response->isSuccess(),
+            'code'    => $response->getCode(),
             'response'             => $response->jsonSerialize(),
             'stream'               => $response->getResponseStream(),
             'headers'              => $response->getHeaders(),

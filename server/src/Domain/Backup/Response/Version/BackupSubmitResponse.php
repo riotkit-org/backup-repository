@@ -4,93 +4,39 @@ namespace App\Domain\Backup\Response\Version;
 
 use App\Domain\Backup\Entity\BackupCollection;
 use App\Domain\Backup\Entity\StoredVersion;
+use App\Domain\Common\Response\NormalResponse;
 
-class BackupSubmitResponse implements \JsonSerializable
+class BackupSubmitResponse extends NormalResponse implements \JsonSerializable
 {
-    /**
-     * @var string
-     */
-    private $status = '';
-
-    /**
-     * @var int
-     */
-    private $exitCode = 0;
-
     /**
      * @var StoredVersion
      */
-    private $version;
-
-    /**
-     * @var int|null
-     */
-    private $errorCode;
+    private StoredVersion $version;
 
     /**
      * @var BackupCollection
      */
-    private $collection;
-
-    /**
-     * @var string|null
-     */
-    private $field;
-
-    /**
-     * @var string[]
-     */
-    private $errors;
+    private BackupCollection $collection;
 
     public static function createSuccessResponse(StoredVersion $version, BackupCollection $collection): self
     {
         $new = new static();
-        $new->status     = 'OK';
-        $new->exitCode   = 200;
-        $new->errorCode  = null;
+        $new->message    = 'File was uploaded';
+        $new->status     = true;
+        $new->httpCode   = 200;
         $new->version    = $version;
         $new->collection = $collection;
 
         return $new;
     }
 
-    public static function createFromFailure(string $message, int $errorCode, string $field): self
+    public function jsonSerialize(): array
     {
-        $new = new static();
-        $new->status     = $message;
-        $new->errorCode  = $errorCode;
-        $new->exitCode   = 400;
-        $new->field      = $field;
+        $data = parent::jsonSerialize();
 
-        return $new;
-    }
+        $data['version'] = $this->version;
+        $data['collection'] = $this->collection;
 
-    public static function createWithValidationErrors(array $validationErrors): self
-    {
-        $new = new static();
-        $new->status    = 'Form validation error';
-        $new->errorCode = 400;
-        $new->exitCode  = 400;
-        $new->errors    = $validationErrors;
-
-        return $new;
-    }
-
-    public function jsonSerialize()
-    {
-        return [
-            'status'     => $this->status,
-            'error_code' => $this->errorCode,
-            'exit_code'  => $this->exitCode,
-            'field'      => $this->field,
-            'errors'     => $this->errors,
-            'version'    => $this->version,
-            'collection' => $this->collection
-        ];
-    }
-
-    public function getExitCode(): int
-    {
-        return $this->exitCode;
+        return $data;
     }
 }

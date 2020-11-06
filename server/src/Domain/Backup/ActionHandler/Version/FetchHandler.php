@@ -4,6 +4,7 @@ namespace App\Domain\Backup\ActionHandler\Version;
 
 use App\Domain\Backup\Entity\BackupCollection;
 use App\Domain\Backup\Exception\AuthenticationException;
+use App\Domain\Backup\Exception\BackupException;
 use App\Domain\Backup\Form\Version\FetchVersionForm;
 use App\Domain\Backup\Repository\VersionRepository;
 use App\Domain\Backup\Response\Version\FetchResponse;
@@ -80,6 +81,12 @@ class FetchHandler
             );
         }
 
+        // unknown error happened, let's raise an exception and cause HTTP 500
+        if (!$response['success'] ?? false) {
+            throw new BackupException($response['message'], $response['code']);
+        }
+
+        // strange unknown error happened, response is success, but there is no file to stream
         throw new \LogicException('Unknown error occurred. Expected that at least exception would be raised by Storage domain');
     }
 

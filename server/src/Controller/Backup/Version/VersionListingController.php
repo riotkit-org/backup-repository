@@ -10,6 +10,7 @@ use App\Domain\Backup\Form\Version\VersionsListingForm;
 use App\Infrastructure\Common\Http\JsonFormattedResponse;
 use Exception;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * Attach/detach a token of given Id to the collection
@@ -51,6 +52,10 @@ class VersionListingController extends BaseController
             $this->authFactory->createVersioningContext($user, $form->collection)
         );
 
-        return new JsonFormattedResponse($response, $response->getExitCode());
+        if (!$response) {
+            throw new NotFoundHttpException();
+        }
+
+        return new JsonFormattedResponse($response, $response->getHttpCode());
     }
 }

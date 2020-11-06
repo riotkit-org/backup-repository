@@ -67,6 +67,7 @@ class BackupCollectionUploadRotationStrategyCest
             "ZSP-lWA calls for a week of protest action against the repression of workers from the Post Office in Poland
                      ===========================================================================================================
         ");
+
         $I->canSeeResponseContains('solidarity-with-postal-workers-article-v2"');
     }
 

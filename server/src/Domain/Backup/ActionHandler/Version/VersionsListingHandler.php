@@ -26,14 +26,14 @@ class VersionsListingHandler
      * @param VersionsListingForm $form
      * @param VersioningContext $securityContext
      *
-     * @return VersionListingResponse
+     * @return null|VersionListingResponse
      *
      * @throws AuthenticationException
      */
-    public function handle(VersionsListingForm $form, VersioningContext $securityContext): VersionListingResponse
+    public function handle(VersionsListingForm $form, VersioningContext $securityContext): ?VersionListingResponse
     {
         if (!$form->collection) {
-            return VersionListingResponse::createWithNotFoundError();
+            return null;
         }
 
         $this->assertHasRights($securityContext, $form->collection);

@@ -68,6 +68,6 @@ class SubmitVersionController extends BaseController
             $this->getLoggedUser()
         );
 
-        return new JsonFormattedResponse($response, $response->getExitCode());
+        return new JsonFormattedResponse($response, $response->getHttpCode());
     }
 }

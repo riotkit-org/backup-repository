@@ -13,7 +13,6 @@ use Exception;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\StreamedResponse;
-use Swagger\Annotations as SWG;
 
 class ViewFileController extends BaseController
 {
@@ -28,47 +27,6 @@ class ViewFileController extends BaseController
 
     /**
      * Download a file
-     *
-     * @SWG\Parameter(
-     *     name="filename",
-     *     in="path",
-     *     type="string",
-     *     description="Filename"
-     * )
-     *
-     * @SWG\Parameter(
-     *     name="password",
-     *     in="query",
-     *     type="string",
-     *     required=false,
-     *     description="Optionally a password if file is password protected"
-     * )
-     *
-     * @SWG\Parameter(
-     *     name="Range",
-     *     type="string",
-     *     in="header",
-     *     description="HTTP Byte-Range support"
-     * )
-     *
-     * @SWG\Parameter(
-     *     name="If-None-Match",
-     *     type="string",
-     *     in="header",
-     *     description="HTTP caching header"
-     * )
-     *
-     * @SWG\Parameter(
-     *     name="If-modified-since",
-     *     type="string",
-     *     in="header",
-     *     description="HTTP caching header"
-     * )
-     *
-     * @SWG\Response(
-     *     response="200",
-     *     description="Returns file contents"
-     * )
      *
      * @param Request $request
      * @param string $filename

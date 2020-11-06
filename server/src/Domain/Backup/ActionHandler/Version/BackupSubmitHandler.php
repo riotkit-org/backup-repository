@@ -12,6 +12,7 @@ use App\Domain\Backup\Security\VersioningContext;
 use App\Domain\Backup\Service\FileUploader;
 use App\Domain\Backup\Response\Version\BackupSubmitResponse;
 use App\Domain\Common\Exception\DomainAssertionFailure;
+use App\Domain\Common\Exception\DomainInputValidationConstraintViolatedError;
 use App\Domain\Errors;
 
 class BackupSubmitHandler
@@ -61,11 +62,11 @@ class BackupSubmitHandler
             } else {
                 $this->fileUploader->rollback($result);
 
-                return BackupSubmitResponse::createFromFailure(
-                    $result->getStatus(),
-                    $result->getErrorCode(),
-                    ''
-                );
+                throw DomainAssertionFailure::fromErrors([
+                    DomainInputValidationConstraintViolatedError::fromString(
+                        '?', $result->getStatus(), $result->getErrorCode()
+                    )
+                ]);
             }
 
         } catch (DomainAssertionFailure $assertionException) {
