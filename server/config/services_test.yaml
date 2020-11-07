@@ -3,12 +3,12 @@ services:
         public: true
         autowire: true
 
-    App\Command\Authentication\GenerateAdminTokenCommand:
+    App\Command\Authentication\GenerateAdminAccountCommand:
         public: true
         autowire: true
         autoconfigure: true
 
-    App\Domain\Authentication\ActionHandler\TokenGenerationHandler:
+    App\Domain\Authentication\ActionHandler\UserCreationHandler:
         public: true
         autowire: true
         arguments:

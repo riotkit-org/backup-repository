@@ -23,11 +23,13 @@ use Symfony\Component\Messenger\Exception\HandlerFailedException;
  */
 class ErrorFormattingSubscriber implements EventSubscriberInterface
 {
-    private bool $isDevEnvironment;
+    private bool $isDebugEnvironment;
+    private bool $isTestEnvironment;
 
-    public function __construct(bool $isDev)
+    public function __construct(bool $isDev, string $envName)
     {
-        $this->isDevEnvironment = $isDev;
+        $this->isDebugEnvironment = $isDev;
+        $this->isTestEnvironment  = $envName === 'test';
     }
 
     public static function getSubscribedEvents(): array
@@ -74,16 +76,16 @@ class ErrorFormattingSubscriber implements EventSubscriberInterface
         // (Are formatted only on PROD environment. On dev/test are shown as raised exception for debugging)
         //
 
-        if (!$this->isDevEnvironment) {
+        if (!$this->isDebugEnvironment || $this->isTestEnvironment) {
             if ($exc instanceof NotFoundHttpException) {
                 $event->setResponse(
-                    new JsonFormattedResponse(HttpError::fromNotFoundError()->jsonSerialize(), 404)
+                    $this->postProcessResponse(new JsonFormattedResponse(HttpError::fromNotFoundError()->jsonSerialize(), 404), $exc)
                 );
 
                 return;
             } elseif ($exc instanceof AccessDeniedHttpException) {
                 $event->setResponse(
-                    new JsonFormattedResponse(HttpError::fromAccessDeniedError()->jsonSerialize(), 403)
+                    $this->postProcessResponse(new JsonFormattedResponse(HttpError::fromAccessDeniedError()->jsonSerialize(), 403), $exc)
                 );
 
                 return;
@@ -94,13 +96,15 @@ class ErrorFormattingSubscriber implements EventSubscriberInterface
         }
     }
 
-    private function postProcessResponse(JsonFormattedResponse $response, ApplicationException $exception): JsonFormattedResponse
+    private function postProcessResponse(JsonFormattedResponse $response, \Exception $exception): JsonFormattedResponse
     {
-        if (!$exception->canBeDisplayedPublic() && !$this->isDevEnvironment) {
+        $canBeDisplayedPublic = $exception instanceof ApplicationException && $exception->canBeDisplayedPublic();
+
+        if (!$canBeDisplayedPublic && !$this->isDebugEnvironment) {
             return new JsonFormattedResponse(HttpError::fromInternalServerError()->jsonSerialize());
         }
 
-        if ($this->isDevEnvironment) {
+        if ($this->isDebugEnvironment) {
             $json = json_decode($response->getContent(), true);
             $json['_exc'] = $exception->getTrace();
 

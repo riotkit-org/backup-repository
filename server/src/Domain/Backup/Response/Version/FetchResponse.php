@@ -38,7 +38,7 @@ class FetchResponse implements \JsonSerializable
     public function jsonSerialize()
     {
         return [
-            'status'     => $this->status
+            'status' => $this->isSuccess()
         ];
     }
 

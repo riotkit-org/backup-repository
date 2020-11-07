@@ -2,43 +2,24 @@
 
 namespace App\Domain\Backup\Response\Collection;
 
-class ListingResponse implements \JsonSerializable
+use App\Domain\Common\Response\NormalResponse;
+
+class ListingResponse extends NormalResponse implements \JsonSerializable
 {
-    /**
-     * @var string
-     */
-    private $status = '';
+    private array $elements;
 
-    /**
-     * @var int
-     */
-    private $exitCode = 0;
+    private int $maxPages;
 
-    /**
-     * @var array $elements
-     */
-    private $elements = [];
+    private int $currentPage;
 
-    /**
-     * @var int
-     */
-    private $maxPages;
-
-    /**
-     * @var int
-     */
-    private $currentPage;
-
-    /**
-     * @var int
-     */
-    private $perPage;
+    private int $perPage;
 
     public static function createFromResults(array $elements, int $maxPages, int $currentPage, int $perPage): ListingResponse
     {
         $new = new static();
         $new->status    = true;
-        $new->exitCode  = 200;
+        $new->httpCode  = 200;
+        $new->message   = $elements ? 'Matches found' : 'No matches found';
         $new->elements  = $elements;
         $new->maxPages  = $maxPages;
         $new->currentPage = $currentPage;
@@ -47,24 +28,18 @@ class ListingResponse implements \JsonSerializable
         return $new;
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
-        return [
-            'status'     => $this->status,
+        $data = parent::jsonSerialize();
+        $data = array_merge($data, [
             'elements'   => $this->elements,
             'pagination' => [
                 'current' => $this->currentPage,
                 'max'     => $this->maxPages,
                 'perPage' => $this->perPage
             ]
-        ];
-    }
+        ]);
 
-    /**
-     * @return int
-     */
-    public function getHttpCode(): int
-    {
-        return $this->exitCode;
+        return $data;
     }
 }

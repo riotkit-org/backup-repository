@@ -4,18 +4,18 @@ namespace App\Domain\Backup\Response\Security;
 
 use App\Domain\Backup\Entity\Authentication\User;
 use App\Domain\Backup\Entity\BackupCollection;
+use App\Domain\Common\Response\NormalResponse;
 
-class CollectionAccessRightsResponse implements \JsonSerializable
+class CollectionAccessRightsResponse extends NormalResponse implements \JsonSerializable
 {
-    private string $status = '';
-    private int $exitCode = 0;
     private array $data = [];
 
     public static function createFromResults(User $user, BackupCollection $collection): CollectionAccessRightsResponse
     {
         $new = new static();
-        $new->status    = 'OK';
-        $new->exitCode  = 200;
+        $new->status    = true;
+        $new->message   = 'OK';
+        $new->httpCode  = 200;
         $new->data      = [
             'user'         => $user,
             'collection'   => $collection,
@@ -25,29 +25,11 @@ class CollectionAccessRightsResponse implements \JsonSerializable
         return $new;
     }
 
-    public static function createWithNotFoundError(): CollectionAccessRightsResponse
+    public function jsonSerialize(): array
     {
-        $new = new static();
-        $new->status    = 'Object not found';
-        $new->exitCode  = 404;
+        $data = parent::jsonSerialize();
+        $data['data'] = $this->data;
 
-        return $new;
-    }
-
-    public function jsonSerialize()
-    {
-        return [
-            'status'     => $this->status,
-            'http_code'  => $this->exitCode,
-            'data'       => $this->data
-        ];
-    }
-
-    /**
-     * @return int
-     */
-    public function getHttpCode(): int
-    {
-        return $this->exitCode;
+        return $data;
     }
 }

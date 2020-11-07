@@ -9,16 +9,6 @@ class CrudResponse extends NormalResponse implements \JsonSerializable
 {
     private ?BackupCollection $collection;
 
-    public static function createWithNotFoundError(): CrudResponse
-    {
-        $new = new static();
-        $new->status   = false;
-        $new->message  = 'Object not found';
-        $new->httpCode = 404;
-
-        return $new;
-    }
-
     public static function createSuccessfulResponse(BackupCollection $collection, int $status = 201): CrudResponse
     {
         $new = new static();
@@ -51,7 +41,7 @@ class CrudResponse extends NormalResponse implements \JsonSerializable
 
     public function isSuccess(): bool
     {
-        return \strpos($this->status, 'OK') === 0;
+        return $this->status;
     }
 
     public function getCollection(): ?BackupCollection

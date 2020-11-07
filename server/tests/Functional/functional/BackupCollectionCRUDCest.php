@@ -65,8 +65,8 @@ class BackupCollectionCRUDCest
             'strategy'          => 'delete_oldest_when_adding_new',
             'filename'          => 'solfed.org.uk_database.tar.gz'
         ]);
+        $I->canSeeErrorResponse('Route or resource not found', 404, 'app.not-found');
         $I->canSeeResponseCodeIs(404);
-        $I->canSeeResponseContains('Object not found');
     }
 
     public function testFetchCollectionMetaData(FunctionalTester $I): void
@@ -95,7 +95,7 @@ class BackupCollectionCRUDCest
     {
         $I->amAdmin();
         $I->fetchCollection('some-non-existing');
+        $I->canSeeErrorResponse('Route or resource not found', 404, 'app.not-found');
         $I->canSeeResponseCodeIs(404);
-        $I->canSeeResponseContains('Object not found');
     }
 }

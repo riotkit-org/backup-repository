@@ -15,6 +15,7 @@ use App\Infrastructure\Common\Http\JsonFormattedResponse;
 use Exception;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class CreateEditController extends BaseController
 {
@@ -61,6 +62,10 @@ class CreateEditController extends BaseController
             $isCreation
         );
 
+        if (!$response) {
+            throw new NotFoundHttpException();
+        }
+
         if ($request->query->get('simulate') !== 'true') {
             $this->createHandler->flush();
         }
@@ -73,11 +78,11 @@ class CreateEditController extends BaseController
      * @param $auth
      * @param bool $isCreation
      *
-     * @return CrudResponse
+     * @return null|CrudResponse
      *
      * @throws AuthenticationException
      */
-    private function handle($form, $auth, bool $isCreation): CrudResponse
+    private function handle($form, $auth, bool $isCreation): ?CrudResponse
     {
         if ($isCreation) {
             return $this->createHandler->handle($form, $auth);

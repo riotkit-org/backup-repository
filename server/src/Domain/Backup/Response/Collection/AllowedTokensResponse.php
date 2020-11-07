@@ -3,15 +3,11 @@
 namespace App\Domain\Backup\Response\Collection;
 
 use App\Domain\Backup\Entity\Authentication\User;
-use App\Domain\Common\Http;
+use App\Domain\Common\Response\NormalResponse;
 
-class AllowedTokensResponse implements \JsonSerializable
+class AllowedTokensResponse extends NormalResponse implements \JsonSerializable
 {
-    private string $status;
-    private int    $exitCode;
-    private ?int   $errorCode;
-    private ?array $errors;
-    private array  $users;
+    private array $users;
 
     /**
      * @param User[] $users
@@ -23,11 +19,10 @@ class AllowedTokensResponse implements \JsonSerializable
     public static function createSuccessfulResponse(array $users, bool $maskIds, int $status = 201): AllowedTokensResponse
     {
         $new = new static();
-        $new->status     = 'OK';
-        $new->errorCode  = null;
-        $new->exitCode   = $status;
-        $new->errors     = [];
-        $new->users      = $users;
+        $new->status   = true;
+        $new->message  = 'OK';
+        $new->users    = $users;
+        $new->httpCode = $status;
 
         if ($maskIds) {
             $new->users = array_map(
@@ -41,25 +36,11 @@ class AllowedTokensResponse implements \JsonSerializable
         return $new;
     }
 
-    public static function createWithNotFoundError(): AllowedTokensResponse
+    public function jsonSerialize(): array
     {
-        $new = new static();
-        $new->status    = 'Object not found';
-        $new->exitCode  = Http::HTTP_NOT_FOUND;
+        $data = parent::jsonSerialize();
+        $data['users'] = $this->users;
 
-        return $new;
-    }
-
-    public function jsonSerialize()
-    {
-        return [
-            'status' => $this->status,
-            'users'  => $this->users
-        ];
-    }
-
-    public function getHttpCode(): int
-    {
-        return $this->exitCode;
+        return $data;
     }
 }

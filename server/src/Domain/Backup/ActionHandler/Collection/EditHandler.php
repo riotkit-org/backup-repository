@@ -24,15 +24,15 @@ class EditHandler
      * @param EditForm $form
      * @param CollectionManagementContext $securityContext
      *
-     * @return CrudResponse
+     * @return null|CrudResponse
      *
      * @throws AuthenticationException
      * @throws \Exception
      */
-    public function handle(EditForm $form, CollectionManagementContext $securityContext): CrudResponse
+    public function handle(EditForm $form, CollectionManagementContext $securityContext): ?CrudResponse
     {
         if (!$form->collection) {
-            return CrudResponse::createWithNotFoundError();
+            return null;
         }
 
         $this->assertHasRights($securityContext, $form);

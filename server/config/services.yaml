@@ -73,6 +73,7 @@ services:
         autoconfigure: true
         arguments:
             $isDev: '%kernel.debug%'
+            $envName: '%kernel.environment%'
 
     App\Domain\Storage\Repository\StagingAreaRepository:
         class: App\Domain\Storage\Repository\StagingAreaRepository

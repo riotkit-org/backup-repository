@@ -226,7 +226,8 @@ class FunctionalTester extends \Codeception\Actor
     public function canSeeResponseOfICanBrowseCollectionVersions(): void
     {
         $this->seeResponseContainsJson([
-            'status'   => 'OK',
+            'message'  => 'OK',
+            'status'   => true,
             'versions' => []
         ]);
     }
@@ -317,8 +318,9 @@ class FunctionalTester extends \Codeception\Actor
     {
         $this->canSeeResponseCodeIsSuccessful();
         $this->canSeeResponseContainsJson([
-            "status" => "OK",
-            'data' => [
+            "message" => "OK",
+            "status"  => true,
+            'data'   => [
                 'user'       => [],
                 'collection' => []
             ]
@@ -367,7 +369,8 @@ class FunctionalTester extends \Codeception\Actor
     public function canSeeResponseOfUploadingToCollectionIsSuccessful(): void
     {
         $this->canSeeResponseContainsJson([
-            "status"     => "OK",
+            'message'    => "File was uploaded",
+            'status'     => true,
             'version'    => [],
             'collection' => []
         ]);

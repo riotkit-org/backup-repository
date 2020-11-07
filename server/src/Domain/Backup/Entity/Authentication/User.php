@@ -6,6 +6,7 @@ use App\Domain\Common\SharedEntity\User as TokenFromCommon;
 
 class User extends TokenFromCommon implements \JsonSerializable
 {
+    // @todo: Remove ID censorship
     public function jsonSerialize(bool $censorId = false)
     {
         return [
