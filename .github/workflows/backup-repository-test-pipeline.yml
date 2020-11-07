@@ -19,6 +19,7 @@ jobs:
 
             - name: Setup PHP, extensions and composer
               uses: shivammathur/setup-php@v2
+              working-directory: "server"
               with:
                   php-version: "7.4"
                   extensions: mbstring, ctype, iconv, intl, fileinfo, openssl, filter, iconv, json, mbstring, pdo, pdo_pgsql
@@ -29,10 +30,12 @@ jobs:
             # —— Cache —————————————————————————————————————————————————————————
             - name: Validate composer.json and composer.lock
               run: composer validate
+              working-directory: "server"
 
             - name: Get composer cache directory
               id: composer-cache
               run: echo "::set-output name=dir::$(composer config cache-files-dir)"
+              working-directory: "server"
 
             # —— Development environment ———————————————————————————————————————
             - name: "Prepare development/testing environment"
@@ -46,6 +49,7 @@ jobs:
                   path: ${{ steps.composer-cache.outputs.dir }}
                   key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
                   restore-keys: ${{ runner.os }}-composer-
+              working-directory: "server"
 
             # —— Tests —————————————————————————————————————————————————————————
             - name: "Run API tests"
