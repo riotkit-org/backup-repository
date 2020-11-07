@@ -1,0 +1,24 @@
+name: "Backup Repository Server test pipeline"
+on:
+    push:
+    pull_request:
+        branches:
+            - master
+            - primary
+
+jobs:
+    runs-on: ubuntu-20.04
+
+    steps:
+        - name: Checkout
+          uses: actions/checkout@v1
+
+        - name: Install RKD
+          run: "pip install rkd==2.0.0"
+
+        - name: Spawn containers required for tests
+          run: "rkd :dev"
+
+        - name: Run API tests
+          run: "rkd :test:api"
+
