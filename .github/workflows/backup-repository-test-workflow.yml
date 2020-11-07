@@ -78,10 +78,3 @@ jobs:
               with:
                   name: logs
                   path: server/var/log
-
-            - name: "Report jUnit Annotations as Github Actions Annotations"
-              uses: ashley-taylor/junit-report-annotations-action@1.3
-              if: ${{ always() }}
-              with:
-                  path: server/var/tests/*.junit.xml
-                  access-token: ${{ secrets.GITHUB_TOKEN }}
