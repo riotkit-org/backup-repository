@@ -12,6 +12,12 @@ tasks:
             docker rm -f s3pb_db_1 || true
             docker-compose -p s3pb -f .infrastructure/docker/docker-compose.yml up -d --force-recreate
 
+    :ci:environment:
+        description: Setup environment for continuous integration
+        steps:
+            - cp -pr .infrastructure/ci-files/* ./
+            - "%RKD% :dev"
+
     :dev:
         description: Prepare development environment
         steps: |

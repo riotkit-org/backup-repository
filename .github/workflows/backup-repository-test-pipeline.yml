@@ -38,7 +38,7 @@ jobs:
 
             # —— Development environment ———————————————————————————————————————
             - name: "Prepare development/testing environment"
-              run: "rkd :dev"
+              run: "rkd :ci:environment"
               working-directory: "server"
 
             # —— Cache —————————————————————————————————————————————————————————
