@@ -16,7 +16,7 @@ tasks:
         description: Setup environment for continuous integration
         steps:
             - cp -pr .infrastructure/ci-files/* ./
-            - cp -pr .infrastructure/ci-files/.* ./
+            - cp -pr .infrastructure/ci-files/.env ./
             - "%RKD% :dev"
 
     :dev:
