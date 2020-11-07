@@ -71,6 +71,13 @@ jobs:
                   name: tests-results
                   path: server/var/tests
 
+            - name: "Archive logs"
+              uses: actions/upload-artifact@v2
+              if: ${{ always() }}
+              with:
+                  name: logs
+                  path: server/var/log
+
             - name: "Report jUnit Annotations as Github Actions Annotations"
               uses: shyim/junit-report-annotations-action@0.2.0
               if: ${{ always() }}
