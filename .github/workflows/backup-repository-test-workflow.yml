@@ -53,3 +53,9 @@ jobs:
             - name: "Run API tests"
               run: "rkd :test:api"
               working-directory: "server"
+
+            - name: Archive code coverage results
+              uses: actions/upload-artifact@v2
+              with:
+                  name: code-coverage-report
+                  path: server/tests/Functional/_output
