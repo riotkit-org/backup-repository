@@ -18,7 +18,8 @@ jobs:
 
             - name: Spawn containers required for tests
               run: "rkd :dev"
+              working-directory: "server"
 
             - name: Run API tests
               run: "rkd :test:api"
-
+              working-directory: "server"
