@@ -84,3 +84,4 @@ jobs:
               if: ${{ always() }}
               with:
                   path: server/var/tests/*.junit.xml
+                  access-token: ${{ secrets.GITHUB_TOKEN }}
