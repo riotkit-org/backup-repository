@@ -13,6 +13,7 @@ jobs:
             - name: "Checkout"
               uses: actions/checkout@v1
 
+            # —— Dependencies —————————————————————————————————————————————————————————
             - name: "Install RKD"
               run: "sudo pip install rkd==2.0.0"
 
@@ -21,9 +22,26 @@ jobs:
               with:
                   php-version: "7.4"
                   extensions: mbstring, ctype, iconv, intl, fileinfo, openssl, filter, iconv, json, mbstring, pdo, pdo_pgsql
+                  tools: symfony, composer
               env:
                   update: true
 
+            # —— Composer —————————————————————————————————————————————————————————
+            - name: Validate composer.json and composer.lock
+              run: composer validate
+
+            - name: Get composer cache directory
+              id: composer-cache
+              run: echo "::set-output name=dir::$(composer config cache-files-dir)"
+
+            - name: Cache composer dependencies
+              uses: actions/cache@v1
+              with:
+                  path: ${{ steps.composer-cache.outputs.dir }}
+                  key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+                  restore-keys: ${{ runner.os }}-composer-
+
+            # —— Testing —————————————————————————————————————————————————————————
             - name: "Prepare development/testing environment"
               run: "rkd :dev"
               working-directory: "server"
