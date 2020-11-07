@@ -7,7 +7,7 @@ on:
             - primary
 
 jobs:
-    "Test each new commit":
+    "test_each_new_commit":
         runs-on: ubuntu-20.04
         steps:
             - name: "Checkout"
