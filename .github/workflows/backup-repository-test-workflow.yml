@@ -1,4 +1,4 @@
-name: "Backup Repository Server test pipeline"
+name: "Backup Repository Server testing workflow"
 on:
     push:
     pull_request:
@@ -7,7 +7,7 @@ on:
             - primary
 
 jobs:
-    test:
+    "Test each new commit":
         runs-on: ubuntu-20.04
         steps:
             - name: "Checkout"
