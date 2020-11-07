@@ -43,10 +43,10 @@ tasks:
 
         steps:
             - mkdir -p var/tests
-            - rm ./tests/Functional/_output/*.html || true
+            - rm ./tests/Functional/_output/*.html 2>/dev/null || true
             - |
                 set +e
-                SYMFONY_DEPRECATIONS_HELPER=weak ./vendor/bin/codecept run --html=../../../var/tests/api.html functional ${ARG_FILTER};
+                SYMFONY_DEPRECATIONS_HELPER=weak ./vendor/bin/codecept run --html=../../../var/tests/api.html --xml=../../../var/tests/api.junit.xml functional ${ARG_FILTER};
                 exit_code=$?
 
                 cp -pr ./tests/Functional/_output/* var/tests/ 2>/dev/null
