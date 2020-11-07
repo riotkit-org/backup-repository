@@ -69,4 +69,4 @@ jobs:
               if: ${{ always() }}
               with:
                   name: tests-results
-                  path: var/tests
+                  path: server/var/tests
