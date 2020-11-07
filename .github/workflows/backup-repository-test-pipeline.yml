@@ -19,7 +19,6 @@ jobs:
 
             - name: Setup PHP, extensions and composer
               uses: shivammathur/setup-php@v2
-              working-directory: "server"
               with:
                   php-version: "7.4"
                   extensions: mbstring, ctype, iconv, intl, fileinfo, openssl, filter, iconv, json, mbstring, pdo, pdo_pgsql
