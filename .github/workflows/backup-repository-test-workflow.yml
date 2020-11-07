@@ -14,8 +14,9 @@ jobs:
               uses: actions/checkout@v1
 
             # —— Dependencies —————————————————————————————————————————————————————————
-            - name: "Install RKD"
-              run: "sudo pip install rkd==2.0.0"
+            - name: "Install build dependencies"
+              run: "sudo pip install -r ./requirements.txt"
+              working-directory: "server"
 
             - name: Setup PHP, extensions and composer
               uses: shivammathur/setup-php@v2
@@ -54,8 +55,18 @@ jobs:
               run: "rkd :test:api"
               working-directory: "server"
 
-            - name: "Archive API tests results"
+            - name: "Run Unit tests"
+              run: "rkd :test:unit"
+              working-directory: "server"
+
+            - name: "Make HTML report from unit tests"
+              run: "rkd :test:unit:html"
+              if: ${{ always() }}
+              working-directory: "server"
+
+            - name: "Archive results"
               uses: actions/upload-artifact@v2
+              if: ${{ always() }}
               with:
-                  name: api-tests-results
-                  path: server/tests/Functional/_output/file-repository.html
+                  name: tests-results
+                  path: var/tests

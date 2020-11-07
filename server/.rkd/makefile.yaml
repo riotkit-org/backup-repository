@@ -41,5 +41,23 @@ tasks:
             "--filter":
                 help: "Execute only selected test case. Examples: Features/Security/FeatureOnlyOneFileAllowedToUploadCest, BackupCollectionListingCest, RegistryListingCest:testListingAllFiles"
 
+        steps:
+            - mkdir -p var/tests
+            - rm ./tests/Functional/_output/*.html || true
+            - |
+                set +e
+                SYMFONY_DEPRECATIONS_HELPER=weak ./vendor/bin/codecept run --html=../../../var/tests/api.html functional ${ARG_FILTER};
+                exit_code=$?
+
+                cp -pr ./tests/Functional/_output/* var/tests/ 2>/dev/null
+                exit $exit_code
+
+    :test:unit:
+        description: Run unit tests
         steps: |
-            SYMFONY_DEPRECATIONS_HELPER=weak ./vendor/bin/codecept run --html=file-repository.html functional ${ARG_FILTER}
+            mkdir -p var/tests
+            SYMFONY_DEPRECATIONS_HELPER=weak ./vendor/bin/phpunit --coverage-html=var/tests/coverage
+
+    :test:unit:html:
+        description: Create report in HTML format
+        steps: vjunit -f var/tests/unit.junit.xml -o var/tests/unit.junit.html

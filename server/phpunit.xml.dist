@@ -24,9 +24,7 @@
 
     <filter>
         <whitelist>
-            <directory suffix=".php">./bundles/</directory>
             <directory suffix=".php">./src/</directory>
-
             <exclude>
                 <directory suffix=".php">./src/Controller</directory>
                 <directory suffix=".php">./src/Migrations</directory>
@@ -46,6 +44,7 @@
     </listeners>
 
     <logging>
-        <log type="coverage-clover" target="clover.xml"/>
+        <log type="coverage-clover" target="var/tests/unit.coverage.xml"/>
+        <log type="junit" target="var/tests/unit.junit.xml"/>
     </logging>
 </phpunit>
