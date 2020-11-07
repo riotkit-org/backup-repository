@@ -10,16 +10,24 @@ jobs:
     test:
         runs-on: ubuntu-20.04
         steps:
-            - name: Checkout
+            - name: "Checkout"
               uses: actions/checkout@v1
 
-            - name: Install RKD
+            - name: "Install RKD"
               run: "sudo pip install rkd==2.0.0"
 
-            - name: Spawn containers required for tests
+            - name: Setup PHP, extensions and composer
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: "7.4"
+                  extensions: mbstring, ctype, iconv, intl, fileinfo, openssl, filter, iconv, json, mbstring, pdo, pdo_pgsql
+              env:
+                  update: true
+
+            - name: "Prepare development/testing environment"
               run: "rkd :dev"
               working-directory: "server"
 
-            - name: Run API tests
+            - name: "Run API tests"
               run: "rkd :test:api"
               working-directory: "server"
