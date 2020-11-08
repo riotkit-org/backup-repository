@@ -51,21 +51,21 @@ jobs:
 
             # —— Archive packages ——————————————————————————————————————————————
             - name: "Archive distribution package"
-              use: actions/upload-artifact@v2
+              uses: actions/upload-artifact@v2
               if: ${{ always() }}
               with:
                   name: complete-distributable-package.tar.gz
                   path: server/var/dist.tar.gz
 
             - name: "Archive API documentation"
-              use: actions/upload-artifact@v2
+              uses: actions/upload-artifact@v2
               if: ${{ always() }}
               with:
                   name: api-documentation.swagger.json
                   path: server/swagger.json
 
             - name: "Archive manual documentation"
-              use: actions/upload-artifact@v2
+              uses: actions/upload-artifact@v2
               if: ${{ always() }}
               with:
                   name: manual-documentation.zip
