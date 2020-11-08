@@ -34,38 +34,38 @@ jobs:
 
             # —— Build —————————————————————————————————————————————————————————
             - name: "Build swagger documentation"
-              runs: "rkd :release:swagger-docs"
+              run: "rkd :release:swagger-docs"
               working-directory: "server"
 
             - name: "Build manual documentation"
-              runs: "rkd :release:docs"
+              run: "rkd :release:docs"
               working-directory: "server"
 
             - name: "Build and push distribution package"
-              runs: "rkd :release:dist-zip"
+              run: "rkd :release:dist-zip"
               working-directory: "server"
 
             - name: "Build and push docker image"
-              runs: "rkd :release:docker-image"
+              run: "rkd :release:docker-image"
               working-directory: "server"
 
             # —— Archive packages ——————————————————————————————————————————————
             - name: "Archive distribution package"
-              uses: actions/upload-artifact@v2
+              use: actions/upload-artifact@v2
               if: ${{ always() }}
               with:
                   name: complete-distributable-package.tar.gz
                   path: server/var/dist.tar.gz
 
             - name: "Archive API documentation"
-              uses: actions/upload-artifact@v2
+              use: actions/upload-artifact@v2
               if: ${{ always() }}
               with:
                   name: api-documentation.swagger.json
                   path: server/swagger.json
 
             - name: "Archive manual documentation"
-              uses: actions/upload-artifact@v2
+              use: actions/upload-artifact@v2
               if: ${{ always() }}
               with:
                   name: manual-documentation.zip
