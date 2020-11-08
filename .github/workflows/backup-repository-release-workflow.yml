@@ -33,6 +33,14 @@ jobs:
                   update: true
 
             # —— Build —————————————————————————————————————————————————————————
+            - name: "Build swagger documentation"
+              runs: "rkd :release:swagger-docs"
+              working-directory: "server"
+
+            - name: "Build manual documentation"
+              runs: "rkd :release:docs"
+              working-directory: "server"
+
             - name: "Build and push distribution package"
               runs: "rkd :release:dist-zip"
               working-directory: "server"
@@ -42,12 +50,26 @@ jobs:
               working-directory: "server"
 
             # —— Archive packages ——————————————————————————————————————————————
-            - name: "Archive results"
+            - name: "Archive distribution package"
               uses: actions/upload-artifact@v2
               if: ${{ always() }}
               with:
-                  name: complete-distributable-package.zip
-                  path: server/var/dist.zip
+                  name: complete-distributable-package.tar.gz
+                  path: server/var/dist.tar.gz
+
+            - name: "Archive API documentation"
+              uses: actions/upload-artifact@v2
+              if: ${{ always() }}
+              with:
+                  name: api-documentation.swagger.json
+                  path: server/swagger.json
+
+            - name: "Archive manual documentation"
+              uses: actions/upload-artifact@v2
+              if: ${{ always() }}
+              with:
+                  name: manual-documentation.zip
+                  path: docs/build/html
 
             # —— Create a new release ——————————————————————————————————————————
             - name: Create Release
@@ -61,13 +83,33 @@ jobs:
                 draft: true
                 prerelease: false
 
-            - name: Upload Release Asset
-              id: upload-release-asset
+            # —— Add release artifacts ——————————————————————————————————————————
+            - name: Add distribution package to release
               uses: actions/upload-release-asset@v1
               env:
                 GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
               with:
                 upload_url: ${{ steps.create_release.outputs.upload_url }}
-                asset_path: server/var/dist.zip
-                asset_name: backup-repository-${{ github.ref }}.zip
+                asset_path: server/var/dist.tar.gz
+                asset_name: backup-repository-${{ github.ref }}.tar.gz
+                asset_content_type: application/tar+gzip
+
+            - name: Add API documentation to release
+              uses: actions/upload-release-asset@v1
+              env:
+                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              with:
+                upload_url: ${{ steps.create_release.outputs.upload_url }}
+                asset_path: server/swagger.json
+                asset_name: backup-repository-${{ github.ref }}.swagger.json
+                asset_content_type: application/json
+
+            - name: Add manual documentation to the release
+              uses: actions/upload-release-asset@v1
+              env:
+                GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+              with:
+                upload_url: ${{ steps.create_release.outputs.upload_url }}
+                asset_path: docs/build/html
+                asset_name: backup-repository-${{ github.ref }}-manual.zip
                 asset_content_type: application/zip

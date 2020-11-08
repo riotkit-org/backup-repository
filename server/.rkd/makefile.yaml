@@ -67,9 +67,9 @@ tasks:
         description: Creates a distribution package
         steps:
             - composer install
-            - rm -f ./var/dist.zip
+            - rm -f ./var/dist.tar.gz
             - |
-                tar -zcvf ./var/dist.zip  \
+                tar -zcvf ./var/dist.tar.gz  \
                     --exclude=.env \
                     --exclude=.venv \
                     --exclude=config/jwt \
@@ -81,6 +81,16 @@ tasks:
                     --exclude=.infrastructure \
                     --exclude=.rkd \
                     *
+
+    :release:swagger-docs:
+        description: Create API documentation in SWAGGER json format
+        steps:
+            - ./bin/console docs:swagger:json > swagger.json
+
+    :release:docs:
+        description: Build release manual documentation
+        steps:
+            - cd ../docs && sphinx-build -M html "source" "build"
 
     :release:docker-image:
         description: Build and release a docker image
