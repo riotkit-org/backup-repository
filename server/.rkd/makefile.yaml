@@ -1,5 +1,6 @@
 version: org.riotkit.rkd/yaml/v1
-imports: []
+imports:
+    - rkt_utils.docker
 
 env_file:
     - ../.env
@@ -61,3 +62,32 @@ tasks:
     :test:unit:html:
         description: Create report in HTML format
         steps: vjunit -f var/tests/unit.junit.xml -o var/tests/unit.junit.html
+
+    :release:dist-zip:
+        description: Creates a distribution package
+        steps:
+            - composer install
+            - rm -f ./var/dist.zip
+            - |
+                tar -zcvf ./var/dist.zip  \
+                    --exclude=.env \
+                    --exclude=.venv \
+                    --exclude=config/jwt \
+                    --exclude=var \
+                    --exclude=.phpunit.result.cache \
+                    --exclude=phpunit* \
+                    --exclude=codeception* \
+                    --exclude=tests \
+                    --exclude=.infrastructure \
+                    --exclude=.rkd \
+                    *
+
+    :release:docker-image:
+        description: Build and release a docker image
+        arguments:
+            "ref":
+                help: "Tag name"
+        steps:
+            - docker build . -f .infrastructure/Dockerfile.x86_64 -t quay.io/riotkit/backup-repository:latest-release
+            - docker tag quay.io/riotkit/backup-repository:latest-release quay.io/riotkit/backup-repository:${ARG_REF}
+            - "%RKD% --image quay.io/riotkit/backup-repository:${ARG_REF} --propagate :docker:tag :docker:push"
