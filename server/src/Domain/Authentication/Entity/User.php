@@ -263,6 +263,7 @@ class User extends \App\Domain\Common\SharedEntity\User implements \JsonSerializ
     public function jsonSerialize(bool $censorId = false)
     {
         return [
+            // @todo: Remove id censorship
             'id'           => $censorId ? $this->getCensoredId() : $this->getId(),
             'email'        => $this->email->getValue(),
             'active'       => $this->active,

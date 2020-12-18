@@ -75,6 +75,12 @@ services:
             $isDev: '%kernel.debug%'
             $envName: '%kernel.environment%'
 
+    App\Infrastructure\Common\Event\Subscriber\CorsSubscriber:
+        autowire: true
+        autoconfigure: true
+        arguments:
+            $isDev: '%kernel.debug%'
+
     App\Domain\Storage\Repository\StagingAreaRepository:
         class: App\Domain\Storage\Repository\StagingAreaRepository
         arguments:

@@ -5,9 +5,6 @@ namespace App\Controller\Backup\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-use Nelmio\ApiDocBundle\Annotation\Model;
-use Swagger\Annotations as SWG;
-
 class RevokeUserAccessForCollectionController extends ManageCollectionAccessControlController
 {
     /**

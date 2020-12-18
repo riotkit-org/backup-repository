@@ -1243,8 +1243,18 @@ definitions:
             id:
                 example: d5aab8d7-64f3-42ce-bae4-59d7108294c3
                 type: string
+            email:
+                example: someone@iwa-ait.org
+                type: string
+            expired:
+                type: boolean
+                example: false
+            expires:
+                type: string
+                example: "2077-05-01 08:00:00"
             active:
                 type: boolean
+                example: true
             roles:
                 example:
                     - upload.images
@@ -1265,7 +1275,7 @@ definitions:
                     type: string
                 type: array
             maxAllowedFileSize:
-                example: '1073741824'
+                example: 1073741824
                 type: integer
             allowedIpAddresses:
                 example:
