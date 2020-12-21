@@ -7,12 +7,15 @@ import Dictionary from 'src/contracts/base.contract.ts';
 // @ts-ignore
 import AppInfo from 'src/models/appinfo.model.ts'
 // @ts-ignore
-import BackupCollection from "src/models/backup.model.ts";
+import { BackupCollection } from "src/models/backup.model.ts";
 // @ts-ignore
 import BackupCollectionsResponse from "src/models/backup.response.model.ts";
 // @ts-ignore
 import Pagination from "src/models/pagination.model.ts";
-import {List} from "../contracts/base.contract";
+// @ts-ignore
+import {List} from "src/contracts/base.contract.ts";
+// @ts-ignore
+import {BackupVersion} from "src/models/backup.model.ts";
 
 export default class BackupRepositoryBackend {
     vue: any|VueComponent
@@ -88,6 +91,35 @@ export default class BackupRepositoryBackend {
                     }) : []
                 )
             })
+    }
+
+    async findBackupCollectionById(collectionId: string): Promise<BackupCollection|null> {
+        return this._get('/repository/collection/' + collectionId).then(function (response) {
+            if (response.data.collection === undefined) {
+                return null
+            }
+
+            return BackupCollection.fromDict(response.data.collection)
+        })
+    }
+
+    async findVersionsForCollection(collection: BackupCollection): Promise<List<BackupVersion>> {
+        return this._get('/repository/collection/' + collection.id + '/version').then(function (response) {
+
+            // @ts-ignore
+            let versions: List = []
+
+            for (let versionNum in response.data.versions) {
+                if (!response.data.versions.hasOwnProperty(versionNum)) {
+                    continue
+                }
+
+                let version: Dictionary<string> = response.data.versions[versionNum]
+                versions.push(BackupVersion.fromDict(version))
+            }
+
+            return versions
+        })
     }
 
     async _post(url: string, data: Dictionary<string>): Promise<any> {

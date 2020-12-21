@@ -11,7 +11,7 @@
         <tr v-for="(item, index) in data" :key="index" :class="item['_active'] ? 'active' : 'inactive'">
           <slot :row="item">
               <td v-for="column in columns" :key="column" v-if="hasValue(item, column)">
-                  <a :href="item['_url']" v-html="itemValue(item, column)" v-if="!itemValue(item, column).includes('<button')"></a>
+                  <a :href="item['_url']" v-html="itemValue(item, column)" v-if="item['_url'] && typeof itemValue(item, column) === 'string' && !itemValue(item, column).includes('<button')"></a>
                   <span v-else v-html="itemValue(item, column)"></span>
               </td>
           </slot>

@@ -1067,7 +1067,15 @@ paths:
                                 type: object
                                 properties:
                                     "1":
-                                        "$ref": "#/definitions/BackupVersion"
+                                        type: object
+                                        properties:
+                                            details:
+                                                properties:
+                                                    "$ref": "#/definitions/BackupVersion"
+                                            url:
+                                                type: string
+                                                example: "http://localhost:8000/api/stable/repository/file/db-backup.tar.gz"
+
 
     # ========================================
     #  Endpoints: Administration & Technical

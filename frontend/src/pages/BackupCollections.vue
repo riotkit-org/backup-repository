@@ -70,7 +70,6 @@ import Card from 'src/components/Cards/Card.vue'
 import DatePicker from 'src/components/Filters/DatePicker.vue'
 import vPagination from 'vue-plain-pagination'
 import VueTagsInput from '@johmun/vue-tags-input';
-import byteSize from 'byte-size'
 
 export default {
     components: {
@@ -135,7 +134,7 @@ export default {
                         that.collections.data.push({
                             id: '<small>' + collection.id + '</small>',
                             filename: collection.filename,
-                            limits: collection.maxBackupsCount + 'x' + byteSize(collection.maxOneBackupVersionSize) + ' (' + byteSize(collection.maxCollectionSize) + ')',
+                            limits: collection.maxBackupsCount + 'x' + collection.getPrettyMaxOneVersionSize() + ' (' + collection.getPrettyMaxCollectionSize() + ')',
                             description: '<i>' + collection.description + '</i>',
                             _url: '#/admin/backup/collection/' + collection.id,
                             _active: true

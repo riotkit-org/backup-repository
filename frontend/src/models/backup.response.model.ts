@@ -1,5 +1,5 @@
 import Pagination from "./pagination.model";
-import BackupCollection from "./backup.model";
+import {BackupCollection} from "./backup.model";
 import {List} from "../contracts/base.contract";
 
 export default class BackupCollectionsResponse {

@@ -58,7 +58,7 @@ backup.submit_version:
     methods: ['POST']
     defaults:
         _secured: true
-        naming: (backup|version)
+        naming: (backup|version|versions|backups)
 
 backup.list_versions:
     path: /api/stable/repository/collection/{collectionId}/{naming}
@@ -66,8 +66,7 @@ backup.list_versions:
     methods: ['GET']
     defaults:
         _secured: true
-
-        naming: (backup|version)
+        naming: (backup|version|versions|backups)
 
 backup.delete_version:
     path: /api/stable/repository/collection/{collectionId}/{naming}/{backupId}
@@ -75,8 +74,7 @@ backup.delete_version:
     methods: ['DELETE']
     defaults:
         _secured: true
-
-        naming: (backup|version)
+        naming: (backup|version|versions|backups)
 
 backup.fetch_version:
     path: /api/stable/repository/collection/{collectionId}/{naming}/{backupId}
@@ -84,5 +82,4 @@ backup.fetch_version:
     methods: ['GET']
     defaults:
         _secured: true
-
-        naming: (backup|version)
+        naming: (backup|version|versions|backups)
