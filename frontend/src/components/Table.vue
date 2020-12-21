@@ -8,14 +8,20 @@
       </slot>
     </thead>
     <tbody>
-    <tr v-for="(item, index) in data" :key="index" :class="item['_active'] ? 'active' : 'inactive'">
-      <slot :row="item">
-          <td v-for="column in columns" :key="column" v-if="hasValue(item, column)">
-              <a :href="item['_url']" v-html="itemValue(item, column)" v-if="!itemValue(item, column).includes('<button')"></a>
-              <span v-else v-html="itemValue(item, column)"></span>
-          </td>
-      </slot>
-    </tr>
+        <tr v-for="(item, index) in data" :key="index" :class="item['_active'] ? 'active' : 'inactive'">
+          <slot :row="item">
+              <td v-for="column in columns" :key="column" v-if="hasValue(item, column)">
+                  <a :href="item['_url']" v-html="itemValue(item, column)" v-if="!itemValue(item, column).includes('<button')"></a>
+                  <span v-else v-html="itemValue(item, column)"></span>
+              </td>
+          </slot>
+        </tr>
+        <tr v-if="!data || !data.length">
+            <td>
+                No data to display
+            </td>
+            <td v-for="column in columns" :key="column"></td>
+        </tr>
     </tbody>
   </table>
 </template>

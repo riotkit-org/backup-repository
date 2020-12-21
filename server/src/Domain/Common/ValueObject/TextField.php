@@ -5,7 +5,7 @@ namespace App\Domain\Common\ValueObject;
 use App\Domain\Common\Exception\DomainInputValidationConstraintViolatedError;
 use App\Domain\Errors;
 
-class TextField
+class TextField implements \JsonSerializable
 {
     protected string $value;
     protected static string $field        = '';
@@ -47,5 +47,10 @@ class TextField
     public function getValue(): string
     {
         return $this->value;
+    }
+
+    public function jsonSerialize(): string
+    {
+        return $this->getValue();
     }
 }

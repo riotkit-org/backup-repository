@@ -27,9 +27,12 @@ $default-color:              #888888 !default;
 $default-bg:                 #888888 !default;
 $default-states-color:       #777777 !default;
 
-$primary-color:              #3472F7 !default;
-$primary-bg:                 #3472F7 !default;
-$primary-states-color:       #1D62F0 !default;
+$primary-color: #ff4d4d !default;
+$primary-bg: #f73434 !default;
+$primary-states-color: #d20e0e !default;
+$primary-btn-bg: #ff9595 !default;
+$primary-btn-hover-bg: #ff7878 !default;
+$primary-btn-border: #ff8989 !default;
 
 $success-color:              #87CB16 !default;
 $success-bg:                 #87CB16 !default;
@@ -218,20 +221,6 @@ $pink-color-bottom: 	            #ff2e2e;
 
 $black-color-top:	 	            #292929;
 $black-color-bottom: 	            #0e0e0e;
-
-$social-facebook: 			#3b5998;
-$social-twitter: 			#55acee;
-$social-pinterest: 			#cc2127;
-$social-google: 			#dd4b39;
-$social-linkedin: 			#0976b4;
-$social-dribbble: 			#ea4c89;
-$social-github: 			#333333;
-$social-youtube: 			#e52d27;
-$social-stumbleupon: 		#eb4924;
-$social-reddit: 			#ff4500;
-$social-tumblr: 			#35465c;
-$social-behance: 			#1769ff;
-
 
 $filter-blue:         darken($primary-color, 10%);
 $filter-azure:        darken($info-color, 10%);

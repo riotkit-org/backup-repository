@@ -9,6 +9,11 @@
         <p class="card-category" v-if="subTitle">{{subTitle}}</p>
       </slot>
     </div>
+
+    <div class="card-header">
+        <slot name="filters"></slot>
+    </div>
+
     <div class="card-body" v-if="$slots.default" :class="bodyClasses">
       <slot></slot>
     </div>

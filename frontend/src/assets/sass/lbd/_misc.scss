@@ -5,10 +5,10 @@ body,
     position: relative;
 }
 a{
-  color: $info-color;
+  color: $primary-color;
 
   &:hover, &:focus{
-     color: $info-states-color;
+     color: $primary-states-color;
      text-decoration: none;
   }
 }

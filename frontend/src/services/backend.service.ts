@@ -1,9 +1,18 @@
 
 import axios from 'axios';
 import VueComponent from 'vue'
-import Dictionary from '../contracts/base.contract';
+
 // @ts-ignore
-import AppInfo from '../models/appinfo.model.ts'
+import Dictionary from 'src/contracts/base.contract.ts';
+// @ts-ignore
+import AppInfo from 'src/models/appinfo.model.ts'
+// @ts-ignore
+import BackupCollection from "src/models/backup.model.ts";
+// @ts-ignore
+import BackupCollectionsResponse from "src/models/backup.response.model.ts";
+// @ts-ignore
+import Pagination from "src/models/pagination.model.ts";
+import {List} from "../contracts/base.contract";
 
 export default class BackupRepositoryBackend {
     vue: any|VueComponent
@@ -42,6 +51,43 @@ export default class BackupRepositoryBackend {
         }).then(function (response) {
             return response.data.token
         })
+    }
+
+    /**
+     * Fetches backup collection and returns as a paginated respnose
+     *
+     * @param pageNum
+     * @param qs
+     * @param startDate
+     * @param endDate
+     * @param tags
+     */
+    async getBackupCollections(pageNum: number = 1, qs: string = '', startDate: Date|null, endDate: Date|null, tags: List<any>): Promise<BackupCollectionsResponse> {
+        let url = '/repository/collection?page=' + pageNum + '&searchQuery=' + qs
+
+        if (startDate !== null && endDate !== null) {
+            url += '&createdFrom=' + startDate.toLocaleDateString("en-US") + '&createdTo=' + endDate.toLocaleDateString("en-US")
+        }
+
+        if (tags && tags.length > 0) {
+            for (let tagNum in tags) {
+                let tagData = tags[tagNum].text.split('=')
+                let tagName = tagData[0]
+                let tagValue = tagData[1] == undefined ? '' : tagData[1]
+
+                url += '&tags[' + tagName + ']=' + tagValue
+            }
+        }
+
+        return this._get(url)
+            .then(function (response) {
+                return new BackupCollectionsResponse(
+                    Pagination.fromDict(response.data.pagination),
+                    response.data.elements ? response.data.elements.map(function (elementData: Dictionary<any>) {
+                        return BackupCollection.fromDict(elementData)
+                    }) : []
+                )
+            })
     }
 
     async _post(url: string, data: Dictionary<string>): Promise<any> {

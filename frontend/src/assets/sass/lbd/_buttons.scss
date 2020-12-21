@@ -107,26 +107,3 @@
     margin-top: -1px;
     right: 8px;
 }
-.btn-social{
-    opacity: 0.85;
-}
-
-.btn-twitter{
-    border-color: $social-twitter;
-    color: $social-twitter;
-    &:hover{
-        opacity: 1 !important;
-        border-color: $social-twitter;
-        color: $social-twitter;
-    }
-}
-.btn-facebook{
-    border-color: $social-facebook;
-    color: $social-facebook;
-
-    &:hover{
-        opacity: 1 !important;
-        border-color: $social-facebook;
-        color: $social-facebook;
-    }
-}

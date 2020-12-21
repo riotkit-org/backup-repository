@@ -12,7 +12,7 @@
                 <i class="nc-icon nc-circle-09"></i>
                 <p>Users</p>
             </sidebar-link>
-            <sidebar-link to="/admin/backup-collections" v-if="isLoggedIn">
+            <sidebar-link to="/admin/backup/collections" v-if="isLoggedIn">
                 <i class="nc-icon nc-single-copy-04"></i>
                 <p>Backup collections</p>
             </sidebar-link>

@@ -1,3 +1,10 @@
+/**
+ * App Plugin
+ * ==========
+ *
+ * Registers core services to be initialized and accessible in global scope of each page
+ */
+
 // @ts-ignore
 import AuthenticatorService from "../services/authenticator.service.ts";
 

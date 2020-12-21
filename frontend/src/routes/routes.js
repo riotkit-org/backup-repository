@@ -6,11 +6,12 @@ import NotFound from '../pages/NotFoundPage.vue'
 import Overview from 'src/pages/Overview.vue'
 import UserProfile from 'src/pages/UserProfile.vue'
 import Icons from 'src/pages/Icons.vue'
-import Notifications from 'src/pages/Notifications.vue'
 
 import Login from 'src/pages/Login.vue'
 import Logout from 'src/pages/Logout.vue';
 import Users from 'src/pages/Users.vue'
+import BackupCollections from "src/pages/BackupCollections";
+import BackupCollectionDetails from "@/pages/BackupCollectionDetails";
 
 const routes = [
     {
@@ -44,6 +45,16 @@ const routes = [
                 component: UserProfile
             },
             {
+                path: 'backup/collections',
+                name: 'List backup collections',
+                component: BackupCollections
+            },
+            {
+                path: 'backup/collection/*',
+                name: 'Backup Collection Details',
+                component: BackupCollectionDetails
+            },
+            {
                 path: 'login',
                 name: 'Authenticate',
                 component: Login
@@ -57,11 +68,6 @@ const routes = [
                 path: 'icons',
                 name: 'Icons',
                 component: Icons
-            },
-            {
-                path: 'notifications',
-                name: 'Notifications',
-                component: Notifications
             }
         ]
     },

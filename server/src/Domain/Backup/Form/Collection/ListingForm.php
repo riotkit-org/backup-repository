@@ -8,8 +8,9 @@ class ListingForm
     public ?array $allowedTokens = [];
     public ?\DateTimeImmutable $createdFrom = null;
     public ?\DateTimeImmutable $createdTo   = null;
-    public ?int $page  = 1;
-    public ?int $limit = 20;
+    public ?int $page   = 1;
+    public ?int $limit  = 20;
+    public ?array $tags = [];
 
     public function toArray(): array
     {
@@ -19,7 +20,8 @@ class ListingForm
             'createdFrom'   => $this->createdFrom,
             'createdTo'     => $this->createdTo,
             'page'          => $this->getPage(),
-            'limit'         => $this->getLimit()
+            'limit'         => $this->getLimit(),
+            'tags'          => $this->tags
         ];
     }
 

@@ -21,7 +21,7 @@
             <div class="row">
                 <div class="col-12">
                     <div class="text-center">
-                        <button type="submit" class="btn btn-info btn-fill float-right" @click.prevent="addNewUser">Add user</button>
+                        <button type="submit" class="btn btn-fill float-right" @click.prevent="addNewUser">Add user</button>
                     </div>
                 </div>
             </div>
