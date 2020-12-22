@@ -27,9 +27,9 @@ Backup Repository Todo
 - [x] Drop upload file by url (backups will be uploaded only via POST)
 - [x] Drop HTTP caching functionality - backups do not need to be cached
 - [ ] FEATURE: Add support for joining backups into BackupApplication
-- [ ] FEATURE/REFACTOR: Exceptions & Errors in ONE file mapped as constants, properly done exception inheriting and factory methods
-- [ ] FEATURE: Add support for granting a token access, when backup collection is created (add support for ROLES granting per collection, should be not that difficult)
-- [ ] FEATURE: Add JWT support, replace token with user management (tokenid replace with userid, add e-mail and password)
+- [x] FEATURE/REFACTOR: Exceptions & Errors in ONE file mapped as constants, properly done exception inheriting and factory methods
+- [x] FEATURE: Add support for granting a token access, when backup collection is created (add support for ROLES granting per collection, should be not that difficult)
+- [x] FEATURE: Add JWT support, replace token with user management (tokenid replace with userid, add e-mail and password)
 - [ ] FEATURE: Implement WebDav for usage with rclone as a client
 - [ ] FEATURE: Bump Symfony 4 to Symfony 5 (at the end of refactoring?)
 - [ ] FEATURE: Add a frontend in React or Vue.js

@@ -93,6 +93,12 @@ export default class BackupRepositoryBackend {
             })
     }
 
+    async saveBackupCollection(collection: BackupCollection): Promise<boolean> {
+        return this._post('/repository/collection', collection.toDict(), "PUT").then(function (response) {
+            return response.data.status === true
+        })
+    }
+
     async findBackupCollectionById(collectionId: string): Promise<BackupCollection|null> {
         return this._get('/repository/collection/' + collectionId).then(function (response) {
             if (response.data.collection === undefined) {
@@ -122,18 +128,25 @@ export default class BackupRepositoryBackend {
         })
     }
 
-    async _post(url: string, data: Dictionary<string>): Promise<any> {
+    async _post(url: string, data: Dictionary<string>, method: string|any = "POST"): Promise<any> {
         this.prepareAuthentication()
 
         let that = this
         let response
 
-        await axios.post(this.getBaseURL() + url, data).then(function (onResponse) {
+        await axios.request({url: this.getBaseURL() + url, method: method, data: data}).then(function (onResponse) {
             response = onResponse
 
         }).catch(function (onError) {
             response = onError.response
-            that._notify(response.data.message ? response.data.message : response.statusText)
+
+            let message = response.data.message ? response.data.message : response.statusText
+
+            if (response.data.error !== undefined) {
+                message = response.data.error
+            }
+
+            that._notify(message)
         })
 
         return response

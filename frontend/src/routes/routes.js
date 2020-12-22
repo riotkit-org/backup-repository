@@ -50,6 +50,11 @@ const routes = [
                 component: BackupCollections
             },
             {
+                path: 'backup/collection',
+                name: 'Create a new backup collection',
+                component: BackupCollectionDetails
+            },
+            {
                 path: 'backup/collection/*',
                 name: 'Backup Collection Details',
                 component: BackupCollectionDetails

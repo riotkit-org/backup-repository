@@ -31,6 +31,18 @@ export class BackupCollection {
         return collection
     }
 
+    toDict(): Dictionary<string|any> {
+        return {
+            id: this.id,
+            maxBackupsCount: typeof this.maxBackupsCount === 'string' ? parseInt(this.maxBackupsCount) : this.maxBackupsCount,
+            maxOneVersionSize: this.getPrettyMaxOneVersionSize(),
+            maxCollectionSize: this.getPrettyMaxCollectionSize(),
+            strategy: this.strategy,
+            description: this.description,
+            filename: this.filename
+        }
+    }
+
     getPrettyMaxOneVersionSize(): string {
         return bytes(this.maxOneBackupVersionSize)
     }

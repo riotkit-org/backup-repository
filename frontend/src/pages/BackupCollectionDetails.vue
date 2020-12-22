@@ -2,21 +2,8 @@
     <div class="content">
         <div class="container-fluid">
             <div class="row">
-                <div class="col-6" v-if="collection">
-                    <card class="card-plain">
-                        <template slot="header">
-                            <h4 class="card-title">Stored versions</h4>
-                            <p class="card-category">
-                                Recently stored versions in this collection
-                            </p>
-                        </template>
-                        <div class="table-responsive">
-                            <l-table class="table-hover"
-                                     :columns="collections.columns"
-                                     :data="collections.data">
-                            </l-table>
-                        </div>
-                    </card>
+                <div class="col-6" v-if="isEditing && collection">
+                    <versions-list :collection="collection"></versions-list>
                 </div>
 
                 <div class="col-6" v-if="collection">
@@ -83,7 +70,7 @@
             <div class="row">
                 <div class="col-12">
                     <div class="text-center">
-                        <button type="submit" class="btn btn-info btn-fill float-right" @click.prevent="saveChanges">Save</button>
+                        <button type="submit" class="btn btn-info btn-fill float-right" @click.prevent="saveChanges" v-html="isEditing ? 'Save changes' : 'Create'"></button>
                     </div>
                 </div>
             </div>
@@ -92,48 +79,33 @@
 </template>
 
 <script>
-import LTable from 'src/components/Table.vue'
 import Card from 'src/components/Cards/Card.vue'
-import vPagination from 'vue-plain-pagination'
-import {BackupVersion} from 'src/models/backup.model.ts'
-
-let exampleModel = new BackupVersion()
-exampleModel.id = 'a158d1a0-34f1-4581-830e-6c54fb19e765'
-exampleModel.date = '2020-05-01 08:00:00'
-exampleModel.version = 'v1'
-
-const tableColumns = ['Version', 'Id', 'Date']
+import VersionsList from 'src/components/Collections/VersionsList.vue'
 
 export default {
     components: {
-        LTable,
-        Card,
-        vPagination
+        Card, VersionsList
     },
     data () {
         return {
-            collections: {
-                columns: [...tableColumns],
-                data: []
-            },
-            currentPage: 1,
-            bootstrapPaginationClasses: {
-                ul: 'pagination',
-                li: 'page-item',
-                liActive: 'active',
-                liDisable: 'disabled',
-                button: 'page-link'
-            },
+            isEditing: false,
             collection: null
         }
     },
     methods: {
-        addNewBackupCollection() {
-            window.location.href = '#/admin/backup/collection'
-        },
-
         saveChanges() {
+            let that = this
 
+            this.$backend().saveBackupCollection(this.collection).then(function (status) {
+                if (status === true) {
+                    that.$notifications.notify({
+                        message: 'Changes saved',
+                        horizontalAlign: 'right',
+                        verticalAlign: 'top',
+                        type: 'success'
+                    })
+                }
+            })
         },
 
         fetchBackendData() {
@@ -142,27 +114,16 @@ export default {
 
             this.$backend().findBackupCollectionById(collectionId).then(function (collection) {
                 that.collection = collection
-
-                that.$backend().findVersionsForCollection(collection).then(function (versions) {
-                    that.collections.data = []
-
-                    for (let versionNum in versions) {
-                        let version = versions[versionNum]
-
-                        that.collections.data.push({
-                            version: version.version,
-                            id: version.id,
-                            date: version.creationDate.date,
-                            _url: '',
-                            _active: true
-                        })
-                    }
-                })
             })
         }
     },
     mounted() {
-        this.fetchBackendData()
+        let collectionId = this.$route.params.pathMatch
+        this.isEditing = collectionId !== undefined
+
+        if (collectionId) {
+            this.fetchBackendData()
+        }
     }
 }
 </script>
