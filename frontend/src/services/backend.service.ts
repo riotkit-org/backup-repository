@@ -6,16 +6,6 @@ import VueComponent from 'vue'
 import Dictionary from 'src/contracts/base.contract.ts';
 // @ts-ignore
 import AppInfo from 'src/models/appinfo.model.ts'
-// @ts-ignore
-import { BackupCollection } from "src/models/backup.model.ts";
-// @ts-ignore
-import BackupCollectionsResponse from "src/models/backup.response.model.ts";
-// @ts-ignore
-import Pagination from "src/models/pagination.model.ts";
-// @ts-ignore
-import {List} from "src/contracts/base.contract.ts";
-// @ts-ignore
-import {BackupVersion} from "src/models/backup.model.ts";
 
 export default class BackupRepositoryBackend {
     vue: any|VueComponent
@@ -32,7 +22,7 @@ export default class BackupRepositoryBackend {
      * Loads application version information
      */
     async getApplicationInfo(): Promise<AppInfo|null> {
-        return await this._get('/version', false).then(function (response) {
+        return await this.get('/version', false).then(function (response) {
             if (response.data.version) {
                 return new AppInfo(response.data.version, response.data.dbType)
             }
@@ -48,7 +38,7 @@ export default class BackupRepositoryBackend {
      * @param password
      */
     async getJWT(login: string, password: string): Promise<string|undefined> {
-        return this._post('/login_check', {
+        return this.post('/login_check', {
             'username': login,
             'password': password
         }).then(function (response) {
@@ -56,79 +46,7 @@ export default class BackupRepositoryBackend {
         })
     }
 
-    /**
-     * Fetches backup collection and returns as a paginated respnose
-     *
-     * @param pageNum
-     * @param qs
-     * @param startDate
-     * @param endDate
-     * @param tags
-     */
-    async getBackupCollections(pageNum: number = 1, qs: string = '', startDate: Date|null, endDate: Date|null, tags: List<any>): Promise<BackupCollectionsResponse> {
-        let url = '/repository/collection?page=' + pageNum + '&searchQuery=' + qs
-
-        if (startDate !== null && endDate !== null) {
-            url += '&createdFrom=' + startDate.toLocaleDateString("en-US") + '&createdTo=' + endDate.toLocaleDateString("en-US")
-        }
-
-        if (tags && tags.length > 0) {
-            for (let tagNum in tags) {
-                let tagData = tags[tagNum].text.split('=')
-                let tagName = tagData[0]
-                let tagValue = tagData[1] == undefined ? '' : tagData[1]
-
-                url += '&tags[' + tagName + ']=' + tagValue
-            }
-        }
-
-        return this._get(url)
-            .then(function (response) {
-                return new BackupCollectionsResponse(
-                    Pagination.fromDict(response.data.pagination),
-                    response.data.elements ? response.data.elements.map(function (elementData: Dictionary<any>) {
-                        return BackupCollection.fromDict(elementData)
-                    }) : []
-                )
-            })
-    }
-
-    async saveBackupCollection(collection: BackupCollection): Promise<boolean> {
-        return this._post('/repository/collection', collection.toDict(), "PUT").then(function (response) {
-            return response.data.status === true
-        })
-    }
-
-    async findBackupCollectionById(collectionId: string): Promise<BackupCollection|null> {
-        return this._get('/repository/collection/' + collectionId).then(function (response) {
-            if (response.data.collection === undefined) {
-                return null
-            }
-
-            return BackupCollection.fromDict(response.data.collection)
-        })
-    }
-
-    async findVersionsForCollection(collection: BackupCollection): Promise<List<BackupVersion>> {
-        return this._get('/repository/collection/' + collection.id + '/version').then(function (response) {
-
-            // @ts-ignore
-            let versions: List = []
-
-            for (let versionNum in response.data.versions) {
-                if (!response.data.versions.hasOwnProperty(versionNum)) {
-                    continue
-                }
-
-                let version: Dictionary<string> = response.data.versions[versionNum]
-                versions.push(BackupVersion.fromDict(version))
-            }
-
-            return versions
-        })
-    }
-
-    async _post(url: string, data: Dictionary<string>, method: string|any = "POST"): Promise<any> {
+    async post(url: string, data: Dictionary<string>, method: string|any = "POST"): Promise<any> {
         this.prepareAuthentication()
 
         let that = this
@@ -152,7 +70,7 @@ export default class BackupRepositoryBackend {
         return response
     }
 
-    async _get(url: string, notifyErrors: boolean = true): Promise<any> {
+    async get(url: string, notifyErrors: boolean = true): Promise<any> {
         this.prepareAuthentication()
 
         let that = this

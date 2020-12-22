@@ -3,12 +3,15 @@
         <div class="container-fluid">
             <div class="row">
                 <div class="col-6" v-if="isEditing && collection">
-                    <versions-list :collection="collection"></versions-list>
+                    <permissions-list :collection="collection"/>
                 </div>
 
-                <div class="col-6" v-if="collection">
+                <!--
+                  -- Edit & Creation form
+                  -->
+                <div :class="isEditing ? 'col-6' : 'col-12'" v-if="collection">
                     <card>
-                        <h4 slot="header" class="card-title">Edit Backup Collection</h4>
+                        <h4 slot="header" class="card-title" v-html="isEditing ? 'Edit Backup Collection' : 'Create Backup Collection'"></h4>
                         <div class="row">
                             <div class="col-md-6">
                                 <base-input type="text"
@@ -39,28 +42,39 @@
 
                         <div class="row">
                             <div class="col-md-4">
-                                <base-input type="number"
-                                            label="Max backups count"
-                                            placeholder="14"
-                                            :value="collection.maxBackupsCount"
-                                            @input="(value) => collection.maxBackupsCount = value"
+                                <base-input
+                                    type="number"
+                                    label="Max backups count"
+                                    placeholder="14"
+                                    :value="collection.maxBackupsCount"
+                                    @input="(value) => collection.maxBackupsCount = value"
                                 />
                             </div>
                             <div class="col-md-4">
-                                <base-input type="string"
-                                            label="Max one version size"
-                                            placeholder="150MB"
-                                            :value="collection.getPrettyMaxOneVersionSize()"
-                                            @input="(value) => collection.setMaxOneVersionSize(value)"
+                                <base-input
+                                    type="string"
+                                    label="Max one version size"
+                                    placeholder="150MB"
+                                    :value="collection.getPrettyMaxOneVersionSize()"
+                                    @input="(value) => collection.setMaxOneVersionSize(value)"
                                 />
                             </div>
                             <div class="col-md-4">
-                                <base-input type="string"
-                                            label="Max overall collection size"
-                                            placeholder="150MB"
-                                            :value="collection.getPrettyMaxCollectionSize()"
-                                            @input="(value) => collection.setMaxCollectionSize(value)"
+                                <base-input
+                                    type="string"
+                                    label="Max overall collection size"
+                                    placeholder="150MB"
+                                    :value="collection.getPrettyMaxCollectionSize()"
+                                    @input="(value) => collection.setMaxCollectionSize(value)"
                                 />
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-12">
+                                <div class="text-center">
+                                    <button type="submit" class="btn btn-info btn-fill float-right" @click.prevent="saveChanges" v-html="isEditing ? 'Save changes' : 'Create'"></button>
+                                </div>
                             </div>
                         </div>
                     </card>
@@ -68,10 +82,11 @@
             </div>
 
             <div class="row">
-                <div class="col-12">
-                    <div class="text-center">
-                        <button type="submit" class="btn btn-info btn-fill float-right" @click.prevent="saveChanges" v-html="isEditing ? 'Save changes' : 'Create'"></button>
-                    </div>
+                <!--
+                  -- List of backup versions
+                  -->
+                <div class="col-12" v-if="isEditing && collection">
+                    <versions-list :collection="collection"/>
                 </div>
             </div>
         </div>
@@ -81,29 +96,36 @@
 <script>
 import Card from 'src/components/Cards/Card.vue'
 import VersionsList from 'src/components/Collections/VersionsList.vue'
+import PermissionsList from 'src/components/Collections/PermissionsList.vue'
+import {BackupCollection} from "src/models/backup.model.ts";
 
 export default {
     components: {
-        Card, VersionsList
+        Card, VersionsList, PermissionsList
     },
     data () {
         return {
             isEditing: false,
-            collection: null
+            collection: new BackupCollection()
         }
     },
     methods: {
         saveChanges() {
             let that = this
 
-            this.$backend().saveBackupCollection(this.collection).then(function (status) {
-                if (status === true) {
+            this.$backupCollectionBackend().saveBackupCollection(this.collection).then(function (collectionId) {
+                if (collectionId !== false) {
                     that.$notifications.notify({
-                        message: 'Changes saved',
+                        message: that.isEditing ? 'Changes saved' : 'Collection created',
                         horizontalAlign: 'right',
                         verticalAlign: 'top',
                         type: 'success'
                     })
+
+                    // redirect if new collection was created
+                    if (!that.isEditing) {
+                        that.$router.push({name: 'backup_collections_list', query: {'searchQuery': collectionId}})
+                    }
                 }
             })
         },
@@ -112,7 +134,7 @@ export default {
             let collectionId = this.$route.params.pathMatch
             let that = this
 
-            this.$backend().findBackupCollectionById(collectionId).then(function (collection) {
+            this.$backupCollectionBackend().findBackupCollectionById(collectionId).then(function (collection) {
                 that.collection = collection
             })
         }

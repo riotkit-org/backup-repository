@@ -3,14 +3,14 @@ import Dictionary from "src/contracts/base.contract.ts";
 import bytes from 'bytes'
 
 export class BackupCollection {
-    id: string
-    maxBackupsCount: number
-    maxOneBackupVersionSize: number
-    maxCollectionSize: number
-    createdAt: string
-    strategy: string
-    description: string
-    filename: string
+    id: string = ''
+    maxBackupsCount: number = 2
+    maxOneBackupVersionSize: number = 52428800  // default 50 MB
+    maxCollectionSize: number = 115343360       // default 110 MB
+    createdAt: string   = ''
+    strategy: string    = 'delete_oldest_when_adding_new'
+    description: string = ''
+    filename: string    = ''
 
     /**
      * Factory method

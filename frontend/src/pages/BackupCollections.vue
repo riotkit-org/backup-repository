@@ -107,6 +107,10 @@ export default {
         }
     },
     created() {
+        if (this.$route.query.searchQuery) {
+            this.filters.searchQuery = this.$route.query.searchQuery
+        }
+
         this.fetchBackendData()
     },
     methods: {
@@ -117,7 +121,7 @@ export default {
         fetchBackendData() {
             let that = this
 
-            this.$backend().getBackupCollections(this.currentPage, this.filters.searchQuery, this.filters.range.start, this.filters.range.end, this.filters.tags)
+            this.$backupCollectionBackend().getBackupCollections(this.currentPage, this.filters.searchQuery, this.filters.range.start, this.filters.range.end, this.filters.tags)
                 .then(function (response) {
                     // pagination
                     that.maxPages    = response.pagination.max

@@ -46,17 +46,17 @@ const routes = [
             },
             {
                 path: 'backup/collections',
-                name: 'List backup collections',
+                name: 'backup_collections_list',
                 component: BackupCollections
             },
             {
                 path: 'backup/collection',
-                name: 'Create a new backup collection',
+                name: 'backup_collection_creation',
                 component: BackupCollectionDetails
             },
             {
                 path: 'backup/collection/*',
-                name: 'Backup Collection Details',
+                name: 'backup_collection_details',
                 component: BackupCollectionDetails
             },
             {

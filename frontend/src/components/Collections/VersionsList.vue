@@ -36,9 +36,16 @@ export default {
     },
     methods: {
         fetchBackend(collection) {
+            if (!collection.id) {
+                window.console.info('Not fetching the versions list')
+                return false
+            }
+
+            window.console.info('Fetching versions list')
+
             let that = this
 
-            this.$backend().findVersionsForCollection(collection).then(function (versions) {
+            this.$backupCollectionBackend().findVersionsForCollection(collection).then(function (versions) {
                 that.versions.data = []
 
                 for (let versionNum in versions) {
