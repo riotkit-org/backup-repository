@@ -49,7 +49,15 @@ class CreateEditController extends BaseController
         /**
          * @var CreationForm|EditForm $form
          */
-        $form = $this->decodeRequestIntoDTO($request, $isCreation ? CreationForm::class : EditForm::class);
+        $form = $this->decodeRequestIntoDTO($request, $isCreation ? CreationForm::class : EditForm::class,
+            function (array $data) use ($isCreation) {
+                if (isset($data['id'])) {
+                    $data['collection'] = $data['id'];
+                }
+
+                return $data;
+            }
+        );
 
         /**
          * @var User $user

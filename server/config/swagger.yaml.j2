@@ -200,7 +200,7 @@ strategy:
 #  Request bodies
 # -----------------
 
-{% macro payload_collection(is_editing) %}
+{% macro payload_collection() %}
 schema:
   required:
       - maxBackupsCount
@@ -212,12 +212,9 @@ schema:
       - description
   properties:
 
-{%  if not is_editing %}
       id:
           type: string
           example: f9eff6b7-3138-43ca-b4b1-b3f1d61df17b
-{% endif  %}
-
       maxBackupsCount:
           type: integer
           example: 5
@@ -613,7 +610,7 @@ paths:
                 - name: body
                   in: body
                   description: JSON payload
-                  {{ _self.payload_collection(false) | indent_by('                  ') | raw }}
+                  {{ _self.payload_collection() | indent_by('                  ') | raw }}
             responses:
                 {{ _self.standard_responses() | indent_by('                ') | raw }}
                 "403 - Current permissions does not allow to create this object":
@@ -669,7 +666,7 @@ paths:
                 - name: body
                   in: body
                   description: JSON payload
-                  {{ _self.payload_collection(true) | indent_by('                  ') | raw }}
+                  {{ _self.payload_collection() | indent_by('                  ') | raw }}
             responses:
                 {{ _self.standard_responses() | indent_by('                ') | raw }}
                 "403 - No permissions to modify this object":

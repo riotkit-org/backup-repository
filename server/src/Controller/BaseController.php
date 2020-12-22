@@ -33,19 +33,24 @@ abstract class BaseController implements ContainerAwareInterface
 
     /**
      * @param Request|array $request
-     * @param string $DTOClassName
+     * @param string        $DTOClassName
+     * @param callable|null $transformer
      *
      * @return ${DTOClassName}
      *
      * @throws JsonRequestException
      */
-    protected function decodeRequestIntoDTO($request, string $DTOClassName)
+    protected function decodeRequestIntoDTO($request, string $DTOClassName, callable $transformer = null)
     {
         if (is_array($request)) {
             $request = FormTypeCaster::recast($request, $DTOClassName);
         }
 
         $data = $request instanceof Request ? $request->getContent(false) : json_encode($request);
+
+        if ($transformer && strpos(ltrim($data), '{') === 0) {
+            $data = json_encode($transformer(json_decode($data, true)));
+        }
 
         try {
             return $this->container->get('serializer')
