@@ -810,7 +810,7 @@ paths:
                                 type: boolean
                             users:
                                 items:
-                                    "$ref": "#/definitions/UserInACollection"
+                                    "$ref": "#/definitions/UserAccessInACollection"
                                 type: array
                         type: object
 
@@ -1336,6 +1336,7 @@ definitions:
         type: object
 
     UserInACollection:
+        type: object
         properties:
             id:
                 example: ca6a2635-d2cb-4682-ba81-3879dd0e8a77
@@ -1344,9 +1345,23 @@ definitions:
                 items:
                     type: string
                 type: array
-            idIsCensored:
-                type: boolean
+
+    UserAccessInACollection:
         type: object
+        properties:
+            userId:
+                example: ca6a2635-d2cb-4682-ba81-3879dd0e8a77
+                type: string
+            userEmail:
+                example: some--body@riseup.net
+                type: string
+            roles:
+                type: array
+                items:
+                    type: string
+            collectionId:
+                type: string
+                example: d5aab8d7-64f3-42ce-bae4-59d7108294c3
 
     BackupVersion:
         type: object

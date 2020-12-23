@@ -1,0 +1,7 @@
+App\Domain\Backup\ValueObject\Email:
+    type: embeddable
+    fields:
+        value:
+            type: string
+            column: email
+            nullable: false

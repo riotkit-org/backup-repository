@@ -59,10 +59,10 @@ class CommonValueException extends ApplicationException
         );
     }
 
-    public static function fromInvalidRolesSelected()
+    public static function fromInvalidRolesSelected(string $role, array $availableRoles)
     {
         return new static(
-            Errors::ERR_MSG_USER_ROLE_INVALID,
+            str_replace(['{{ role }}', '{{ available }}'], [$role, json_encode($availableRoles)],Errors::ERR_MSG_USER_ROLE_INVALID),
             Errors::ERR_USER_ROLE_INVALID
         );
     }

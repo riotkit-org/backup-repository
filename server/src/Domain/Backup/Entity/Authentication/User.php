@@ -2,17 +2,24 @@
 
 namespace App\Domain\Backup\Entity\Authentication;
 
+use App\Domain\Backup\ValueObject\Email;
 use App\Domain\Common\SharedEntity\User as TokenFromCommon;
 
 class User extends TokenFromCommon implements \JsonSerializable
 {
-    // @todo: Remove ID censorship
-    public function jsonSerialize(bool $censorId = false)
+    protected Email $email;
+
+    public function jsonSerialize()
     {
         return [
-            'id'           => $censorId ? $this->getCensoredId() : $this->getId(),
+            'id'           => $this->getId(),
+            'email'        => $this->email->getValue(),
             'roles'        => $this->getRoles(),
-            'idIsCensored' => $censorId
         ];
+    }
+
+    public function getEmail(): Email
+    {
+        return $this->email;
     }
 }

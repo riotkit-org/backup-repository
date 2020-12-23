@@ -9,11 +9,11 @@ use App\Domain\Backup\ValueObject\CollectionSpecificRoles;
  * Normally it is fully managed transparently by ORM, but in this case we manage it semi-manually to inject
  * roles per connection.
  */
-class UserAccess
+class UserAccess implements \JsonSerializable
 {
     private string $collectionId;
     private string $userId;
-
+    private Authentication\User $user;
     private CollectionSpecificRoles $roles;
 
     public static function createFrom(BackupCollection $collection, Authentication\User $user)
@@ -25,6 +25,7 @@ class UserAccess
         $ua = new static();
         $ua->collectionId = (string) $collection->getId();
         $ua->userId       = (string) $user->getId();
+        $ua->user         = $user;
 
         return $ua;
     }
@@ -37,5 +38,15 @@ class UserAccess
     public function getRoles(): CollectionSpecificRoles
     {
         return $this->roles;
+    }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'userId'       => $this->userId,
+            'userEmail'    => $this->user->getEmail()->getValue(),
+            'roles'        => $this->roles->getAsList(),
+            'collectionId' => $this->collectionId
+        ];
     }
 }

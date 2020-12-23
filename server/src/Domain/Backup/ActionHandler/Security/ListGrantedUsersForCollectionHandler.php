@@ -5,11 +5,19 @@ namespace App\Domain\Backup\ActionHandler\Security;
 use App\Domain\Backup\Entity\BackupCollection;
 use App\Domain\Backup\Exception\AuthenticationException;
 use App\Domain\Backup\Form\CollectionTokenListingForm;
+use App\Domain\Backup\Repository\UserAccessRepository;
 use App\Domain\Backup\Response\Collection\AllowedTokensResponse;
 use App\Domain\Backup\Security\CollectionManagementContext;
 
 class ListGrantedUsersForCollectionHandler
 {
+    private UserAccessRepository $repository;
+
+    public function __construct(UserAccessRepository $repository)
+    {
+        $this->repository = $repository;
+    }
+
     /**
      * @param CollectionTokenListingForm  $form
      * @param CollectionManagementContext $ctx
@@ -27,8 +35,7 @@ class ListGrantedUsersForCollectionHandler
         $this->assertHasRights($ctx, $form->collection);
 
         return AllowedTokensResponse::createSuccessfulResponse(
-            $form->collection->getAllowedUsers(),
-            $ctx->cannotSeeFullTokenIds()
+            $this->repository->findAllAccessesForCollection($form->collection)
         );
     }
 

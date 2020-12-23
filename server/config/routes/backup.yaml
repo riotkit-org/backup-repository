@@ -39,7 +39,7 @@ backup.collection_list_accesses:
 backup.collection_add_token:
     path: /api/stable/repository/collection/{id}/access
     controller: 'App\Controller\Backup\Security\GrantUserToCollectionController::handleAction'
-    methods: ['POST']
+    methods: ['POST', 'PUT']
     defaults:
         _secured: true
 

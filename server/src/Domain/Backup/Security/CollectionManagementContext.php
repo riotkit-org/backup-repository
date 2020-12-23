@@ -232,11 +232,6 @@ class CollectionManagementContext
         return $collection->isTokenIdAllowed($this->userId);
     }
 
-    public function cannotSeeFullTokenIds(): bool
-    {
-        return $this->cannotSeeFullTokenIds;
-    }
-
     public function getUser(): ?User
     {
         return $this->user;

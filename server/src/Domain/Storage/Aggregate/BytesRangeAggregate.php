@@ -72,25 +72,25 @@ class BytesRangeAggregate
     private function parse(string $headerValue, int $fileSize): array
     {
         if (\strpos($headerValue, ',') !== false) {
-            throw new ContentRangeInvalidException(0, $fileSize, $fileSize);
+            throw ContentRangeInvalidException::createFromRange(0, $fileSize, $fileSize);
         }
 
         $actual = explode('=', $headerValue)[1] ?? '';
         $range  = explode('-', $actual);
 
         if ($headerValue && (!$actual || \count($range) === 0)) {
-            throw new ContentRangeInvalidException(0, $fileSize, $fileSize);
+            throw ContentRangeInvalidException::createFromRange(0, $fileSize, $fileSize);
         }
 
         $start = (int) $range[0] > 0 ? (int) $range[0] : 0;
         $end   = (int) ($range[1] ?? 0) > 0 ? (int) $range[1] : $fileSize;
 
         if ($end > $fileSize) {
-            throw new ContentRangeInvalidException(0, $fileSize, $fileSize);
+            throw ContentRangeInvalidException::createFromRange(0, $fileSize, $fileSize);
         }
 
         if ($end < $start) {
-            throw new ContentRangeInvalidException(0, $fileSize, $fileSize);
+            throw ContentRangeInvalidException::createFromRange(0, $fileSize, $fileSize);
         }
 
         return [

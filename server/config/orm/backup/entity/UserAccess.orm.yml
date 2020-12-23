@@ -13,3 +13,10 @@ App\Domain\Backup\Entity\UserAccess:
         roles:
             class: \App\Domain\Backup\ValueObject\CollectionSpecificRoles
             columnPrefix: false
+
+    manyToOne:
+        user:
+            targetEntity: \App\Domain\Backup\Entity\Authentication\User
+            joinColumn:
+                name: user_id
+                referencedColumnName: id

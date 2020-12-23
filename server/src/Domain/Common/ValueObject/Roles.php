@@ -28,7 +28,7 @@ class Roles implements \JsonSerializable
 
         foreach ($roles as $role) {
             if (!\in_array($role, $availableRoles, true)) {
-                throw CommonValueException::fromInvalidRolesSelected();
+                throw CommonValueException::fromInvalidRolesSelected($role, $availableRoles);
             }
         }
 

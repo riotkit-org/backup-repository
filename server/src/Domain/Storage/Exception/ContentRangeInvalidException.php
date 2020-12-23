@@ -23,17 +23,19 @@ class ContentRangeInvalidException extends CommonValueException
      */
     private int $length;
 
-    public function __construct(int $from, int $to, int $length, Throwable $previous = null)
+    public static function createFromRange(int $from, int $to, int $length, Throwable $previous = null)
     {
-        $this->from   = $from;
-        $this->to     = $to;
-        $this->length = $length;
-
-        parent::__construct(
+        $exc = new static(
             Errors::ERR_MSG_STORAGE_READ_CONTENT_RANGE_INVALID,
             Errors::ERR_STORAGE_READ_CONTENT_RANGE_INVALID,
             $previous
         );
+
+        $exc->from   = $from;
+        $exc->to     = $to;
+        $exc->length = $length;
+
+        return $exc;
     }
 
     public function getFrom(): int

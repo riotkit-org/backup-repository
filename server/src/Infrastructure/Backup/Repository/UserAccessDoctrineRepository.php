@@ -26,6 +26,17 @@ class UserAccessDoctrineRepository extends BaseRepository implements UserAccessR
         return $userAccess;
     }
 
+
+    /**
+     * @param BackupCollection $collection
+     *
+     * @return UserAccess[]
+     */
+    public function findAllAccessesForCollection(BackupCollection $collection): array
+    {
+        return $this->findBy(['collectionId' => $collection->getId()]);
+    }
+
     public function persist(UserAccess $userAccess): void
     {
         $this->_em->persist($userAccess);

@@ -33,7 +33,7 @@ final class Errors
     public const ERR_MSG_USER_PASSWORD_WHITESPACES     = 'Password cannot begin or end with a blank character';
 
     public const ERR_USER_ROLE_INVALID                 = 40010;
-    public const ERR_MSG_USER_ROLE_INVALID             = 'Invalid role selected';
+    public const ERR_MSG_USER_ROLE_INVALID             = 'Invalid role selected: {{ role }}. Available: {{ available }}';
 //
 //    public const ERR_USER_NOT_FOUND_BY_EMAIL     = 40011;
 //    public const ERR_MSG_USER_NOT_FOUND_BY_EMAIL = 'User not found';

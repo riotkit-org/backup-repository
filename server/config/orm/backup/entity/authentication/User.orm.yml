@@ -19,3 +19,8 @@ App\Domain\Backup\Entity\Authentication\User:
             class: App\Domain\Authentication\ValueObject\Roles
             columnPrefix: false
 
+        email:
+            class: App\Domain\Backup\ValueObject\Email
+            columnPrefix: false
+
+
