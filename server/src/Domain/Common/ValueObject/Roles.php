@@ -68,6 +68,10 @@ class Roles implements \JsonSerializable
 
     public function getAsList(): array
     {
+        if ($this->isAdmin()) {
+            return array_merge($this->value, $this->getAdministratorPrivileges());
+        }
+
         return $this->value;
     }
 
@@ -76,7 +80,18 @@ class Roles implements \JsonSerializable
         $this->prepareAdministrationRole();
         $this->recordRoleRequest($roleName);
 
-        return \in_array($roleName, $this->value, true);
+        return \in_array($roleName, $this->getAsList(), true);
+    }
+
+    private function isAdmin(): bool
+    {
+        // NOTICE: cannot use hasRole() because of possible infinite recursion
+        return in_array(RolesConst::ROLE_ADMINISTRATOR, $this->value);
+    }
+
+    private function getAdministratorPrivileges(): array
+    {
+        return RolesConst::GRANTS_LIST;
     }
 
     /**

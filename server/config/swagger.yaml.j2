@@ -509,6 +509,13 @@ paths:
         get:
             summary: List available roles
             tags: ['Authentication']
+            parameters:
+                - name: limits
+                  in: query
+                  required: false
+                  description: "Comma separated list of scopes to limit the list by. Use 'auth' to limit the list by roles that user have. Use 'collection' to limit the list by roles allowed to be set per-collection. Example: 'auth,collection'"
+                  type: string
+                  example: "auth,collection"
             responses:
                 {{ _self.standard_responses() | indent_by('                ') | raw }}
                 "403 - You don't have enough permissions to use technical endpoints":

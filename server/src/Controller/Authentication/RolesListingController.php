@@ -4,9 +4,10 @@ namespace App\Controller\Authentication;
 
 use App\Controller\BaseController;
 use App\Domain\Authentication\ActionHandler\RolesListingHandler;
+use App\Domain\Authentication\Exception\AuthenticationException;
 use App\Domain\Authentication\Factory\Context\SecurityContextFactory;
 use App\Infrastructure\Common\Http\JsonFormattedResponse;
-use Exception;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class RolesListingController extends BaseController
@@ -23,14 +24,17 @@ class RolesListingController extends BaseController
     /**
      * List available roles
      *
+     * @param Request $request
+     *
      * @return JsonFormattedResponse
      *
-     * @throws Exception
+     * @throws AuthenticationException
      */
-    public function handle(): Response
+    public function handle(Request $request): Response
     {
         $securityContext = $this->authFactory->createFromUserAccount($this->getLoggedUser());
+        $limits = explode(',', str_replace(' ', '', $request->query->get('limits', '')));
 
-        return new JsonFormattedResponse($this->handler->handle($securityContext));
+        return new JsonFormattedResponse($this->handler->handle($securityContext, $this->getLoggedUser(), $limits));
     }
 }
