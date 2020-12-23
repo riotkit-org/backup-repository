@@ -32,6 +32,23 @@ const AppPlugin = {
         Vue.prototype.$auth = function () {
             return new AuthenticatorService(this.$store)
         };
+
+        Vue.prototype.debounce = function (id, func, delay) {
+            if (!globalThis.toDebounce) {
+                globalThis.toDebounce = {}
+            }
+
+            return function() {
+                const context = this;
+                const args = arguments;
+
+                if (globalThis.toDebounce[id]) {
+                    clearTimeout(globalThis.toDebounce[id]);
+                }
+
+                globalThis.toDebounce[id] = setTimeout(() => func.apply(context, args), delay);
+            };
+        }
     }
 };
 

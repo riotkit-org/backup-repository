@@ -1,5 +1,7 @@
 // @ts-ignore
 import Dictionary from "src/contracts/base.contract.ts";
+// @ts-ignore
+import {RolesList} from "./auth.model.ts";
 import bytes from 'bytes'
 
 export class BackupCollection {
@@ -42,6 +44,8 @@ export class BackupCollection {
             filename: this.filename
         }
     }
+
+    // @todo: Fix issue with inconsistent behavior on read/write bytes related to parsing bytes
 
     getPrettyMaxOneVersionSize(): string {
         return bytes(this.maxOneBackupVersionSize)
@@ -101,5 +105,25 @@ export class BackupVersion {
         version.file = new BackupFile(data['details']['file']['id'], data['details']['file']['filename'])
 
         return version
+    }
+}
+
+export class AuthorizedAccess {
+    userId: string
+    userEmail: string
+    roles: Dictionary<string>
+
+    constructor(userId: string, userEmail: string, roles: Dictionary<string>) {
+        this.userId = userId
+        this.userEmail = userEmail
+        this.roles = roles
+    }
+
+    static fromDict(accessData: Dictionary<string|any>) {
+        return new AuthorizedAccess(
+            accessData['userId'],
+            accessData['userEmail'],
+            accessData['roles']
+        )
     }
 }

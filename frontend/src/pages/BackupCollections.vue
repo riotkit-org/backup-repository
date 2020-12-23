@@ -18,7 +18,7 @@
                                         <form class="form-inline" role="form">
                                             <div class="form-group">
                                                 <label class="filter-col">Search:</label>
-                                                <input type="text" v-debounce:500ms="fetchBackendData" v-model="filters.searchQuery" class="form-control input-sm">
+                                                <input type="text" @change="debouncedFetchBackendData" v-model="filters.searchQuery" class="form-control input-sm">
                                             </div>
                                             <!-- @todo: Implement tags support - https://github.com/riotkit-org/file-repository/issues/121 -->
                                             <div class="form-group" style="display: none;">
@@ -116,6 +116,10 @@ export default {
     methods: {
         addNewBackupCollection() {
             window.location.href = '#/admin/backup/collection'
+        },
+
+        debouncedFetchBackendData() {
+            this.debounce('fetchBackendData', this.fetchBackendData, 250)()
         },
 
         fetchBackendData() {

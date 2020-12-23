@@ -10,6 +10,8 @@ import BackupCollectionsResponse from "src/models/backup.response.model.ts";
 import Pagination from "src/models/pagination.model.ts";
 // @ts-ignore
 import { List, Dictionary } from "src/contracts/base.contract.ts";
+// @ts-ignore
+import {AuthorizedAccess} from "src/models/backup.model.ts";
 
 export default class BackupCollectionBackendService extends BackupRepositoryBackend {
     /**
@@ -87,6 +89,18 @@ export default class BackupCollectionBackendService extends BackupRepositoryBack
             }
 
             return versions
+        })
+    }
+
+    async findAuthorizedUsersAndRoles(collection: BackupCollection): Promise<List<AuthorizedAccess>|never[]> {
+        return super.get('/repository/collection/' + collection.id + '/access').then(function (response) {
+            if (!response.data.users) {
+                return []
+            }
+
+            return response.data.users.map(function (accessData) {
+                return AuthorizedAccess.fromDict(accessData)
+            })
         })
     }
 }

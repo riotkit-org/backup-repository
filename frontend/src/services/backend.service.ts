@@ -46,7 +46,7 @@ export default class BackupRepositoryBackend {
         })
     }
 
-    async post(url: string, data: Dictionary<string>, method: string|any = "POST"): Promise<any> {
+    async post(url: string, data: Dictionary<string|any>, method: string|any = "POST"): Promise<any> {
         this.prepareAuthentication()
 
         let that = this

@@ -16,7 +16,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import App from './App.vue'
-import vueDebounce from 'vue-debounce'
 
 
 // LightBootstrap plugin
@@ -29,7 +28,6 @@ import './registerServiceWorker'
 // plugin setup
 Vue.use(VueRouter)
 Vue.use(LightBootstrap)
-Vue.use(vueDebounce)
 
 import store from './plugins/store.ts'
 

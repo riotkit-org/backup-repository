@@ -2,14 +2,14 @@
     <div class="content">
         <div class="container-fluid">
             <div class="row">
-                <div class="col-6" v-if="isEditing && collection">
-                    <permissions-list :collection="collection"/>
+                <div class="col-7" v-if="isEditing && collection">
+                    <permissions-list :collection="collection" @selected="permissionsUpdated()"/>
                 </div>
 
                 <!--
                   -- Edit & Creation form
                   -->
-                <div :class="isEditing ? 'col-6' : 'col-12'" v-if="collection">
+                <div :class="isEditing ? 'col-5' : 'col-12'" v-if="collection">
                     <card>
                         <h4 slot="header" class="card-title" v-html="isEditing ? 'Edit Backup Collection' : 'Create Backup Collection'"></h4>
                         <div class="row">
@@ -137,6 +137,10 @@ export default {
             this.$backupCollectionBackend().findBackupCollectionById(collectionId).then(function (collection) {
                 that.collection = collection
             })
+        },
+
+        permissionsUpdated() {
+            window.console.info('permissions updateeeeeed')
         }
     },
     mounted() {
