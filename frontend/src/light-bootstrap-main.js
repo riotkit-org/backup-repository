@@ -1,3 +1,17 @@
+/*!
+
+ =========================================================
+ * Vue Light Bootstrap Dashboard - v2.0.0 (Bootstrap 4)
+ =========================================================
+
+ * Product Page: http://www.creative-tim.com/product/light-bootstrap-dashboard
+ * Copyright 2019 Creative Tim (http://www.creative-tim.com)
+ * Licensed under MIT (https://github.com/creativetimofficial/light-bootstrap-dashboard/blob/master/LICENSE.md)
+
+ =========================================================
+
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+ */
 import VTooltip from 'v-tooltip'
 // Notifications plugin
 import Notifications from 'src/components/NotificationPlugin'
@@ -10,7 +24,7 @@ import SideBar from './components/SidebarPlugin'
 
 // asset imports
 import 'bootstrap/dist/css/bootstrap.css'
-import './assets/sass/light-bootstrap-dashboard.scss'
+import './assets/sass/main.scss'
 import AppPlugin from "./plugins/app.plugin.js.ts";
 
 /**
