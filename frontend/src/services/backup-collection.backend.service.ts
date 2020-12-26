@@ -103,4 +103,37 @@ export default class BackupCollectionBackendService extends BackupRepositoryBack
             })
         })
     }
+
+    /**
+     * Give user an access to collection, or update that access
+     *
+     * @param collection
+     * @param userId
+     * @param roles
+     * @param create
+     */
+    async createOrUpdateUserAccessForCollection(collection: BackupCollection, userId: string, roles: List<string|any>, create: boolean = false): Promise<boolean> {
+        let payload = {
+            'user': userId,
+            'roles': roles
+        }
+
+        let method = create ? "POST" : "PUT"
+
+        return super.post('/repository/collection/' + collection.id + '/access', payload, method).then(function(response) {
+            return response.data.status === true
+        })
+    }
+
+    /**
+     * Remove user's access from a collection
+     *
+     * @param collection
+     * @param userId
+     */
+    async revokeUserAccessInCollection(collection: BackupCollection, userId: string): Promise<boolean> {
+        return super.delete('/repository/collection/' + collection.id + '/access/' + userId).then(function (response) {
+            return response.data.status === true
+        })
+    }
 }

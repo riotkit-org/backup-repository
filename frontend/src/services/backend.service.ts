@@ -70,13 +70,13 @@ export default class BackupRepositoryBackend {
         return response
     }
 
-    async get(url: string, notifyErrors: boolean = true): Promise<any> {
+    async get(url: string, notifyErrors: boolean = true, method: string|any = "GET"): Promise<any> {
         this.prepareAuthentication()
 
         let that = this
         let response
 
-        await axios.get(this.getBaseURL() + url).then(function (onResponse) {
+        await axios.request({url: this.getBaseURL() + url, method: method}).then(function (onResponse) {
             response = onResponse
 
         }).catch(function (onError) {
@@ -92,6 +92,10 @@ export default class BackupRepositoryBackend {
         })
 
         return response
+    }
+
+    async delete(url: string, notifyErrors: boolean = true): Promise<any> {
+        return this.get(url, notifyErrors, "DELETE")
     }
 
     prepareAuthentication() {

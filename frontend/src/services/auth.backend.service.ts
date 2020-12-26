@@ -6,6 +6,8 @@ import {RolesList} from "src/models/auth.model.ts";
 import {BackupCollection} from "src/models/backup.model.ts";
 // @ts-ignore
 import {List} from "src/contracts/base.contract.ts";
+// @ts-ignore
+import {User} from "src/models/auth.model.ts";
 
 export default class AuthBackend extends BackupRepositoryBackend {
     /**
@@ -21,16 +23,15 @@ export default class AuthBackend extends BackupRepositoryBackend {
         })
     }
 
-    async updateRolesForCollection(collection: BackupCollection, userId: string, roles: List<string|any>): Promise<boolean> {
-        let payload = {
-            'user': userId,
-            'roles': roles
-        }
+    async findUsers(): Promise<List<User>|never[]> {
+        return super.get('/auth/user/search?limit=1000&page=1').then(function (response) {
+            if (!response.data.data) {
+                return []
+            }
 
-        return super.post('/repository/collection/' + collection.id + '/access', payload, "PUT").then(function(response) {
-            window.console.info(response.data)
-
-            return response.data.success === true
+            return response.data.data.map(function (userData) {
+                return User.fromDict(userData)
+            })
         })
     }
 }
