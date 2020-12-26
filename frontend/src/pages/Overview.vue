@@ -9,7 +9,7 @@
                 <div class="col-xl-3 col-md-6">
                     <stats-card>
                         <div slot="header" class="icon-warning">
-                            <i class="nc-icon nc-chart text-warning"></i>
+                            <i class="bi bi-pie-chart-fill text-warning"></i>
                         </div>
                         <div slot="content">
                             <p class="card-category">Used disk space</p>
@@ -21,7 +21,7 @@
                 <div class="col-xl-3 col-md-6">
                     <stats-card>
                         <div slot="header" class="icon-success">
-                            <i class="nc-icon nc-circle-09 text-success"></i>
+                            <i class="bi bi-people-fill text-success"></i>
                         </div>
                         <div slot="content">
                             <p class="card-category">Users</p>
@@ -33,7 +33,7 @@
                 <div class="col-xl-3 col-md-6">
                     <stats-card>
                         <div slot="header" class="icon-danger">
-                            <i class="nc-icon nc-vector text-danger"></i>
+                            <i class="bi bi-files text-danger"></i>
                         </div>
                         <div slot="content">
                             <p class="card-category">Active versions</p>
@@ -45,7 +45,7 @@
                 <div class="col-xl-3 col-md-6">
                     <stats-card>
                         <div slot="header" class="icon-info">
-                            <i class="nc-icon nc-single-copy-04 text-primary"></i>
+                            <i class="bi bi-file-earmark-arrow-up text-primary"></i>
                         </div>
                         <div slot="content">
                             <p class="card-category">Backup collections</p>
@@ -153,5 +153,8 @@ export default {
 }
 </script>
 <style>
-
+.card-body {
+    padding-top: 0 !important;
+    padding-bottom: 15px !important;
+}
 </style>
