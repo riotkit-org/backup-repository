@@ -2,18 +2,14 @@
 
 namespace App\Domain\Authentication\Form;
 
-use App\Domain\Authentication\Entity\User;
-
 class AccessTokenGenerationForm
 {
-    public User $user;
-
     /**
-     * List of roles requested to have for a token
+     * List of permissions requested to have for a token
      *
-     * @var array $requestedRoles
+     * @var array $requestedPermissions
      */
-    public array $requestedRoles;
+    public array $requestedPermissions;
 
     /**
      * Time in seconds how long the token should live

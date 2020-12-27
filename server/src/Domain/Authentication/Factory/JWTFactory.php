@@ -6,6 +6,6 @@ use App\Domain\Authentication\Entity\User;
 
 interface JWTFactory
 {
-    public function createForUser(User $user, array $roles = null, int $ttl = 86400 * 365 * 2): string;
+    public function createForUser(User $user, array $permissions = null, int $ttl = 86400 * 365 * 2): string;
 }
 

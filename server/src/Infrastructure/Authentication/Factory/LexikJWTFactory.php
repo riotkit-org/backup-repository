@@ -15,11 +15,11 @@ class LexikJWTFactory implements JWTFactory
         $this->encoder = $encoder;
     }
 
-    public function createForUser(User $user, array $roles = null, int $ttl = 86400 * 365 * 2): string
+    public function createForUser(User $user, array $permissions = null, int $ttl = 86400 * 365 * 2): string
     {
         return $this->encoder->encode([
             'email' => $user->getEmail()->getValue(),
-            'roles' => $roles ? $roles : $user->getRoles(),
+            'roles' => $permissions ? $permissions : $user->getRoles(),
             'exp'   => time() + $ttl
         ]);
     }

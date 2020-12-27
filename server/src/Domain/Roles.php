@@ -57,8 +57,8 @@ final class Roles
     /** User can use technical endpoints to manage the application */
     public const ROLE_USE_TECHNICAL_ENDPOINTS      = 'security.use_technical_endpoints';
 
-    /** User can expire other token, so it will be not valid anymore */
-    public const ROLE_REVOKE_TOKENS                = 'security.revoke_tokens';
+    /** User can revoke access for other user */
+    public const ROLE_DELETE_USERS                = 'security.delete_users';
 
     /** Special: Marking - tokens with this marking will not be able to be revoked by non-administrators */
     public const ROLE_ADMINISTRATOR                = 'security.administrator';
@@ -141,6 +141,9 @@ final class Roles
     /** Delete versions only from collections where the token was added as allowed */
     public const ROLE_DELETE_VERSIONS_IN_ALLOWED_COLLECTIONS = 'collections.delete_versions_for_allowed_collections';
 
+    /** Download a version blob only from collections where token was added as allowed */
+    public const ROLE_FETCH_SINGLE_VERSION_FILE_IN_ALLOWED_COLLECTIONS = 'collections.fetch_single_version_file_in_allowed_collections';
+
     public const GRANTS_LIST = [
         self::ROLE_USER,
         self::ROLE_UPLOAD,
@@ -154,7 +157,7 @@ final class Roles
         self::ROLE_BROWSE_LIST_OF_FILES_BY_ANY_TAG,
         self::ROLE_ACCESS_LISTING_ENDPOINT,
         self::ROLE_CAN_SEE_EXTRA_ADMIN_METADATA,
-        self::ROLE_REVOKE_TOKENS,
+        self::ROLE_DELETE_USERS,
         self::ROLE_ADMINISTRATOR,
 
         // collections

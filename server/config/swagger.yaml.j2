@@ -287,6 +287,43 @@ paths:
                                 type: string
                                 example: "Invalid credentials."
 
+    "/api/stable/auth/token/generate":
+        post:
+            summary: "API token generation for programmatic access"
+            description: "Generate an API token for programmatic access (eg. backup clients). Endpoint can generate a token using your account in selected, limited scope of permissions."
+            <<: *json_input_output
+            tags: ['Authentication']
+            parameters:
+                - name: body
+                  in: body
+                  description: JSON payload
+                  schema:
+                      type: object
+                      required:
+                          - requestedPermissions
+                          - ttl
+                      properties:
+                          requestedPermissions:
+                              type: array
+                              example: ['collections.list_versions_for_allowed_collections']
+                          ttl:
+                              type: integer
+                              example: 86400
+            responses:
+                {{ _self.standard_responses() | indent_by('                ') | raw }}
+                '200':
+                    description: Successful login
+                    schema:
+                        type: object
+                        properties:
+                            token:
+                                type: string
+                                example: "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE2MDE3MTc3ODAsInJvbGVzIjpbInNlY3VyaXR5LmFkbWluaXN0cmF0b3IiLCJ1c2VyIiwidXBsb2FkLmFsbCIsInNlY3VyaXR5LmF1dGhlbnRpY2F0aW9uX2xvb2t1cCIsInNlY3VyaXR5LnNlYXJjaF9mb3JfdG9rZW5zIiwic2VjdXJpdHkub3ZlcndyaXRlIiwic2VjdXJpdHkuZ2VuZXJhdGVfdG9rZW5zIiwic2VjdXJpdHkudXNlX3RlY2huaWNhbF9lbmRwb2ludHMiLCJkZWxldGlvbi5hbGxfZmlsZXNfaW5jbHVkaW5nX3Byb3RlY3RlZF9hbmRfdW5wcm90ZWN0ZWQiLCJ2aWV3LmFueV9maWxlIiwidmlldy5maWxlc19mcm9tX2FsbF90YWdzIiwidmlldy5jYW5fdXNlX2xpc3RpbmdfZW5kcG9pbnRfYXRfYWxsIiwidmlldy5jYW5fc2VlX2FkbWluX21ldGFkYXRhX2luX2xpc3RpbmciLCJzZWN1cml0eS5yZXZva2VfdG9rZW5zIiwic2VjdXJpdHkuYWRtaW5pc3RyYXRvciIsImNvbGxlY3Rpb25zLmNyZWF0ZV9uZXciLCJjb2xsZWN0aW9ucy5jcmVhdGVfbmV3LndpdGhfY3VzdG9tX2lkIiwiY29sbGVjdGlvbnMuYWxsb3dfaW5maW5pdGVfbGltaXRzIiwiY29sbGVjdGlvbnMuZGVsZXRlX2FsbG93ZWRfY29sbGVjdGlvbnMiLCJjb2xsZWN0aW9ucy5jYW5fbGlzdF90b2tlbnNfaW5fYWxsb3dlZF9jb2xsZWN0aW9ucyIsImNvbGxlY3Rpb25zLm1vZGlmeV9hbnlfY29sbGVjdGlvbl9yZWdhcmRsZXNzX2lmX3Rva2VuX3dhc19hbGxvd2VkX2J5X2NvbGxlY3Rpb24iLCJjb2xsZWN0aW9ucy5tb2RpZnlfZGV0YWlsc19vZl9hbGxvd2VkX2NvbGxlY3Rpb25zIiwiY29sbGVjdGlvbnMudmlld19hbGxfY29sbGVjdGlvbnMiLCJjb2xsZWN0aW9ucy5jYW5fdXNlX2xpc3RpbmdfZW5kcG9pbnQiLCJjb2xsZWN0aW9ucy5tYW5hZ2VfdG9rZW5zX2luX2FsbG93ZWRfY29sbGVjdGlvbnMiLCJjb2xsZWN0aW9ucy51cGxvYWRfdG9fYWxsb3dlZF9jb2xsZWN0aW9ucyIsImNvbGxlY3Rpb25zLmxpc3RfdmVyc2lvbnNfZm9yX2FsbG93ZWRfY29sbGVjdGlvbnMiLCJjb2xsZWN0aW9ucy5kZWxldGVfdmVyc2lvbnNfZm9yX2FsbG93ZWRfY29sbGVjdGlvbnMiXSwidXNlcm5hbWUiOnt9LCJleHAiOjE2MDE3MjEzODB9.xtp6uMxty82MuyyBSDjWBuJSOpugmn3tyzM7YwxV_mzgk0icgywUzQsULqMZuGABgmYZkOb3ZQG8YaCVYWau1ITk-fpT1nyb7acgI_05mPEsZ1bfgo9DZgOSlYoYiTBfcR28MdYDF0q7HD6O7Ja6pnY9Pk9fsWXoVOsdRz2mIWSY0CNtIqMJ2Cmyzz6Ggj4OPYmyNsVao6IMj-k2XE5D_R_HwJoUDl34iwSNeOdzser-d6MwV6NQ5ceSX7JZrbWVwsNcIJG-B34vBRbNFKBHp40S-3wcPwoIv5DtaJgZgytz8T1hGGDSS3RCc2TYehP_a96t7CpoYGvvRERvYEqZe1zepRR0zGRqZWw2WM_kN3_XE86SggoTZx_rx3-wL8zZP4SPIguEVghMepmrvfVek7psPYcKajbhJOpGzVAe0-U12BKVvjb389pGz0KM2HLyY6N9XX5bN_3X6eyRcaNycsX4WLbHfekjhXPn1RmGJ32_giUarMf28w9GSULMbodIMf8buF14b8HyVHCfZ0kJLVUBJYYRQAj0OQnQK6mubZucnX9t-qxvZLWalD-SpJilpG2L2F4VDkxJO_x8sJdofmdTHH2xZ0cBMfcTUFUasvZEqYRcZrzDKA0WGiisXSNpQX3HGjmdimemzDS5JYOFCobrVYZ_y9LWGCM0yyKBZ5E"
+                '403 - Cannot create an API token with roles that user actually does not have. You can only limit your roles':
+                    description: "Cannot create an API token with roles that user actually does not have. You can only limit your roles"
+                    {{ _self.response_error('Cannot create an API token with roles that user actually does not have. You can only limit your roles', 40316, 'request.auth-error') | indent_by('                    ') | raw }}
+
+
     "/api/stable/auth/user":
         post:
             summary: Create a new user, assign roles, set optional expiration, upload policy

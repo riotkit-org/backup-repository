@@ -27,10 +27,10 @@ class AccessTokenGenerationHandler
      */
     public function handle(AccessTokenGenerationForm $form, AuthenticationManagementContext $context): TokenGenerationResponse
     {
-        $this->assertHasRights($context, $form->requestedRoles);
+        $this->assertHasRights($context, $form->requestedPermissions);
 
         return TokenGenerationResponse::create(
-            $this->factory->createForUser($context->getUser(), $form->requestedRoles, $form->ttl)
+            $this->factory->createForUser($context->getUser(), $form->requestedPermissions, $form->ttl)
         );
     }
 

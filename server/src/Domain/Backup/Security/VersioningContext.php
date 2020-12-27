@@ -6,42 +6,31 @@ use App\Domain\Backup\Entity\BackupCollection;
 
 class VersioningContext
 {
-    /**
-     * @var bool
-     */
-    private $canModifyAnyCollection;
+    private bool $canModifyAnyCollection;
 
-    /**
-     * @var bool
-     */
-    private $canUploadToAllowedCollections;
+    private bool $canUploadToAllowedCollections;
 
-    /**
-     * @var bool
-     */
-    private $canUseListingEndpointToFindVersionsOfAllowedCollections;
+    private bool $canUseListingEndpointToFindVersionsOfAllowedCollections;
 
-    /**
-     * @var bool
-     */
-    private $canDeleteVersionsInAllowedCollections;
+    private bool $canDeleteVersionsInAllowedCollections;
 
-    /**
-     * @var string|null
-     */
-    private $tokenId;
+    private bool $canFetchSingleCollectionVersionFile;
+
+    private string|null $tokenId;
 
     public function __construct(
         bool $canModifyAnyCollection,
         bool $canUploadToAllowedCollections,
         bool $canUseListingEndpointToFindVersionsOfAllowedCollections,
         bool $canDeleteVersionsInAllowedCollections,
+        bool $canFetchSingleCollectionVersionFile,
         ?string $tokenId
     ) {
         $this->canModifyAnyCollection                = $canModifyAnyCollection;
         $this->canUploadToAllowedCollections         = $canUploadToAllowedCollections;
         $this->canUseListingEndpointToFindVersionsOfAllowedCollections = $canUseListingEndpointToFindVersionsOfAllowedCollections;
         $this->canDeleteVersionsInAllowedCollections = $canDeleteVersionsInAllowedCollections;
+        $this->canFetchSingleCollectionVersionFile   = $canFetchSingleCollectionVersionFile;
         $this->tokenId                               = $tokenId;
     }
 
@@ -86,6 +75,10 @@ class VersioningContext
 
     public function canFetchSingleVersion(BackupCollection $collection): bool
     {
-        return $this->canListCollectionVersions($collection);
+        if (!$this->canFetchSingleCollectionVersionFile) {
+            return false;
+        }
+
+        return $collection->isTokenIdAllowed($this->tokenId);
     }
 }

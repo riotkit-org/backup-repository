@@ -50,6 +50,7 @@ class SecurityContextFactory
             $roles->hasRole(Roles::ROLE_CAN_UPLOAD_TO_ALLOWED_COLLECTIONS),
             $roles->hasRole(Roles::ROLE_LIST_VERSIONS_FOR_ALLOWED_COLLECTIONS),
             $roles->hasRole(Roles::ROLE_DELETE_VERSIONS_IN_ALLOWED_COLLECTIONS),
+            $roles->hasRole(Roles::ROLE_FETCH_SINGLE_VERSION_FILE_IN_ALLOWED_COLLECTIONS),
             $user->getId()
         );
     }
