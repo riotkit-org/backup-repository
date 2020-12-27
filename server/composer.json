@@ -4,7 +4,7 @@
     "description": "Specialized ninja for backup storage. Designed to have very low resource requirements.",
     "license": "MIT",
     "require": {
-        "php": ">=7.4",
+        "php": ">=8.0",
         "ext-ctype": "*",
         "ext-fileinfo": "*",
         "ext-iconv": "*",

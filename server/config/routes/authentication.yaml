@@ -28,10 +28,18 @@ authentication.delete:
     defaults:
         _secured: true
 
-# documentation: roles listing
 authentication.roles_listing:
     path: /api/stable/auth/roles
     controller: 'App\Controller\Authentication\RolesListingController::handle'
     methods: ['GET']
     defaults:
         _secured: true
+
+authentication.generate_api_token:
+    path: /api/stable/auth/token/generate
+    controller: 'App\Controller\Authentication\AccessTokenGenerationController::generateAction'
+    methods: ['POST']
+    defaults:
+        _secured: true
+
+# @todo: Revoke token - user can revoke it's token, admin can revoke anyone token

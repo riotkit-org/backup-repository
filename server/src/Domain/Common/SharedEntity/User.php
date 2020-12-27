@@ -18,6 +18,13 @@ class User
 
     public const ANONYMOUS_TOKEN_ID = '00000000-0000-0000-0000-000000000000';
 
+    /**
+     * Allows to block from writing this entity into the database, in case it was manipulated
+     *
+     * @var bool $cannotBePersisted
+     */
+    protected bool $cannotBePersisted = false;
+
     public function __construct()
     {
         $this->roles = Roles::fromArray([\App\Domain\Roles::ROLE_USER]);
@@ -68,6 +75,24 @@ class User
         return $this->roles->getAsList();
     }
 
+    /**
+     * In case when eg. a token has fewer roles than user (JWT was generated with limited scope)
+     *
+     * @param array $roles
+     *
+     * @return static
+     *
+     * @throws \App\Domain\Common\Exception\CommonValueException
+     */
+    public function withRoles(array $roles)
+    {
+        $clone = clone $this;
+        $clone->setRoles(Roles::fromArray($roles));
+        $clone->cannotBePersisted = true;
+
+        return $clone;
+    }
+
     public function getRolesAsValueObject(): Roles
     {
         return $this->roles;
@@ -97,6 +122,6 @@ class User
 
     public function canBePersisted(): bool
     {
-        return $this->id !== self::ANONYMOUS_TOKEN_ID;
+        return $this->id !== self::ANONYMOUS_TOKEN_ID && !$this->cannotBePersisted;
     }
 }

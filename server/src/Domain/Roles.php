@@ -20,7 +20,7 @@ final class Roles
     public const INTERNAL_CONSOLE_TOKEN = 'internal-console-token';
 
     /** Recognized user in the system */
-    public const ROLE_USER                       = 'user';
+    public const ROLE_USER                       = 'ROLE_USER';
 
     //
     //

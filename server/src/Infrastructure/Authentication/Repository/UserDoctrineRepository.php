@@ -24,7 +24,10 @@ class UserDoctrineRepository extends CommonTokenRepository implements UserReposi
     public function persist(User $user): void
     {
         if (!$user->canBePersisted()) {
-            throw new \LogicException('Attempting to persist a user, that cannot be persisted');
+            throw new \LogicException(
+                'Attempting to persist a user, that cannot be persisted. ' .
+                'Maybe it is a session user object?'
+            );
         }
 
         $this->_em->persist($user);

@@ -77,7 +77,7 @@ class UserCreationHandler
             throw AuthenticationException::fromUsersCreationProhibition();
         }
 
-        if ($form->id && !$context->canCreateTokensWithPredictableIdentifiers()) {
+        if ($form->id && !$context->canCreateUsersWithPredictableIdentifiers()) {
             throw AuthenticationException::fromPredictableIdSelectionProhibition();
         }
     }

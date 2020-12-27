@@ -18,7 +18,8 @@ class SecurityContextFactory
             $access->hasRole(Roles::ROLE_REVOKE_TOKENS),
             $access->hasRole(Roles::ROLE_CREATE_PREDICTABLE_TOKEN_IDS),
             $access->hasRole(Roles::ROLE_SEARCH_FOR_TOKENS),
-            $access->hasRole(Roles::ROLE_CANNOT_SEE_FULL_TOKEN_ID)
+            $access->hasRole(Roles::ROLE_CANNOT_SEE_FULL_TOKEN_ID),
+            $access
         );
     }
 
@@ -28,7 +29,8 @@ class SecurityContextFactory
             true, true,
             true, true,
             true, true,
-            true, false
+            true, false,
+            null
         );
     }
 }

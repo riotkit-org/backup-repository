@@ -2,6 +2,7 @@
 
 namespace App\Domain\Authentication\Helper;
 
+// @todo
 final class IdHidingHelper
 {
     /**

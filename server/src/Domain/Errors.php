@@ -238,6 +238,9 @@ final class Errors
     public const ERR_PERMISSION_CANNOT_ASSIGN_MORE_ROLES_THAN_HAVE     = 40315;
     public const ERR_MSG_PERMISSION_CANNOT_ASSIGN_MORE_ROLES_THAN_HAVE = 'Cannot give roles to other user that current context user does not have';
 
+    public const ERR_FORBIDDEN_TO_ASSIGN_TOKEN_WITH_MORE_ROLES_THAN_USER_HAVE     = 40316;
+    public const ERR_MSG_FORBIDDEN_TO_ASSIGN_TOKEN_WITH_MORE_ROLES_THAN_USER_HAVE = 'Cannot create an API token with roles that user actually does not have. You can only limit your roles.';
+
     //
     // Request errors
     //

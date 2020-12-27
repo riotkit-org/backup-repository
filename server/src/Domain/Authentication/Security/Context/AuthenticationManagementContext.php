@@ -3,6 +3,7 @@
 namespace App\Domain\Authentication\Security\Context;
 
 use App\Domain\Authentication\Entity\User;
+use App\Domain\Authentication\Service\RolesFilter;
 use App\Domain\Roles;
 
 class AuthenticationManagementContext
@@ -15,6 +16,7 @@ class AuthenticationManagementContext
     private bool $canCreateTokensWithPredictableIds;
     private bool $canSearchForTokens;
     private bool $cannotSeeFullTokenIds;
+    private ?User $user;
 
     public function __construct(
         bool $canLookup,
@@ -24,7 +26,8 @@ class AuthenticationManagementContext
         bool $canRevokeTokens,
         bool $canCreateTokensWithPredictableIds,
         bool $canSearchForTokens,
-        bool $cannotSeeFullTokenIds
+        bool $cannotSeeFullTokenIds,
+        ?User $user
     ) {
         $this->canLookup                         = $canLookup;
         $this->canGenerateTokens                 = $canGenerate;
@@ -34,6 +37,7 @@ class AuthenticationManagementContext
         $this->canCreateTokensWithPredictableIds = $canCreateTokensWithPredictableIds;
         $this->canSearchForTokens                = $canSearchForTokens;
         $this->cannotSeeFullTokenIds             = $cannotSeeFullTokenIds;
+        $this->user                              = $user;
     }
 
     public function canLookupAnyUserAccount(): bool
@@ -86,7 +90,7 @@ class AuthenticationManagementContext
         return $this->canRevokeTokens;
     }
 
-    public function canCreateTokensWithPredictableIdentifiers(): bool
+    public function canCreateUsersWithPredictableIdentifiers(): bool
     {
         if ($this->isAdministrator) {
             return true;
@@ -95,8 +99,29 @@ class AuthenticationManagementContext
         return $this->canCreateTokensWithPredictableIds;
     }
 
+    public function canGenerateJWTWithSelectedPermissions(array $roles): bool
+    {
+        if ($this->isAdministrator) {
+            return true;
+        }
+
+        // remove all roles that user does not have
+        $filteredByPermissions = RolesFilter::filterBy($roles, [RolesFilter::FILTER_AUTH], $this->user);
+        sort($roles);
+        sort($filteredByPermissions);
+
+        // check that RolesFilter didn't reject any role
+        return $filteredByPermissions === $roles;
+    }
+
+    // @todo
     public function cannotSeeFullUserIds(): bool
     {
         return $this->cannotSeeFullTokenIds;
+    }
+
+    public function getUser(): User
+    {
+        return $this->user;
     }
 }
