@@ -44,3 +44,4 @@
 /server/tests/Functional/_output/
 
 !.gitkeep
+/frontend/vendor/

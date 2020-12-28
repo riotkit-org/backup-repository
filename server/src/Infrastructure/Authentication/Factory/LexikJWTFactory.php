@@ -23,4 +23,9 @@ class LexikJWTFactory implements JWTFactory
             'exp'   => time() + $ttl
         ]);
     }
+
+    public function createArrayFromToken(string $token): array
+    {
+        return $this->encoder->decode($token);
+    }
 }

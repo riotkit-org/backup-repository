@@ -123,6 +123,11 @@ services:
         arguments:
             $readOnly: '%env(bool:READ_ONLY)%'
 
+    App\Infrastructure\Authentication\Repository\AccessTokenAuditDoctrineRepository:
+        autowire: true
+        arguments:
+            $readOnly: '%env(bool:READ_ONLY)%'
+
     App\Infrastructure\Backup\Repository\TokenDoctrineRepository:
         autowire: true
         arguments:

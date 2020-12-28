@@ -16,7 +16,7 @@ class VersioningContext
 
     private bool $canFetchSingleCollectionVersionFile;
 
-    private string|null $tokenId;
+    private ?string $tokenId;
 
     public function __construct(
         bool $canModifyAnyCollection,

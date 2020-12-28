@@ -34,9 +34,9 @@ final class Errors
 
     public const ERR_USER_ROLE_INVALID                 = 40010;
     public const ERR_MSG_USER_ROLE_INVALID             = 'Invalid role selected: {{ role }}. Available: {{ available }}';
-//
-//    public const ERR_USER_NOT_FOUND_BY_EMAIL     = 40011;
-//    public const ERR_MSG_USER_NOT_FOUND_BY_EMAIL = 'User not found';
+
+    public const ERR_USER_NOT_FOUND_BY_EMAIL     = 40011;
+    public const ERR_MSG_USER_NOT_FOUND_BY_EMAIL = 'No user found matching given e-mail address';
 //
 //    public const ERR_INPUT_NOT_NUMERIC     = 40012;
 //    public const ERR_MSG_INPUT_NOT_NUMERIC = 'Value is not numeric';

@@ -1,0 +1,43 @@
+App\Domain\Authentication\Entity\AccessTokenAuditEntry:
+    type: entity
+    table: audit_access_token
+
+    id:
+        id:
+            type: guid
+            unique: true
+            nullable: false
+            id: true
+            length: 36
+            generator:
+                strategy: UUID
+
+    fields:
+        date:
+            type: datetime_immutable
+
+        expiration:
+            type: datetime_immutable
+
+        active:
+            type: boolean
+
+        tokenHash:
+            type: string
+            column: token_hash
+
+        tokenShortcut:
+            type: string
+            column: token_shortcut
+
+    embedded:
+        permissions:
+            class: App\Domain\Authentication\ValueObject\Roles
+            columnPrefix: false
+
+    manyToOne:
+        user:
+            targetEntity: App\Domain\Authentication\Entity\User
+            joinColumn:
+                name: user_id
+                referencedColumnName: id

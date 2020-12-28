@@ -3,5 +3,5 @@ App\Domain\Authentication\ValueObject\Roles:
     fields:
         value:
             type: json_array
-            column: roles
+            column: permissions
             nullable: false

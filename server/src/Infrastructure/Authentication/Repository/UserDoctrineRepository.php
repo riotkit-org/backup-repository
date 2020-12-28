@@ -78,6 +78,11 @@ class UserDoctrineRepository extends CommonTokenRepository implements UserReposi
         return (int) ceil($qb->getQuery()->getSingleScalarResult() / $limit);
     }
 
+    public function findOneByEmail(string $email): ?User
+    {
+        return $this->findOneBy(['email.value' => $email]);
+    }
+
     private function createQueryFindTokensBy(string $pattern, bool $searchById = true)
     {
         $qb = $this->createQueryBuilder('token');
