@@ -6,17 +6,17 @@ authentication.create_user:
 # @todo: Edit user...
 
 authentication.search:
-    path: /api/stable/auth/user/search
+    path: /api/stable/auth/user
     controller: '\App\Controller\Authentication\UserSearchController::searchAction'
     methods: ['GET']
 
 authentication.lookup:
-    path: /api/stable/auth/user/by-id/{userId}
+    path: /api/stable/auth/user/{userId}
     controller: 'App\Controller\Authentication\LookupUserController::handle'
     methods: ['GET']
 
 authentication.delete:
-    path: /api/stable/auth/user/by-id/{userId}
+    path: /api/stable/auth/user/{userId}
     controller: 'App\Controller\Authentication\RevokeUserAccountController::handle'
     methods: ['DELETE']
 
@@ -40,6 +40,6 @@ authentication.list_api_tokens:
     methods: ['GET']
 
 authentication.revoke_api_token:
-    path: /api/stable/auth/token
+    path: /api/stable/auth/token/{tokenHash}
     controller: 'App\Controller\Authentication\AccessTokenRevokingController::revokeAction'
     methods: ['DELETE']

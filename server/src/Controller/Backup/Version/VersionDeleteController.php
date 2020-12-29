@@ -7,6 +7,7 @@ use App\Domain\Backup\ActionHandler\Version\BackupVersionDeleteHandler;
 use App\Domain\Backup\Entity\Authentication\User;
 use App\Domain\Backup\Factory\SecurityContextFactory;
 use App\Domain\Backup\Form\Version\VersionDeleteForm;
+use App\Domain\Common\Exception\ResourceNotFoundException;
 use App\Infrastructure\Common\Http\JsonFormattedResponse;
 use Exception;
 use Symfony\Component\HttpFoundation\Request;
@@ -50,6 +51,18 @@ class VersionDeleteController extends BaseController
          * @var User $user
          */
         $user = $this->getLoggedUser(User::class);
+
+        if (!$form->collection) {
+            throw ResourceNotFoundException::createFromMessage('Collection not found');
+        }
+
+        if (!$form->version) {
+            throw ResourceNotFoundException::createFromMessage('Version not found');
+        }
+
+        if (!$user) {
+            throw ResourceNotFoundException::createFromMessage('Current user not found');
+        }
 
         $response = $this->handler->handle(
             $form,

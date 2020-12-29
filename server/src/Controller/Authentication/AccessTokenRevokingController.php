@@ -29,26 +29,24 @@ class AccessTokenRevokingController extends BaseController
 
     /**
      * @param Request $request
+     * @param string $tokenHash
      *
      * @return Response
      *
      * @throws AuthenticationException
      * @throws CommonValueException
-     * @throws JsonRequestException
      * @throws ResourceNotFoundException
      */
-    public function revokeAction(Request $request): Response
+    public function revokeAction(Request $request, string $tokenHash): Response
     {
         /**
          * @var User $currentUser
          */
         $currentUser = $this->getLoggedUser(User::class);
 
-        /**
-         * @var AccessTokenRevokingForm $form
-         */
-        $form = $this->decodeRequestIntoDTO($request->query->all(), AccessTokenRevokingForm::class);
+        $form = new AccessTokenRevokingForm();
         $form->currentSessionTokenHash = HashEncoder::encode($this->getCurrentSessionToken($request));
+        $form->tokenHash = $tokenHash;
 
         return new JsonFormattedResponse(
             $this->handler->handle(

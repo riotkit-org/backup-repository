@@ -382,6 +382,7 @@ paths:
                     description: Cannot list access tokens for selected user. Current access does not allow such operation
                     {{ _self.response_error('Cannot list access tokens for selected user. Current access does not allow such operation', 40317, 'request.auth-error') | indent_by('                    ') | raw }}
 
+    "/api/stable/auth/token/{tokenHash}":
         delete:
             summary: "Revoke any previously granted JWT or logout current session"
             description: "Allows to revoke any JWT granted in application, for current user, current session, or for any other user"
@@ -389,7 +390,7 @@ paths:
             tags: ['Authentication']
             parameters:
                 - name: tokenHash
-                  in: query
+                  in: path
                   example: "current-session"
                   description: "token_hash of a JWT (can be found in the listing endpoint). Use 'current-session' to logout current session by revoking current JWT used to authorize this request"
             responses:
@@ -510,7 +511,6 @@ paths:
                     description: Maximum allowed characters exceeded
                     {{ _self.response_validation_error('about', 'Maximum allowed characters exceeded', 40003) | indent_by('                    ') | raw }}
 
-    "/api/stable/auth/user/search":
         get:
             summary: Search for users accounts
             tags: ['Authentication']
@@ -563,7 +563,7 @@ paths:
                     {{ _self.response_validation_error('page', 'Page cannot be negative', 50005) | indent_by('                    ') | raw }}
 
 
-    "/api/stable/auth/user/by-id/{userId}":
+    "/api/stable/auth/user/{userId}":
         get:
             summary: Retrieve details of a specific user
             tags: ['Authentication']
@@ -1052,7 +1052,7 @@ paths:
                         type: object
 
 
-    "/api/stable/repository/collection/{collectionId}/{naming}/{backupId}":
+    "/api/stable/repository/collection/{collectionId}/versions/{backupId}":
         get:
             summary: Download selected version of file in the collection
             tags: ['Backup']
@@ -1070,10 +1070,6 @@ paths:
                 - name: password
                   in: query
                   description: If the file is password protected, then a password needs to be entered there
-                  type: string
-                - name: naming
-                  in: path
-                  required: true
                   type: string
             responses:
                 {{ _self.standard_responses() | indent_by('                ') | raw }}
@@ -1102,10 +1098,6 @@ paths:
                   in: path
                   required: true
                   type: string
-                - name: naming
-                  in: path
-                  required: true
-                  type: string
                 - name: backupId
                   in: path
                   required: true
@@ -1130,17 +1122,13 @@ paths:
                                 type: string
                         type: object
 
-    "/api/stable/repository/collection/{collectionId}/{naming}":
+    "/api/stable/repository/collection/{collectionId}/versions":
         post:
             summary: Send a new version to the collection
             tags: ['Backup']
             <<: *json_input_output
             parameters:
                 - name: collectionId
-                  in: path
-                  required: true
-                  type: string
-                - name: naming
                   in: path
                   required: true
                   type: string
@@ -1168,10 +1156,6 @@ paths:
             tags: ['Backup']
             parameters:
                 - name: collectionId
-                  in: path
-                  required: true
-                  type: string
-                - name: naming
                   in: path
                   required: true
                   type: string

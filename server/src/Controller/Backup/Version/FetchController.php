@@ -7,6 +7,7 @@ use App\Domain\Backup\ActionHandler\Version\FetchHandler;
 use App\Domain\Backup\Entity\Authentication\User;
 use App\Domain\Backup\Factory\SecurityContextFactory;
 use App\Domain\Backup\Form\Version\FetchVersionForm;
+use App\Domain\Common\Exception\ResourceNotFoundException;
 use App\Infrastructure\Common\Http\JsonFormattedResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -55,6 +56,14 @@ class FetchController extends BaseController
          * @var User $user
          */
         $user = $this->getLoggedUser(User::class);
+
+        if (!$form->collection) {
+            throw ResourceNotFoundException::createFromMessage('Collection not found');
+        }
+
+        if (!$user) {
+            throw ResourceNotFoundException::createFromMessage('User not found');
+        }
 
         $response = $this->handler->handle(
             $form,

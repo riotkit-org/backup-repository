@@ -24,7 +24,7 @@ export default class AuthBackend extends BackupRepositoryBackend {
     }
 
     async findUsers(): Promise<List<User>|never[]> {
-        return super.get('/auth/user/search?limit=1000&page=1').then(function (response) {
+        return super.get('/auth/user?limit=1000&page=1').then(function (response) {
             if (!response.data.data) {
                 return []
             }
