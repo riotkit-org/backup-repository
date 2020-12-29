@@ -10,6 +10,7 @@ use App\Domain\Authentication\Factory\Context\SecurityContextFactory;
 use App\Domain\Authentication\Form\AccessTokenRevokingForm;
 use App\Domain\Authentication\Service\Security\HashEncoder;
 use App\Domain\Common\Exception\CommonValueException;
+use App\Domain\Common\Exception\ResourceNotFoundException;
 use App\Infrastructure\Common\Exception\JsonRequestException;
 use App\Infrastructure\Common\Http\JsonFormattedResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -34,6 +35,7 @@ class AccessTokenRevokingController extends BaseController
      * @throws AuthenticationException
      * @throws CommonValueException
      * @throws JsonRequestException
+     * @throws ResourceNotFoundException
      */
     public function revokeAction(Request $request): Response
     {

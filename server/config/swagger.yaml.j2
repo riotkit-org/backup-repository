@@ -287,7 +287,7 @@ paths:
                                 type: string
                                 example: "Invalid credentials."
 
-    "/api/stable/auth/token/generate":
+    "/api/stable/auth/token":
         post:
             summary: "API token generation for programmatic access"
             description: "Generate an API token for programmatic access (eg. backup clients). Endpoint can generate a token using your account in selected, limited scope of permissions."
@@ -323,6 +323,92 @@ paths:
                     description: "Cannot create an API token with roles that user actually does not have. You can only limit your roles"
                     {{ _self.response_error('Cannot create an API token with roles that user actually does not have. You can only limit your roles', 40316, 'request.auth-error') | indent_by('                    ') | raw }}
 
+        get:
+            summary: "List granted API tokens"
+            description: "Lists all granted API tokens (JWT) "
+            <<: *json_input_output
+            tags: ['Authentication']
+            parameters:
+                - name: user
+                  in: query
+                  description: "User ID if listing for other user, empty if listing for current session user"
+                  type: string
+
+                - name: page
+                  in: query
+                  description: "Current page number"
+                  example: 1
+                  type: integer
+
+                - name: perPageLimit
+                  in: query
+                  description: "How many entries can be on single page"
+                  example: 20
+                  type: integer
+            responses:
+                {{ _self.standard_responses() | indent_by('                ') | raw }}
+                '200':
+                    description: "Matches found"
+                    schema:
+                        type: object
+                        properties:
+                            message:
+                                type: string
+                                example: "Matches found"
+                            status:
+                                type: string
+                                example: true
+                            data:
+                                type: array
+                                items:
+                                    "$ref": "#/definitions/UserJWTGrantedAccess"
+                            context:
+                                type: object
+                                properties:
+                                    pagination:
+                                        type: object
+                                        properties:
+                                            page:
+                                                type: integer
+                                                example: 1
+                                            perPageLimit:
+                                                type: integer
+                                                example: 20
+                                            maxPages:
+                                                type: integer
+                                                example: 161
+
+                '403 - Cannot list access tokens for selected user. Current access does not allow such operation':
+                    description: Cannot list access tokens for selected user. Current access does not allow such operation
+                    {{ _self.response_error('Cannot list access tokens for selected user. Current access does not allow such operation', 40317, 'request.auth-error') | indent_by('                    ') | raw }}
+
+        delete:
+            summary: "Revoke any previously granted JWT or logout current session"
+            description: "Allows to revoke any JWT granted in application, for current user, current session, or for any other user"
+            <<: *json_input_output
+            tags: ['Authentication']
+            parameters:
+                - name: tokenHash
+                  in: query
+                  example: "current-session"
+                  description: "token_hash of a JWT (can be found in the listing endpoint). Use 'current-session' to logout current session by revoking current JWT used to authorize this request"
+            responses:
+                {{ _self.standard_responses() | indent_by('                ') | raw }}
+                '200':
+                    description: "JWT access token was revoked successfully"
+                    schema:
+                        type: object
+                        properties:
+                            status:
+                                type: boolean
+                                example: true
+                            message:
+                                type: string
+                                example: "Access was revoked"
+
+                '403':
+                    description: Cannot revoke JWT token. Maybe you cannot revoke other users tokens? Maybe you cannot logout your other sessions than current one? Maybe the target JWT token user is an administrator?
+                    {{ _self.response_error('Cannot revoke JWT token. Maybe you cannot revoke other users tokens? Maybe you cannot logout your other sessions than current one? Maybe the target JWT token user is an administrator?', 40318, 'request.auth-error') | indent_by('                    ') | raw }}
 
     "/api/stable/auth/user":
         post:
@@ -1313,6 +1399,37 @@ definitions:
             data:
                 "$ref": "#/definitions/UserRestrictions"
         type: object
+
+    UserJWTGrantedAccess:
+        type: object
+        properties:
+            event_id:
+                type: string
+                example: 7f9395cb-b69d-4aae-bc5f-765b027499ad
+            generated_at:
+                type: object
+                properties:
+                    date:
+                        type: string
+                        example: "2020-12-29 21:23:54.000000"
+                    timezone_type:
+                        type: integer
+                        example: 3
+                    timezone:
+                        type: string
+                        example: "UTC"
+            user:
+                type: string
+                example: "ca6a2635-d2cb-4682-ba81-3879dd0e8a77"
+            token_hash:
+                type: string
+                example: "d91fb95243cc9780db9c1f99b50a90b1a92c6b3f2803d1982309ec5e17422051"
+            token_shortctu:
+                type: string
+                example: "eyJ0eXAiOiJKV1Qi...LxJhyNDAY9sPbGWQ"
+            permissions:
+                type: string
+                example: ["collections.create_new", "collections.manage_users_in_allowed_collections"]
 
     UserRestrictions:
         properties:
