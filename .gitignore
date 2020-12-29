@@ -48,3 +48,4 @@
 /server/.devops/symfony/
 /server/.composer/
 /server/.symfony/
+/server/composer.phar

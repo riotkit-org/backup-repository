@@ -1,19 +1,6 @@
 Backup Repository Server
 ========================
 
-An application designed for shared backups storage with limits per user, per application and per file.
-Perfectly fits in case, when multiple organizations are hosting their backups at same server - the administrator can allocate space and grant rights.
-
-*Written in PHP 8.0 & Symfony 5.x, designed to run on cheap hardware and on cheap cloud infrastructure.*
-
-**Features:**
-
-- Strict permissions (Role based)
-- Users management
-- Limits per item, per backup collection, per user
-- Storage at the local filesystem or at AWS S3 compatible storage (officially supporting Min.io)
-- Versioned backups with rotation policies
-
 Developing
 ----------
 

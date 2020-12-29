@@ -1,52 +1,21 @@
-File Repository
-===============
+Backup Repository
+=================
 
-[![Build Status](https://travis-ci.org/riotkit-org/file-repository.svg?branch=master)](https://travis-ci.org/riotkit-org/file-repository)
-[![Documentation Status](https://readthedocs.org/projects/file-repository/badge/?version=latest)](https://file-repository.docs.riotkit.org/en/latest/?badge=latest)
-[![Maintainability](https://api.codeclimate.com/v1/badges/4ed37b276f5379c3dc52/maintainability)](https://codeclimate.com/github/riotkit-org/file-repository/maintainability)
-[![codecov](https://codecov.io/gh/riotkit-org/file-repository/branch/master/graph/badge.svg)](https://codecov.io/gh/riotkit-org/file-repository)
+Specialized ninja for backup storage. Fully multi-tenant, can act as a farm of backups for various people.
 
-File Repository is a modern API application dedicated for storing files. 
-Can use any type of backend supported by Flysystem library, officialy we support S3 and local filesystem.
-Lightweight, requires just PHP 7.4+ and at least SQLite3, PostgreSQL or MySQL.
+Features
+--------
 
-Backup Repository Todo
-----------------------
+- Fully **multi-tenant**, granular permissions and roles
+- **End-To-End encryption**. Server acts as a blob storage, client is encrypting client-side
+- Security focused, limit access by IP address, User Agent, limited scope API tokens. In future we may implement "scheduled backup windows" to prevent overwriting backups in short time periods
+- Backups rotation strategies
+- Very **low resources requirements**, a container with 256 MB ram and 0.5vCPU on a shared VM can fit
+- Fully compatible with containerized workflows (**Docker supported** out-of-the-box by both client and server)
+- Administrative **frontend in web browser**
+- **JSON API**, JSON Web Token (JWT), SWAGGER documentation for the API
 
-- [x] Delete support for MySQL and SQLite3, only PostgreSQL should be support
-- [x] Leave only Amazon S3 + Min.io + Filesystem support in filesystems
-- [x] Drop all encryption methods, SecureCopy
-- [x] Delete externally generated tokens functionality
-- [x] Delete MinimumUI functionality
-- [x] Drop generic object storage endpoints, leave only backup endpoints + storage download & listing endpoints (for administrators as a fallback)
-- [x] Drop all unused tables
-- [x] Drop custom ORM config
-- [x] Remove ids mapping
-- [ ] (?) Consider removing file deduplication feature to simplify storage, as backups cannot be the same - those should be encrypted, then with this assumption there should be no possibility to have duplicated files
-- [x] Delete mime type validation as zero-knowledge backups cannot be analylzed
-- [x] Drop upload file by url (backups will be uploaded only via POST)
-- [x] Drop HTTP caching functionality - backups do not need to be cached
-- [ ] FEATURE: Add support for joining backups into BackupApplication
-- [x] FEATURE/REFACTOR: Exceptions & Errors in ONE file mapped as constants, properly done exception inheriting and factory methods
-- [x] FEATURE: Add support for granting a token access, when backup collection is created (add support for ROLES granting per collection, should be not that difficult)
-- [x] FEATURE: Add JWT support, replace token with user management (tokenid replace with userid, add e-mail and password)
-- [ ] FEATURE: Implement WebDav for usage with rclone as a client
-- [ ] FEATURE: Bump Symfony 4 to Symfony 5 (at the end of refactoring?)
-- [ ] FEATURE: Add a frontend in React or Vue.js
-- [ ] FEATURE: Check if there is enough declared space to define a backup (or modify existing)
-- [ ] Drop user id (previously token id) censorship as the user will be using e-mail anyway to log-in
-
-#### For installation, guides and more information please check he documentation: https://file-repository.readthedocs.io/en/latest/index.html
-
-**Main functionality:**
-
-- Strict access control, you can **generate a token** that will have access to specific actions and access to specific items
-- Store files where you need; on **AWS S3, Minio.io, local storage, or on other location supported by Flysystem library (we oficially test on local storage and Min.io)**
-- **Deduplication for non-grouped files**. There will be no duplicated files stored on your disk
-- **Backups management**, you can define a collection of file versions that can **rotate on adding a new version**
-- HTTP API, download endpoints supports Bytes Range (rewinding video files), in-browser cache
-- Ready to integrate upload forms for your applications. Only generate token and redirect a user to an url
-- Encryption
+#### For installation, guides and more information please check the documentation: https://file-repository.readthedocs.io/en/latest/index.html
 
 **Requirements for the server:**
 - A Cheap VM - minimum of 0.5 vCPU, 256 MB ram (for about 10 backups each night)
@@ -69,6 +38,17 @@ Backup Repository Todo
 **Requirements to manually build documentation:**
 - sphinx-glpi-theme
 - sphinx
+
+Developers
+----------
+
+Technically this repository consists of 3 applications placed in following directories:
+- ./server - server written in PHP
+- ./frontend - web administration panel written in Vue.js
+- ./bahub-client - backup sending/downloading client written in Python
+
+Check README.md of each of those projects to check technical details.
+Please report issues with suffixes in topic \[Server] \[Frontend] \[Bahub].
 
 Copyleft
 --------
