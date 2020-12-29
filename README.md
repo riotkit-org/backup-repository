@@ -48,7 +48,7 @@ Technically this repository consists of 3 applications placed in following direc
 - ./bahub-client - backup sending/downloading client written in Python
 
 Check README.md of each of those projects to check technical details.
-Please report issues with suffixes in topic \[Server] \[Frontend] \[Bahub].
+Please report issues with suffixes in topic [Server] [Frontend] [Bahub].
 
 Copyleft
 --------
