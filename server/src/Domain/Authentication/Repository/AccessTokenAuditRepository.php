@@ -3,6 +3,7 @@
 namespace App\Domain\Authentication\Repository;
 
 use App\Domain\Authentication\Entity\AccessTokenAuditEntry;
+use App\Domain\Authentication\Entity\User;
 
 interface AccessTokenAuditRepository
 {
@@ -18,4 +19,22 @@ interface AccessTokenAuditRepository
     public function persist(AccessTokenAuditEntry $entry): void;
 
     public function flush(): void;
+
+    /**
+     * @param User $user
+     * @param int $page
+     * @param int $perPage
+     *
+     * @return AccessTokenAuditEntry[]
+     */
+    public function findForUser(User $user, int $page, int $perPage): array;
+
+    /**
+     * Finds how many results are for findForUser()
+     *
+     * @param User $user
+     *
+     * @return int
+     */
+    public function findMaxPagesForUser(User $user): int;
 }

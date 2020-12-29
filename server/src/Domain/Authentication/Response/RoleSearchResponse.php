@@ -11,7 +11,6 @@ class RoleSearchResponse extends NormalSearchResponse
     {
         $response = new RoleSearchResponse();
         $response->status    = true;
-        $response->exitCode  = Http::HTTP_OK;
         $response->page      = 1;
         $response->pageLimit = 4096;
         $response->maxPages  = 1;

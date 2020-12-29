@@ -16,7 +16,7 @@ Backup Repository Todo
 - [x] Delete support for MySQL and SQLite3, only PostgreSQL should be support
 - [x] Leave only Amazon S3 + Min.io + Filesystem support in filesystems
 - [x] Drop all encryption methods, SecureCopy
-- [ ] Delete externally generated tokens functionality
+- [x] Delete externally generated tokens functionality
 - [x] Delete MinimumUI functionality
 - [x] Drop generic object storage endpoints, leave only backup endpoints + storage download & listing endpoints (for administrators as a fallback)
 - [x] Drop all unused tables
@@ -49,18 +49,22 @@ Backup Repository Todo
 - Encryption
 
 **Requirements for the server:**
-- PHP 7.4+ with bcmath, openssl, iconv, ctype, fileinfo, json, pdo, pdo_sqlite, pdo_pgsql, pdo_mysql
+- A Cheap VM - minimum of 0.5 vCPU, 256 MB ram (for about 10 backups each night)
+- PHP 8.0+ with bcmath, iconv, ctype, fileinfo, json, pdo, pdo_sqlite, pdo_pgsql
 - Composer (PHP package manager)
 - "file" standard unix shell command
 - "sha256sum" unix shell command
-- MariaDB 10.2+ / SQLite 3 / PostgreSQL 10.12+
-- NodeJS 12.x + NPM (for building simple frontend at installation time)
+- PostgreSQL 10.12+
 
 **Requirements for the backup client "Bahub":**
-- Python 3.6+
+- Python 3.7+
 - For a list of required pip packages check: [requirements.txt](bahub-client/requirements.txt)
 - PostgreSQL client tools (for PostgreSQL databases backup support)
 - MariaDB/MySQL client tools (for MySQL/MariaDB databases backup support)
+
+**Requirements to build the administration frontend from sources:**
+- NPM 6+
+- NodeJS v15+
 
 **Requirements to manually build documentation:**
 - sphinx-glpi-theme

@@ -97,6 +97,17 @@ class AuthenticationException extends ApplicationException
         );
     }
 
+    /**
+     * @return static
+     */
+    public static function fromCannotListAccessTokensOfUser()
+    {
+        return new static(
+            Errors::ERR_MSG_CANNOT_LIST_ACCESS_TOKENS_OF_USER,
+            Errors::ERR_CANNOT_LIST_ACCESS_TOKENS_OF_USER
+        );
+    }
+
     public function jsonSerialize(): array
     {
         return [

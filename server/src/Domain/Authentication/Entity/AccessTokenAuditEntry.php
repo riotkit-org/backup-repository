@@ -11,7 +11,7 @@ use App\Domain\Authentication\ValueObject\Roles;
  *   - Each time user is logging
  *   - Each time user is generating an API token
  */
-class AccessTokenAuditEntry
+class AccessTokenAuditEntry implements \JsonSerializable
 {
     private string $id;
 
@@ -50,5 +50,18 @@ class AccessTokenAuditEntry
         }
 
         return $this->expiration >= new \DateTimeImmutable();
+    }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'event_id'       => $this->id,
+            'generated_at'   => $this->date,
+            'user'           => $this->user->getId(),
+            'token_hash'     => $this->tokenHash,
+            'token_shortcut' => $this->tokenShortcut,
+            'permissions'    => $this->permissions,
+            'active'         => $this->active
+        ];
     }
 }

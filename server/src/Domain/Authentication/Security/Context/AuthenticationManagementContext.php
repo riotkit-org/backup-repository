@@ -16,6 +16,8 @@ class AuthenticationManagementContext
     private bool $canCreateTokensWithPredictableIds;
     private bool $canSearchForTokens;
     private bool $cannotSeeFullTokenIds;
+    private bool $canListSelfAccessTokens;
+    private bool $canListAllUsersAccessTokens;
     private ?User $user;
 
     public function __construct(
@@ -27,6 +29,8 @@ class AuthenticationManagementContext
         bool $canCreateTokensWithPredictableIds,
         bool $canSearchForTokens,
         bool $cannotSeeFullTokenIds,
+        bool $canListSelfAccessTokens,
+        bool $canListAllUsersAccessTokens,
         ?User $user
     ) {
         $this->canLookup                         = $canLookup;
@@ -37,6 +41,8 @@ class AuthenticationManagementContext
         $this->canCreateTokensWithPredictableIds = $canCreateTokensWithPredictableIds;
         $this->canSearchForTokens                = $canSearchForTokens;
         $this->cannotSeeFullTokenIds             = $cannotSeeFullTokenIds;
+        $this->canListSelfAccessTokens           = $canListSelfAccessTokens;
+        $this->canListAllUsersAccessTokens       = $canListAllUsersAccessTokens;
         $this->user                              = $user;
     }
 
@@ -114,7 +120,24 @@ class AuthenticationManagementContext
         return $filteredByPermissions === $roles;
     }
 
-    // @todo
+    /**
+     * - Normally user can only see it's own access tokens (without JWT)
+     * - With additional permission user can see other people access tokens (without JWT)
+     *
+     * @param User $user
+     *
+     * @return bool
+     */
+    public function canListUserAccessTokens(User $user): bool
+    {
+        if ($this->user->getId() === $user->getId()) {
+            return $this->canListSelfAccessTokens;
+        }
+
+        return $this->canListAllUsersAccessTokens;
+    }
+
+    // @todo Remove
     public function cannotSeeFullUserIds(): bool
     {
         return $this->cannotSeeFullTokenIds;

@@ -241,6 +241,9 @@ final class Errors
     public const ERR_FORBIDDEN_TO_ASSIGN_TOKEN_WITH_MORE_ROLES_THAN_USER_HAVE     = 40316;
     public const ERR_MSG_FORBIDDEN_TO_ASSIGN_TOKEN_WITH_MORE_ROLES_THAN_USER_HAVE = 'Cannot create an API token with roles that user actually does not have. You can only limit your roles';
 
+    public const ERR_CANNOT_LIST_ACCESS_TOKENS_OF_USER     = 40317;
+    public const ERR_MSG_CANNOT_LIST_ACCESS_TOKENS_OF_USER = 'Cannot list access tokens for selected user. Current access does not allow such operation';
+
     //
     // Request errors
     //

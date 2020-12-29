@@ -41,7 +41,7 @@ class UserSearchHandler
             $page,
             $limit,
             $this->repository->findMaxPagesOfUsersBy($pattern, $limit),
-            $ctx->cannotSeeFullUserIds()
+            $ctx->cannotSeeFullUserIds() // @todo: Remove
         );
     }
 

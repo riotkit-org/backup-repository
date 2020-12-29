@@ -69,6 +69,12 @@ final class Roles
     /** Prevent token user from seeing other tokens in listings */
     public const ROLE_CANNOT_SEE_FULL_TOKEN_ID     = 'security.cannot_see_full_token_ids';
 
+    /** Browse list of authorized accesses on self account. Does not reveal JWT token used to authenticate */
+    public const ROLE_CAN_SEE_SELF_USER_ACCESS_TOKENS = 'security.can_see_own_access_tokens';
+
+    /** Browse list of authorized accesses of all users. Does not reveal JWT token used to authenticate */
+    public const ROLE_CAN_LIST_ALL_USERS_ACCESS_TOKENS = 'security.can_see_all_users_access_tokens';
+
     //
     //
     // deletion
@@ -159,6 +165,10 @@ final class Roles
         self::ROLE_CAN_SEE_EXTRA_ADMIN_METADATA,
         self::ROLE_DELETE_USERS,
         self::ROLE_ADMINISTRATOR,
+
+        // tokens
+        self::ROLE_CAN_SEE_SELF_USER_ACCESS_TOKENS,
+        self::ROLE_CAN_LIST_ALL_USERS_ACCESS_TOKENS,
 
         // collections
         self::ROLE_COLLECTION_ADD,
