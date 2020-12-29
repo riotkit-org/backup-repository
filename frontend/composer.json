@@ -1,0 +1,7 @@
+{
+    "require": {
+        "behat/behat": "^3.8",
+        "behat/gherkin": "^4.6",
+        "dmore/chrome-mink-driver": "^2.7"
+    }
+}

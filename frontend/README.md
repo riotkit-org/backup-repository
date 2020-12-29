@@ -1,45 +1,34 @@
-# [Vue Light Bootstrap Dashboard](http://vuejs.creative-tim.com/vue-light-bootstrap-dashboard) [![version][version-badge]][CHANGELOG] [![license][license-badge]][LICENSE]
+Backup Repository Frontend
+==========================
 
-> Admin dashboard based on light bootstrap dashboard UI template + vue-router
+Dashboard and management frontend written in Vue.js
 
-This project is a vue version of [Light bootstrap dashboard](https://www.creative-tim.com/product/light-bootstrap-dashboard)
-designed for vue js. The dashboard includes Bootstrap 4, vue-router, chartist, google-maps and several other plugins/components.
+Goals
+-----
 
-Check the [Live Demo here](http://vuejs.creative-tim.com/vue-light-bootstrap-dashboard).
+- Provide an overview of granted accesses, created collections, usage
+- Easy-to-use backup collection management for users and administrators
+- Overview of which backups were submitted and when
+- Security auditing of backups
 
-![](public/Dashboard.PNG)
-## :rocket: Getting started
+Running development environment
+-------------------------------
 
-Vue Light Bootstrap Dashboard is built on top of Bootstrap 4, Vuejs and Vue-router. To get started do the following steps:
-1. Download the project
-2. Make sure you have node.js (https://nodejs.org/en/) installed
-3. Type `npm install` in the source folder where `package.json` is located
-4. Type `npm run dev` to start the development server
+```bash
+npm install
+npm run dev
+```
 
-The repo uses [vue-cli](https://github.com/vuejs/vue-cli) scaffolding which takes care of the development setup with webpack and all the necessary modern tools to make web development faster and easier.
+End-to-end tests in Chromium
+----------------------------
 
-## [Documentation](https://demos.creative-tim.com/vue-light-bootstrap-dashboard/documentation/#/buttons)
+Requires a proper Chromedriver (according to the Chromium browser version) to be installed.
 
-## :cloud: Build Setup
+```bash
+./vendor/bin/behat
+```
 
-### install dependencies
-`npm install`
-### serve with hot reload at localhost:8000
-`npm run dev`
-### build for production with minification
-`npm run build`
-### run unit tests
-`npm run unit`
-### run and watch unit tests
-`npm run unit:watch`
+Thanks to
+---------
 
-## :clipboard: Contribution guide
-* `npm install` or `yarn install`
-* Please don't use jQuery or jQuery based plugins since there are many pure Vue alternatives
-
-For detailed explanation on how things work, checkout the [guide](http://vuejs-templates.github.io/webpack/) and [docs for vue-loader](http://vuejs.github.io/vue-loader).
-
-[CHANGELOG]: ./CHANGELOG.md
-[LICENSE]: ./LICENSE.md
-[version-badge]: https://img.shields.io/badge/version-1.0.0-blue.svg
-[license-badge]: https://img.shields.io/badge/license-MIT-blue.svg
+Based on [Vue Light Bootstrap Dashboard](http://vuejs.creative-tim.com/vue-light-bootstrap-dashboard) on MIT license.

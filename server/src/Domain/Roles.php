@@ -66,9 +66,6 @@ final class Roles
     /** Allow to specify token id when creating a token */
     public const ROLE_CREATE_PREDICTABLE_TOKEN_IDS = 'security.create_predictable_token_ids';
 
-    /** Prevent token user from seeing other tokens in listings */
-    public const ROLE_CANNOT_SEE_FULL_TOKEN_ID     = 'security.cannot_see_full_token_ids';
-
     /** Browse list of authorized accesses on self account. Does not reveal JWT token used to authenticate */
     public const ROLE_CAN_SEE_SELF_USER_ACCESS_TOKENS = 'security.can_see_own_access_tokens';
 

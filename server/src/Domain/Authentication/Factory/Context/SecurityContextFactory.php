@@ -18,7 +18,6 @@ class SecurityContextFactory
             $access->hasRole(Roles::ROLE_DELETE_USERS),
             $access->hasRole(Roles::ROLE_CREATE_PREDICTABLE_TOKEN_IDS),
             $access->hasRole(Roles::ROLE_SEARCH_FOR_TOKENS),
-            $access->hasRole(Roles::ROLE_CANNOT_SEE_FULL_TOKEN_ID),
             $access->hasRole(Roles::ROLE_CAN_SEE_SELF_USER_ACCESS_TOKENS),
             $access->hasRole(Roles::ROLE_CAN_LIST_ALL_USERS_ACCESS_TOKENS),
             $access
@@ -31,7 +30,7 @@ class SecurityContextFactory
             true, true,
             true, true,
             true, true,
-            true, false, true, true,
+            true, true, true,
             null
         );
     }

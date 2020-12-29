@@ -15,7 +15,6 @@ class AuthenticationManagementContext
     private bool $canRevokeTokens;
     private bool $canCreateTokensWithPredictableIds;
     private bool $canSearchForTokens;
-    private bool $cannotSeeFullTokenIds;
     private bool $canListSelfAccessTokens;
     private bool $canListAllUsersAccessTokens;
     private ?User $user;
@@ -28,7 +27,6 @@ class AuthenticationManagementContext
         bool $canRevokeTokens,
         bool $canCreateTokensWithPredictableIds,
         bool $canSearchForTokens,
-        bool $cannotSeeFullTokenIds,
         bool $canListSelfAccessTokens,
         bool $canListAllUsersAccessTokens,
         ?User $user
@@ -40,7 +38,6 @@ class AuthenticationManagementContext
         $this->canRevokeTokens                   = $canRevokeTokens;
         $this->canCreateTokensWithPredictableIds = $canCreateTokensWithPredictableIds;
         $this->canSearchForTokens                = $canSearchForTokens;
-        $this->cannotSeeFullTokenIds             = $cannotSeeFullTokenIds;
         $this->canListSelfAccessTokens           = $canListSelfAccessTokens;
         $this->canListAllUsersAccessTokens       = $canListAllUsersAccessTokens;
         $this->user                              = $user;
