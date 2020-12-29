@@ -37,11 +37,10 @@ class UserSearchHandler
         $this->validator->validateSearchCanBePerformed($page, $limit);
 
         return UserSearchResponse::createResultsResponse(
-            $this->repository->findUsersBy($pattern, $page, $limit, !$ctx->cannotSeeFullUserIds()),
+            $this->repository->findUsersBy($pattern, $page, $limit),
             $page,
             $limit,
-            $this->repository->findMaxPagesOfUsersBy($pattern, $limit),
-            $ctx->cannotSeeFullUserIds() // @todo: Remove
+            $this->repository->findMaxPagesOfUsersBy($pattern, $limit)
         );
     }
 

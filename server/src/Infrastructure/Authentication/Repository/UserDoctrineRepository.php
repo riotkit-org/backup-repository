@@ -92,11 +92,9 @@ class UserDoctrineRepository extends CommonTokenRepository implements UserReposi
             $qb->andWhere('token.id LIKE :pattern');
         }
 
-        // search only in allowed parts of token "*****f40-**87-**7c-**bb-********e8c0" when user does not have permissions to see full tokens
-        $qb->andWhere(IdHidingHelper::generateDQLConcatString('token.id') . ' LIKE :pattern OR token.id = :token_id');
         $qb->orWhere('CAST(token.roles.value as STRING) LIKE :pattern');
 
-        $qb->setParameters(['pattern' => '%' . $pattern . '%', 'token_id' => $pattern]);
+        $qb->setParameters(['pattern' => '%' . $pattern . '%']);
 
         return $qb;
     }

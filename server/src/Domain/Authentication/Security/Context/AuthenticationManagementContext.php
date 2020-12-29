@@ -137,12 +137,6 @@ class AuthenticationManagementContext
         return $this->canListAllUsersAccessTokens;
     }
 
-    // @todo Remove
-    public function cannotSeeFullUserIds(): bool
-    {
-        return $this->cannotSeeFullTokenIds;
-    }
-
     public function getUser(): User
     {
         return $this->user;

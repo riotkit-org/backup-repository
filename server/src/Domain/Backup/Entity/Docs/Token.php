@@ -19,9 +19,4 @@ abstract class Token
      * @var array
      */
     public array $roles;
-
-    /**
-     * @var bool
-     */
-    public bool $idIsCensored;
 }

@@ -260,18 +260,16 @@ class User extends \App\Domain\Common\SharedEntity\User implements \JsonSerializ
         return \in_array($userAgent, $this->getAllowedUserAgents(), true);
     }
 
-    public function jsonSerialize(bool $censorId = false)
+    public function jsonSerialize()
     {
         return [
-            // @todo: Remove id censorship
-            'id'           => $censorId ? $this->getCensoredId() : $this->getId(),
+            'id'           => $this->getId(),
             'email'        => $this->email->getValue(),
             'active'       => $this->active,
             'expired'      => !$this->isNotExpired(),
             'expires'      => $this->getExpirationDate()->format('Y-m-d H:i:s'),
             'data'         => $this->data,
             'roles'        => $this->getRoles(),
-            'idIsCensored' => $censorId
         ];
     }
 

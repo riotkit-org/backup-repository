@@ -2,7 +2,6 @@
 
 namespace App\Domain\Common\SharedEntity;
 
-use App\Domain\Authentication\Helper\IdHidingHelper;
 use App\Domain\Common\ValueObject\Roles;
 
 class User
@@ -42,15 +41,6 @@ class User
     {
         $this->id = $id;
         return $this;
-    }
-
-    public function getCensoredId(): ?string
-    {
-        if ($this->getId()) {
-            return IdHidingHelper::getStrippedOutToken($this->getId());
-        }
-
-        return null;
     }
 
     public function isSameAs(User $token): bool

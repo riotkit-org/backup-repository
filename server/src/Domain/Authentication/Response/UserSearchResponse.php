@@ -9,7 +9,7 @@ use App\Domain\Common\Response\NormalSearchResponse;
 class UserSearchResponse extends NormalSearchResponse
 {
     public static function createResultsResponse(array $matches, int $page,
-                                                 int $limit, int $maxPages, bool $censorIds): UserSearchResponse
+                                                 int $limit, int $maxPages): UserSearchResponse
     {
         $response = new UserSearchResponse();
         $response->message   = count($matches) > 0 ? 'Matches found' : 'No matches found';
@@ -18,15 +18,6 @@ class UserSearchResponse extends NormalSearchResponse
         $response->pageLimit = $limit;
         $response->maxPages  = $maxPages;
         $response->data      = $matches;
-
-        if ($censorIds) {
-            $response->data = array_map(
-                function (User $token) {
-                    return $token->jsonSerialize(true);
-                },
-                $response->data
-            );
-        }
 
         return $response;
     }
