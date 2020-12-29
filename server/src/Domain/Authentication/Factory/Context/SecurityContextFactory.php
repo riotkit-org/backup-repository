@@ -20,6 +20,8 @@ class SecurityContextFactory
             $access->hasRole(Roles::ROLE_SEARCH_FOR_TOKENS),
             $access->hasRole(Roles::ROLE_CAN_SEE_SELF_USER_ACCESS_TOKENS),
             $access->hasRole(Roles::ROLE_CAN_LIST_ALL_USERS_ACCESS_TOKENS),
+            $access->hasRole(Roles::ROLE_CAN_REVOKE_OWN_ACCESS_TOKEN),
+            $access->hasRole(Roles::ROLE_CAN_REVOKE_TOKENS_OF_OTHER_USERS),
             $access
         );
     }
@@ -31,6 +33,7 @@ class SecurityContextFactory
             true, true,
             true, true,
             true, true, true,
+            true, true,
             null
         );
     }

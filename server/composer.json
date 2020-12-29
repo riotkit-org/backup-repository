@@ -5,6 +5,7 @@
     "license": "MIT",
     "require": {
         "php": ">=8.0",
+        "ext-bcmath": "*",
         "ext-ctype": "*",
         "ext-fileinfo": "*",
         "ext-iconv": "*",
@@ -30,7 +31,7 @@
         "symfony/asset": "4.4.*",
         "symfony/console": "*",
         "symfony/dotenv": "4.4.*",
-        "symfony/flex": "^1.1",
+        "symfony/flex": "^1.9",
         "symfony/framework-bundle": "*",
         "symfony/messenger": "4.4.*",
         "symfony/monolog-bundle": "^3.4",

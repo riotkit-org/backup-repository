@@ -40,6 +40,6 @@ authentication.list_api_tokens:
     methods: ['GET']
 
 authentication.revoke_api_token:
-    path: /api/stable/auth/token/revoke
+    path: /api/stable/auth/token
     controller: 'App\Controller\Authentication\AccessTokenRevokingController::revokeAction'
-    methods: ['POST']
+    methods: ['DELETE']

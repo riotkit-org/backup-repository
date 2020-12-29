@@ -21,7 +21,6 @@ class CollectionManagementContext
     private bool $canManageUsersInAllowedCollections;
     private bool $canDeleteAllowedCollections;
     private bool $canSeeTokensInCollection;
-    private bool $cannotSeeFullTokenIds;
     private bool $isSystemAdmin;
     private ?string $userId;
     private ?User $user;
@@ -37,7 +36,6 @@ class CollectionManagementContext
         bool $canManageTokensInAllowedCollections,
         bool $canDeleteAllowedCollections,
         bool $canSeeTokensInCollection,
-        bool $cannotSeeFullTokenIds,
         bool $isSystemAdmin,
         ?string $userId,
         ?User $user
@@ -52,7 +50,6 @@ class CollectionManagementContext
         $this->canManageUsersInAllowedCollections    = $canManageTokensInAllowedCollections;
         $this->canDeleteAllowedCollections            = $canDeleteAllowedCollections;
         $this->canSeeTokensInCollection         = $canSeeTokensInCollection;
-        $this->cannotSeeFullTokenIds            = $cannotSeeFullTokenIds;
         $this->isSystemAdmin                    = $isSystemAdmin;
         $this->userId                          = $userId;
         $this->user                             = $user;

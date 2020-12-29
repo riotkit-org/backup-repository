@@ -4,18 +4,14 @@ namespace App\Controller;
 
 use App\Domain\Authentication\Entity\User;
 use App\Domain\Authentication\Factory\IncomingUserFactory;
-use App\Domain\Common\Exception\AuthenticationException;
+use App\Domain\Authentication\Service\Security\TokenExtractorFromHttp;
 use App\Domain\Common\Exception\CommonValueException;
-use App\Domain\Common\Exception\ReadOnlyException;
-use App\Domain\Storage\Exception\StorageException;
 use App\Infrastructure\Authentication\Token\TokenTransport;
 use App\Infrastructure\Common\Exception\JsonRequestException;
-use App\Infrastructure\Common\Http\JsonFormattedResponse;
 use App\Infrastructure\Common\Service\Http\FormTypeCaster;
 use Symfony\Bundle\FrameworkBundle\Controller\ControllerTrait;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
-use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
@@ -90,6 +86,11 @@ abstract class BaseController implements ContainerAwareInterface
         }
 
         return $sessionToken->getUser();
+    }
+
+    protected function getCurrentSessionToken(Request $request): string
+    {
+        return TokenExtractorFromHttp::extractFromHeaders($request->headers->all());
     }
 
     protected function getLoggedUserOrAnonymousToken(?string $className = null)

@@ -64,4 +64,29 @@ class AccessTokenAuditEntry implements \JsonSerializable
             'active'         => $this->active
         ];
     }
+
+    public function getUser(): User
+    {
+        return $this->user;
+    }
+
+    /**
+     * Checks if provided token hash is same as our Audit Entry
+     *
+     * @param string $tokenHash
+     *
+     * @return bool
+     */
+    public function hasSameTokenHashAs(string $tokenHash): bool
+    {
+        return $this->tokenHash === $tokenHash;
+    }
+
+    /**
+     * Deactivate/revoke the token
+     */
+    public function revokeSelf(): void
+    {
+        $this->active = false;
+    }
 }

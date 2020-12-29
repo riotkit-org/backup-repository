@@ -2,21 +2,32 @@
 
 namespace App\Domain\Authentication\Security\Context;
 
+use App\Domain\Authentication\Entity\AccessTokenAuditEntry;
 use App\Domain\Authentication\Entity\User;
 use App\Domain\Authentication\Service\RolesFilter;
 use App\Domain\Roles;
 
+/**
+ * Security policies as part of security context
+ * ---------------------------------------------
+ *   Defines what actions could be performed by which user.
+ *   One place to define security logic.
+ *
+ *   Scope: Users authorization and API tokens
+ */
 class AuthenticationManagementContext
 {
     private bool $canLookup;
     private bool $canGenerateTokens;
     private bool $canUseTechnicalEndpoints;
     private bool $isAdministrator;
-    private bool $canRevokeTokens;
+    private bool $canRevokeUserAccounts;
     private bool $canCreateTokensWithPredictableIds;
     private bool $canSearchForTokens;
     private bool $canListSelfAccessTokens;
     private bool $canListAllUsersAccessTokens;
+    private bool $canRevokeOwnAccessTokens;
+    private bool $canRevokeAccessTokensOfOtherUsers;
     private ?User $user;
 
     public function __construct(
@@ -29,17 +40,21 @@ class AuthenticationManagementContext
         bool $canSearchForTokens,
         bool $canListSelfAccessTokens,
         bool $canListAllUsersAccessTokens,
+        bool $canRevokeOwnAccessTokens,
+        bool $canRevokeAccessTokensOfOtherUsers,
         ?User $user
     ) {
         $this->canLookup                         = $canLookup;
         $this->canGenerateTokens                 = $canGenerate;
         $this->canUseTechnicalEndpoints          = $canUseTechnicalEndpoints;
         $this->isAdministrator                   = $isAdministrator;
-        $this->canRevokeTokens                   = $canRevokeTokens;
+        $this->canRevokeUserAccounts                   = $canRevokeTokens;
         $this->canCreateTokensWithPredictableIds = $canCreateTokensWithPredictableIds;
         $this->canSearchForTokens                = $canSearchForTokens;
         $this->canListSelfAccessTokens           = $canListSelfAccessTokens;
         $this->canListAllUsersAccessTokens       = $canListAllUsersAccessTokens;
+        $this->canRevokeOwnAccessTokens          = $canRevokeOwnAccessTokens;
+        $this->canRevokeAccessTokensOfOtherUsers = $canRevokeAccessTokensOfOtherUsers;
         $this->user                              = $user;
     }
 
@@ -79,7 +94,7 @@ class AuthenticationManagementContext
         return $this->canUseTechnicalEndpoints;
     }
 
-    public function canRevokeAccess(User $user): bool
+    public function canRevokeUserAccount(User $user): bool
     {
         if ($this->isAdministrator) {
             return true;
@@ -90,7 +105,51 @@ class AuthenticationManagementContext
             return false;
         }
 
-        return $this->canRevokeTokens;
+        return $this->canRevokeUserAccounts;
+    }
+
+    /**
+     * Revoking API tokens (JWT) - do not confuse with user accounts. User accounts are using JWT to have a working session
+     *
+     * Cases:
+     *   - Administrator can do everything
+     *   - User can logout himself/herself from CURRENT SESSION
+     *   - User can revoke own sessions only if a special permission was granted (so the limited tokens could not revoke other tokens)
+     *   - User can revoke sessions of other users if a special permission was granted (except tokens that belongs to administrative accounts)
+     *
+     * @param AccessTokenAuditEntry $entry
+     * @param string $currentSessionTokenHash
+     *
+     * @return bool
+     */
+    public function canRevokeAccessToken(AccessTokenAuditEntry $entry, string $currentSessionTokenHash): bool
+    {
+        // Administrator can do everything
+        if ($this->isAdministrator) {
+            return true;
+        }
+
+        // User can logout himself/herself from CURRENT SESSION
+        if ($entry->hasSameTokenHashAs($currentSessionTokenHash)) {
+            return true;
+        }
+
+        // User can revoke own sessions only if a special permission was granted (so the limited tokens could not revoke other tokens)
+        if ($this->getContextUser()->isSameAs($entry->getUser())) {
+            return $this->canRevokeOwnAccessTokens;
+        }
+
+        // User can revoke sessions of other users if a special permission was granted (except tokens that belongs to administrative accounts)
+        if ($this->canRevokeAccessTokensOfOtherUsers) {
+            // a non-administrator cannot revoke access for the administrator
+            if ($entry->getUser()->isAdministrator() && !$this->isAdministrator) {
+                return false;
+            }
+
+            return true;
+        }
+
+        return false;
     }
 
     public function canCreateUsersWithPredictableIdentifiers(): bool
@@ -134,7 +193,7 @@ class AuthenticationManagementContext
         return $this->canListAllUsersAccessTokens;
     }
 
-    public function getUser(): User
+    public function getContextUser(): User
     {
         return $this->user;
     }

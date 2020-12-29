@@ -75,4 +75,9 @@ class AccessTokenAuditDoctrineRepository extends BaseRepository implements Acces
 
         return $paginator;
     }
+
+    public function findByTokenHash(string $tokenHash): ?AccessTokenAuditEntry
+    {
+        return $this->findOneBy(['tokenHash' => $tokenHash]);
+    }
 }

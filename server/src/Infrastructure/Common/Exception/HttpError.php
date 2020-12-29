@@ -19,12 +19,14 @@ class HttpError extends ApplicationException
     }
 
     /**
+     * @param string $message
+     *
      * @return static
      */
-    public static function fromNotFoundError()
+    public static function fromNotFoundError(string $message = Errors::ERR_MSG_REQUEST_NOT_FOUND)
     {
         return new static(
-            Errors::ERR_MSG_REQUEST_NOT_FOUND,
+            $message,
             Errors::ERR_REQUEST_NOT_FOUND
         );
     }

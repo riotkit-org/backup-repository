@@ -244,6 +244,9 @@ final class Errors
     public const ERR_CANNOT_LIST_ACCESS_TOKENS_OF_USER     = 40317;
     public const ERR_MSG_CANNOT_LIST_ACCESS_TOKENS_OF_USER = 'Cannot list access tokens for selected user. Current access does not allow such operation';
 
+    public const ERR_CANNOT_REVOKE_ACCESS_TOKEN     = 40318;
+    public const ERR_MSG_CANNOT_REVOKE_ACCESS_TOKEN = 'Cannot revoke JWT token. Maybe you cannot revoke other users tokens? Maybe you cannot logout your other sessions than current one? Maybe the target JWT token user is an administrator?';
+
     //
     // Request errors
     //

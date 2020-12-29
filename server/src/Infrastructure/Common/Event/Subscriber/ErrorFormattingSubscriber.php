@@ -5,6 +5,7 @@ namespace App\Infrastructure\Common\Event\Subscriber;
 use App\Domain\Common\Exception\ApplicationException;
 use App\Domain\Common\Exception\DomainAssertionFailure;
 use App\Domain\Common\Exception\DomainInputValidationConstraintViolatedError;
+use App\Domain\Common\Exception\ResourceNotFoundException;
 use App\Infrastructure\Common\Exception\HttpError;
 use App\Infrastructure\Common\Http\JsonFormattedResponse;
 use App\Infrastructure\Common\Http\ValidationErrorResponse;
@@ -77,9 +78,11 @@ class ErrorFormattingSubscriber implements EventSubscriberInterface
         //
 
         if (!$this->isDebugEnvironment || $this->isTestEnvironment) {
-            if ($exc instanceof NotFoundHttpException) {
+            if ($exc instanceof NotFoundHttpException || $exc instanceof ResourceNotFoundException) {
+                $httpError = $exc instanceof ResourceNotFoundException ? HttpError::fromNotFoundError($exc->getMessage()) : HttpError::fromNotFoundError();
+
                 $event->setResponse(
-                    $this->postProcessResponse(new JsonFormattedResponse(HttpError::fromNotFoundError()->jsonSerialize(), 404), $exc)
+                    $this->postProcessResponse(new JsonFormattedResponse($httpError->jsonSerialize(), 404), $exc)
                 );
 
                 return;

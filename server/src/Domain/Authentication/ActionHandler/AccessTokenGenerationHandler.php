@@ -40,7 +40,7 @@ class AccessTokenGenerationHandler
     {
         $this->assertHasRights($context, $form->requestedPermissions);
 
-        $token = $this->factory->createForUser($context->getUser(), $form->requestedPermissions, $form->ttl);
+        $token = $this->factory->createForUser($context->getContextUser(), $form->requestedPermissions, $form->ttl);
         $this->recorder->record($token);
 
         return TokenGenerationResponse::create($token);

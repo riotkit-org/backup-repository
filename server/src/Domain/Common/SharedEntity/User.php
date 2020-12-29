@@ -3,6 +3,7 @@
 namespace App\Domain\Common\SharedEntity;
 
 use App\Domain\Common\ValueObject\Roles;
+use App\Domain\Roles as RolesConst;
 
 class User
 {
@@ -37,15 +38,22 @@ class User
         return $this->id;
     }
 
+    /**
+     * Checks if regardless of domain the user is the same
+     *
+     * @param User $user
+     *
+     * @return bool
+     */
+    public function isSameAs(User $user): bool
+    {
+        return $this->getId() === $user->getId();
+    }
+
     public function setId(string $id)
     {
         $this->id = $id;
         return $this;
-    }
-
-    public function isSameAs(User $token): bool
-    {
-        return $token->getId() === $this->getId();
     }
 
     /**
@@ -96,6 +104,11 @@ class User
     public function getRequestedRolesList(): array
     {
         return $this->roles->getRequestedRolesList();
+    }
+
+    public function isAdministrator(): bool
+    {
+        return $this->hasRole(RolesConst::ROLE_ADMINISTRATOR);
     }
 
     /**

@@ -34,7 +34,7 @@ class AccessTokenListingHandler
     public function handle(AuthenticationManagementContext $context, AccessTokenListingForm $form): AccessTokenListingResponse
     {
         if (!$form->user) {
-            $form->user = $context->getUser();
+            $form->user = $context->getContextUser();
         }
 
         $this->assertHasRights($context, $form->user);

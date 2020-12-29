@@ -52,7 +52,7 @@ class UserAccountDeleteHandler
      */
     private function assertHasRights(AuthenticationManagementContext $context, User $user): void
     {
-        if (!$context->canRevokeAccess($user)) {
+        if (!$context->canRevokeUserAccount($user)) {
             throw AuthenticationException::fromDeletionProhibited();
         }
     }

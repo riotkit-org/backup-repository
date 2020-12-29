@@ -30,6 +30,13 @@ interface AccessTokenAuditRepository
     public function findForUser(User $user, int $page, int $perPage): array;
 
     /**
+     * @param string $tokenHash
+     *
+     * @return AccessTokenAuditEntry|null
+     */
+    public function findByTokenHash(string $tokenHash): ?AccessTokenAuditEntry;
+
+    /**
      * Finds how many results are for findForUser()
      *
      * @param User $user

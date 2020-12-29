@@ -45,6 +45,17 @@ class AuthenticationException extends ExceptionFromCommon
     /**
      * @return static
      */
+    public static function fromCannotRevokeUserAccessToken()
+    {
+        return new static(
+            Errors::ERR_MSG_CANNOT_REVOKE_ACCESS_TOKEN,
+            Errors::ERR_CANNOT_REVOKE_ACCESS_TOKEN
+        );
+    }
+
+    /**
+     * @return static
+     */
     public static function fromNoPermissionToLookupUser()
     {
         return new static(

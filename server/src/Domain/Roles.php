@@ -72,6 +72,12 @@ final class Roles
     /** Browse list of authorized accesses of all users. Does not reveal JWT token used to authenticate */
     public const ROLE_CAN_LIST_ALL_USERS_ACCESS_TOKENS = 'security.can_see_all_users_access_tokens';
 
+    /** Deactivate own API access tokens (JWT) and logged-in sessions */
+    public const ROLE_CAN_REVOKE_OWN_ACCESS_TOKEN = 'security.revoke_own_access_tokens';
+
+    /** Deactivate API access tokens (JWT) and logged-in sessions of other users */
+    public const ROLE_CAN_REVOKE_TOKENS_OF_OTHER_USERS = 'security.revoke_other_users_access_tokens';
+
     //
     //
     // deletion
@@ -199,8 +205,7 @@ final class Roles
 
     public const RESTRICTIONS_LIST = [
         self::ROLE_UPLOAD_ENFORCE_TOKEN_TAGS,
-        self::ROLE_UPLOAD_ONLY_ONCE_SUCCESSFUL,
-        self::ROLE_CANNOT_SEE_FULL_TOKEN_ID
+        self::ROLE_UPLOAD_ONLY_ONCE_SUCCESSFUL
     ];
 
     public static function getRolesList(): array
