@@ -1,5 +1,3 @@
-@TODO
-
 # Contributor Covenant Code of Conduct
 
 ## Our Pledge
@@ -15,6 +13,7 @@ Examples of behavior that contributes to creating a positive environment include
 * Gracefully accepting constructive criticism
 * Focusing on what is best for the community
 * Showing empathy towards other community members
+* Promotion of direct democracy, respecting the voice of others, egalitarian lifestyle
 
 Examples of unacceptable behavior by participants include:
 
@@ -22,6 +21,9 @@ Examples of unacceptable behavior by participants include:
 * Trolling, insulting/derogatory comments, and personal or political attacks
 * Public or private harassment
 * Publishing others' private information, such as a physical or electronic address, without explicit permission
+* Intrusive promotion of commercial products, services or companies
+* Racism, homophobia, xenophobia
+* Promotion of totalitarian methods, totalitarian regimes, elite lifestyle
 * Other conduct which could reasonably be considered inappropriate in a professional setting
 
 ## Our Responsibilities
@@ -36,13 +38,13 @@ This Code of Conduct applies both within project spaces and in public spaces whe
 
 ## Enforcement
 
-Instances of abusive, harassing, or otherwise unacceptable behavior may be reported by contacting the project team at joracristi@gmail.com. The project team will review and investigate all complaints, and will respond in a way that it deems appropriate to the circumstances. The project team is obligated to maintain confidentiality with regard to the reporter of an incident. Further details of specific enforcement policies may be posted separately.
+Instances of abusive, harassing, or otherwise unacceptable behavior may be reported by contacting the project team at riotkit[this-special-symbol]riseup.net. The project team will review and investigate all complaints, and will respond in a way that it deems appropriate to the circumstances. The project team is obligated to maintain confidentiality with regard to the reporter of an incident. Further details of specific enforcement policies may be posted separately.
 
-Project maintainers who do not follow or enforce the Code of Conduct in good faith may face temporary or permanent repercussions as determined by other members of the project's leadership.
+Project maintainers who do not follow or enforce the Code of Conduct in good faith may face temporary or permanent repercussions as determined by other maintainers of the project.
 
 ## Attribution
 
-This Code of Conduct is adapted from the [Contributor Covenant][homepage], version 1.4, available at [http://contributor-covenant.org/version/1/4][version]
+This Code of Conduct is based on the [Contributor Covenant][homepage], version 1.4, available at [http://contributor-covenant.org/version/1/4][version], modified by RiotKit according to the character of the organization
 
 [homepage]: http://contributor-covenant.org
 [version]: http://contributor-covenant.org/version/1/4/
