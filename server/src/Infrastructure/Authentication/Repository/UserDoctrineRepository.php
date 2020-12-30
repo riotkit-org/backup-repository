@@ -73,7 +73,7 @@ class UserDoctrineRepository extends CommonTokenRepository implements UserReposi
     public function findMaxPagesOfUsersBy(string $pattern, int $limit = 50, bool $searchById = true): int
     {
         $qb = $this->createQueryFindTokensBy($pattern);
-        $qb->select('COUNT(token)');
+        $qb->select('COUNT(user)');
 
         return (int) ceil($qb->getQuery()->getSingleScalarResult() / $limit);
     }
@@ -90,14 +90,17 @@ class UserDoctrineRepository extends CommonTokenRepository implements UserReposi
 
     private function createQueryFindTokensBy(string $pattern, bool $searchById = true)
     {
-        $qb = $this->createQueryBuilder('token');
+        $qb = $this->createQueryBuilder('user');
 
         // searching by parts of id could be forbidden for security reasons
         if ($searchById) {
-            $qb->andWhere('token.id LIKE :pattern');
+            $qb->andWhere('user.id LIKE :pattern');
         }
 
-        $qb->orWhere('CAST(token.roles.value as STRING) LIKE :pattern');
+        $qb->orWhere('CAST(user.roles.value as STRING) LIKE :pattern');
+        $qb->orWhere('CAST(user.about.value as STRING) LIKE :pattern');
+        $qb->orWhere('CAST(user.organization.value as STRING) LIKE :pattern');
+        $qb->orWhere('CAST(user.email.value as STRING) LIKE :pattern');
 
         $qb->setParameters(['pattern' => '%' . $pattern . '%']);
 

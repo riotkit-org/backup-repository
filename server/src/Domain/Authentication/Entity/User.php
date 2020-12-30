@@ -263,13 +263,16 @@ class User extends \App\Domain\Common\SharedEntity\User implements \JsonSerializ
     public function jsonSerialize()
     {
         return [
-            'id'           => $this->getId(),
-            'email'        => $this->email->getValue(),
-            'active'       => $this->active,
-            'expired'      => !$this->isNotExpired(),
-            'expires'      => $this->getExpirationDate()->format('Y-m-d H:i:s'),
-            'data'         => $this->data,
-            'roles'        => $this->getRoles(),
+            'id'               => $this->getId(),
+            'email'            => $this->email->getValue(),
+            'active'           => $this->active,
+            'expired'          => !$this->isNotExpired(),
+            'expires'          => $this->getExpirationDate()->format('Y-m-d H:i:s'),
+            'data'             => $this->data,
+            'roles'            => $this->getRoles(),
+            'organization'     => $this->organization->getValue(),
+            'about'            => $this->about->getValue(),
+            'is_administrator' => $this->isAdministrator()
         ];
     }
 
