@@ -49,3 +49,4 @@
 /server/.composer/
 /server/.symfony/
 /server/composer.phar
+/server/.bash_history

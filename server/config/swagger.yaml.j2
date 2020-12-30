@@ -121,6 +121,48 @@ schema:
     {{ _self.response_401() | indent_by('    ') | raw }}
 {% endmacro %}
 
+{% macro user_edit_create_responses() %}
+'400 - Invalid e-mail format':
+    description: Invalid e-mail format
+    {{ _self.response_validation_error('email', 'Invalid e-mail format', 40005) | indent_by('    ') | raw }}
+
+'400 - User ID format invalid, should be a uuidv4 format':
+    description: Invalid e-mail format
+    {{ _self.response_validation_error('email', 'User ID format invalid, should be a uuidv4 format', 40021) | indent_by('    ') | raw }}
+
+'400 - Invalid role selected':
+    description: Invalid role selected
+    {{ _self.response_validation_error('roles', 'Invalid role selected', 40010) | indent_by('    ') | raw }}
+
+'400 - Expiration date has invalid date format':
+    description: Expiration date has invalid date format
+    {{ _self.response_validation_error('expirationDate', 'Expiration date has invalid date format', 41014) | indent_by('    ') | raw }}
+
+'400 - Password is too short':
+    description: Password is too short
+    {{ _self.response_validation_error('password', 'Password is too short', 40006) | indent_by('    ') | raw }}
+
+'400 - Password is too long':
+    description: Password is too long
+    {{ _self.response_validation_error('password', 'Password is too long', 40007) | indent_by('    ') | raw }}
+
+'400 - Password should contain at least one special character':
+    description: Password should contain at least one special character
+    {{ _self.response_validation_error('password', 'Password should contain at least one special character', 40008) | indent_by('    ') | raw }}
+
+'400 - Password cannot begin or end with a blank character':
+    description: Password cannot begin or end with a blank character
+    {{ _self.response_validation_error('password', 'Password cannot begin or end with a blank character', 40009) | indent_by('    ') | raw }}
+
+'400 - Organization - Max chars':
+    description: Maximum allowed characters exceeded
+    {{ _self.response_validation_error('organization', 'Maximum allowed characters exceeded', 40003) | indent_by('    ') | raw }}
+
+'400 - About - Max chars':
+    description: Maximum allowed characters exceeded
+    {{ _self.response_validation_error('about', 'Maximum allowed characters exceeded', 40003) | indent_by('    ') | raw }}
+{% endmacro %}
+
 {% macro response_not_found() %}
 schema:
     properties:
@@ -292,7 +334,7 @@ paths:
             summary: "API token generation for programmatic access"
             description: "Generate an API token for programmatic access (eg. backup clients). Endpoint can generate a token using your account in selected, limited scope of permissions."
             <<: *json_input_output
-            tags: ['Authentication']
+            tags: ['Authentication - API tokens management']
             parameters:
                 - name: body
                   in: body
@@ -327,7 +369,7 @@ paths:
             summary: "List granted API tokens"
             description: "Lists all granted API tokens (JWT) "
             <<: *json_input_output
-            tags: ['Authentication']
+            tags: ['Authentication - API tokens management']
             parameters:
                 - name: user
                   in: query
@@ -387,7 +429,7 @@ paths:
             summary: "Revoke any previously granted JWT or logout current session"
             description: "Allows to revoke any JWT granted in application, for current user, current session, or for any other user"
             <<: *json_input_output
-            tags: ['Authentication']
+            tags: ['Authentication - API tokens management']
             parameters:
                 - name: tokenHash
                   in: path
@@ -471,45 +513,66 @@ paths:
                                 "$ref": "#/definitions/User"
                         type: object
 
-                '400 - Invalid e-mail format':
-                    description: Invalid e-mail format
-                    {{ _self.response_validation_error('email', 'Invalid e-mail format', 40005) | indent_by('                    ') | raw }}
+                {{ _self.user_edit_create_responses() | indent_by('                ') | raw }}
 
-                '400 - User ID format invalid, should be a uuidv4 format':
-                    description: Invalid e-mail format
-                    {{ _self.response_validation_error('email', 'User ID format invalid, should be a uuidv4 format', 40021) | indent_by('                    ') | raw }}
+        put:
+            summary: "Update user account"
+            description: "Edit user account, change password"
+            <<: *json_input_output
+            tags: ['Authentication']
+            parameters:
+                - name: userId
+                  in: path
+                  description: "User ID, can be found in users search"
+                  type: string
+                - name: body
+                  in: body
+                  description: JSON payload
+                  schema:
+                      properties:
+                          password:
+                              example: aNti_cap.italiSM
+                              type: string
+                          repeatPassword:
+                              example: aNti_cap.italiSM
+                              type: string
+                          currentPassword:
+                              example: weak-password
+                              type: string
+                          about:
+                              example: A member of the collective. Technically website administrator.
+                              type: string
+                          organization:
+                              example: Food not bombs
+                              type: string
+                          roles:
+                              example:
+                                  - collections.create_new
+                                  - collections.manage_users_in_allowed_collections
+                              items:
+                                  type: string
+                              type: array
+                          expires:
+                              example: '2021-05-01 01:06:01'
+                              type: string
+                      type: object
+            responses:
+                {{ _self.standard_responses() | indent_by('                ') | raw }}
+                '200':
+                    description: User profile was successfuly saved
+                    schema:
+                        properties:
+                            status:
+                                example: true
+                                type: boolean
+                            message:
+                                example: User saved
+                                type: string
+                            user:
+                                "$ref": "#/definitions/User"
+                        type: object
 
-                '400 - Invalid role selected':
-                    description: Invalid role selected
-                    {{ _self.response_validation_error('roles', 'Invalid role selected', 40010) | indent_by('                    ') | raw }}
-
-                '400 - Expiration date has invalid date format':
-                    description: Expiration date has invalid date format
-                    {{ _self.response_validation_error('expirationDate', 'Expiration date has invalid date format', 41014) | indent_by('                    ') | raw }}
-
-                '400 - Password is too short':
-                    description: Password is too short
-                    {{ _self.response_validation_error('password', 'Password is too short', 40006) | indent_by('                    ') | raw }}
-
-                '400 - Password is too long':
-                    description: Password is too long
-                    {{ _self.response_validation_error('password', 'Password is too long', 40007) | indent_by('                    ') | raw }}
-
-                '400 - Password should contain at least one special character':
-                    description: Password should contain at least one special character
-                    {{ _self.response_validation_error('password', 'Password should contain at least one special character', 40008) | indent_by('                    ') | raw }}
-
-                '400 - Password cannot begin or end with a blank character':
-                    description: Password cannot begin or end with a blank character
-                    {{ _self.response_validation_error('password', 'Password cannot begin or end with a blank character', 40009) | indent_by('                    ') | raw }}
-
-                '400 - Organization - Max chars':
-                    description: Maximum allowed characters exceeded
-                    {{ _self.response_validation_error('organization', 'Maximum allowed characters exceeded', 40003) | indent_by('                    ') | raw }}
-
-                '400 - About - Max chars':
-                    description: Maximum allowed characters exceeded
-                    {{ _self.response_validation_error('about', 'Maximum allowed characters exceeded', 40003) | indent_by('                    ') | raw }}
+                {{ _self.user_edit_create_responses() | indent_by('                ') | raw }}
 
         get:
             summary: Search for users accounts
