@@ -5,6 +5,7 @@ namespace App\Domain\Authentication\Security\Context;
 use App\Domain\Authentication\Entity\AccessTokenAuditEntry;
 use App\Domain\Authentication\Entity\User;
 use App\Domain\Authentication\Service\RolesFilter;
+use App\Domain\Authentication\ValueObject\Password;
 use App\Domain\Roles;
 
 /**
@@ -76,7 +77,7 @@ class AuthenticationManagementContext
         return $this->canLookupAnyUserAccount() && $this->canSearchForTokens;
     }
 
-    public function canGenerateNewToken(): bool
+    public function canCreateNewUser(): bool
     {
         if ($this->isAdministrator) {
             return true;
@@ -106,6 +107,69 @@ class AuthenticationManagementContext
         }
 
         return $this->canRevokeUserAccounts;
+    }
+
+    /**
+     * Editing an user
+     *
+     * Cases:
+     *   - User can edit self
+     *   - Administrator can edit anyone
+     *
+     * @param User $user
+     * @param array $permissions
+     *
+     * @return bool
+     */
+    public function canEditUser(User $user, array $permissions): bool
+    {
+        if ($this->isAdministrator) {
+            return true;
+        }
+
+        // remove all roles that user does not have
+        $filteredByPermissions = RolesFilter::filterBy($permissions, [RolesFilter::FILTER_AUTH], $this->user);
+        sort($permissions);
+        sort($filteredByPermissions);
+
+        // at least one role was removed by the RolesFilter, which means that the CURRENT SESSION USER does not own such role
+        // so the SESSION USER cannot assign that role to other user
+        if ($permissions !== $filteredByPermissions) {
+            return false;
+        }
+
+        return $this->getContextUser()->isSameAs($user);
+    }
+
+    /**
+     * Cases:
+     *   - Administrator can change any password without entering old password
+     *   - User can change only it's own password, not other user password
+     *   - User must know his/her current password to change it
+     *   - User must enter and repeat a password
+     *
+     * @param User $user
+     * @param Password $currentPassword
+     * @param Password $newPassword
+     * @param Password $repeatNew
+     *
+     * @return bool
+     */
+    public function canChangePassword(User $user, Password $currentPassword, Password $newPassword, Password $repeatNew): bool
+    {
+        if (!$newPassword->isSame($repeatNew)) {
+            return false;
+        }
+
+        if ($this->isAdministrator) {
+            return true;
+        }
+
+        if (!$currentPassword->isSame($user->getPasswordAsObject())) {
+            return false;
+        }
+
+        return $user->isSameAs($this->getContextUser());
     }
 
     /**

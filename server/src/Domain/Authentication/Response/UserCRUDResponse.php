@@ -22,23 +22,34 @@ class UserCRUDResponse extends NormalResponse
         return $response;
     }
 
-    public static function createTokenCreatedResponse(User $token): UserCRUDResponse
+    public static function createTokenCreatedResponse(User $user): UserCRUDResponse
     {
         $response = new UserCRUDResponse();
         $response->status   = true;
         $response->exitCode = Http::HTTP_CREATED;
-        $response->user    = $token;
+        $response->user     = $user;
         $response->message  = 'User created';
 
         return $response;
     }
 
-    public static function createFoundResponse(User $token)
+    public static function createUserEditedResponse($user)
     {
         $response = new UserCRUDResponse();
         $response->status   = true;
         $response->exitCode = Http::HTTP_OK;
-        $response->user    = $token;
+        $response->user     = $user;
+        $response->message  = 'User saved';
+
+        return $response;
+    }
+
+    public static function createFoundResponse(User $user)
+    {
+        $response = new UserCRUDResponse();
+        $response->status   = true;
+        $response->exitCode = Http::HTTP_OK;
+        $response->user    = $user;
         $response->message  = 'User found';
 
         return $response;

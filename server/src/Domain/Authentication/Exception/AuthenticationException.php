@@ -23,6 +23,17 @@ class AuthenticationException extends ExceptionFromCommon
     /**
      * @return static
      */
+    public static function fromCannotChangePassword()
+    {
+        return new static(
+            Errors::ERR_MSG_CANNOT_CHANGE_PASSWORD,
+            Errors::ERR_CANNOT_CHANGE_PASSWORD
+        );
+    }
+
+    /**
+     * @return static
+     */
     public static function fromPredictableIdSelectionProhibition()
     {
         return new static(

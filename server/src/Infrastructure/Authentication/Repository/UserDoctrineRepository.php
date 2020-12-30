@@ -83,6 +83,11 @@ class UserDoctrineRepository extends CommonTokenRepository implements UserReposi
         return $this->findOneBy(['email.value' => $email]);
     }
 
+    public function findOneById(string $id): ?User
+    {
+        return $this->findOneBy(['id' => $id]);
+    }
+
     private function createQueryFindTokensBy(string $pattern, bool $searchById = true)
     {
         $qb = $this->createQueryBuilder('token');

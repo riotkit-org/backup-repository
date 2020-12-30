@@ -2,12 +2,15 @@
 
 namespace App\Domain\Authentication\Form;
 
-use App\Domain\Roles;
-
 class AuthForm
 {
     public ?string $email    = '';
     public ?string $password = '';
+
+    // <edit mode>
+    public string $repeatPassword = '';
+    public string $currentPassword = '';
+    // </edit mode>
 
     /**
      * @var string[]
@@ -39,14 +42,9 @@ class AuthForm
     public $about;
 
     /**
-     * Custom token id (requires additional permissions to use)
+     * Custom token id (requires additional permissions to use in CREATION endpoint)
      *
      * @var string|null
      */
     public $id;
-
-    public static function getAvailableRoles(): array
-    {
-        return Roles::getRolesList();
-    }
 }

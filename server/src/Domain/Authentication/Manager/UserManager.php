@@ -7,11 +7,13 @@ use App\Domain\Authentication\Entity\User;
 use App\Domain\Authentication\Exception\InvalidUserIdException;
 use App\Domain\Authentication\Repository\UserRepository;
 use App\Domain\Authentication\Service\UuidValidator;
+use App\Domain\Authentication\ValueObject\About;
+use App\Domain\Authentication\ValueObject\ExpirationDate;
+use App\Domain\Authentication\ValueObject\Organization;
+use App\Domain\Authentication\ValueObject\Password;
+use App\Domain\Authentication\ValueObject\Roles;
 use App\Domain\Common\Exception\DomainAssertionFailure;
 
-/**
- * @todo: Rewrite into commands
- */
 class UserManager
 {
     private UserRepository $repository;
@@ -72,6 +74,20 @@ class UserManager
         }
 
         return $user;
+    }
+
+    public function editUser(User $user, array $roles, ?string $expirationTime,
+                             ?string $organizationName, ?string $about): void
+    {
+        $user->setRoles(Roles::fromArray($roles));
+        $user->setExpirationDate(ExpirationDate::fromString($expirationTime, $this->defaultExpirationTime));
+        $user->setOrganization(Organization::fromString($organizationName));
+        $user->setAbout(About::fromString($about));
+    }
+
+    public function changePassword(User $user, string $newPassword): void
+    {
+        $user->setPassphrase(Password::fromString($newPassword, $user->getSalt(), $this->hashingConfiguration));
     }
 
     public function revokeAccessForUser(User $user): void

@@ -16,15 +16,9 @@ class UserCreationHandler
 {
     private UserManager $tokenManager;
 
-    /**
-     * @var string A modificator eg. "+30 minutes"
-     */
-    private string $expirationTimeModifier;
-
-    public function __construct(UserManager $manager, string $expirationTime)
+    public function __construct(UserManager $manager)
     {
-        $this->tokenManager           = $manager;
-        $this->expirationTimeModifier = $expirationTime;
+        $this->tokenManager = $manager;
     }
 
     /**
@@ -73,7 +67,7 @@ class UserCreationHandler
      */
     private function assertHasRights(AuthenticationManagementContext $context, AuthForm $form): void
     {
-        if (!$context->canGenerateNewToken()) {
+        if (!$context->canCreateNewUser()) {
             throw AuthenticationException::fromUsersCreationProhibition();
         }
 

@@ -1,9 +1,12 @@
 authentication.create_user:
     path: /api/stable/auth/user
-    controller: 'App\Controller\Authentication\CreateUserController::generateAction'
+    controller: 'App\Controller\Authentication\CreateEditUserController::modifyAction'
     methods: ['POST']
 
-# @todo: Edit user...
+authentication.edit_user:
+    path: /api/stable/auth/user/{userId}
+    controller: 'App\Controller\Authentication\CreateEditUserController::modifyAction'
+    methods: ['PUT']
 
 authentication.search:
     path: /api/stable/auth/user

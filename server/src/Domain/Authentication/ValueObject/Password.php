@@ -8,7 +8,7 @@ use App\Domain\Authentication\Configuration\PasswordHashingConfiguration;
 
 class Password implements \JsonSerializable
 {
-    protected string $value;
+    protected string $value = '';
 
     /**
      * @param string                       $value
@@ -67,6 +67,11 @@ class Password implements \JsonSerializable
         return $new;
     }
 
+    public static function fromEmpty(): Password
+    {
+        return new static();
+    }
+
     public function getValue(): string
     {
         return $this->value;
@@ -85,5 +90,17 @@ class Password implements \JsonSerializable
     public function jsonSerialize()
     {
         return $this->value;
+    }
+
+    /**
+     * Checks if password is same
+     *
+     * @param Password $password
+     *
+     * @return bool
+     */
+    public function isSame(Password $password): bool
+    {
+        return $this->getValue() === $password->getValue();
     }
 }

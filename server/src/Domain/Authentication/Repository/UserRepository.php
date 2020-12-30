@@ -28,4 +28,6 @@ interface UserRepository extends \App\Domain\Common\Repository\TokenRepository
     public function findMaxPagesOfUsersBy(string $pattern, int $limit = 50): int;
 
     public function findOneByEmail(string $email): ?User;
+
+    public function findOneById(string $id): ?User;
 }

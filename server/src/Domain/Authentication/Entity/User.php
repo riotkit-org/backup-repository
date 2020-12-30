@@ -157,19 +157,19 @@ class User extends \App\Domain\Common\SharedEntity\User implements \JsonSerializ
         return $this;
     }
 
-    private function setPassphrase(Password $password): User
+    public function setPassphrase(Password $password): User
     {
         $this->passphrase = $password;
         return $this;
     }
 
-    private function setOrganization(Organization $organization): User
+    public function setOrganization(Organization $organization): User
     {
         $this->organization = $organization;
         return $this;
     }
 
-    private function setAbout(About $about): User
+    public function setAbout(About $about): User
     {
         $this->about = $about;
         return $this;
@@ -273,9 +273,19 @@ class User extends \App\Domain\Common\SharedEntity\User implements \JsonSerializ
         ];
     }
 
+    /**
+     * Interface method, must return string
+     *
+     * @return string|null
+     */
     public function getPassword()
     {
         return $this->passphrase->getValue();
+    }
+
+    public function getPasswordAsObject(): Password
+    {
+        return $this->passphrase;
     }
 
     public function getSalt()

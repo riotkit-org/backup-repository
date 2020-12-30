@@ -45,11 +45,6 @@ services:
         arguments:
             $secretCode: '%env(HEALTH_CHECK_CODE)%'
 
-    App\Domain\Authentication\ActionHandler\UserCreationHandler:
-        arguments:
-            $manager: '@App\Domain\Authentication\Manager\UserManager'
-            $expirationTime: '%env(TOKEN_EXPIRATION_TIME)%'
-
     App\Infrastructure\Common\Service\SerializerORMEntityNormalizer:
         public: false
         autowire: true
