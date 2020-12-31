@@ -108,7 +108,7 @@ class User
 
     public function isAdministrator(): bool
     {
-        return $this->hasRole(RolesConst::ROLE_ADMINISTRATOR);
+        return $this->hasRole(RolesConst::PERMISSION_ADMINISTRATOR);
     }
 
     /**

@@ -24,7 +24,7 @@ abstract class TokenDoctrineRepository extends BaseRepository implements TokenRe
              */
             $token = new $className();
             $token->setId($id);
-            $token->setRoles(RolesVO::fromArray([RolesDomain::ROLE_ADMINISTRATOR]));
+            $token->setRoles(RolesVO::fromArray([RolesDomain::PERMISSION_ADMINISTRATOR]));
 
             return $token;
         }

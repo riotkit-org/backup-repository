@@ -40,7 +40,7 @@ class GenerateAdminAccountCommand extends Command
 
         $opts = [
             'command'    => CreateUserCommand::NAME,
-            '--roles'    => Roles::ROLE_ADMINISTRATOR,
+            '--roles'    => Roles::PERMISSION_ADMINISTRATOR,
             '--expires'  => $input->getOption('expires') ?? '+10 years',
             '--id'       => $input->getOption('id') ?? '',
             '--email'    => $input->getOption('email'),

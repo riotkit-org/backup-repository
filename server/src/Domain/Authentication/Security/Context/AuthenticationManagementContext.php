@@ -19,7 +19,7 @@ use App\Domain\Roles;
 class AuthenticationManagementContext
 {
     private bool $canLookup;
-    private bool $canGenerateTokens;
+    private bool $canCreateUnlimitedUserAccount;
     private bool $canUseTechnicalEndpoints;
     private bool $isAdministrator;
     private bool $canRevokeUserAccounts;
@@ -33,7 +33,7 @@ class AuthenticationManagementContext
 
     public function __construct(
         bool $canLookup,
-        bool $canGenerate,
+        bool $canCreateUnlimitedUserAccount,
         bool $canUseTechnicalEndpoints,
         bool $isAdministrator,
         bool $canRevokeTokens,
@@ -46,7 +46,7 @@ class AuthenticationManagementContext
         ?User $user
     ) {
         $this->canLookup                         = $canLookup;
-        $this->canGenerateTokens                 = $canGenerate;
+        $this->canCreateUnlimitedUserAccount     = $canCreateUnlimitedUserAccount;
         $this->canUseTechnicalEndpoints          = $canUseTechnicalEndpoints;
         $this->isAdministrator                   = $isAdministrator;
         $this->canRevokeUserAccounts                   = $canRevokeTokens;
@@ -83,7 +83,7 @@ class AuthenticationManagementContext
             return true;
         }
 
-        return $this->canGenerateTokens;
+        return $this->canCreateUnlimitedUserAccount;
     }
 
     public function canUseTechnicalEndpoints(): bool
@@ -102,7 +102,7 @@ class AuthenticationManagementContext
         }
 
         // a non-administrator cannot revoke access for the administrator
-        if (!$this->isAdministrator && $user->hasRole(Roles::ROLE_ADMINISTRATOR)) {
+        if (!$this->isAdministrator && $user->hasRole(Roles::PERMISSION_ADMINISTRATOR)) {
             return false;
         }
 

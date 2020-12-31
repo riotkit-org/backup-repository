@@ -15,12 +15,12 @@ class SecurityContextFactory
     {
         return new UploadSecurityContext(
             $token->getTags(),
-            $token->hasRole(Roles::ROLE_UPLOAD),
-            $token->hasRole(Roles::ROLE_ALLOW_OVERWRITE_FILES),
+            $token->hasRole(Roles::PERMISSION_UPLOAD),
+            $token->hasRole(Roles::PERMISSION_ALLOW_OVERWRITE_FILES),
             $token->getMaxAllowedFileSize(),
-            $token->hasRole(Roles::ROLE_UPLOAD_ENFORCE_TOKEN_TAGS),
-            $token->hasRole(Roles::ROLE_ADMINISTRATOR),
-            $token->hasRole(Roles::ROLE_UPLOAD_ONLY_ONCE_SUCCESSFUL),
+            $token->hasRole(Roles::PERMISSION_UPLOAD_ENFORCE_USER_TAGS),
+            $token->hasRole(Roles::PERMISSION_ADMINISTRATOR),
+            $token->hasRole(Roles::PERMISSION_UPLOAD_ONLY_ONCE_SUCCESSFUL),
             $token
         );
     }
@@ -28,11 +28,11 @@ class SecurityContextFactory
     public function createViewingContextFromTokenAndForm(User $token, ViewFileForm $form, bool $isFileAlreadyValidated = false): ReadSecurityContext
     {
         return new ReadSecurityContext(
-            $token->hasRole(Roles::ROLE_BROWSE_ALL_FILES),
-            $token->hasRole(Roles::ROLE_BROWSE_LIST_OF_FILES_BY_ANY_TAG),
-            $token->hasRole(Roles::ROLE_ACCESS_LISTING_ENDPOINT),
+            $token->hasRole(Roles::PERMISSION_BROWSE_ALL_FILES),
+            $token->hasRole(Roles::PERMISSION_BROWSE_LIST_OF_FILES_BY_ANY_TAG),
+            $token->hasRole(Roles::PERMISSION_ACCESS_LISTING_ENDPOINT),
             $token->getTags(),
-            $token->hasRole(Roles::ROLE_CAN_SEE_EXTRA_ADMIN_METADATA),
+            $token->hasRole(Roles::PERMISSION_CAN_SEE_EXTRA_ADMIN_METADATA),
             $token,
             $isFileAlreadyValidated
         );
@@ -41,11 +41,11 @@ class SecurityContextFactory
     public function createListingContextFromTokenAndForm(User $token, FilesListingForm $form, bool $isFileAlreadyValidated = false): ReadSecurityContext
     {
         return new ReadSecurityContext(
-            $token->hasRole(Roles::ROLE_BROWSE_ALL_FILES),
-            $token->hasRole(Roles::ROLE_BROWSE_LIST_OF_FILES_BY_ANY_TAG),
-            $token->hasRole(Roles::ROLE_ACCESS_LISTING_ENDPOINT),
+            $token->hasRole(Roles::PERMISSION_BROWSE_ALL_FILES),
+            $token->hasRole(Roles::PERMISSION_BROWSE_LIST_OF_FILES_BY_ANY_TAG),
+            $token->hasRole(Roles::PERMISSION_ACCESS_LISTING_ENDPOINT),
             $token->getTags(),
-            $token->hasRole(Roles::ROLE_CAN_SEE_EXTRA_ADMIN_METADATA),
+            $token->hasRole(Roles::PERMISSION_CAN_SEE_EXTRA_ADMIN_METADATA),
             $token,
             $isFileAlreadyValidated
         );

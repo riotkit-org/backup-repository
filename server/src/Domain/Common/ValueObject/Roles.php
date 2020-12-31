@@ -86,7 +86,7 @@ class Roles implements \JsonSerializable
     private function isAdmin(): bool
     {
         // NOTICE: cannot use hasRole() because of possible infinite recursion
-        return in_array(RolesConst::ROLE_ADMINISTRATOR, $this->value);
+        return in_array(RolesConst::PERMISSION_ADMINISTRATOR, $this->value);
     }
 
     private function getAdministratorPrivileges(): array
@@ -120,7 +120,7 @@ class Roles implements \JsonSerializable
 
     private function prepareAdministrationRole(): void
     {
-        if (!$this->alreadyGrantedAdminAccess && in_array(RolesConst::ROLE_ADMINISTRATOR, $this->value, true)) {
+        if (!$this->alreadyGrantedAdminAccess && in_array(RolesConst::PERMISSION_ADMINISTRATOR, $this->value, true)) {
             $this->value = array_merge($this->value, RolesConst::GRANTS_LIST);
             $this->alreadyGrantedAdminAccess = true;
         }
