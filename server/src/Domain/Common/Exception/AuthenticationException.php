@@ -89,6 +89,17 @@ class AuthenticationException extends ApplicationException
     /**
      * @return static
      */
+    public static function fromPermissionDeniedToListPermissions()
+    {
+        return new static(
+            Errors::ERR_MSG_PERMISSION_CANNOT_LIST_PERMISSIONS,
+            Errors::ERR_PERMISSION_CANNOT_LIST_PERMISSIONS
+        );
+    }
+
+    /**
+     * @return static
+     */
     public static function fromForbiddenToGenerateTokenWithMoreRolesThanUserHave()
     {
         return new static(

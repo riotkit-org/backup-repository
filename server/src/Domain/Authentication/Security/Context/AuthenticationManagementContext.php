@@ -29,6 +29,7 @@ class AuthenticationManagementContext
     private bool $canListAllUsersAccessTokens;
     private bool $canRevokeOwnAccessTokens;
     private bool $canRevokeAccessTokensOfOtherUsers;
+    private bool $canListRoles;
     private ?User $user;
 
     public function __construct(
@@ -43,6 +44,7 @@ class AuthenticationManagementContext
         bool $canListAllUsersAccessTokens,
         bool $canRevokeOwnAccessTokens,
         bool $canRevokeAccessTokensOfOtherUsers,
+        bool $canListRoles,
         ?User $user
     ) {
         $this->canLookup                         = $canLookup;
@@ -56,6 +58,7 @@ class AuthenticationManagementContext
         $this->canListAllUsersAccessTokens       = $canListAllUsersAccessTokens;
         $this->canRevokeOwnAccessTokens          = $canRevokeOwnAccessTokens;
         $this->canRevokeAccessTokensOfOtherUsers = $canRevokeAccessTokensOfOtherUsers;
+        $this->canListRoles                      = $canListRoles;
         $this->user                              = $user;
     }
 
@@ -93,6 +96,15 @@ class AuthenticationManagementContext
         }
 
         return $this->canUseTechnicalEndpoints;
+    }
+
+    public function canListRoles(): bool
+    {
+        if ($this->isAdministrator) {
+            return true;
+        }
+
+        return $this->canListRoles;
     }
 
     public function canRevokeUserAccount(User $user): bool

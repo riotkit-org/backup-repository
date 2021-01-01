@@ -2,20 +2,33 @@
 
 namespace App\Domain\Authentication\Response;
 
-use App\Domain\Common\Http;
 use App\Domain\Common\Response\NormalSearchResponse;
 
 class RoleSearchResponse extends NormalSearchResponse
 {
-    public static function createResultsResponse(array $roles): RoleSearchResponse
+    protected int $page      = 1;
+    protected int $pageLimit = 1000;
+    protected int $maxPages  = 1;
+
+    private array $allPermissions;
+
+    public static function createResultsResponse(array $scopedPermissions, array $allPermissions): RoleSearchResponse
     {
         $response = new RoleSearchResponse();
-        $response->status    = true;
-        $response->page      = 1;
-        $response->pageLimit = 4096;
-        $response->maxPages  = 1;
-        $response->data      = $roles;
+        $response->status         = true;
+        $response->data           = $scopedPermissions;
+        $response->allPermissions = $allPermissions;
 
         return $response;
+    }
+
+    public function jsonSerialize(): array
+    {
+        return [
+            'message'        => $this->message,
+            'status'         => $this->status,
+            'permissions'    => $this->data,
+            'allPermissions' => $this->allPermissions
+        ];
     }
 }

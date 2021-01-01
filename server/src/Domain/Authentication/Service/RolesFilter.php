@@ -39,9 +39,13 @@ class RolesFilter
      */
     protected static function filterByAllowedPerCollectionOnly(array $roles, User $user): array
     {
-        return array_filter($roles, function (string $role) {
-            return in_array($role, Roles::PER_BACKUP_COLLECTION_LIST);
-        }, ARRAY_FILTER_USE_KEY);
+        return array_filter(
+            $roles,
+            function (string $role) {
+                return in_array($role, Roles::PER_BACKUP_COLLECTION_LIST);
+            },
+            static::isFlatListWithoutDescriptions($roles) ? 0 : ARRAY_FILTER_USE_KEY
+        );
     }
 
     /**
@@ -54,8 +58,30 @@ class RolesFilter
      */
     protected static function filterByAuth(array $roles, User $user): array
     {
-        return array_filter($roles, function (string $role) use ($user) {
-            return $user->hasRole($role);
-        }, ARRAY_FILTER_USE_KEY);
+        $isAdministrator = $user->isAdministrator();
+
+        return array_filter(
+            $roles,
+            function (string $role) use ($user, $isAdministrator) {
+
+                // administrator is also allowed to grant restrictions
+                if ($isAdministrator && in_array($role, Roles::getRestrictionsList())) {
+                    return true;
+                }
+
+                return $user->hasRole($role);
+            },
+            static::isFlatListWithoutDescriptions($roles) ? 0 : ARRAY_FILTER_USE_KEY
+        );
+    }
+
+    private static function isFlatListWithoutDescriptions(array $permissions): bool
+    {
+        // does not matter at all
+        if (!$permissions) {
+            return true;
+        }
+
+        return is_numeric(array_keys($permissions)[0]);
     }
 }

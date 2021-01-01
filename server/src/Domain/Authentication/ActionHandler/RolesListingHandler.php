@@ -29,12 +29,15 @@ class RolesListingHandler
      */
     public function handle(AuthenticationManagementContext $context, User $user, array $limits): RoleSearchResponse
     {
-        if (!$context->canUseTechnicalEndpoints()) {
-            throw AuthenticationException::fromPermissionDeniedToUseTechnicalEndpoints();
+        if (!$context->canListRoles()) {
+            throw AuthenticationException::fromPermissionDeniedToListPermissions();
         }
 
+        $allPermissions = $this->provider->findAllRolesWithTheirDescription();
+
         return RoleSearchResponse::createResultsResponse(
-            RolesFilter::filterBy($this->provider->findAllRolesWithTheirDescription(), $limits, $user)
+            RolesFilter::filterBy($allPermissions, $limits, $user),
+            $allPermissions
         );
     }
 }
