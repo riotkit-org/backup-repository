@@ -6,44 +6,103 @@
 
 // @ts-ignore
 import {List} from "src/contracts/base.contract.ts";
-import Dictionary from "../contracts/base.contract";
+// @ts-ignore
+import Dictionary from "src/contracts/base.contract.ts";
 
-export class User {
-    id: string
-    email: string
-    active: boolean
-    data: Dictionary<any>
-    roles: List<string>
-    expires: string
-    expired: boolean
+/**
+ * Details - mostly restrictions eg. allowed IP addresses
+ */
+export class UserDetails {
+    tags: List<string>|never[] = []
+    maxAllowedFileSize: number = 0
+    allowedIpAddresses: List<string>|never[] = []
+    allowedUserAgents: List<string>|never[]  = []
 
-    static fromDict(userData: Dictionary<any>) {
-        let user = new User()
-        user.id      = userData['id']
-        user.email   = userData['email']
-        user.expired = userData['expired']
-        user.expires = userData['expires']
-        user.active  = userData['active']
-        user.roles   = userData['roles']
+    static fromDict(data: Dictionary<any>) {
+        let details = new UserDetails()
+        details.tags = data['tags']
+        details.maxAllowedFileSize = data['maxAllowedFileSize']
+        details.allowedIpAddresses = data['allowedIpAddresses']
+        details.allowedUserAgents  = data['allowedUserAgents']
 
-        return user
+        return details
+    }
+
+    toUserUpdatePayloadDict() {
+        return {
+            'tags': this.tags,
+            'maxAllowedFileSize': this.maxAllowedFileSize,
+            'allowedIpAddresses': this.allowedIpAddresses,
+            'allowedUserAgents': this.allowedUserAgents
+        }
     }
 }
 
 /**
- * active: true
- data: {tags: ["international-workers-association", "iwa-ait.org"], maxAllowedFileSize: 1073741824,…}
- allowedIpAddresses: []
- allowedUserAgents: ["Mozilla XYZ", "curl/15.55 (RiotKit)"]
- maxAllowedFileSize: 1073741824
- tags: ["international-workers-association", "iwa-ait.org"]
- email: "example3@riseup.net"
- expired: false
- expires: "2021-05-01 01:06:01"
- id: "ca6a2635-d2cb-4682-ba81-3879dd0e8372"
- idIsCensored: false
- roles: ["collections.create_new", "collections.manage_users_in_allowed_collections",…]
+ * User account
  */
+export class User {
+    id: string = ''
+    email: string = ''
+    active: boolean = true
+    data: UserDetails
+    roles: List<string>|never[] = []
+    expires: string = ''
+    expired: boolean = false
+    about: string = ''
+    organization: string = ''
+    isAdmin: boolean = false
+
+    constructor() {
+        this.data = new UserDetails()
+    }
+
+    static fromDict(userData: Dictionary<any>) {
+        let user = new User()
+        user.id           = userData['id']
+        user.email        = userData['email']
+        user.expired      = userData['expired']
+        user.expires      = userData['expires']
+        user.active       = userData['active']
+        user.roles        = userData['roles']
+        user.about        = userData['about']
+        user.organization = userData['organization']
+        user.isAdmin      = userData['is_administrator']
+        user.data         = UserDetails.fromDict(userData['data'])
+
+        return user
+    }
+
+    /**
+     * Create a payload required to Create/Update User account
+     *
+     * @param newPassword
+     * @param repeatNewPassword
+     * @param currentPassword
+     */
+    toUserUpdatePayloadDict(newPassword: string, repeatNewPassword: string, currentPassword: string) {
+        let data = {
+            'password': newPassword,
+            'repeatPassword': repeatNewPassword,
+            'currentPassword': currentPassword,
+
+            // fields in edit and in creation
+            'expires': this.expires,
+            'active': this.active,
+            'roles': this.roles,
+            'about': this.about,
+            'organization': this.organization,
+            'data': this.data.toUserUpdatePayloadDict()
+        }
+
+        if (!this.id) {
+            data['email'] = this.email
+            data['expired'] = this.expired
+        }
+
+        return data
+    }
+}
 
 export class Permission {
     id: string
@@ -76,5 +135,10 @@ export class RolesList {
         }
 
         return roles
+    }
+
+    includes(permissionId) {
+        // @ts-ignore
+        return this.toList().includes(permissionId)
     }
 }

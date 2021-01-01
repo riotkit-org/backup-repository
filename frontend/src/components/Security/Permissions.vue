@@ -5,9 +5,9 @@
 
 <template>
     <div class="form-group">
-        <label class="clickable-label" v-html="title" @click="(value) => isVisible = !isVisible"></label> <small> ({{selectedRoles.length}})</small>
+        <label class="clickable-label" v-html="title" @click="(value) => this.isVisible = !this.isVisible"></label> <small> ({{selectedRoles.length}})</small>
         <slot name="toolbar">
-            <i class="bi-wrench clickable-label toolbar" @click="(value) => isVisible = !isVisible" v-tooltip.top-center="'Show/hide roles list assigned to this user access'"></i>
+            <i class="bi-wrench clickable-label toolbar" @click="(value) => this.isVisible = !this.isVisible" v-tooltip.top-center="'Show/hide roles list assigned to this user access'"></i>
             <i class="bi-layers-half clickable-label toolbar" @click="onShowAdvancedClicked" v-tooltip.top-center="'Toggle role names/description'"></i>
             <slot name="toolbar-existing" v-if="!isNew">
                 <i class="bi-trash clickable-label toolbar" v-tooltip.top-center="'Revoke access'" @click="onAccessRevoking"></i>
@@ -20,7 +20,7 @@
         <user-selector v-if="isNew" @selected="(user) => onUserSelected(user)" :style="isVisible ? '' : 'display: none;'"/>
 
         <div v-for="role in available.permissions" v-if="available" :style="isVisible ? '' : 'display: none;'">
-            <input type="checkbox" class="border-input checkbox" :checked="isChecked(role.id)" @change="onCheckboxChange(role.id)">
+            <input type="checkbox" class="border-input checkbox" :checked="isChecked(role.id)" @change="onCheckboxChange(role.id)" :disabled="isDisabled(role.id)">
             <label class="checkbox-label role-description" v-html="role.description && !showAdvanced ? role.description : role.id"></label>
         </div>
     </div>
@@ -37,27 +37,48 @@ export default {
         title: {
             default: 'Permissions and roles'
         },
-        limits: {
-            default: ''
-        },
+        /**
+         * All available roles. All will be listed as checkboxes
+         */
         available: {
             default() {
                 return {}
             }
         },
+        /**
+         * List of roles that are actually SELECTABLE, the rest will be grayed out.
+         * This input is OPTIONAL.
+         */
+        usable: {
+            default() {
+                return []
+            }
+        },
+        /**
+         * Preselected roles list
+         */
         selected: {
             default() {
                 return []
             }
         },
+        /**
+         * Is this widget about adding new user access to some object?
+         */
         isNew: {
             default: false
         },
-        creationResult: {
-            default: null
-        },
+        /**
+         * User ID
+         */
         uid: {
             default: null
+        },
+        /**
+         * Should the list of roles be by default expanded?
+         */
+        rolesDefaultVisibility: {
+            default: false
         }
     },
     data() {
@@ -68,16 +89,26 @@ export default {
         }
     },
     mounted() {
+        this.isVisible = this.rolesDefaultVisibility
         this.selectedRoles = this.selected
         this.userId = this.uid
     },
     methods: {
-        isChecked(role) {
+        isChecked(permissionId) {
             if (!this.selectedRoles) {
                 return false
             }
 
-            return this.selectedRoles.includes(role)
+            return this.selectedRoles.includes(permissionId)
+        },
+
+        isDisabled(permissionId) {
+            // usable roles property is optional
+            if (!this.usable) {
+                return false
+            }
+
+            return !this.usable.includes(permissionId)
         },
 
         onCheckboxChange(role) {
@@ -104,13 +135,6 @@ export default {
          */
         onNewUserAccessAdding() {
             this.$emit('newAccessSubmitted', this.selectedRoles, this.userId)
-
-            if (this.creationResult === true) {
-                // then clean up
-                this.selectedRoles = []
-                this.isVisible = false
-                this.showAdvanced = false
-            }
         },
 
         onUserSelected(userId) {

@@ -11,13 +11,17 @@
 
         <div class="row">
             <div class="col-md-12">
-                <permissions :available="availableRoles" v-if="showCreationForm"
-                             title="<b>Grant a new access</b>" isNew="true"
+                <permissions :available="availablePermissions"
+                             :usable="usablePermissions"
+                             v-if="showCreationForm"
+                             title="<b>Grant a new access</b>"
+                             isNew="true"
                              @newAccessSubmitted="(permissions, userId) => createUserAccess(permissions, userId)"
                 />
 
                 <permissions v-for="user in users"
-                             :available="availableRoles"
+                             :available="availablePermissions"
+                             :usable="usablePermissions"
                              :selected="user.roles"
                              @selected="(permissions) => updatePermissions(permissions, user.userId)"
                              @access-revoked="(userId) => revokeAccess(userId)"
@@ -42,7 +46,8 @@ export default {
     },
     data: function () {
         return {
-            availableRoles: {},
+            availablePermissions: {},
+            usablePermissions: {},
             users: [],
             showCreationForm: true
         }
@@ -144,8 +149,9 @@ export default {
 
             let that = this
 
-            this.$authBackend().findRoles('auth,collection').then(function (roles) {
-                that.availableRoles = roles
+            this.$authBackend().findPermissions('auth,collection').then(function (permissions) {
+                that.availablePermissions = permissions.all
+                that.usablePermissions = permissions.scoped
             })
 
             this.refreshAccessList()

@@ -7,9 +7,9 @@ const NotificationStore = {
     verticalAlign: 'top',
     horizontalAlign: 'right',
     type: 'info',
-    timeout: 5000,
+    timeout: 15000,
     closeOnClick: true,
-    showClose: true
+    showClose: false
   },
   setOptions(options) {
     this.settings = Object.assign(this.settings, options);

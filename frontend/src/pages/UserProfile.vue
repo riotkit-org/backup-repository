@@ -15,7 +15,7 @@
 
   export default {
     components: {
-      EditProfileForm,
+      EditProfileForm
     }
   }
 </script>

@@ -32,6 +32,18 @@
 
                 <div class="col-xl-3 col-md-6">
                     <stats-card>
+                        <div slot="header" class="icon-success">
+                            <i class="bi bi-key-fill"></i>
+                        </div>
+                        <div slot="content">
+                            <p class="card-category">Authorized JWT keys</p>
+                            <h4 class="card-title">{{ stats.jwt_keys }}</h4>
+                        </div>
+                    </stats-card>
+                </div>
+
+                <div class="col-xl-3 col-md-6">
+                    <stats-card>
                         <div slot="header" class="icon-danger">
                             <i class="bi bi-files text-danger"></i>
                         </div>
@@ -50,6 +62,18 @@
                         <div slot="content">
                             <p class="card-category">Backup collections</p>
                             <h4 class="card-title">{{ stats.total_backup_collections }}</h4>
+                        </div>
+                    </stats-card>
+                </div>
+
+                <div class="col-xl-3 col-md-6">
+                    <stats-card>
+                        <div slot="header" class="icon-info">
+                            <i class="bi bi-geo text-danger"></i>
+                        </div>
+                        <div slot="content">
+                            <p class="card-category">Resource tags</p>
+                            <h4 class="card-title">{{ stats.resource_tags }}</h4>
                         </div>
                     </stats-card>
                 </div>
@@ -113,7 +137,9 @@ export default {
                 'disk_total': '1024GB',
                 'users_total': 15,
                 'total_active_versions': 4954,
-                'total_backup_collections': 400
+                'total_backup_collections': 400,
+                'jwt_keys': 25,
+                'resource_tags': 800
             },
             spaceUsageData: {
                 data: {

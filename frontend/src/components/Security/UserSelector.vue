@@ -17,8 +17,8 @@ export default {
         fetchFromBackend() {
             let that = this
 
-            this.$authBackend().findUsers().then(function (users) {
-                that.users = users
+            this.$authBackend().findUsers().then(function (response) {
+                that.users = response.users
             })
         },
 
