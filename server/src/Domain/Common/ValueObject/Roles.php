@@ -69,7 +69,7 @@ class Roles implements \JsonSerializable
     public function getAsList(): array
     {
         if ($this->isAdmin()) {
-            return array_merge($this->value, $this->getAdministratorPrivileges());
+            return array_values(array_unique(array_merge($this->value, $this->getAdministratorPrivileges())));
         }
 
         return $this->value;
