@@ -77,17 +77,18 @@ class UserManager
     }
 
     public function editUser(User $user, array $roles, ?string $expirationTime,
-                             ?string $organizationName, ?string $about): void
+                             ?string $organizationName, ?string $about, array $restrictions): void
     {
         $user->setRoles(Roles::fromArray($roles));
         $user->setExpirationDate(ExpirationDate::fromString($expirationTime, $this->defaultExpirationTime));
         $user->setOrganization(Organization::fromString($organizationName));
         $user->setAbout(About::fromString($about));
+        $user->setData($restrictions);
     }
 
-    public function changePassword(User $user, string $newPassword): void
+    public function changePassword(User $user, Password $newPassword): void
     {
-        $user->setPassphrase(Password::fromString($newPassword, $user->getSalt(), $this->hashingConfiguration));
+        $user->setPassphrase($newPassword);
     }
 
     public function revokeAccessForUser(User $user): void

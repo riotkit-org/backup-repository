@@ -28,6 +28,7 @@ class UserAccountLookupHandler
     public function handle(string $uidToLookup, AuthenticationManagementContext $context): ?UserCRUDResponse
     {
         $user = $this->repository->findUserByUserId($uidToLookup);
+
         $this->assertHasRights($context);
 
         if (!$user instanceof User) {

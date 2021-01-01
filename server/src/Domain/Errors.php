@@ -250,6 +250,12 @@ final class Errors
     public const ERR_CANNOT_CHANGE_PASSWORD     = 40319;
     public const ERR_MSG_CANNOT_CHANGE_PASSWORD = 'Cannot change password. Was password correctly repeated? Did you provide also previous password? Maybe you don\'t have permissions to manage other users passwords?';
 
+    public const ERR_PERMISSION_CANNOT_EDIT_USERS        = 40320;
+    public const ERR_MSG_PERMISSION_CANNOT_EDIT_USERS    = 'Access denied while trying to modify profile. Maybe you don\'t have permission to modify other user account? Or yaybe you are trying to extend your permissions or change other field which is not allowed?';
+
+    public const ERR_PERMISSION_CANNOT_LIST_PERMISSIONS     = 40321;
+    public const ERR_MSG_PERMISSION_CANNOT_LIST_PERMISSIONS = 'Current access does not allow listing permissions';
+
     //
     // Request errors
     //

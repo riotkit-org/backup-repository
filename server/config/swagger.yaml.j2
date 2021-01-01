@@ -515,65 +515,6 @@ paths:
 
                 {{ _self.user_edit_create_responses() | indent_by('                ') | raw }}
 
-        put:
-            summary: "Update user account"
-            description: "Edit user account, change password"
-            <<: *json_input_output
-            tags: ['Authentication']
-            parameters:
-                - name: userId
-                  in: path
-                  description: "User ID, can be found in users search"
-                  type: string
-                - name: body
-                  in: body
-                  description: JSON payload
-                  schema:
-                      properties:
-                          password:
-                              example: aNti_cap.italiSM
-                              type: string
-                          repeatPassword:
-                              example: aNti_cap.italiSM
-                              type: string
-                          currentPassword:
-                              example: weak-password
-                              type: string
-                          about:
-                              example: A member of the collective. Technically website administrator.
-                              type: string
-                          organization:
-                              example: Food not bombs
-                              type: string
-                          roles:
-                              example:
-                                  - collections.create_new
-                                  - collections.manage_users_in_allowed_collections
-                              items:
-                                  type: string
-                              type: array
-                          expires:
-                              example: '2021-05-01 01:06:01'
-                              type: string
-                      type: object
-            responses:
-                {{ _self.standard_responses() | indent_by('                ') | raw }}
-                '200':
-                    description: User profile was successfuly saved
-                    schema:
-                        properties:
-                            status:
-                                example: true
-                                type: boolean
-                            message:
-                                example: User saved
-                                type: string
-                            user:
-                                "$ref": "#/definitions/User"
-                        type: object
-
-                {{ _self.user_edit_create_responses() | indent_by('                ') | raw }}
-
         get:
             summary: Search for users accounts
             tags: ['Authentication']
@@ -659,6 +600,65 @@ paths:
                     description: Not found
                     {{ _self.response_not_found() | indent_by('                ') | raw }}
 
+        put:
+            summary: "Update user account"
+            description: "Edit user account, change password"
+            <<: *json_input_output
+            tags: ['Authentication']
+            parameters:
+                - name: userId
+                  in: path
+                  description: "User ID, can be found in users search"
+                  type: string
+                - name: body
+                  in: body
+                  description: JSON payload
+                  schema:
+                      properties:
+                          password:
+                              example: aNti_cap.italiSM
+                              type: string
+                          repeatPassword:
+                              example: aNti_cap.italiSM
+                              type: string
+                          currentPassword:
+                              example: weak-password
+                              type: string
+                          about:
+                              example: A member of the collective. Technically website administrator.
+                              type: string
+                          organization:
+                              example: Food not bombs
+                              type: string
+                          roles:
+                              example:
+                                  - collections.create_new
+                                  - collections.manage_users_in_allowed_collections
+                              items:
+                                  type: string
+                              type: array
+                          expires:
+                              example: '2021-05-01 01:06:01'
+                              type: string
+                      type: object
+            responses:
+                {{ _self.standard_responses() | indent_by('                ') | raw }}
+                '200':
+                    description: User profile was successfuly saved
+                    schema:
+                        properties:
+                            status:
+                                example: true
+                                type: boolean
+                            message:
+                                example: User saved
+                                type: string
+                            user:
+                                "$ref": "#/definitions/User"
+                        type: object
+
+                {{ _self.user_edit_create_responses() | indent_by('                ') | raw }}
+
         delete:
             summary: Revoke an access for given user
             tags: ['Authentication']
@@ -693,7 +693,7 @@ paths:
 
     "/api/stable/auth/roles":
         get:
-            summary: List available roles
+            summary: List available permissions
             tags: ['Authentication']
             parameters:
                 - name: limits
@@ -717,7 +717,7 @@ paths:
                             message:
                                 example: Matches found
                                 type: string
-                            data:
+                            permissions:
                                 items:
                                     properties:
                                         role_name:
@@ -725,11 +725,14 @@ paths:
                                             type: string
                                     type: object
                                 type: array
-                            context:
-                                type: object
-                                properties:
-                                    pagination:
-                                        "$ref": "#/definitions/Pagination"
+                            allPermissions:
+                                items:
+                                    properties:
+                                        role_name:
+                                            example: Some description
+                                            type: string
+                                    type: object
+                                type: array
                         type: object
 
 

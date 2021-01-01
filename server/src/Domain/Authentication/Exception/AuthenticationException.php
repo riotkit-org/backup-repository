@@ -8,15 +8,24 @@ use App\Domain\Errors;
 class AuthenticationException extends ExceptionFromCommon
 {
     /**
-     * @param ?string $details
-     *
      * @return static
      */
-    public static function fromUsersCreationProhibition(string $details = 'No details')
+    public static function fromUsersCreationProhibition()
     {
         return new static(
             Errors::ERR_MSG_PERMISSION_CANNOT_CREATE_USERS,
             Errors::ERR_PERMISSION_CANNOT_CREATE_USERS
+        );
+    }
+
+    /**
+     * @return static
+     */
+    public static function fromUsersEditProhibition()
+    {
+        return new static(
+            Errors::ERR_MSG_PERMISSION_CANNOT_EDIT_USERS,
+            Errors::ERR_PERMISSION_CANNOT_EDIT_USERS
         );
     }
 

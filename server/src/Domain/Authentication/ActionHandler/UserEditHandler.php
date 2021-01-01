@@ -12,6 +12,7 @@ use App\Domain\Authentication\Response\UserCRUDResponse;
 use App\Domain\Authentication\Security\Context\AuthenticationManagementContext;
 use App\Domain\Authentication\ValueObject\Password;
 use App\Domain\Common\Exception\ResourceNotFoundException;
+use App\Domain\Common\SharedEntity\EntityValidationTrait;
 use Exception;
 
 /**
@@ -21,6 +22,8 @@ use Exception;
  */
 class UserEditHandler
 {
+    use EntityValidationTrait;
+
     private UserManager $tokenManager;
     private UserRepository $repository;
     private PasswordHashingConfiguration $hashingConfiguration;
@@ -57,9 +60,21 @@ class UserEditHandler
         };
 
         $isChangingPassword = $form->password && $form->repeatPassword;
-        $currentPassword    = $constructPassword($form->currentPassword);
-        $newPassword        = $constructPassword($form->password);
-        $repeatPassword     = $constructPassword($form->repeatPassword);
+        $currentPassword    = null;
+        $newPassword        = null;
+        $repeatPassword     = null;
+
+        static::withValidationErrorAggregation([
+            static function () use (&$currentPassword, $constructPassword, $form) {
+                $currentPassword = $constructPassword($form->currentPassword);
+            },
+            static function () use (&$newPassword, $constructPassword, $form) {
+                $newPassword = $constructPassword($form->password);
+            },
+            static function () use (&$repeatPassword, $constructPassword, $form) {
+                $repeatPassword = $constructPassword($form->repeatPassword);
+            }
+        ]);
 
         $this->assertHasRights(
             $context, $user, $form->roles, $currentPassword,
@@ -71,11 +86,12 @@ class UserEditHandler
             $form->roles,
             $form->expires,
             $form->organization,
-            $form->about
+            $form->about,
+            $form->data->toArray()
         );
 
         if ($isChangingPassword) {
-            $this->tokenManager->changePassword($user, $form->password);
+            $this->tokenManager->changePassword($user, $newPassword);
         }
 
         $this->tokenManager->flushAll();
@@ -103,7 +119,7 @@ class UserEditHandler
         }
 
         if (!$context->canEditUser($user, $permissions)) {
-            throw AuthenticationException::fromUsersCreationProhibition();
+            throw AuthenticationException::fromUsersEditProhibition();
         }
     }
 }

@@ -61,6 +61,9 @@ final class Roles
     /** [Users] User can revoke access for other user */
     public const PERMISSION_DELETE_USERS                = 'security.delete_users';
 
+    /** [Users/Admin] List application permissions with possibility to limit the list by scope of current access token or user account */
+    public const PERMISSION_CAN_LIST_ROLES                   = 'security.list_roles';
+
     /** [Admin] User can use technical endpoints to manage the application - healthcheck, unlimited read-only metrics dashboard */
     public const PERMISSION_USE_TECHNICAL_ENDPOINTS      = 'security.use_technical_endpoints';
 
@@ -152,17 +155,21 @@ final class Roles
         self::PERMISSION_SEARCH_FOR_USERS,
         self::PERMISSION_ALLOW_OVERWRITE_FILES,
         self::PERMISSION_CREATE_UNLIMITED_USER_ACCOUNTS,
+        self::PERMISSION_CREATE_PREDICTABLE_USER_IDS,
         self::PERMISSION_USE_TECHNICAL_ENDPOINTS,
         self::PERMISSION_BROWSE_ALL_FILES,
         self::PERMISSION_BROWSE_LIST_OF_FILES_BY_ANY_TAG,
         self::PERMISSION_ACCESS_LISTING_ENDPOINT,
         self::PERMISSION_CAN_SEE_EXTRA_ADMIN_METADATA,
         self::PERMISSION_DELETE_USERS,
+        self::PERMISSION_CAN_LIST_ROLES,
         self::PERMISSION_ADMINISTRATOR,
 
         // tokens
         self::PERMISSION_CAN_SEE_SELF_USER_ACCESS_TOKENS,
         self::PERMISSION_CAN_LIST_ALL_USERS_ACCESS_TOKENS,
+        self::PERMISSION_CAN_REVOKE_OWN_ACCESS_TOKEN,
+        self::PERMISSION_CAN_REVOKE_TOKENS_OF_OTHER_USERS,
 
         // collections
         self::PERMISSION_COLLECTION_ADD,
@@ -199,6 +206,11 @@ final class Roles
         self::PERMISSION_UPLOAD_ENFORCE_USER_TAGS,
         self::PERMISSION_UPLOAD_ONLY_ONCE_SUCCESSFUL
     ];
+
+    public static function getRestrictionsList(): array
+    {
+        return self::RESTRICTIONS_LIST;
+    }
 
     public static function getRolesList(): array
     {
