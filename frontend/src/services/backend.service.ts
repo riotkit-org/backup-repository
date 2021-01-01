@@ -57,14 +57,7 @@ export default class BackupRepositoryBackend {
 
         }).catch(function (onError) {
             response = onError.response
-
-            let message = response.data.message ? response.data.message : response.statusText
-
-            if (response.data.error !== undefined) {
-                message = response.data.error
-            }
-
-            that._notify(message)
+            that.onResponseError(onError, true)
         })
 
         return response
@@ -81,14 +74,7 @@ export default class BackupRepositoryBackend {
 
         }).catch(function (onError) {
             response = onError.response
-
-            if (notifyErrors && response) {
-                that._notify(response.data && response.data.message ? response.data.message : response.statusText)
-            }
-
-            if (!response) {
-                window.console.warn('Invalid response:', onError)
-            }
+            that.onResponseError(onError, notifyErrors)
         })
 
         return response
@@ -114,5 +100,32 @@ export default class BackupRepositoryBackend {
             verticalAlign: 'top',
             type: 'danger'
         })
+    }
+
+    onResponseError(onError: any, notifyErrors: boolean) {
+        // validation.error
+        let response = onError.response
+
+        if (notifyErrors && response) {
+            let msgAttribute = [response.data.message, response.data.error, response.statusText]
+
+            for (let errMsg in msgAttribute) {
+                if (msgAttribute[errMsg]) {
+                    this._notify(msgAttribute[errMsg])
+                    break
+                }
+            }
+        }
+
+        if (response.data.fields) {
+            for (let fieldName in response.data.fields) {
+                let fieldDetails = response.data.fields[fieldName]
+                this._notify(fieldName + ': ' + fieldDetails['message'])
+            }
+        }
+
+        if (!response) {
+            window.console.warn('Invalid response:', onError)
+        }
     }
 }
