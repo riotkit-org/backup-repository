@@ -115,7 +115,11 @@ class CollectionDoctrineRepository extends BaseRepository implements CollectionR
     private function appendSearchParameters(ListingParameters $parameters, QueryBuilder $qb): void
     {
         if ($parameters->getSearchQuery()) {
-            $qb->andWhere('collection.id LIKE :searchQuery OR collection.description.value LIKE :searchQuery');
+            $qb->andWhere('
+                collection.id LIKE :searchQuery 
+                OR collection.description.value LIKE :searchQuery
+                OR collection.filename.value LIKE :searchQuery
+            ');
             $qb->setParameter('searchQuery', '%' . $parameters->getSearchQuery() . '%');
         }
 
