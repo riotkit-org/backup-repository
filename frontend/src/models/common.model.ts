@@ -21,7 +21,8 @@ export class PhpDate {
     }
 
     getFormattedDate() {
-        return date.format(new Date(this.date), "Y-MM-DD HH:mm:SS Z")
+        let tz = parseInt(date.format(new Date(this.date), "Z").replace("+", "")) / 100
+        return date.format(date.addHours(new Date(this.date), tz), "Y-MM-DD HH:mm:SS")
     }
 
     substract(secondDate: PhpDate) {
