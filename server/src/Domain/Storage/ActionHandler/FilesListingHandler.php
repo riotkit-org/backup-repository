@@ -39,9 +39,9 @@ class FilesListingHandler
         return [
             'results' => $entries,
             'pagination' => [
-                'current' => $form->getPage(),
-                'max'     => $maxPages,
-                'perPage' => $form->getLimit()
+                'page'         => $form->getPage(),
+                'maxPages'     => $maxPages,
+                'perPageLimit' => $form->getLimit()
             ]
         ];
     }

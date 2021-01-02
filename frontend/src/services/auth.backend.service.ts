@@ -1,19 +1,23 @@
 // @ts-ignore
 import BackupRepositoryBackend from './backend.service.ts';
 // @ts-ignore
-import {RolesList} from "src/models/auth.model.ts";
+import {RolesList} from "../models/auth.model.ts";
 // @ts-ignore
-import {BackupCollection} from "src/models/backup.model.ts";
+import {BackupCollection} from "../models/backup.model.ts";
 // @ts-ignore
-import {List} from "src/contracts/base.contract.ts";
+import {List} from "../contracts/base.contract.ts";
 // @ts-ignore
-import {User} from "src/models/auth.model.ts";
+import {User} from "../models/auth.model.ts";
 // @ts-ignore
-import {UserListingResponse} from "src/models/auth.response.model.ts";
+import {UserListingResponse} from "../models/auth.response.model.ts";
 // @ts-ignore
-import Pagination from "src/models/pagination.model.ts";
+import Pagination from "../models/pagination.model.ts";
 // @ts-ignore
-import {PermissionsResponse} from "src/models/auth.response.model.ts";
+import {PermissionsResponse} from "../models/auth.response.model.ts";
+// @ts-ignore
+import {UserAccessResponse} from "../models/auth.response.model.ts";
+// @ts-ignore
+import {UserAccess} from "../models/auth.model.ts";
 
 export default class AuthBackend extends BackupRepositoryBackend {
     /**
@@ -32,6 +36,13 @@ export default class AuthBackend extends BackupRepositoryBackend {
         })
     }
 
+    /**
+     * Users search
+     *
+     * @param searchPhrase
+     * @param page
+     * @param limit
+     */
     async findUsers(searchPhrase: string = '', page: number = 1, limit: number = 1000): Promise<UserListingResponse> {
         return super.get('/auth/user?limit=' + limit + '&page=' + page + '&q=' + searchPhrase).then(function (response) {
             if (!response.data.data) {
@@ -45,6 +56,11 @@ export default class AuthBackend extends BackupRepositoryBackend {
         })
     }
 
+    /**
+     * Finds a single User profile
+     *
+     * @param userId
+     */
     async findUserById(userId: string): Promise<User|null> {
         return super.get('/auth/user/' + userId).then(function (response) {
             if (response.data.status !== true) {
@@ -55,6 +71,15 @@ export default class AuthBackend extends BackupRepositoryBackend {
         })
     }
 
+    /**
+     * Create or Edit User account
+     *
+     * @param user
+     * @param isNewUser
+     * @param currentPassword
+     * @param newPassword
+     * @param repeatNewPassword
+     */
     async saveUser(user: User, isNewUser: boolean, currentPassword: string, newPassword: string, repeatNewPassword: string): Promise<any> {
         let url = isNewUser ? '/auth/user' : '/auth/user/' + user.id
         let method = isNewUser ? 'POST' : 'PUT'
@@ -63,6 +88,18 @@ export default class AuthBackend extends BackupRepositoryBackend {
 
         return super.post(url, data, method).then(function (response) {
             return response.data.status === true
+        })
+    }
+
+    /**
+     * Searches for Access Tokens
+     */
+    async findAccessTokens(page: number = 1): Promise<UserAccessResponse> {
+        return super.get('/auth/token?page=' + page, true).then(function (response) {
+            return new UserAccessResponse(
+                response.data.data.map((accessToken) => UserAccess.fromDict(accessToken)),
+                Pagination.fromDict(response.data.context.pagination)
+            )
         })
     }
 }

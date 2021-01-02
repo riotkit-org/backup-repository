@@ -2,6 +2,9 @@
 import Dictionary from "src/contracts/base.contract.ts";
 // @ts-ignore
 import {RolesList} from "./auth.model.ts";
+// @ts-ignore
+import {PhpDate} from "./common.model.ts"
+
 import bytes from 'bytes'
 
 export class BackupCollection {
@@ -64,18 +67,6 @@ export class BackupCollection {
     }
 }
 
-export class CreationDate {
-    date: string
-    timezone_time: number
-    timezone: string
-
-    constructor(date: string, timezone_time: number, timezone: string) {
-        this.date = date
-        this.timezone_time = timezone_time
-        this.timezone = timezone
-    }
-}
-
 export class BackupFile {
     id: number
     filename: string
@@ -89,7 +80,7 @@ export class BackupFile {
 export class BackupVersion {
     id: string
     version: string
-    creationDate: CreationDate
+    creationDate: PhpDate
     file: BackupFile
 
     static fromDict(data: Dictionary<string>|any): BackupVersion {
@@ -97,7 +88,7 @@ export class BackupVersion {
         version.id = data['details']['id']
         version.version = data['details']['version']
 
-        version.creationDate = new CreationDate(
+        version.creationDate = new PhpDate(
             data['details']['creationDate']['date'],
             data['details']['creationDate']['timezone_type'],
             data['details']['creationDate']['timezone']

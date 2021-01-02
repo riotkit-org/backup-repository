@@ -1,9 +1,12 @@
 // @ts-ignore
-import {RolesList, User} from "./auth.model.ts";
+import {RolesList, User, UserAccess} from "./auth.model.ts";
 // @ts-ignore
 import Pagination from "./pagination.model.ts";
 // @ts-ignore
 import {List} from "src/contracts/base.contract.ts";
+// @ts-ignore
+import {CreationDate} from "src/models/common.model.ts";
+import Dictionary from "../contracts/base.contract";
 
 export class UserListingResponse {
     users: List<User>|never[]
@@ -29,5 +32,15 @@ export class PermissionsResponse {
     constructor(scoped: RolesList, all: RolesList) {
         this.scoped = scoped
         this.all = all
+    }
+}
+
+export class UserAccessResponse {
+    accessList: List<UserAccess>|never[]
+    pagination: Pagination
+
+    constructor(accessList: List<UserAccess>|never[], pagination: Pagination) {
+        this.accessList = accessList
+        this.pagination = pagination
     }
 }

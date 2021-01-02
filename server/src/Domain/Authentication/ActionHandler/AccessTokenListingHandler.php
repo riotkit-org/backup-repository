@@ -41,7 +41,7 @@ class AccessTokenListingHandler
 
         return AccessTokenListingResponse::createResultsResponse(
             $this->repository->findForUser($form->user, $form->page, $form->perPageLimit),
-            $this->repository->findMaxPagesForUser($form->user),
+            $this->repository->findMaxPagesForUser($form->user, $form->perPageLimit),
             $form->page,
             $form->perPageLimit
         );

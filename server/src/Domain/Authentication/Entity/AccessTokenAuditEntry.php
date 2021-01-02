@@ -61,7 +61,9 @@ class AccessTokenAuditEntry implements \JsonSerializable
             'token_hash'     => $this->tokenHash,
             'token_shortcut' => $this->tokenShortcut,
             'permissions'    => $this->permissions,
-            'active'         => $this->active
+            'active'         => $this->active,
+            'expiration'     => $this->expiration,
+            'still_valid'    => $this->isStillValid()
         ];
     }
 

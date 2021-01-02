@@ -54,14 +54,14 @@ class AccessTokenAuditDoctrineRepository extends BaseRepository implements Acces
         return $this->paginate($qb, $page, $perPage)->getQuery()->getResult();
     }
 
-    public function findMaxPagesForUser(User $user): int
+    public function findMaxPagesForUser(User $user, int $limitPerPage): int
     {
         $qb = $this->createQueryBuilder('access_token');
         $qb->select('COUNT(access_token)');
         $qb->where('access_token.user = :user');
         $qb->setParameter('user', $user);
 
-        return $qb->getQuery()->getSingleScalarResult();
+        return (int) ceil($qb->getQuery()->getSingleScalarResult() / $limitPerPage);
     }
 
     private function paginate($dql, $page = 1, $limit = 3): Paginator

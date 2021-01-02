@@ -8,6 +8,8 @@
 import {List} from "src/contracts/base.contract.ts";
 // @ts-ignore
 import Dictionary from "src/contracts/base.contract.ts";
+// @ts-ignore
+import {PhpDate} from "./common.model.ts";
 
 /**
  * Details - mostly restrictions eg. allowed IP addresses
@@ -140,5 +142,49 @@ export class RolesList {
     includes(permissionId) {
         // @ts-ignore
         return this.toList().includes(permissionId)
+    }
+}
+
+/**
+ * User Access - a user session, or API token
+ */
+export class UserAccess {
+    eventId: string
+    generatedAt: PhpDate
+    user: string
+    tokenHash: string
+    tokenShortcut: string
+    permissions: List<string>|never[] = []
+    active: boolean
+    valid: boolean
+    expiration: PhpDate
+
+    static fromDict(data: Dictionary<string|number|any>): UserAccess {
+        let response = new this()
+        response.eventId       = data['event_id']
+        response.generatedAt   = PhpDate.fromDict(data['generated_at'])
+        response.user          = data['user']
+        response.tokenHash     = data['token_hash']
+        response.tokenShortcut = data['token_shortcut']
+        response.permissions   = data['permissions']
+        response.active        = data['active']
+        response.expiration    = PhpDate.fromDict(data['expiration'])
+        response.valid         = data['still_valid']
+
+        return response
+    }
+
+    getTTL() {
+        let substracted = this.generatedAt.substract(this.expiration)
+
+        if (substracted.toDays() >= 1) {
+            return substracted.toDays() + 'd'
+        }
+
+        return substracted.toHours() + 'h'
+    }
+
+    isValid() {
+        return this.valid
     }
 }

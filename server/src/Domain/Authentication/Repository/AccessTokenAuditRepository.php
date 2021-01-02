@@ -40,8 +40,9 @@ interface AccessTokenAuditRepository
      * Finds how many results are for findForUser()
      *
      * @param User $user
+     * @param integer $limitPerPage
      *
      * @return int
      */
-    public function findMaxPagesForUser(User $user): int;
+    public function findMaxPagesForUser(User $user, int $limitPerPage): int;
 }

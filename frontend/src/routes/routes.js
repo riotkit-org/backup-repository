@@ -11,7 +11,8 @@ import Login from 'src/pages/Login.vue'
 import Logout from 'src/pages/Logout.vue';
 import Users from 'src/pages/Users.vue'
 import BackupCollections from "src/pages/BackupCollections";
-import BackupCollectionDetails from "@/pages/BackupCollectionDetails";
+import BackupCollectionDetails from "src/pages/BackupCollectionDetails";
+import AccessTokens from "src/pages/AccessTokens";
 
 const routes = [
     {
@@ -43,6 +44,11 @@ const routes = [
                 path: 'user',
                 name: 'Create new user',
                 component: UserProfile
+            },
+            {
+                path: 'security/access-tokens',
+                name: 'security_access_tokens',
+                component: AccessTokens
             },
             {
                 path: 'backup/collections',

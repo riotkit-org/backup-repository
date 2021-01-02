@@ -34,9 +34,9 @@ class ListingResponse extends NormalResponse implements \JsonSerializable
         $data = array_merge($data, [
             'elements'   => $this->elements,
             'pagination' => [
-                'current' => $this->currentPage,
-                'max'     => $this->maxPages,
-                'perPage' => $this->perPage
+                'page'         => $this->currentPage,
+                'maxPages'     => $this->maxPages,
+                'perPageLimit' => $this->perPage
             ]
         ]);
 

@@ -10,6 +10,10 @@
                 <i class="bi bi-people-fill"></i>
                 <p>Users</p>
             </sidebar-link>
+            <sidebar-link to="/admin/security/access-tokens" v-if="isLoggedIn">
+                <i class="bi bi-shield-fill-exclamation"></i>
+                <p>Authorization</p>
+            </sidebar-link>
             <sidebar-link to="/admin/backup/collections" v-if="isLoggedIn">
                 <i class="bi bi-file-earmark-arrow-up"></i>
                 <p>Backup collections</p>

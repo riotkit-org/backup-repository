@@ -9,17 +9,6 @@ class ErrorResponse extends CommonErrorResponse
 {
     private const CODE_FILE_NOT_FOUND = 404;
 
-    public static function createFileNotFoundResponse()
-    {
-        $response = new static();
-        $response->status    = false;
-        $response->message   = 'File not found';
-        $response->httpCode  = Http::HTTP_NOT_FOUND;
-        $response->errorCode = self::CODE_FILE_NOT_FOUND;
-
-        return $response;
-    }
-
     public static function createValidationErrorResponse(string $reason, int $code, array $context)
     {
         $response = new static();
