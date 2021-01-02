@@ -48,7 +48,7 @@
                                             <input type="text" readonly :value="item.user" class="form-control" style="width: 300px;">
                                         </td>
                                         <td>
-                                            <button type="button" class="btn btn-default btn-small" :disabled="!item.isValid()">
+                                            <button type="button" class="btn btn-default btn-small" :disabled="!item.isValid()" @click="() => revokeAccess(item.tokenHash)">
                                                 <span class="bi bi-key" aria-hidden="true"></span> Revoke
                                             </button>
                                         </td>
@@ -110,8 +110,29 @@ export default {
             let that = this
 
             this.$authBackend().findAccessTokens(this.currentPage).then(function (response) {
-                that.accessTokens.data = response.accessList
-                that.maxPages = response.pagination.max
+                that.accessTokens.data = []
+                that.$nextTick(function() {
+                    that.accessTokens.data = response.accessList
+                    that.maxPages = response.pagination.max
+                })
+            })
+        },
+
+        revokeAccess(tokenHash) {
+            let that = this
+
+            this.$authBackend().revokeToken(tokenHash).then(function (status) {
+                if (status === true) {
+                    that.$notifications.notify({
+                        message: 'Access revoked',
+                        horizontalAlign: 'right',
+                        verticalAlign: 'top',
+                        type: 'success'
+                    })
+
+                    // refresh the list
+                    that.fetchFromBackend()
+                }
             })
         }
     },

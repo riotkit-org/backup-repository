@@ -102,4 +102,15 @@ export default class AuthBackend extends BackupRepositoryBackend {
             )
         })
     }
+
+    /**
+     * Revoke a session/api token
+     *
+     * @param tokenHash
+     */
+    async revokeToken(tokenHash: string): Promise<boolean> {
+        return super.delete('/auth/token/' + tokenHash).then(function (response) {
+            return response.data.status === true
+        })
+    }
 }
