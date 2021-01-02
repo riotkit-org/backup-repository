@@ -13,10 +13,12 @@ import App from './App.vue'
 import VTooltip from 'v-tooltip'
 import LightBootstrap from './light-bootstrap-main'
 import routes from './routes/routes'
+import VModal from 'vue-js-modal'
 
 Vue.use(VueRouter)
 Vue.use(LightBootstrap)
 Vue.use(VTooltip)
+Vue.use(VModal)
 
 import store from './plugins/store.ts'
 

@@ -21,6 +21,19 @@
                             </div>
                         </template>
 
+                        <modal
+                            v-for="(item, index) in accessTokens.data"
+                            :name="'modal-' + item.tokenHash"
+                            width="60%"
+                            height="60%"
+                            :scrollable="true"
+                            :reset="true"
+                        >
+                            <permissions :selected="item.permissions" :available="allPermissions" :usable="['none']" :roles-default-visibility="true">
+                                <template slot="toolbar-existing">&nbsp;</template>
+                            </permissions>
+                        </modal>
+
                         <div class="table-responsive">
                             <table class="table">
                                 <thead>
@@ -40,7 +53,7 @@
                                             <input type="text" readonly :value="item.tokenHash" class="form-control" style="width: 300px;">
                                         </td>
                                         <td>
-                                            <button type="button" class="btn btn-default btn-small">
+                                            <button type="button" class="btn btn-default btn-small" @click="() => showPermissions(item.tokenHash)">
                                                 <span class="bi bi-layers-half" aria-hidden="true"></span> Show
                                             </button>
                                         </td>
@@ -80,13 +93,15 @@
 <script>
 import LTable from 'src/components/Table.vue'
 import Card from 'src/components/Cards/Card.vue'
+import Permissions from "src/components/Security/Permissions.vue";
 import vPagination from 'vue-plain-pagination'
 
 export default {
     components: {
         LTable,
         Card,
-        vPagination
+        vPagination,
+        Permissions
     },
     data() {
         return {
@@ -102,18 +117,25 @@ export default {
                 liActive: 'active',
                 liDisable: 'disabled',
                 button: 'page-link'
-            }
+            },
+            allPermissions: {}
         }
     },
     methods: {
         fetchFromBackend() {
             let that = this
 
+            this.$authBackend().findPermissions().then(function (permissions) {
+                that.allPermissions = permissions.all
+            })
+
             this.$authBackend().findAccessTokens(this.currentPage).then(function (response) {
                 that.accessTokens.data = []
                 that.$nextTick(function() {
                     that.accessTokens.data = response.accessList
                     that.maxPages = response.pagination.max
+
+                    window.console.info('???', response)
                 })
             })
         },
@@ -134,6 +156,10 @@ export default {
                     that.fetchFromBackend()
                 }
             })
+        },
+
+        showPermissions(tokenHash) {
+            this.$modal.show('modal-' + tokenHash)
         }
     },
     mounted: function () {
@@ -153,5 +179,10 @@ export default {
 
 .active a, .active a:hover {
     color: black;
+}
+
+div[role=dialog] {
+    padding: 15px;
+    overflow: auto;
 }
 </style>
