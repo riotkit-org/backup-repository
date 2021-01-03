@@ -30,6 +30,10 @@ App\Domain\Authentication\Entity\AccessTokenAuditEntry:
             type: string
             column: token_shortcut
 
+        description:
+            type: string
+            column: description
+
     embedded:
         permissions:
             class: App\Domain\Authentication\ValueObject\Roles

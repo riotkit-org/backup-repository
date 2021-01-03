@@ -4,6 +4,8 @@ namespace App\Domain\Authentication\Form;
 
 class AccessTokenGenerationForm
 {
+    // @todo: Add required fields validation (my implementing an interface method?)
+
     /**
      * List of permissions requested to have for a token
      *
@@ -17,4 +19,11 @@ class AccessTokenGenerationForm
      * @var int $ttl
      */
     public int $ttl;
+
+    /**
+     * Optional token description
+     *
+     * @var string $description
+     */
+    public string $description = '';
 }

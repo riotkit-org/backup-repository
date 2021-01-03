@@ -25,6 +25,6 @@ class JWTLoginAuditSubscriber implements EventSubscriberInterface
 
     public function onTokenCreated(JWTEncodedEvent $event)
     {
-        $this->recorder->record($event->getJWTString());
+        $this->recorder->record($event->getJWTString(), 'Web panel login');
     }
 }

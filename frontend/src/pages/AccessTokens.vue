@@ -59,7 +59,10 @@
                                             {{ item.getTTL() }}
                                         </td>
                                         <td>
-                                            <input type="text" readonly :value="item.tokenHash" class="form-control" style="width: 300px;">
+                                            <input type="text" readonly :value="item.tokenHash" class="form-control" style="max-width: 300px;"/>
+                                        </td>
+                                        <td>
+                                            <input type="tex" readonly :value="item.description" class="form-control" style="max-width: 300px;"/>
                                         </td>
                                         <td>
                                             <button type="button" class="btn btn-default btn-small" @click="() => showPermissions(item.tokenHash)">
@@ -67,7 +70,7 @@
                                             </button>
                                         </td>
                                         <td>
-                                            <input type="text" readonly :value="item.user" class="form-control" style="width: 300px;">
+                                            <input type="text" readonly :value="item.user" class="form-control" style="max-width: 300px;">
                                         </td>
                                         <td>
                                             <button type="button" class="btn btn-default btn-small" :disabled="!item.isValid()" @click="() => revokeAccess(item.tokenHash)">
@@ -117,7 +120,7 @@ export default {
     data() {
         return {
             accessTokens: {
-                columns: ['Valid', 'TTL', 'Identifier Hash', 'Permissions', 'User ID', 'Actions'],
+                columns: ['Valid', 'TTL', 'Identifier Hash', 'Description', 'Permissions', 'User ID', 'Actions'],
                 data: {}
             },
             currentPage: 1,
@@ -133,6 +136,9 @@ export default {
         }
     },
     methods: {
+        /**
+         * Communicate with the server and retrieve required actual data
+         */
         fetchFromBackend() {
             let that = this
 
@@ -201,5 +207,9 @@ export default {
 div[role=dialog] {
     padding: 15px;
     overflow: auto;
+}
+
+input {
+    cursor: pointer !important;
 }
 </style>

@@ -29,8 +29,12 @@ class AccessTokenAuditEntry implements \JsonSerializable
 
     private Roles $permissions;
 
-    public static function createFrom(string $token, User $user, array $permissions, int $expiration)
+    private string $description;
+
+    public static function createFrom(string $token, User $user, array $permissions, int $expiration, string $description)
     {
+        // @todo: Use value objects
+
         $auditEntry = new static();
         $auditEntry->date          = new \DateTimeImmutable();
         $auditEntry->expiration    = (new \DateTimeImmutable())->setTimestamp($expiration);
@@ -39,6 +43,7 @@ class AccessTokenAuditEntry implements \JsonSerializable
         $auditEntry->tokenShortcut = substr($token, 0, 16) . '...' . substr($token, -16);
         $auditEntry->permissions   = Roles::fromArray($permissions);
         $auditEntry->active        = true;
+        $auditEntry->description   = $description;
 
         return $auditEntry;
     }
@@ -63,7 +68,8 @@ class AccessTokenAuditEntry implements \JsonSerializable
             'permissions'    => $this->permissions,
             'active'         => $this->active,
             'expiration'     => $this->expiration,
-            'still_valid'    => $this->isStillValid()
+            'still_valid'    => $this->isStillValid(),
+            'description'    => $this->description
         ];
     }
 

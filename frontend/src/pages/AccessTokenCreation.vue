@@ -26,8 +26,16 @@
 
             <template slot="selector">
                 <select name="ttl" class="form-control" v-model="ttl">
+                    <option value="0">Select how long the token should be valid</option>
                     <option v-for="(value, label) in ttlSelectorValues" :value="value" v-html="label"/>
                 </select>
+                <div class="token-description">
+                    <textarea class="form-control"
+                              v-model="selectedDescription"
+                              rows="5"
+                              placeholder="Describe the purpose of this token. How and when it will be used? Description can help you having a clear look on all usages of your account."
+                    />
+                </div>
             </template>
         </permissions>
     </div>
@@ -46,6 +54,7 @@ export default {
             usable: {},
             selected: [],
             ttl: 0,
+            selectedDescription: '',
             ttlSelectorValues: {},
             generatedToken: ''
         }
@@ -88,7 +97,7 @@ export default {
                 return false
             }
 
-            this.$authBackend().createAccessToken(this.selected, this.ttl).then(function (token) {
+            this.$authBackend().createAccessToken(this.selected, this.ttl, this.selectedDescription).then(function (token) {
                 if (token) {
                     that.generatedToken = token
                     that.$notifications.notify({
@@ -117,6 +126,11 @@ export default {
 }
 
 .token-notice {
+    margin-bottom: 15px;
+}
+
+.token-description {
+    margin-top: 15px;
     margin-bottom: 15px;
 }
 </style>

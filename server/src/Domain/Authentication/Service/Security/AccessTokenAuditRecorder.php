@@ -32,10 +32,11 @@ class AccessTokenAuditRecorder
 
     /**
      * @param string $jwtToken
+     * @param string $description
      *
      * @throws UserNotFoundException
      */
-    public function record(string $jwtToken): void
+    public function record(string $jwtToken, string $description = ''): void
     {
         $payload = $this->factory->createArrayFromToken($jwtToken);
         $email       = $payload['email'];
@@ -48,7 +49,7 @@ class AccessTokenAuditRecorder
             throw UserNotFoundException::fromNoLongerFoundCause();
         }
 
-        $this->repository->persist(AccessTokenAuditEntry::createFrom($jwtToken, $user, $permissions, $expiration));
+        $this->repository->persist(AccessTokenAuditEntry::createFrom($jwtToken, $user, $permissions, $expiration, $description));
         $this->repository->flush();
     }
 }

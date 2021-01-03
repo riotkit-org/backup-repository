@@ -158,6 +158,7 @@ export class UserAccess {
     active: boolean
     valid: boolean
     expiration: PhpDate
+    description: string
 
     static fromDict(data: Dictionary<string|number|any>): UserAccess {
         let response = new this()
@@ -170,6 +171,7 @@ export class UserAccess {
         response.active        = data['active']
         response.expiration    = PhpDate.fromDict(data['expiration'])
         response.valid         = data['still_valid']
+        response.description   = data['description']
 
         return response
     }
