@@ -46,9 +46,11 @@ class AccessTokenAuditDoctrineRepository extends BaseRepository implements Acces
     public function findForUser(User $user, int $page, int $perPage): array
     {
         $qb = $this->createQueryBuilder('access_token');
+        $qb->addSelect('(CASE WHEN access_token.expiration > :now AND access_token.active = true THEN true ELSE false END) AS HIDDEN is_valid');
         $qb->where('access_token.user = :user');
         $qb->setParameter('user', $user);
-        $qb->addOrderBy('access_token.active', 'DESC');
+        $qb->setParameter('now', new \DateTime());
+        $qb->addOrderBy('is_valid', 'DESC');
         $qb->addOrderBy('access_token.date', 'DESC');
 
         return $this->paginate($qb, $page, $perPage)->getQuery()->getResult();
