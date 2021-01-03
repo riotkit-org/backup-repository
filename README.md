@@ -46,9 +46,51 @@ Technically this repository consists of 3 applications placed in following direc
 - ./server - server written in PHP
 - ./frontend - web administration panel written in Vue.js
 - ./bahub-client - backup sending/downloading client written in Python
+- ./e2e - End-To-End integration tests that are testing server + frontend + client
 
 Check README.md of each of those projects to check technical details.
 Please report issues with suffixes in topic [Server] [Frontend] [Bahub].
+
+Tests
+-----
+
+### E2E - integration tests
+
+Smoke testing of workflows that includes multiple applications, multiple interfaces together.
+The tests are using Chromium browser to test frontend, are launching backup client via shell, Symfony shell commands on the server side.
+
+Tests are written in **Gherkin/Cucumber** language with addition of PHP on top of **Behat 3.x** framework.
+
+**Note:** .feature files in E2E tests are English written scenarios that should be clear to the end user, so are also an instruction/specification of given feature - can be used as a documentation
+
+```bash
+cd e2e
+./vendor/bin/behat
+```
+
+**Notice: Requires server to be up and running on `localhost:8000` in `APP_ENV=test` mode (uses technical endpoints and test token)**
+
+### Server unit tests
+
+Unit tests written in PhpUnit.
+
+```bash
+cd server
+./bin/phpunit
+```
+
+### Server API tests
+
+Functional API tests written in Codeception. Requires a server to be up and running under `localhost:8000` in `APP_ENV=test` mode.
+
+### Bahub unit/functional tests
+
+Unit and functional tests written in `unittest` + `rkd.api.testing` frameworks.
+
+```bash
+cd bahub
+rkd :test
+```
 
 Copyleft
 --------
