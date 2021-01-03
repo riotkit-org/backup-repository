@@ -113,4 +113,10 @@ export default class AuthBackend extends BackupRepositoryBackend {
             return response.data.status === true
         })
     }
+
+    async createAccessToken(permissions: List<string>|never[], ttl: number): Promise<string> {
+        return super.post('/auth/token', {'requestedPermissions': permissions, 'ttl': ttl}).then(function (response) {
+            return response.data.token
+        })
+    }
 }

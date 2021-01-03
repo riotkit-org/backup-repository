@@ -7,7 +7,9 @@
     <div class="form-group">
         <label class="clickable-label" v-html="title" @click="(value) => this.isVisible = !this.isVisible"></label> <small> ({{selectedRoles.length}})</small>
         <slot name="toolbar">
-            <i class="bi-wrench clickable-label toolbar" @click="(value) => this.isVisible = !this.isVisible" v-tooltip.top-center="'Show/hide roles list assigned to this user access'"></i>
+            <slot name="toolbar-toggle">
+                <i class="bi-wrench clickable-label toolbar" @click="(value) => this.isVisible = !this.isVisible" v-tooltip.top-center="'Show/hide roles list assigned to this user access'"></i>
+            </slot>
             <i class="bi-layers-half clickable-label toolbar" @click="onShowAdvancedClicked" v-tooltip.top-center="'Toggle role names/description'"></i>
             <slot name="toolbar-existing" v-if="!isNew">
                 <i class="bi-trash clickable-label toolbar" v-tooltip.top-center="'Revoke access'" @click="onAccessRevoking"></i>
@@ -17,7 +19,9 @@
             </slot>
         </slot>
 
-        <user-selector v-if="isNew" @selected="(user) => onUserSelected(user)" :style="isVisible ? '' : 'display: none;'"/>
+        <slot name="selector">
+            <user-selector v-if="isNew" @selected="(user) => onUserSelected(user)" :style="isVisible ? '' : 'display: none;'"/>
+        </slot>
 
         <div v-for="role in available.permissions" v-if="available" :style="isVisible ? '' : 'display: none;'">
             <input type="checkbox" class="border-input checkbox" :checked="isChecked(role.id)" @change="onCheckboxChange(role.id)" :disabled="isDisabled(role.id)">
@@ -92,6 +96,8 @@ export default {
         this.isVisible = this.rolesDefaultVisibility
         this.selectedRoles = this.selected
         this.userId = this.uid
+
+        window.console.info('hehe', this.available)
     },
     methods: {
         isChecked(permissionId) {

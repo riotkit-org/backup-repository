@@ -1,5 +1,27 @@
 <template>
     <div class="content">
+        <!-- Creation modal -->
+        <modal name="grant-new-permission"
+               width="80%"
+               height="80%"
+               :reset="true"
+        >
+            <access-token-creation @token-created="onTokenCreated"/>
+        </modal>
+
+        <!-- Edit modals -->
+        <modal
+            v-for="(item, index) in accessTokens.data"
+            :name="'modal-' + item.tokenHash"
+            width="60%"
+            height="60%"
+            :reset="true"
+        >
+            <permissions :selected="item.permissions" :available="allPermissions" :usable="['none']" :roles-default-visibility="true">
+                <template slot="toolbar-existing">&nbsp;</template>
+            </permissions>
+        </modal>
+
         <div class="container-fluid">
             <div class="row">
                 <div class="col-12">
@@ -14,25 +36,12 @@
                                 </div>
 
                                 <div class="col-2">
-                                    <button type="button" class="btn btn-default btn-small">
+                                    <button type="button" class="btn btn-default btn-small" @click="showTokenCreationModal">
                                         <span class="bi bi-key" aria-hidden="true"></span> Grant a new access
                                     </button>
                                 </div>
                             </div>
                         </template>
-
-                        <modal
-                            v-for="(item, index) in accessTokens.data"
-                            :name="'modal-' + item.tokenHash"
-                            width="60%"
-                            height="60%"
-                            :scrollable="true"
-                            :reset="true"
-                        >
-                            <permissions :selected="item.permissions" :available="allPermissions" :usable="['none']" :roles-default-visibility="true">
-                                <template slot="toolbar-existing">&nbsp;</template>
-                            </permissions>
-                        </modal>
 
                         <div class="table-responsive">
                             <table class="table">
@@ -95,9 +104,11 @@ import LTable from 'src/components/Table.vue'
 import Card from 'src/components/Cards/Card.vue'
 import Permissions from "src/components/Security/Permissions.vue";
 import vPagination from 'vue-plain-pagination'
+import AccessTokenCreation from "@/pages/AccessTokenCreation";
 
 export default {
     components: {
+        AccessTokenCreation,
         LTable,
         Card,
         vPagination,
@@ -160,6 +171,14 @@ export default {
 
         showPermissions(tokenHash) {
             this.$modal.show('modal-' + tokenHash)
+        },
+
+        showTokenCreationModal() {
+            this.$modal.show('grant-new-permission')
+        },
+
+        onTokenCreated() {
+            this.fetchFromBackend()
         }
     },
     mounted: function () {
