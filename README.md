@@ -92,6 +92,12 @@ cd bahub
 rkd :test
 ```
 
+Release versioning and naming
+-----------------------------
+
+Each release is versioned according to Semantic Versioning and named.
+Names are taken from profession names to commemorate and express respect to forgotten professions.
+
 Copyleft
 --------
 
