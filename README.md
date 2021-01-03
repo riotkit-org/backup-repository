@@ -1,7 +1,7 @@
 Backup Repository
 =================
 
-Specialized ninja for backup storage. Fully multi-tenant, can act as a farm of backups for various people.
+A specialized ninja for backup storage. Fully multi-tenant, with its very granular permissions and client-side (E2E) encryption can act as a farm of backups for various people and organizations.
 
 Features
 --------
