@@ -145,8 +145,6 @@ export default {
                 that.$nextTick(function() {
                     that.accessTokens.data = response.accessList
                     that.maxPages = response.pagination.max
-
-                    window.console.info('???', response)
                 })
             })
         },

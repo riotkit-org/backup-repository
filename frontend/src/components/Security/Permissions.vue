@@ -96,8 +96,6 @@ export default {
         this.isVisible = this.rolesDefaultVisibility
         this.selectedRoles = this.selected
         this.userId = this.uid
-
-        window.console.info('hehe', this.available)
     },
     methods: {
         isChecked(permissionId) {
