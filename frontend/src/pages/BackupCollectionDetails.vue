@@ -3,7 +3,7 @@
         <div class="container-fluid">
             <div class="row">
                 <div class="col-7" v-if="isEditing && collection">
-                    <permissions-list :collection="collection" @selected="permissionsUpdated()"/>
+                    <permissions-list :collection="collection"/>
                 </div>
 
                 <!--
@@ -71,7 +71,13 @@
                         </div>
 
                         <div class="row">
-                            <div class="col-12">
+                            <div class="col-6">
+                                <div class="text-center" v-if="isEditing">
+                                    <button type="submit" class="btn btn-info btn-fill float-left" @click.prevent="deleteCollection">Delete collection</button>
+                                </div>
+                            </div>
+
+                            <div class="col-6">
                                 <div class="text-center">
                                     <button type="submit" class="btn btn-info btn-fill float-right" @click.prevent="saveChanges" v-html="isEditing ? 'Save changes' : 'Create'"></button>
                                 </div>
@@ -139,8 +145,24 @@ export default {
             })
         },
 
-        permissionsUpdated() {
-            window.console.info('permissions updateeeeeed')
+        deleteCollection() {
+            let that = this
+            let confirmation = prompt('Are you sure you want to delete this collection? To confirm write "' + this.collection.filename + '"')
+
+            if (confirmation === this.collection.filename) {
+                this.$backupCollectionBackend().deleteCollection(this.collection).then(function (status) {
+                    if (status === true) {
+                        that.$notifications.notify({
+                            message: 'Collection deleted',
+                            horizontalAlign: 'right',
+                            verticalAlign: 'top',
+                            type: 'success'
+                        })
+
+                        that.$router.push({name: 'backup_collections_list'})
+                    }
+                })
+            }
         }
     },
     mounted() {

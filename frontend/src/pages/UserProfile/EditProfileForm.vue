@@ -122,7 +122,7 @@
             </div>
 
             <div class="text-center">
-                <button type="submit" class="btn btn-danger btn-fill float-left" @click.prevent="revokeAccess" v-if="!isAddingNew">Revoke access</button>
+                <button type="submit" class="btn btn-danger btn-fill float-left" @click.prevent="revokeAccess" v-if="!isAddingNew">Delete User</button>
                 <button type="submit" class="btn btn-info btn-fill float-right" @click.prevent="updateProfile" v-if="!isAddingNew">Update Profile</button>
                 <button type="submit" class="btn btn-info btn-fill float-right" @click.prevent="updateProfile" v-else>Add new user</button>
             </div>
@@ -226,10 +226,22 @@ export default {
         },
 
         revokeAccess() {
-            let confirmation = prompt('Are you sure you want to revoke access for user ' + this.user.email + '?')
+            let confirmation = prompt('Are you sure you want to revoke access for user ' + this.user.email + '? To confirm please type "' + this.user.email + '".')
+            let that = this
 
-            if (confirmation) {
-
+            if (confirmation === this.user.email) {
+                this.$authBackend().deleteUserProfile(this.user.id).then(function (status) {
+                    if (status === true) {
+                        that.$router.push({name: 'users_list'})
+                        that.$notifications.notify({
+                            message: 'User account deleted',
+                            icon: 'bi bi-person-plus-fill',
+                            horizontalAlign: 'right',
+                            verticalAlign: 'top',
+                            type: 'success'
+                        })
+                    }
+                })
             }
         },
 

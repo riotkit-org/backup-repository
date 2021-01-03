@@ -92,6 +92,17 @@ export default class AuthBackend extends BackupRepositoryBackend {
     }
 
     /**
+     * Deletes an user account
+     *
+     * @param userId
+     */
+    async deleteUserProfile(userId: string): Promise<boolean> {
+        return super.delete('/auth/user/' + userId).then(function (response) {
+            return response.data.status === true
+        })
+    }
+
+    /**
      * Searches for Access Tokens
      */
     async findAccessTokens(page: number = 1): Promise<UserAccessResponse> {
@@ -114,6 +125,13 @@ export default class AuthBackend extends BackupRepositoryBackend {
         })
     }
 
+    /**
+     * Creates a token
+     *
+     * @param permissions
+     * @param ttl
+     * @param description
+     */
     async createAccessToken(permissions: List<string>|never[], ttl: number, description: string): Promise<string> {
         return super.post('/auth/token', {'requestedPermissions': permissions, 'ttl': ttl, 'description': description}).then(function (response) {
             return response.data.token

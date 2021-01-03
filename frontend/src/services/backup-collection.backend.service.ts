@@ -105,6 +105,17 @@ export default class BackupCollectionBackendService extends BackupRepositoryBack
     }
 
     /**
+     * Deletes a backup collection
+     *
+     * @param collection
+     */
+    async deleteCollection(collection: BackupCollection): Promise<boolean> {
+        return super.delete('/repository/collection/' + collection.id).then(function (response) {
+            return response.data.status === true
+        })
+    }
+
+    /**
      * Give user an access to collection, or update that access
      *
      * @param collection
