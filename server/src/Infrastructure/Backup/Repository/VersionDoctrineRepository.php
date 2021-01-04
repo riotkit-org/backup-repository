@@ -3,6 +3,7 @@
 namespace App\Infrastructure\Backup\Repository;
 
 use App\Domain\Backup\Collection\VersionsCollection;
+use App\Domain\Backup\Entity\Authentication\User;
 use App\Domain\Backup\Entity\BackupCollection;
 use App\Domain\Backup\Entity\StoredVersion;
 use App\Domain\Backup\Repository\VersionRepository;
@@ -14,15 +15,12 @@ use Doctrine\ORM\ORMException;
 
 class VersionDoctrineRepository extends BaseRepository implements VersionRepository
 {
-    /**
-     * @var Filesystem
-     */
-    private $fs;
+    private Filesystem $fs;
 
     /**
      * @var VersionsCollection[]
      */
-    private $collectionVersionsCache = [];
+    private array $collectionVersionsCache = [];
 
     public function __construct(ManagerRegistry $registry, Filesystem $fs, bool $readOnly)
     {
@@ -99,5 +97,35 @@ class VersionDoctrineRepository extends BaseRepository implements VersionReposit
     public function flushAll(): void
     {
         $this->getEntityManager()->flush();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function findRecentlyPushedVersionsOfAnyCollection(int $limit = 10): array
+    {
+        $qb = $this->createQueryBuilder('version');
+        $qb->addOrderBy('version.creationDate', 'DESC');
+        $qb->setMaxResults($limit);
+
+        return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function findRecentlyPushedVersionsForUser(User $user, int $limit = 10): array
+    {
+        $qb = $this->createQueryBuilder('version');
+        $qb->join('version.collection', 'collection');
+        $qb->join('collection.allowedTokens', 'allowed_users');
+
+        $qb->andWhere('allowed_users in (:user)');
+        $qb->setParameter('user', $user);
+
+        $qb->addOrderBy('version.creationDate', 'DESC');
+        $qb->setMaxResults($limit);
+
+        return $qb->getQuery()->getResult();
     }
 }

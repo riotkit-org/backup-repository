@@ -38,6 +38,12 @@ App\Domain\Storage\Entity\StoredFile:
             length: 36
             column: submittedBy
 
+        filesize:
+            type: integer
+            length: 24
+            column: size
+
+
     manyToMany:
         tags:
             targetEntity: Tag

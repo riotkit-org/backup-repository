@@ -246,14 +246,14 @@ class WriteManager
     }
 
     /**
-     * @param StagedFile|Path $stagedFile
+     * @param StagedFile      $stagedFile
      * @param StoredFile      $file
      * @param StoredFile|null $originForReference
      *
      * @return StoredFile
      * @throws ValidationException
      */
-    private function commitToRegistry($stagedFile, StoredFile $file,
+    private function commitToRegistry(StagedFile $stagedFile, StoredFile $file,
                                       ?StoredFile $originForReference = null): StoredFile
     {
         // case: $file is a duplicate of $originForReference (the second one was already upload and has same content)
@@ -269,6 +269,7 @@ class WriteManager
             $info = $this->fileInfoFactory->generateForStagedFile($stagedFile);
 
             $file->setContentHash($info->getChecksum());
+            $file->setFilesize($stagedFile->getFilesize());
 
             $this->validator->assertThereIsNoFileByFilename($file);
         }

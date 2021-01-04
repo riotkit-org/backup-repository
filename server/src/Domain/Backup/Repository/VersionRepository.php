@@ -3,6 +3,7 @@
 namespace App\Domain\Backup\Repository;
 
 use App\Domain\Backup\Collection\VersionsCollection;
+use App\Domain\Backup\Entity\Authentication\User;
 use App\Domain\Backup\Entity\BackupCollection;
 use App\Domain\Backup\Entity\StoredVersion;
 
@@ -34,4 +35,16 @@ interface VersionRepository
      * Send all pending changes to the database/storage
      */
     public function flushAll(): void;
+
+    /**
+     * @return BackupCollection[]
+     */
+    public function findRecentlyPushedVersionsOfAnyCollection(): array;
+
+    /**
+     * @param User $user
+     *
+     * @return BackupCollection[]
+     */
+    public function findRecentlyPushedVersionsForUser(User $user): array;
 }

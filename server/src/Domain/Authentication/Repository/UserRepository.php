@@ -4,7 +4,7 @@ namespace App\Domain\Authentication\Repository;
 
 use App\Domain\Authentication\Entity\User;
 
-interface UserRepository extends \App\Domain\Common\Repository\TokenRepository
+interface UserRepository extends \App\Domain\Common\Repository\UserRepository
 {
     public function persist(User $user): void;
     public function remove(User $token): void;

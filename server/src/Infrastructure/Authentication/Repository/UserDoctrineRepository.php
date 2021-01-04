@@ -4,9 +4,8 @@ namespace App\Infrastructure\Authentication\Repository;
 
 use App\Domain\Authentication\Entity\User;
 use App\Domain\Authentication\Exception\UserAlreadyExistsException;
-use App\Domain\Authentication\Helper\IdHidingHelper;
 use App\Domain\Authentication\Repository\UserRepository;
-use App\Infrastructure\Common\Repository\TokenDoctrineRepository as CommonTokenRepository;
+use App\Infrastructure\Common\Repository\UserDoctrineRepository as CommonTokenRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\Tools\Pagination\Paginator;

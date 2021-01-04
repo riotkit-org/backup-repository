@@ -5,75 +5,77 @@
             <!--
               -- Stats cards
               -->
-            <div class="row">
-                <div class="col-xl-3 col-md-6">
+            <div class="row" v-if="metricsFetched">
+                <div class="col-xl-3 col-md-6" v-if="metrics.storage.used_space !== null && metrics.storage.declared_space !== null">
                     <stats-card>
                         <div slot="header" class="icon-warning">
                             <i class="bi bi-pie-chart-fill text-warning"></i>
                         </div>
                         <div slot="content">
-                            <p class="card-category">Used disk space</p>
-                            <h4 class="card-title">{{ stats.disk_used }}/{{ stats.disk_total }}</h4>
+                            <p class="card-category">Used/Declared disk space</p>
+                            <h5 class="card-title">
+                                {{ bytes(metrics.storage.used_space) }}/{{ bytes(metrics.storage.declared_space) }}
+                            </h5>
                         </div>
                     </stats-card>
                 </div>
 
-                <div class="col-xl-3 col-md-6">
+                <div class="col-xl-3 col-md-6" v-if="metrics.users.active_accounts !== null">
                     <stats-card>
                         <div slot="header" class="icon-success">
                             <i class="bi bi-people-fill text-success"></i>
                         </div>
                         <div slot="content">
-                            <p class="card-category">Users</p>
-                            <h4 class="card-title">{{ stats.users_total }}</h4>
+                            <p class="card-category">Active User accounts</p>
+                            <h4 class="card-title">{{ metrics.users.active_accounts }}</h4>
                         </div>
                     </stats-card>
                 </div>
 
-                <div class="col-xl-3 col-md-6">
+                <div class="col-xl-3 col-md-6" v-if="metrics.users.active_jwt_keys !== null">
                     <stats-card>
                         <div slot="header" class="icon-success">
                             <i class="bi bi-key-fill"></i>
                         </div>
                         <div slot="content">
                             <p class="card-category">Authorized JWT keys</p>
-                            <h4 class="card-title">{{ stats.jwt_keys }}</h4>
+                            <h4 class="card-title">{{ metrics.users.active_jwt_keys }}</h4>
                         </div>
                     </stats-card>
                 </div>
 
-                <div class="col-xl-3 col-md-6">
+                <div class="col-xl-3 col-md-6" v-if="metrics.backup.versions !== null">
                     <stats-card>
                         <div slot="header" class="icon-danger">
                             <i class="bi bi-files text-danger"></i>
                         </div>
                         <div slot="content">
                             <p class="card-category">Active versions</p>
-                            <h4 class="card-title">{{ stats.total_active_versions }}</h4>
+                            <h4 class="card-title">{{ metrics.backup.versions }}</h4>
                         </div>
                     </stats-card>
                 </div>
 
-                <div class="col-xl-3 col-md-6">
+                <div class="col-xl-3 col-md-6" v-if="metrics.backup.collections !== null">
                     <stats-card>
                         <div slot="header" class="icon-info">
                             <i class="bi bi-file-earmark-arrow-up text-primary"></i>
                         </div>
                         <div slot="content">
                             <p class="card-category">Backup collections</p>
-                            <h4 class="card-title">{{ stats.total_backup_collections }}</h4>
+                            <h4 class="card-title">{{ metrics.backup.collections }}</h4>
                         </div>
                     </stats-card>
                 </div>
 
-                <div class="col-xl-3 col-md-6">
+                <div class="col-xl-3 col-md-6" v-if="metrics.resources.tags !== null">
                     <stats-card>
                         <div slot="header" class="icon-info">
                             <i class="bi bi-geo text-danger"></i>
                         </div>
                         <div slot="content">
                             <p class="card-category">Resource tags</p>
-                            <h4 class="card-title">{{ stats.resource_tags }}</h4>
+                            <h4 class="card-title">{{ metrics.resources.tags }}</h4>
                         </div>
                     </stats-card>
                 </div>
@@ -83,33 +85,16 @@
               -- Bigger panels with stats - charts and tables
               -->
             <div class="row">
-                <div class="col-md-6">
-                    <chart-card :chart-data="spaceUsageData.data" chart-type="Bar">
-                        <template slot="header">
-                            <h4 class="card-title">Allocation vs actual usage</h4>
-                            <p class="card-category">Compares how many disk space is reserved and how many space is
-                                actually used</p>
-                        </template>
-                        <template slot="footer">
-                            <div class="legend">
-                                <i class="fa fa-circle text-info"></i> Reserved
-                                <i class="fa fa-circle text-danger"></i> Used
-                            </div>
-                        </template>
-                    </chart-card>
-                </div>
-
-                <div class="col-md-6">
+                <div class="col-md-12">
                     <card>
                         <template slot="header">
                             <h4 class="card-title">Recently submitted versions</h4>
                         </template>
                         <l-table :data="backupsList.data"
-                                 :columns="backupsList.columns">
+                                 :columns="[]">
                             <template slot="columns"></template>
-
                             <template slot-scope="{row}">
-                                <td>{{ row.title }} ({{ row.version }})</td>
+                                <td>{{ row.title }} (v{{ row.version }} at {{ row.creationDate.getFormattedDate() }})</td>
                             </template>
                         </l-table>
                     </card>
@@ -118,11 +103,12 @@
         </div>
     </div>
 </template>
+
 <script>
 import ChartCard from 'src/components/Cards/ChartCard.vue'
 import StatsCard from 'src/components/Cards/StatsCard.vue'
 import LTable from 'src/components/Table.vue'
-import BackupRepositoryBackend from '../services/backend.service.ts'
+import bytes from 'bytes'
 
 export default {
     components: {
@@ -132,52 +118,64 @@ export default {
     },
     data() {
         return {
-            stats: {
-                'disk_used': '105GB',
-                'disk_total': '1024GB',
-                'users_total': 15,
-                'total_active_versions': 4954,
-                'total_backup_collections': 400,
-                'jwt_keys': 25,
-                'resource_tags': 800
-            },
-            spaceUsageData: {
-                data: {
-                    labels: ['Used', 'Reserved'],
-                    series: [
-                        [0, 542],
-                        [412, 0]
-                    ]
+            metricsFetched: false,
+            metrics: {
+                'storage': {
+                    "declared_space": null,
+                    "used_space": null
                 },
-                options: {
-                    seriesBarDistance: 10,
-                    axisX: {
-                        showGrid: false
-                    },
-                    height: '245px'
+                "users": {
+                    "active_accounts": null,
+                    "active_jwt_keys": null
                 },
-                responsiveOptions: [
-                    ['screen and (max-width: 640px)', {
-                        seriesBarDistance: 5,
-                        axisX: {
-                            labelInterpolationFnc(value) {
-                                return value[0]
-                            }
-                        }
-                    }]
-                ]
+                "backup": {
+                    "versions": null,
+                    "collections": null,
+                    "recent_versions": []
+                },
+                "resources": {
+                    "tags": 0
+                }
             },
             backupsList: {
-                data: [
-                    {title: 'zsp.net.pl / database + files', version: "v532"},
-                    {title: 'iwa-ait.org / database + files', version: "v874"},
-                    {title: 'iwa-ait PostgreSQL (whole instance)', version: "v874"}
-                ]
+                data: []
             }
         }
+    },
+
+    methods: {
+        fetchFromBackend() {
+            let that = this
+
+            this.$backend().fetchMetrics().then(function (metrics) {
+                that.metrics = metrics
+                that.backupsList.data = []
+                that.metricsFetched = true
+
+                that.$nextTick(function () {
+                    for (let num in that.metrics.backup.recent_versions) {
+                        let version = that.metrics.backup.recent_versions[num]
+                        that.backupsList.data.push({
+                            title: version.file.filename,
+                            version: version.version,
+                            creationDate: version.creationDate
+                        })
+                    }
+                })
+            })
+        },
+
+        bytes(size) {
+            return bytes(size)
+        }
+    },
+
+    mounted() {
+        this.fetchFromBackend()
     }
 }
 </script>
+
 <style>
 .card-body {
     padding-top: 0 !important;

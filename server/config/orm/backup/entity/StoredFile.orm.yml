@@ -18,3 +18,8 @@ App\Domain\Backup\Entity\StoredFile:
             type: string
             length: 64
             column: contentHash
+
+        filesize:
+            type: integer
+            length: 24
+            column: size

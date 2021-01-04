@@ -6,6 +6,8 @@ import VueComponent from 'vue'
 import Dictionary from 'src/contracts/base.contract.ts';
 // @ts-ignore
 import AppInfo from 'src/models/appinfo.model.ts'
+// @ts-ignore
+import {BackupVersion} from "../models/backup.model.ts";
 
 export default class BackupRepositoryBackend {
     vue: any|VueComponent
@@ -43,6 +45,20 @@ export default class BackupRepositoryBackend {
             'password': password
         }).then(function (response) {
             return response.data.token
+        })
+    }
+
+    /**
+     * Fetches metrics for dashboard
+     */
+    async fetchMetrics(): Promise<string|any> {
+        return this.get('/metrics').then(function (response) {
+            let metrics = response.data.data
+            metrics.backup.recent_versions = metrics.backup.recent_versions.map(function (versionDict) {
+                return BackupVersion.fromDict({details: versionDict})
+            })
+
+            return metrics
         })
     }
 

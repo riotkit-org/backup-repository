@@ -100,6 +100,9 @@ final class Roles
     /** [Storage Administration] Can see extra, technical metadata such as storage path in the listing */
     public const PERMISSION_CAN_SEE_EXTRA_ADMIN_METADATA = 'admin.view.can_see_admin_metadata_in_listing';
 
+    /** [Metrics / System] Can view system metrics such as how many users, collections were created, how many disk was allocated */
+    public const PERMISSION_VIEW_METRICS = 'view.metrics';
+
     //
     //
     // collections
@@ -161,6 +164,7 @@ final class Roles
         self::PERMISSION_BROWSE_LIST_OF_FILES_BY_ANY_TAG,
         self::PERMISSION_ACCESS_LISTING_ENDPOINT,
         self::PERMISSION_CAN_SEE_EXTRA_ADMIN_METADATA,
+        self::PERMISSION_VIEW_METRICS,
         self::PERMISSION_DELETE_USERS,
         self::PERMISSION_CAN_LIST_ROLES,
         self::PERMISSION_ADMINISTRATOR,

@@ -13,20 +13,15 @@ use App\Domain\Storage\ValueObject\Path;
  */
 class StoredFile extends StoredFileFromCommon implements \JsonSerializable
 {
-    /**
-     * @var \DateTimeImmutable
-     */
-    protected $dateAdded;
-
-    /**
-     * @var string
-     */
-    protected $timezone;
+    protected \DateTimeImmutable $dateAdded;
+    protected string $timezone;
 
     /**
      * @var Tag[]
      */
-    private $tags;
+    private array $tags;
+
+    private int $filesize;
 
     /**
      * @throws \Exception
@@ -36,6 +31,7 @@ class StoredFile extends StoredFileFromCommon implements \JsonSerializable
         $this->dateAdded  = new \DateTimeImmutable();
         $this->timezone   = \date_default_timezone_get();
         $this->tags       = [];
+        $this->filesize   = 0;
     }
 
     /**
@@ -124,11 +120,6 @@ class StoredFile extends StoredFileFromCommon implements \JsonSerializable
         return $this->dateAdded;
     }
 
-    public function checkContentHashMatchesEtag(string $etag): bool
-    {
-        return $this->contentHash === $etag;
-    }
-
     public function jsonSerialize(): array
     {
         return [
@@ -137,16 +128,8 @@ class StoredFile extends StoredFileFromCommon implements \JsonSerializable
             'contentHash' => $this->getContentHash(),
             'dateAdded'   => $this->getDateAdded(),
             'timezone'    => $this->getTimezone(),
-            'tags'        => $this->getTags()
-        ];
-    }
-
-    public function jsonSerializeAdmin(): array
-    {
-        return [
-            'attributes' => [
-                'path' => $this->getStoragePath()->getValue()
-            ]
+            'tags'        => $this->getTags(),
+            'filesize'    => $this->getFilesize()
         ];
     }
 
@@ -187,8 +170,13 @@ class StoredFile extends StoredFileFromCommon implements \JsonSerializable
         return $this->getFilename()->getValue() !== $this->getStoragePath()->getValue();
     }
 
-    public function wasSubmittedByTokenId(?string $id): bool
+    public function setFilesize(int $filesize): void
     {
-        return $id === $this->submittedBy;
+        $this->filesize = $filesize;
+    }
+
+    public function getFilesize(): int
+    {
+        return $this->filesize;
     }
 }

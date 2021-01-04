@@ -3,14 +3,14 @@
 namespace App\Infrastructure\Common\Repository;
 
 use App\Domain\Authentication\Entity\User;
-use App\Domain\Common\Repository\TokenRepository;
+use App\Domain\Common\Repository\UserRepository;
 use App\Domain\Common\ValueObject\Roles as RolesVO;
 use App\Domain\Roles as RolesDomain;
 
 /**
  * @codeCoverageIgnore
  */
-abstract class TokenDoctrineRepository extends BaseRepository implements TokenRepository
+abstract class UserDoctrineRepository extends BaseRepository implements UserRepository
 {
     public function findUserByUserId(string $id, string $className = null)
     {
