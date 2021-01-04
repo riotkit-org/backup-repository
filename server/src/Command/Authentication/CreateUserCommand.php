@@ -15,7 +15,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class CreateUserCommand extends Command
 {
-    public const NAME = 'auth:create-token';
+    public const NAME = 'auth:create-user';
 
     private UserCreationHandler $handler;
     private SecurityContextFactory $authFactory;
@@ -30,8 +30,8 @@ class CreateUserCommand extends Command
 
     protected function configure()
     {
-        $this->setName('auth:create-token')
-            ->setDescription('Creates an authentication token')
+        $this->setName(static::NAME)
+            ->setDescription('Creates a user')
             ->addOption('roles', null, InputOption::VALUE_REQUIRED)
             ->addOption('tags', null, InputOption::VALUE_REQUIRED)
             ->addOption('max-file-size', null, InputOption::VALUE_REQUIRED)

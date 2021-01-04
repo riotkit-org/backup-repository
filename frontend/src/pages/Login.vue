@@ -1,42 +1,46 @@
 <template>
     <div class="content">
         <div class="container-fluid">
-            <div class="simple-login-container">
-                <h2>A logging in is required to continue</h2>
-                <div class="row" v-if="!useJWT">
-                    <div class="col-md-12 form-group">
-                        <input type="text" class="form-control" placeholder="Email*" v-model="email">
-                    </div>
-                </div>
-                <div class="row" v-if="!useJWT">
-                    <div class="col-md-12 form-group">
-                        <input type="password" placeholder="Enter your password*" class="form-control" v-model="password">
-                    </div>
-                </div>
-                <div class="row" v-if="useJWT">
-                    <div class="col-md-12 form-group">
-                        <textarea v-model="inputJWT" placeholder="Encoded JSON Web Token" class="form-control" rows="15"></textarea>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-3 form-group">
-                        <div class="form-check form-switch">
-                            <label class="switch" style="float: left;">
-                                <input type="checkbox" class="default" v-model="useJWT">
-                                <span class="slider round"></span>
-                            </label>
+            <form>
+                <div class="simple-login-container">
+                    <h2>A logging in is required to continue</h2>
+                    <div class="row" v-if="!useJWT">
+                        <div class="col-md-12 form-group">
+                            <input type="text" class="form-control" placeholder="Email*" v-model="email">
                         </div>
                     </div>
-                    <div class="col-md-9 jwt-text">
-                        Use JSON Web Token
+                    <div class="row" v-if="!useJWT">
+                        <div class="col-md-12 form-group">
+                            <input type="password" placeholder="Enter your password*"
+                                   name="password" class="form-control" id="passwordField"
+                                   v-model="password" @blur="verifyPasswordValueChange">
+                        </div>
+                    </div>
+                    <div class="row" v-if="useJWT">
+                        <div class="col-md-12 form-group">
+                            <textarea v-model="inputJWT" placeholder="Encoded JSON Web Token" class="form-control" rows="15"></textarea>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-3 form-group">
+                            <div class="form-check form-switch">
+                                <label class="switch" style="float: left;">
+                                    <input type="checkbox" class="default" v-model="useJWT">
+                                    <span class="slider round"></span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="col-md-9 jwt-text">
+                            Use JSON Web Token
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 form-group">
+                            <input type="submit" class="btn btn-block btn-login" value="Log-in" @click.prevent="login">
+                        </div>
                     </div>
                 </div>
-                <div class="row">
-                    <div class="col-md-12 form-group">
-                        <input type="submit" class="btn btn-block btn-login" value="Log-in" @click.prevent="login">
-                    </div>
-                </div>
-            </div>
+            </form>
         </div>
     </div>
 </template>
@@ -46,8 +50,8 @@ export default {
     components: {},
     data () {
         return {
-            email: 'example@riseup.net',
-            password: 'aNti_cap.italiSM',
+            email: '',
+            password: '',
             inputJWT: '',
             useJWT: false
         }
@@ -68,6 +72,15 @@ export default {
                     that.$router.push('Overview')
                 }
             })
+        },
+
+        // https://github.com/vuejs/vue/issues/7058
+        verifyPasswordValueChange() {
+            let domElement = document.getElementById('passwordField')
+
+            if (domElement.value !== this.password) {
+                this.password = domElement.value
+            }
         }
     }
 }

@@ -9,9 +9,9 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class GenerateAdminAccountCommand extends Command
+class CreateAdminAccountCommand extends Command
 {
-    public const NAME = 'auth:generate-admin-account';
+    public const NAME = 'auth:create-admin-account';
 
     protected function configure()
     {
@@ -48,7 +48,7 @@ class GenerateAdminAccountCommand extends Command
         ];
 
         if ($input->getOption('ignore-error-if-already-exists')) {
-            $opts['--ignore-error-if-token-exists'] = true;
+            $opts['--ignore-error-if-user-exists'] = true;
         }
 
         return $command->run(new ArrayInput($opts), $output);
