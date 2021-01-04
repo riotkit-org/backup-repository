@@ -5,6 +5,8 @@ namespace App\Infrastructure\Authentication\Event\Subscriber;
 use App\Domain\Authentication\Entity\User;
 use App\Domain\Authentication\Repository\AccessTokenAuditRepository;
 use App\Infrastructure\Authentication\Token\TokenTransport;
+use Lexik\Bundle\JWTAuthenticationBundle\Encoder\JWTEncoderInterface;
+use Lexik\Bundle\JWTAuthenticationBundle\Security\Authentication\Token\JWTUserToken;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
@@ -16,11 +18,14 @@ class TokenRestrictionsSubscriber implements EventSubscriberInterface
 
     private TokenStorageInterface $tokenStorage;
     private AccessTokenAuditRepository $accessTokenAuditRepository;
+    private JWTEncoderInterface $encoder;
 
-    public function __construct(TokenStorageInterface $tokenStorage, AccessTokenAuditRepository $accessTokenAuditRepository)
+    public function __construct(TokenStorageInterface $tokenStorage, AccessTokenAuditRepository $accessTokenAuditRepository,
+                                JWTEncoderInterface $encoder)
     {
         $this->tokenStorage = $tokenStorage;
         $this->accessTokenAuditRepository = $accessTokenAuditRepository;
+        $this->encoder = $encoder;
     }
 
     public static function getSubscribedEvents()
@@ -56,7 +61,21 @@ class TokenRestrictionsSubscriber implements EventSubscriberInterface
             );
             return;
         }
+
+        // limit the roles on the user object
+        if ($this->tokenStorage->getToken() instanceof JWTUserToken) {
+            $roles = $this->encoder->decode($jwt)['roles'] ?? [];
+
+            $this->tokenStorage->setToken(
+                new JWTUserToken(
+                    $roles,
+                    $this->tokenStorage->getToken()->getUser()->withRoles($roles),
+                    $jwt
+                )
+            );
+        }
     }
+
 
     private function getTokenFromRequest(Request $request): ?string
     {
