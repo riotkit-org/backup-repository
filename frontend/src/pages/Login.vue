@@ -3,14 +3,32 @@
         <div class="container-fluid">
             <div class="simple-login-container">
                 <h2>A logging in is required to continue</h2>
-                <div class="row">
+                <div class="row" v-if="!useJWT">
                     <div class="col-md-12 form-group">
                         <input type="text" class="form-control" placeholder="Email*" v-model="email">
                     </div>
                 </div>
-                <div class="row">
+                <div class="row" v-if="!useJWT">
                     <div class="col-md-12 form-group">
                         <input type="password" placeholder="Enter your password*" class="form-control" v-model="password">
+                    </div>
+                </div>
+                <div class="row" v-if="useJWT">
+                    <div class="col-md-12 form-group">
+                        <textarea v-model="inputJWT" placeholder="Encoded JSON Web Token" class="form-control" rows="15"></textarea>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-3 form-group">
+                        <div class="form-check form-switch">
+                            <label class="switch" style="float: left;">
+                                <input type="checkbox" class="default" v-model="useJWT">
+                                <span class="slider round"></span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-9 jwt-text">
+                        Use JSON Web Token
                     </div>
                 </div>
                 <div class="row">
@@ -29,12 +47,21 @@ export default {
     data () {
         return {
             email: 'example@riseup.net',
-            password: 'aNti_cap.italiSM'
+            password: 'aNti_cap.italiSM',
+            inputJWT: '',
+            useJWT: false
         }
     },
     methods: {
         login() {
             let that = this
+
+            if (this.inputJWT && this.useJWT) {
+                that.$auth().setAuthentication(this.inputJWT)
+                that.$router.push('Overview')
+                return
+            }
+
             this.$backend().getJWT(this.email, this.password).then(function (token) {
                 if (token) {
                     that.$auth().setAuthentication(token)
@@ -61,5 +88,69 @@ export default {
     border-color: transparent;
     background-color: #ff5959;
     color:#fff;
+}
+
+.jwt-text {
+    padding-top: 5px;
+}
+
+/* The switch - the box around the slider */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+    float:right;
+}
+
+/* Hide default HTML checkbox */
+.switch input {display:none;}
+
+/* The slider */
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: .4s;
+}
+
+input.default:checked + .slider {
+    background-color: #444;
+}
+
+input:focus + .slider {
+    box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .slider:before {
+    -webkit-transform: translateX(26px);
+    -ms-transform: translateX(26px);
+    transform: translateX(26px);
+}
+
+/* Rounded sliders */
+.slider.round {
+    border-radius: 34px;
+}
+
+.slider.round:before {
+    border-radius: 50%;
 }
 </style>
