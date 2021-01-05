@@ -1,12 +1,56 @@
 <template>
   <div :class="{'nav-open': $sidebar.showSidebar}">
+    <loader :is-visible="isLoading"></loader>
     <notifications></notifications>
     <router-view></router-view>
   </div>
 </template>
 
 <script>
-  export default {}
+  import Loader from 'src/components/Loader.vue';
+  import axios from 'axios';
+
+  export default {
+      components: {
+          Loader
+      },
+      data: function () {
+          return {
+              isLoading: false,
+              axiosInterceptor: null
+          }
+      },
+      mounted() {
+          this.enableInterceptor()
+      },
+      methods: {
+          enableInterceptor() {
+              this.axiosInterceptor = axios.interceptors.request.use((config) => {
+                  this.isLoading = true
+                  return config
+              }, (error) => {
+                  this.disableLoading()
+                  return Promise.reject(error)
+              })
+
+              axios.interceptors.response.use((response) => {
+                  this.disableLoading()
+                  return response
+              }, (error) => {
+                  this.disableLoading()
+                  return Promise.reject(error)
+              })
+          },
+
+          disableLoading() {
+              setTimeout(() => { this.isLoading = false }, 300)
+          },
+
+          disableInterceptor() {
+              axios.interceptors.request.eject(this.axiosInterceptor)
+          },
+      },
+  }
 </script>
 <style lang="scss">
   .vue-notifyjs.notifications{
