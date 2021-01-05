@@ -5,3 +5,4 @@ Scenario: I try to create an administrator account with e-mail "unity@solidarity
   Given I create admin account with e-mail "unity@solidarity.local" and "you-cant-break-it" password
   When I login as "unity@solidarity.local" with "you-cant-break-it"
   Then I expect to be logged in
+  And I expect that the footer containing application version is visible

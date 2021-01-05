@@ -87,4 +87,15 @@ class FeatureContext extends MinkContext implements Context
     {
         $this->assertUrlRegExp('/\/\#\/admin\/Overview/');
     }
+
+    /**
+     * @Then I expect that the footer containing application version is visible
+     */
+    public function expectToSeeApplicationFooter(): void
+    {
+        $footer = $this->getSession()->getPage()->find('css', 'div[class="footer-menu"]');
+
+        Assertions::assertMatchesRegularExpression('/Backup Repository ([0-9\.\-a-z]+) running on ([a-z]+)/', $footer ? $footer->getText() : '');
+        Assertions::assertTrue($footer && $footer->isVisible());
+    }
 }
