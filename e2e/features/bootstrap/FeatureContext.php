@@ -1,9 +1,7 @@
 <?php declare(strict_types=1);
 
-use Behat\Behat\Context\Context;
-use Behat\Gherkin\Node\PyStringNode;
-use Behat\Gherkin\Node\TableNode;
-use Behat\MinkExtension\Context\MinkContext;
+use Behat\Behat\Hook\Scope\AfterScenarioScope;
+use Behat\Mink\Exception\ElementNotFoundException;
 use PHPUnit\Framework\Assert as Assertions;
 
 define('SERVER_PATH', __DIR__ . '/../../../server');
@@ -16,14 +14,20 @@ require_once __DIR__ . '/TechnicalContext.php';
 class FeatureContext extends TechnicalContext
 {
     /**
-     * Initializes context.
+     * After each scenario clear the browser session - logout user
      *
-     * Every scenario gets its own context instance.
-     * You can also pass arbitrary arguments to the
-     * context constructor through behat.yml.
+     * @param AfterScenarioScope $event
+     *
+     * @AfterScenario
      */
-    public function __construct()
+    public function resetCurrentPage(AfterScenarioScope $event)
     {
+        try {
+            $script = 'sessionStorage.clear(); localStorage.clear();';
+            $this->getSession()->executeScript($script);
+        } catch (\Exception $e) {
+            //
+        }
     }
 
 
@@ -64,11 +68,12 @@ class FeatureContext extends TechnicalContext
      *
      * @param string $user
      * @param string $password
+     * @throws ElementNotFoundException
      */
-    public function iLoginAs(string $user, string $password)
+    public function iLoginAs(string $user, string $password): void
     {
         $this->visit('/');
-        $this->getSession()->getPage()->find('css', 'a[to="/admin/login"]')->click();
+        $this->iClickMenuLink('/admin/login');
 
         $this->fillFieldByCSS('input[placeholder="Email*"]', $user);
         $this->fillFieldByCSS('input[placeholder="Enter your password*"]', $password);
@@ -76,6 +81,18 @@ class FeatureContext extends TechnicalContext
 
         $this->pressButton('Log-in');
         sleep(1);
+    }
+
+    /**
+     * @When I click menu link leading to :path
+     *
+     * @param string $path
+     * @throws ElementNotFoundException
+     */
+    public function iClickMenuLink(string $path): void
+    {
+        $this->findByCSS('a[to="' . $path . '"]')->click();
+        $this->iWait();
     }
 
     /**
@@ -95,5 +112,23 @@ class FeatureContext extends TechnicalContext
 
         Assertions::assertMatchesRegularExpression('/Backup Repository ([0-9\.\-a-z]+) running on ([a-z]+)/', $footer ? $footer->getText() : '');
         Assertions::assertTrue($footer && $footer->isVisible());
+    }
+
+    /**
+     * @Given I am authenticated as administrator
+     */
+    public function iAuthAsAdmin(): void
+    {
+        $this->iCreateAdminAccountWithEMail('unity@solidarity.local', 'you-cant-break-it');
+        $this->iLoginAs('unity@solidarity.local', 'you-cant-break-it');
+    }
+
+    /**
+     * @When I visit users search page
+     * @throws ElementNotFoundException
+     */
+    public function iVisitUsersSearchPage(): void
+    {
+        $this->iClickMenuLink('/admin/users');
     }
 }

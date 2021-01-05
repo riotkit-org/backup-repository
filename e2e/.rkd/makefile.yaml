@@ -2,12 +2,14 @@ version: org.riotkit.rkd/yaml/v1
 imports: []
 
 environment:
-    BROWSER_BIN: "opera"
+    BROWSER_BIN: "chromium"
 
 tasks:
     :e2e:browser:
         description: Run Chromium browser
-        steps: $BROWSER_BIN --remote-debugging-address=0.0.0.0 --remote-debugging-port=9222
+        steps:
+            - rm -rf .rkd/browser
+            - $BROWSER_BIN --remote-debugging-address=0.0.0.0 --remote-debugging-port=9222 --user-data-dir=.rkd/browser
 
     :e2e:test:
         description: Run End-To-End tests with Behat

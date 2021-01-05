@@ -1,5 +1,7 @@
 <?php declare(strict_types=1);
 
+use Behat\Mink\Element\NodeElement;
+use Behat\Mink\Exception\ElementNotFoundException;
 use Behat\MinkExtension\Context\MinkContext;
 use PHPUnit\Framework\Assert as Assertions;
 
@@ -46,7 +48,19 @@ class TechnicalContext extends MinkContext
     // Browser
     //
 
-    protected function fillFieldByCSS(string $selector, string $value)
+    protected function iWait(): void
+    {
+        $this->getSession()->getPage()->waitFor(
+            30,
+            function () {
+                $element = $this->getSession()->getPage()->find('css', 'div[class="loader-overlay"]');
+
+                return !$element || !$element->isVisible();
+            }
+        );
+    }
+
+    protected function fillFieldByCSS(string $selector, string $value): void
     {
         $input = $this->getSession()->getPage()->find('css', $selector);
         $input->click();
@@ -54,5 +68,37 @@ class TechnicalContext extends MinkContext
         $input->setValue($value);
         $input->blur();
         $input->click();
+    }
+
+    /**
+     * @When I press :buttonTitle button
+     *
+     * @param string $buttonTitle
+     */
+    public function iPressButton(string $buttonTitle): void
+    {
+        $this->pressButton($buttonTitle);
+    }
+
+    protected function findByCSS(string $selector, int $timeout = 10): NodeElement
+    {
+        $callback = function () use ($selector) {
+            return $this->getSession()->getPage()->find('css', $selector);
+        };
+
+        do {
+            $element = $callback();
+
+            if ($element instanceof NodeElement) {
+                return $element;
+            }
+
+            $timeout--;
+            sleep(1);
+
+        } while (!$element instanceof NodeElement && $timeout > 0);
+
+        sleep(5);
+        throw new ElementNotFoundException($this->getSession()->getDriver(), null, 'css', $selector);
     }
 }
