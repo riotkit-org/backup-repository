@@ -8,14 +8,13 @@ use PHPUnit\Framework\Assert as Assertions;
 
 define('SERVER_PATH', __DIR__ . '/../../../server');
 
+require_once __DIR__ . '/TechnicalContext.php';
+
 /**
  * Defines application features from the specific context.
  */
-class FeatureContext extends MinkContext implements Context
+class FeatureContext extends TechnicalContext
 {
-    private string $lastShellCommandResponse = '';
-    private int $lastShellCommandExitCode = 1;
-
     /**
      * Initializes context.
      *
@@ -27,25 +26,6 @@ class FeatureContext extends MinkContext implements Context
     {
     }
 
-    protected function execServerCommand(string $command): array
-    {
-        exec('cd ' . SERVER_PATH . ' && ./bin/console ' . $command, $output, $returnCode);
-
-        $this->lastShellCommandResponse = implode("\n", $output);
-        $this->lastShellCommandExitCode = $returnCode;
-
-        return ['out' => $output, 'exit_code' => $returnCode];
-    }
-
-    protected function fillFieldByCSS(string $selector, string $value)
-    {
-        $input = $this->getSession()->getPage()->find('css', $selector);
-        $input->click();
-
-        $input->setValue($value);
-        $input->blur();
-        $input->click();
-    }
 
     //
     // Authentication
@@ -77,26 +57,6 @@ class FeatureContext extends MinkContext implements Context
         $this->execServerCommand(
             'auth:create-admin-account ' . $commandline
         );
-    }
-
-    /**
-     * @Then I expect the server command contains :partial in output
-     *
-     * @param string $partial
-     */
-    public function iAssertShellCommandOutputContains(string $partial): void
-    {
-        Assertions::assertStringContainsString($partial, $this->lastShellCommandResponse);
-    }
-
-    /**
-     * @Then I expect the server command exited with :exitCode exit code
-     *
-     * @param int $exitCode
-     */
-    public function iAssertShellCommandExitedWith(int $exitCode): void
-    {
-        Assertions::assertEquals($exitCode, $this->lastShellCommandExitCode);
     }
 
     /**
