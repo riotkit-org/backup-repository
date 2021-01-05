@@ -13,6 +13,9 @@ define('SERVER_PATH', __DIR__ . '/../../../server');
  */
 class FeatureContext extends MinkContext implements Context
 {
+    private string $lastShellCommandResponse = '';
+    private int $lastShellCommandExitCode = 1;
+
     /**
      * Initializes context.
      *
@@ -27,6 +30,9 @@ class FeatureContext extends MinkContext implements Context
     protected function execServerCommand(string $command): array
     {
         exec('cd ' . SERVER_PATH . ' && ./bin/console ' . $command, $output, $returnCode);
+
+        $this->lastShellCommandResponse = implode("\n", $output);
+        $this->lastShellCommandExitCode = $returnCode;
 
         return ['out' => $output, 'exit_code' => $returnCode];
     }
@@ -59,6 +65,38 @@ class FeatureContext extends MinkContext implements Context
         );
 
         Assertions::assertSame(0, $out['exit_code']);
+    }
+
+    /**
+     * @When I create admin account from shell command with :options advanced options
+     *
+     * @param string $commandline
+     */
+    public function iCreateAdminAccountAdvanced(string $commandline): void
+    {
+        $this->execServerCommand(
+            'auth:create-admin-account ' . $commandline
+        );
+    }
+
+    /**
+     * @Then I expect the server command contains :partial in output
+     *
+     * @param string $partial
+     */
+    public function iAssertShellCommandOutputContains(string $partial): void
+    {
+        Assertions::assertStringContainsString($partial, $this->lastShellCommandResponse);
+    }
+
+    /**
+     * @Then I expect the server command exited with :exitCode exit code
+     *
+     * @param int $exitCode
+     */
+    public function iAssertShellCommandExitedWith(int $exitCode): void
+    {
+        Assertions::assertEquals($exitCode, $this->lastShellCommandExitCode);
     }
 
     /**
