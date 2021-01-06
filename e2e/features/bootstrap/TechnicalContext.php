@@ -100,7 +100,7 @@ class TechnicalContext extends MinkContext
 
     protected function iWait(): void
     {
-        usleep((int) (0.2 * 1000000));
+        usleep((int) (0.5 * 1000000));
 
         $this->getSession()->getPage()->waitFor(
             30,
@@ -240,8 +240,10 @@ class TechnicalContext extends MinkContext
      */
     public function iShouldNotSeeNotificationWithMessage(string $message): void
     {
+        $this->iWait();
+
         try {
-            $this->findByCSS('span[data-notify="message"]:contains("' . $message . '")', 5);
+            $this->findByCSS('span[data-notify="message"]:contains("' . $message . '")', 1);
         } catch (ElementNotFoundException $exception) {
             return;
         }

@@ -59,10 +59,9 @@ class FeatureContext extends TechnicalContext
 
         $this->fillFieldByCSS('input[placeholder="Email*"]', $user);
         $this->fillFieldByCSS('input[placeholder="Enter your password*"]', $password);
-        sleep(1);
-
         $this->pressButton('Log-in');
-        sleep(1);
+
+        $this->iWait();
     }
 
     /**
@@ -90,6 +89,7 @@ class FeatureContext extends TechnicalContext
      */
     public function expectToSeeApplicationFooter(): void
     {
+        $this->iWait();
         $footer = $this->getSession()->getPage()->find('css', 'div[class="footer-menu"]');
 
         Assertions::assertMatchesRegularExpression('/Backup Repository ([0-9\.\-a-z]+) running on ([a-z]+)/', $footer ? $footer->getText() : '');
