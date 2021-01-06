@@ -98,6 +98,8 @@ class TechnicalContext extends MinkContext
 
     protected function iWait(): void
     {
+        usleep((int) (0.4 * 1000000));
+
         $this->getSession()->getPage()->waitFor(
             30,
             function () {
@@ -126,6 +128,7 @@ class TechnicalContext extends MinkContext
     public function iPressButton(string $buttonTitle): void
     {
         $this->pressButton($buttonTitle);
+        $this->iWait();
     }
 
     protected function findByCSS(string $selector, int $timeout = 10): NodeElement
@@ -193,5 +196,23 @@ class TechnicalContext extends MinkContext
     public function iShouldSeeNotificationWithMessage(string $message): void
     {
         $this->findByCSS('span[data-notify="message"]:contains("' . $message . '")');
+    }
+
+    /**
+     * @Then I should not see message :message
+     *
+     * @param string $message
+     *
+     * @throws LogicException
+     */
+    public function iShouldNotSeeNotificationWithMessage(string $message): void
+    {
+        try {
+            $this->findByCSS('span[data-notify="message"]:contains("' . $message . '")', 5);
+        } catch (ElementNotFoundException $exception) {
+            return;
+        }
+
+        throw new LogicException('Message "' . $message . '" should not be present, but actually it is');
     }
 }

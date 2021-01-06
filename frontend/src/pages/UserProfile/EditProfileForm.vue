@@ -219,6 +219,11 @@ export default {
                 hasError = true
             }
 
+            if (this.isAddingNew && (!this.inputs.password || !this.inputs.repeatPassword)) {
+                this.notify('Password is required', 'bi bi-key')
+                hasError = true
+            }
+
             if (!this.user.email) {
                 this.notify('E-mail is required', 'bi bi-envelope-open')
                 hasError = true
