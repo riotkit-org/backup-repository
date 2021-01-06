@@ -24,7 +24,7 @@ class AuthenticationManagementContext
     private bool $isAdministrator;
     private bool $canRevokeUserAccounts;
     private bool $canCreateTokensWithPredictableIds;
-    private bool $canSearchForTokens;
+    private bool $canSearchForUsers;
     private bool $canListSelfAccessTokens;
     private bool $canListAllUsersAccessTokens;
     private bool $canRevokeOwnAccessTokens;
@@ -37,9 +37,9 @@ class AuthenticationManagementContext
         bool $canCreateUnlimitedUserAccount,
         bool $canUseTechnicalEndpoints,
         bool $isAdministrator,
-        bool $canRevokeTokens,
+        bool $canRevokeUserAccounts,
         bool $canCreateTokensWithPredictableIds,
-        bool $canSearchForTokens,
+        bool $canSearchForUsers,
         bool $canListSelfAccessTokens,
         bool $canListAllUsersAccessTokens,
         bool $canRevokeOwnAccessTokens,
@@ -51,9 +51,9 @@ class AuthenticationManagementContext
         $this->canCreateUnlimitedUserAccount     = $canCreateUnlimitedUserAccount;
         $this->canUseTechnicalEndpoints          = $canUseTechnicalEndpoints;
         $this->isAdministrator                   = $isAdministrator;
-        $this->canRevokeUserAccounts                   = $canRevokeTokens;
+        $this->canRevokeUserAccounts             = $canRevokeUserAccounts;
         $this->canCreateTokensWithPredictableIds = $canCreateTokensWithPredictableIds;
-        $this->canSearchForTokens                = $canSearchForTokens;
+        $this->canSearchForUsers                 = $canSearchForUsers;
         $this->canListSelfAccessTokens           = $canListSelfAccessTokens;
         $this->canListAllUsersAccessTokens       = $canListAllUsersAccessTokens;
         $this->canRevokeOwnAccessTokens          = $canRevokeOwnAccessTokens;
@@ -77,7 +77,7 @@ class AuthenticationManagementContext
             return true;
         }
 
-        return $this->canLookupAnyUserAccount() && $this->canSearchForTokens;
+        return $this->canLookupAnyUserAccount() && $this->canSearchForUsers;
     }
 
     public function canCreateNewUser(): bool

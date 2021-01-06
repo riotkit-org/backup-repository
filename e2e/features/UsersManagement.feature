@@ -32,6 +32,7 @@ Feature: Create users, edit basic fields in existing user profiles, searching th
         Then I should not see message "User account saved"
         And I should see message "email: Invalid e-mail format"
 
+
     Scenario: As an administrator I try to create a user, when passwords are not matching
         When I visit users search page
         And I press "Add user" button
@@ -41,6 +42,7 @@ Feature: Create users, edit basic fields in existing user profiles, searching th
         And I press "Add new user" button
         Then I should see message "Passwords are not matching"
         And I should not see message "User account saved"
+
 
     Scenario: As an administrator I try to create a user with empty password, empty e-mail
         When I visit users search page
@@ -78,3 +80,41 @@ Feature: Create users, edit basic fields in existing user profiles, searching th
         When I visit users search page
         Then I should see user "info@abcf.net" on the list
         And I expect that the footer containing application version is visible
+
+
+    Scenario: As an administrator I create an account with limited roles and I will attempt to display users list
+        # I. Create a user that is able to only upload backups, nothing else
+        Given I visit users search page
+        When I press "Add user" button
+        And I fill in "Email" with "info@abcf.net"
+        And I fill in "Organization" with "Anarchist Black Cross"
+        And I fill in "New password" with "anarchist-test123456789_"
+        And I fill in "Repeat password" with "anarchist-test123456789_"
+        And I check "collections.upload_to_allowed_collections"
+        And I check "collections.list_versions_for_allowed_collections"
+        And I check "collections.fetch_single_version_file_in_allowed_collections"
+        And I press "Add new user" button
+        Then I should see message "User account saved"
+
+        # II. Verify by logging in
+        Given I logout
+        And I login as "info@abcf.net" with "anarchist-test123456789_"
+        When I visit users search page
+        Then I should see message "No permission to search for users"
+
+        # III. Edit user - grant him access to display users list
+        Given I logout
+        And I am authenticated as administrator
+        And I visit users search page
+        And I follow "info@abcf.net"
+        And I follow "Toggle role names/description"
+        And I check "security.search_for_users"
+        And I check "security.authentication_lookup"
+        And I press "Update Profile" button
+        Then I should see message "User account saved"
+
+        # IV. Verify that additional permissions were granted on the limited permissions user
+        Given I logout
+        And I login as "info@abcf.net" with "anarchist-test123456789_"
+        When I visit users search page
+        Then I should not see message "No permission to search for users"
