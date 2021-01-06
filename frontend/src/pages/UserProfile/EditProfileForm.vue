@@ -15,17 +15,23 @@
                 <div class="col-md-6">
                     <base-input type="text"
                                 label="Organization"
+                                name="organization_name"
                                 placeholder="Mining Workers Cooperative"
-                                v-model="user.organization">
-                    </base-input>
+                                data-field="Organization"
+                                v-model="user.organization"
+                                @input="(value) => user.organization = value"
+                    />
                 </div>
                 <div class="col-md-6">
-                    <base-input type="email"
+                    <base-input type="text"
                                 label="Email"
+                                name="email"
                                 placeholder="someaddress@iwa-ait.org"
                                 v-model="user.email"
-                                :readonly="!isAddingNew">
-                    </base-input>
+                                @input="(value) => user.email = value"
+                                data-field="Email"
+                                :readonly="!isAddingNew"
+                    />
                 </div>
             </div>
 
@@ -89,8 +95,10 @@
                         <label>About Me</label>
                         <textarea rows="5" class="form-control border-input"
                                   placeholder="Describe user there"
-                                  v-model="user.about">
-                        </textarea>
+                                  v-model="user.about"
+                                  data-field="About"
+                                  name="about_user"
+                        />
                     </div>
                 </div>
             </div>
@@ -100,24 +108,31 @@
                     <base-input type="password"
                                 label="Current password"
                                 placeholder=""
+                                name="current_password"
+                                data-field="Current password"
                                 v-model="inputs.currentPassword"
-                    >
-                    </base-input>
+                                @input="(value) => user.currentPassword = value"
+                    />
                 </div>
                 <div class="col-md-4">
                     <base-input type="password"
                                 label="New password"
                                 placeholder=""
+                                name="new_password"
+                                data-field="New password"
                                 v-model="inputs.password"
-                    >
-                    </base-input>
+                                @input="(value) => user.password = value"
+                    />
                 </div>
                 <div class="col-md-4">
                     <base-input type="password"
                                 label="Repeat password"
                                 placeholder=""
-                                v-model="inputs.repeatPassword">
-                    </base-input>
+                                name="repeat_password"
+                                data-field="Repeat password"
+                                v-model="inputs.repeatPassword"
+                                @input="(value) => user.repeatPassword = value"
+                    />
                 </div>
             </div>
 

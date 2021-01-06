@@ -101,4 +101,37 @@ class TechnicalContext extends MinkContext
         sleep(5);
         throw new ElementNotFoundException($this->getSession()->getDriver(), null, 'css', $selector);
     }
+
+    /**
+     * Improved version of fillField() that supports buttons marked with "data-field" attribute
+     *
+     * @param string $field
+     * @param string $value
+     *
+     * @throws ElementNotFoundException
+     */
+    public function fillField($field, $value)
+    {
+        try {
+            parent::fillField($field, $value);
+
+        } catch (ElementNotFoundException $exception) {
+            $element = $this->findByCSS('input[data-field="' . $field . '"], input[placeholder="' . $field . '"]');
+
+            if ($element) {
+                $element->setValue($value);
+                return;
+            }
+
+            throw $exception;
+        }
+    }
+
+    /**
+     * @Then I debug
+     */
+    public function iWaitForUserInput(): void
+    {
+        readline('Press [enter] to continue');
+    }
 }

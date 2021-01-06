@@ -25,7 +25,7 @@
 
         <div v-for="role in available.permissions" v-if="available" :style="isVisible ? '' : 'display: none;'">
             <input type="checkbox" class="border-input checkbox" :checked="isChecked(role.id)" @change="onCheckboxChange(role.id)" :disabled="isDisabled(role.id)">
-            <label class="checkbox-label role-description" v-html="role.description && !showAdvanced ? role.description : role.id"></label>
+            <label class="checkbox-label role-description clickable-label" v-html="role.description && !showAdvanced ? role.description : role.id" @click="onCheckboxChange(role.id)"></label>
         </div>
     </div>
 </template>
