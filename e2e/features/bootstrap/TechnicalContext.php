@@ -3,7 +3,9 @@
 use Behat\Behat\Hook\Scope\AfterScenarioScope;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use Behat\Mink\Element\NodeElement;
+use Behat\Mink\Exception\DriverException;
 use Behat\Mink\Exception\ElementNotFoundException;
+use Behat\Mink\Exception\UnsupportedDriverActionException;
 use Behat\MinkExtension\Context\MinkContext;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
@@ -245,5 +247,20 @@ class TechnicalContext extends MinkContext
         }
 
         throw new LogicException('Message "' . $message . '" should not be present, but actually it is');
+    }
+
+    /**
+     * @When I prepare to confirm the prompt with :value
+     *
+     * @param string $value
+     *
+     * @throws DriverException
+     * @throws UnsupportedDriverActionException
+     */
+    public function iConfirmPrompt(string $value): void
+    {
+        $this->getSession()->getDriver()->executeScript(
+            'window.prompt = function () { return "' . $value . '"; };'
+        );
     }
 }

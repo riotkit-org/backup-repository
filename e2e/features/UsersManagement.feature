@@ -7,15 +7,21 @@ Feature: Create users, edit basic fields in existing user profiles, searching th
     # Success case
     # ============
 
-    Scenario: Create with success an example user using web panel
-        When I visit users search page
-        And I press "Add user" button
+    Scenario: As an administrator I create with success an example user, then I delete that created profile
+        Given I visit users search page
+        When I press "Add user" button
         And I fill in "Email" with "info@abcf.net"
         And I fill in "Organization" with "Anarchist Black Cross"
         And I fill in "New password" with "anarchist-test123456789_"
         And I fill in "Repeat password" with "anarchist-test123456789_"
         And I press "Add new user" button
         Then I should see message "User account saved"
+
+        When I visit users search page
+        And I follow "info@abcf.net"
+        And I prepare to confirm the prompt with "info@abcf.net"
+        And I press "Delete User" button
+        Then I should see message "User account deleted"
 
     # ==================================
     # Basic validation in USERS CREATION
