@@ -98,7 +98,7 @@ class TechnicalContext extends MinkContext
 
     protected function iWait(): void
     {
-        usleep((int) (0.4 * 1000000));
+        usleep((int) (0.2 * 1000000));
 
         $this->getSession()->getPage()->waitFor(
             30,
@@ -129,6 +129,37 @@ class TechnicalContext extends MinkContext
     {
         $this->pressButton($buttonTitle);
         $this->iWait();
+    }
+
+    public function clickLink($link)
+    {
+        try {
+            parent::clickLink($link);
+            $this->iWait();
+
+        } catch (ElementNotFoundException $exception) {
+            $input = $this->findByCSS('[alt="' . $link . '"], [data-field="' . $link . '"]');
+
+            if ($input) {
+                $input->click();
+                $this->iWait();
+
+                return;
+            }
+
+            throw $exception;
+        }
+    }
+
+    public function checkOption($option)
+    {
+        try {
+            parent::checkOption($option);
+            $this->iWait();
+
+        } catch (ElementNotFoundException $exception) {
+            $this->clickLink($option);
+        }
     }
 
     protected function findByCSS(string $selector, int $timeout = 10): NodeElement

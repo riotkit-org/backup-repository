@@ -113,4 +113,26 @@ class FeatureContext extends TechnicalContext
     {
         $this->iClickMenuLink('/admin/users');
     }
+
+    /**
+     * @Then I should see user :email on the list
+     *
+     * @param string $email
+     *
+     * @throws ElementNotFoundException
+     */
+    public function iShouldSeeUserOnTheList(string $email): void
+    {
+        $this->findByCSS('table:contains("' . $email . '")');
+    }
+
+    /**
+     * @When I logout
+     *
+     * @throws ElementNotFoundException
+     */
+    public function iLogout(): void
+    {
+        $this->iClickMenuLink('/admin/logout');
+    }
 }
