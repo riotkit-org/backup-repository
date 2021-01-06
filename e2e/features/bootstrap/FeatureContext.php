@@ -13,24 +13,6 @@ require_once __DIR__ . '/TechnicalContext.php';
  */
 class FeatureContext extends TechnicalContext
 {
-    /**
-     * After each scenario clear the browser session - logout user
-     *
-     * @param AfterScenarioScope $event
-     *
-     * @AfterScenario
-     */
-    public function resetCurrentPage(AfterScenarioScope $event)
-    {
-        try {
-            $script = 'sessionStorage.clear(); localStorage.clear();';
-            $this->getSession()->executeScript($script);
-        } catch (\Exception $e) {
-            //
-        }
-    }
-
-
     //
     // Authentication
     //

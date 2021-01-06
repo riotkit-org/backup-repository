@@ -1,14 +1,62 @@
 <?php declare(strict_types=1);
 
+use Behat\Behat\Hook\Scope\AfterScenarioScope;
+use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use Behat\Mink\Element\NodeElement;
 use Behat\Mink\Exception\ElementNotFoundException;
 use Behat\MinkExtension\Context\MinkContext;
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\GuzzleException;
 use PHPUnit\Framework\Assert as Assertions;
+
+define('BACKEND_URL', 'http://localhost:8000');
 
 class TechnicalContext extends MinkContext
 {
     private string $lastShellCommandResponse = '';
     private int $lastShellCommandExitCode = 1;
+
+    /**
+     * After each scenario clear the browser session - logout user
+     *
+     * @param AfterScenarioScope $event
+     *
+     * @AfterScenario
+     */
+    public function resetCurrentPage(AfterScenarioScope $event)
+    {
+        try {
+            $script = 'sessionStorage.clear(); localStorage.clear();';
+            $this->getSession()->executeScript($script);
+        } catch (\Exception $e) {
+        }
+    }
+
+    /**
+     * @AfterScenario
+     *
+     * @param AfterScenarioScope $event
+     *
+     * @throws GuzzleException
+     */
+    public function restoreDBFromBackup(AfterScenarioScope $event): void
+    {
+        $http = new Client();
+        $http->get(BACKEND_URL . '/db/restore');
+    }
+
+    /**
+     * @BeforeScenario
+     *
+     * @param BeforeScenarioScope $event
+     *
+     * @throws GuzzleException
+     */
+    public function makeDBBackup(BeforeScenarioScope $event): void
+    {
+        $http = new Client();
+        $http->get(BACKEND_URL . '/db/backup');
+    }
 
     //
     // Server's shell interface
