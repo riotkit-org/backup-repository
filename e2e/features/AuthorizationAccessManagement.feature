@@ -9,7 +9,9 @@ Feature: I can manage my own access list
         Then I should see message "No active token found"
 
 
-    Scenario: I can generate a new API token for longer period than 1 hour
+    Scenario: As a user with all permissions I can generate a new API token for longer period than 1 hour,
+              then I can revoke that token
+
         Given I visit authorization page
         And I follow "Grant a new access"
         And I select "+7 days" from "ttl"
