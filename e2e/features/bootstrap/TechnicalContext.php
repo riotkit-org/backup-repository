@@ -134,4 +134,16 @@ class TechnicalContext extends MinkContext
     {
         readline('Press [enter] to continue');
     }
+
+    /**
+     * @Then I should see message :message
+     *
+     * @param string $message
+     *
+     * @throws ElementNotFoundException
+     */
+    public function iShouldSeeNotificationWithMessage(string $message): void
+    {
+        $this->findByCSS('span[data-notify="message"]:contains("' . $message . '")');
+    }
 }
