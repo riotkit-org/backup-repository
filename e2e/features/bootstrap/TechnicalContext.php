@@ -265,4 +265,15 @@ class TechnicalContext extends MinkContext
             'window.prompt = function () { return "' . $value . '"; };'
         );
     }
+
+    /**
+     * @When I close the popped modal
+     *
+     * @throws ElementNotFoundException
+     */
+    public function iExitModal(): void
+    {
+        $this->findByCSS('div[class="vm--overlay"]')->click();
+        $this->iWait();
+    }
 }

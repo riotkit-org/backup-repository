@@ -1,6 +1,5 @@
 <?php declare(strict_types=1);
 
-use Behat\Behat\Hook\Scope\AfterScenarioScope;
 use Behat\Mink\Exception\ElementNotFoundException;
 use PHPUnit\Framework\Assert as Assertions;
 
@@ -115,6 +114,16 @@ class FeatureContext extends TechnicalContext
     }
 
     /**
+     * @When I visit authorization page
+     *
+     * @throws ElementNotFoundException
+     */
+    public function iVisitAuthorizationPage(): void
+    {
+        $this->iClickMenuLink('/admin/security/access-tokens');
+    }
+
+    /**
      * @Then I should see user :email on the list
      *
      * @param string $email
@@ -124,6 +133,36 @@ class FeatureContext extends TechnicalContext
     public function iShouldSeeUserOnTheList(string $email): void
     {
         $this->findByCSS('table:contains("' . $email . '")');
+    }
+
+    /**
+     * @When I revoke the token :description
+     *
+     * @param string $description
+     * @throws ElementNotFoundException
+     */
+    public function iRevokeAccessToken(string $description): void
+    {
+        $this->findByCSS('input[data-value="' . $description . '"]')
+            ->getParent() /* td */
+            ->getParent() /* tr */
+            ->find('css', 'button[data-field="Revoke"]')->click();
+
+        $this->iWait();
+    }
+
+    /**
+     * @Then I expect the Revoke button will be disabled for :description
+     *
+     * @param string $description
+     * @throws ElementNotFoundException
+     */
+    public function iExpectRevokeButtonShouldBeDisabled(string $description): void
+    {
+        $this->findByCSS('input[data-value="' . $description . '"]')
+            ->getParent() /* td */
+            ->getParent() /* tr */
+            ->find('css', 'button[data-field="Revoke"]')->getAttribute('disabled') === 'disabled';
     }
 
     /**

@@ -36,7 +36,7 @@
                                 </div>
 
                                 <div class="col-2">
-                                    <button type="button" class="btn btn-default btn-small" @click="showTokenCreationModal">
+                                    <button type="button" data-field="Grant a new access" class="btn btn-default btn-small" @click="showTokenCreationModal">
                                         <span class="bi bi-key" aria-hidden="true"></span> Grant a new access
                                     </button>
                                 </div>
@@ -62,7 +62,7 @@
                                             <input type="text" readonly :value="item.tokenHash" class="form-control" style="max-width: 300px;"/>
                                         </td>
                                         <td>
-                                            <input type="tex" readonly :value="item.description" class="form-control" style="max-width: 300px;"/>
+                                            <input type="text" readonly :data-value="item.description" :value="item.description" class="form-control" style="max-width: 300px;"/>
                                         </td>
                                         <td>
                                             <button type="button" class="btn btn-default btn-small" @click="() => showPermissions(item.tokenHash)">
@@ -73,7 +73,7 @@
                                             <input type="text" readonly :value="item.user" class="form-control" style="max-width: 300px;">
                                         </td>
                                         <td>
-                                            <button type="button" class="btn btn-default btn-small" :disabled="!item.isValid()" @click="() => revokeAccess(item.tokenHash)">
+                                            <button type="button" data-field="Revoke" class="btn btn-default btn-small" :disabled="!item.isValid()" @click="() => revokeAccess(item.tokenHash)">
                                                 <span class="bi bi-key" aria-hidden="true"></span> Revoke
                                             </button>
                                         </td>

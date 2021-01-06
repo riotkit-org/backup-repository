@@ -21,7 +21,7 @@
             @selected="(elements) => this.selected = elements">
             <template slot="toolbar-toggle">&nbsp;</template>
             <template slot="toolbar-existing">
-                <i class="bi bi-plus-circle-fill clickable-label toolbar" v-tooltip.top-center="'Create access token'" @click="submitNew"></i>
+                <i class="bi bi-plus-circle-fill clickable-label toolbar" data-field="Create access token" v-tooltip.top-center="'Create access token'" @click="submitNew"></i>
             </template>
 
             <template slot="selector">
@@ -33,6 +33,7 @@
                     <textarea class="form-control"
                               v-model="selectedDescription"
                               rows="5"
+                              name="description"
                               placeholder="Describe the purpose of this token. How and when it will be used? Description can help you having a clear look on all usages of your account."
                     />
                 </div>
