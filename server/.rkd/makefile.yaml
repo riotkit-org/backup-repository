@@ -29,6 +29,10 @@ tasks:
             ./bin/console doctrine:migrations:migrate -n
             symfony serve -d
 
+    :create:admin-account:
+        description: "Create a test admin user account, e-mail: example@riseup.net, password: example_1234"
+        steps: ./bin/console auth:create-admin-account --email=example@riseup.net --password=example_1234
+
     :create:keys:
         description: Create JWT encryption keys
         steps:

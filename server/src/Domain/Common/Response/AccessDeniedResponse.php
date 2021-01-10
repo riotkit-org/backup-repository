@@ -39,6 +39,11 @@ abstract class AccessDeniedResponse implements Response
         return false;
     }
 
+    public function isOk(): bool
+    {
+        return false;
+    }
+
     public function getHttpCode(): int
     {
         return Http::HTTP_ACCESS_DENIED;

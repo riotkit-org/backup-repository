@@ -19,7 +19,7 @@ class StoredFile extends StoredFileFromCommon implements \JsonSerializable
     /**
      * @var Tag[]
      */
-    private array $tags;
+    private $tags;
 
     private int $filesize;
 

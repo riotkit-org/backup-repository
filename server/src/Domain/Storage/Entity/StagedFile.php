@@ -13,7 +13,7 @@ class StagedFile
 {
     private Path $path;
     private string $id;
-    private ?Stream $stream;
+    private ?Stream $stream = null;
 
     public function __construct(Path $path)
     {
@@ -37,7 +37,7 @@ class StagedFile
 
     public function getFilesize(): int
     {
-        return filesize($this->getFilePath());
+        return filesize($this->getFilePath()->getValue());
     }
 
     public function getId(): string
