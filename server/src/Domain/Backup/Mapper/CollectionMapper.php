@@ -5,7 +5,7 @@ namespace App\Domain\Backup\Mapper;
 use App\Domain\Backup\Entity\BackupCollection;
 use App\Domain\Backup\Exception\ValueObjectException;
 use App\Domain\Backup\Form\Collection\CreationForm;
-use App\Domain\Backup\Repository\TokenRepository;
+use App\Domain\Backup\Repository\UserRepository;
 use App\Domain\Backup\ValueObject\BackupStrategy;
 use App\Domain\Backup\ValueObject\Collection\BackupSize;
 use App\Domain\Backup\ValueObject\Collection\CollectionLength;
@@ -21,9 +21,9 @@ use App\Domain\Errors;
 
 class CollectionMapper
 {
-    private TokenRepository $tokenRepository;
+    private UserRepository $tokenRepository;
 
-    public function __construct(TokenRepository $tokenRepository)
+    public function __construct(UserRepository $tokenRepository)
     {
         $this->tokenRepository = $tokenRepository;
     }

@@ -4,12 +4,12 @@ namespace App\Domain\Backup\Repository;
 
 use App\Domain\Backup\Entity\Authentication\User;
 
-interface TokenRepository
+interface UserRepository
 {
     /**
      * @param string $id
      *
      * @return User|null
      */
-    public function findTokenById(string $id): ?User;
+    public function findUserById(string $id): ?User;
 }

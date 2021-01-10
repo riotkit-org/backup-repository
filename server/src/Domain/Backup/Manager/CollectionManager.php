@@ -8,6 +8,7 @@ use App\Domain\Backup\Entity\UserAccess;
 use App\Domain\Backup\Exception\BackupLogicException;
 use App\Domain\Backup\Repository\CollectionRepository;
 use App\Domain\Backup\Repository\UserAccessRepository;
+use App\Domain\Backup\Repository\UserRepository;
 use App\Domain\Backup\Validation\CollectionValidator;
 use App\Domain\Backup\ValueObject\CollectionSpecificRoles;
 
@@ -18,18 +19,21 @@ use App\Domain\Backup\ValueObject\CollectionSpecificRoles;
  */
 class CollectionManager
 {
-    private CollectionValidator $validator;
+    private CollectionValidator  $validator;
     private CollectionRepository $repository;
     private UserAccessRepository $userAccessRepository;
+    private UserRepository       $userRepository;
 
     public function __construct(
         CollectionValidator $validator,
         CollectionRepository $repository,
-        UserAccessRepository $userAccess
+        UserAccessRepository $userAccess,
+        UserRepository $userRepository
     ) {
         $this->validator  = $validator;
         $this->repository = $repository;
         $this->userAccessRepository = $userAccess;
+        $this->userRepository       = $userRepository;
     }
 
     /**
@@ -101,7 +105,10 @@ class CollectionManager
         $userAccess = $this->userAccessRepository->findForCollectionAndUser($collection, $user);
 
         if (!$userAccess) {
-            $userAccess = UserAccess::createFrom($collection, $user);
+            $userAccess = UserAccess::createFrom(
+                $collection,
+                $this->userRepository->findUserById($user->getId())
+            );
         }
 
         // replace roles in existing UserAccess or set roles in new UserAccess
