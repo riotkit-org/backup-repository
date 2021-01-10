@@ -119,9 +119,9 @@ final class Roles
     public const PERMISSION_COLLECTION_ADD_WITH_INFINITE_LIMITS = 'collections.allow_infinite_limits';
 
     /** [Global scope] Modify any collection, regardless of if user is in collection permissions list */
-    public const PERMISSION_COLLECTION_MODIFY_ANY_COLLECTION = 'collections.modify_any_collection_regardless_if_token_was_allowed_by_collection';
+    public const PERMISSION_COLLECTION_MODIFY_ANY_COLLECTION = 'collections.modify_any_collection_regardless_if_user_was_allowed_in_collection';
 
-    /** [Global scope] Allow to browse any collection regardless of if the user token was allowed by it or not */
+    /** [Global scope] Allow to browse any collection regardless of if the user was allowed by it or not */
     public const PERMISSION_COLLECTION_VIEW_ANY_COLLECTION = 'collections.view_all_collections';
 
     /** [Global scope] Can use an endpoint that will allow to browse and search collections? */
@@ -137,7 +137,7 @@ final class Roles
     public const PERMISSION_CAN_DELETE_ALLOWED_COLLECTIONS = 'collections.delete_allowed_collections';
 
     /** [Collection scope] List users */
-    public const PERMISSION_CAN_LIST_TOKENS_IN_COLLECTION = 'collections.can_list_tokens_in_allowed_collections';
+    public const PERMISSION_CAN_LIST_TOKENS_IN_COLLECTION = 'collections.can_list_users_in_allowed_collections';
 
     /** [Collection scope] Upload a new version */
     public const PERMISSION_CAN_UPLOAD_TO_ALLOWED_COLLECTIONS = 'collections.upload_to_allowed_collections';
