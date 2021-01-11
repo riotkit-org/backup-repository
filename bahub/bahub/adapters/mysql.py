@@ -42,6 +42,11 @@ class Definition(BackupDefinition):
             }
         }
 
+    def get_sensitive_information(self) -> list:
+        return [
+            self._spec['password']
+        ]
+
 
 class Adapter(AdapterInterface):
     """Contains a logic specific to MySQL - how to backup, and how to restore"""

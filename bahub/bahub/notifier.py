@@ -49,7 +49,6 @@ class NotifierInterface(object):
     def exception_occurred(self, exception: BaseException):
         pass
 
-    # @todo: USE THIS TO SET SENSITIVE DATA AFTER PARSING BACKUP DEFINITIONS
     def set_sensitive_data_to_strip_out(self, sensitive_data: list):
         self.sensitive_data = sensitive_data
 
@@ -119,6 +118,9 @@ class SlackNotifier(NotifierInterface):
 
     def _send(self, msg: str, retry_num: int = 0):
         msg = self.filter_out_sensitive_data(msg)
+
+        self.io.debug('Notifying: %s' % msg)
+        self.io.debug('Notifier retry num=%i' % retry_num)
 
         try:
             response = requests.post(

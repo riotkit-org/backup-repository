@@ -37,18 +37,6 @@ class ConfigurationFactory(object):
         self._parse_monitoring_error_handlers(config.get('error_handlers', {}))
         self._parse_notifiers(config.get('notifiers', {}))
 
-    # def _read(self, path: str):
-    #     f = open(path, 'rb')
-    #
-    #     try:
-    #         config = yaml.load(self._process_env_variables(f.read().decode('utf-8')), Loader=Loader)
-    #     except Exception as e:
-    #         f.close()
-    #         raise e
-    #
-    #     f.close()
-    #     return config
-
     def _process_env_variables(self, content: str) -> str:
         env_list = list(dict(os.environ).items())
         env_list.sort(key=lambda item: (-len(item[0]), item[0]))
@@ -125,7 +113,12 @@ class ConfigurationFactory(object):
                 self._error_handlers[key] = ErrorHandlerFactory.create(values['type'], values)
 
     def _parse_notifiers(self, config: dict):
-        """ Notifiers """
+        """Notifiers"""
+
+        sensitive_data = []
+
+        for definition in self._backups.values():
+            sensitive_data += definition.get_sensitive_information()
 
         for key, values in config.items():
             with DefinitionFactoryErrorCatcher('notifiers.' + key, self._debug):
@@ -133,7 +126,11 @@ class ConfigurationFactory(object):
                 if 'type' not in values:
                     raise ConfigurationFactoryException('Notifier type needs to be specified')
 
-                self._notifiers[key] = NotifierFactory.create(values['type'], values, self._io)
+                notifier = NotifierFactory.create(values['type'], values, self._io)
+                self._notifiers[key] = notifier
+
+                # make the notification to be stripped out of sensitive data such as passwords
+                notifier.set_sensitive_data_to_strip_out(sensitive_data)
 
     def get_error_handlers(self):
         return self._error_handlers
