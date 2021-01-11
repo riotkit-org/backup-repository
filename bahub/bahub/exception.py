@@ -32,6 +32,9 @@ class InvalidResponseException(HttpException):
     def get_json(self) -> dict:
         return self._json
 
+    def get_error(self):
+        return self._json['error'] if 'error' in self._json else str(self._json)
+
 
 class ParsingException(ApplicationException):
     """Errors related to parsing YAML/Python syntax"""

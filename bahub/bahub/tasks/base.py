@@ -7,11 +7,13 @@ from rkd.yaml_parser import YamlFileLoader
 from rkd.exception import YAMLFileValidationError
 from ..api import BackupRepository
 from ..configurationfactory import ConfigurationFactory
+from ..notifier import MultiplexedNotifiers, NotifierInterface
 
 
 class BaseTask(TaskInterface, ABC):
     config: ConfigurationFactory
     api: BackupRepository
+    notifier: Union[MultiplexedNotifiers, NotifierInterface]
 
     def get_declared_envs(self) -> Dict[str, Union[str, ArgumentEnv]]:
         return {
@@ -24,13 +26,15 @@ class BaseTask(TaskInterface, ABC):
             self.config = ConfigurationFactory(
                 configuration_path=context.get_arg_or_env('--config'),
                 debug=bool(context.get_arg_or_env('--debug')),
-                parser=YamlFileLoader([])
+                parser=YamlFileLoader([]),
+                io=self._io
             )
         except YAMLFileValidationError as e:
             self.io().error('Configuration file looks invalid, details: ' + str(e))
             return False
 
         self.api = BackupRepository(self._io)
+        self.notifier = MultiplexedNotifiers(self.config.get_notifiers())
 
         # execute() needs to be inherited, not directly executed
         return False

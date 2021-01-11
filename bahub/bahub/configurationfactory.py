@@ -1,8 +1,8 @@
 
-import yaml
-from yaml import SafeLoader as Loader
 import os
 import re
+from rkd.api.inputoutput import IO
+from rkd.yaml_parser import YamlFileLoader
 from .importing import Importing
 from .model import Encryption
 from .model import ServerAccess
@@ -10,7 +10,6 @@ from .model import BackupDefinition
 from .errorhandler import ErrorHandlerFactory, ErrorHandlerInterface
 from .notifier import NotifierInterface, NotifierFactory
 from .exception import ConfigurationFactoryException, ConfigurationError
-from rkd.yaml_parser import YamlFileLoader
 
 
 class ConfigurationFactory(object):
@@ -23,8 +22,10 @@ class ConfigurationFactory(object):
     _notifiers = {}       # type: dict[NotifierInterface]
     _debug = False        # type: bool
     _config_dir: str
+    _io: IO
 
-    def __init__(self, configuration_path: str, debug: bool, parser: YamlFileLoader):
+    def __init__(self, configuration_path: str, debug: bool, parser: YamlFileLoader, io: IO):
+        self._io = io
         self._debug = debug
         self._config_dir = os.path.abspath(os.path.dirname(configuration_path))
         self._parse(parser.load_from_file(configuration_path, 'org.riotkit.bahub'))
@@ -132,7 +133,7 @@ class ConfigurationFactory(object):
                 if 'type' not in values:
                     raise ConfigurationFactoryException('Notifier type needs to be specified')
 
-                self._notifiers[key] = NotifierFactory.create(values['type'], values)
+                self._notifiers[key] = NotifierFactory.create(values['type'], values, self._io)
 
     def get_error_handlers(self):
         return self._error_handlers

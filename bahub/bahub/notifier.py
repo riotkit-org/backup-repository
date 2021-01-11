@@ -9,6 +9,7 @@ Integrates external monitoring services for sending infos and alerts
 import requests
 import json
 from time import sleep
+from rkd.api.inputoutput import IO
 from .model import BackupDefinition
 
 
@@ -17,9 +18,12 @@ class NotifierInterface(object):
 
     config = {}
     sensitive_data: list
+    io: IO
 
-    def __init__(self, config: dict):
+    def __init__(self, config: dict, io: IO):
         self._set_config(config)
+        self.sensitive_data = []
+        self.io = io
 
     def _set_config(self, config: dict):
         pass
@@ -45,6 +49,7 @@ class NotifierInterface(object):
     def exception_occurred(self, exception: BaseException):
         pass
 
+    # @todo: USE THIS TO SET SENSITIVE DATA AFTER PARSING BACKUP DEFINITIONS
     def set_sensitive_data_to_strip_out(self, sensitive_data: list):
         self.sensitive_data = sensitive_data
 
@@ -85,8 +90,8 @@ class SlackNotifier(NotifierInterface):
     _url = ''
     _max_retry_num = 3
 
-    def __init__(self, config: dict):
-        super().__init__(config)
+    def __init__(self, config: dict, io: IO):
+        super().__init__(config, io)
         self._url = config['url']
         self._max_retry_num = int(config.get('max_retry_num', 3))
         self._timeout = int(config.get('connection_timeout', 300))
@@ -132,7 +137,7 @@ class SlackNotifier(NotifierInterface):
                 sleep(1)
                 return
 
-            print('During sending a notification an unrecoverable error occurred:', e)
+            self.io.warn('During sending a notification an unrecoverable error occurred: ' + str(e))
 
 
 class NotifierFactory(object):
@@ -148,8 +153,8 @@ class NotifierFactory(object):
     }
 
     @staticmethod
-    def create(notifier_type: str, config: dict):
+    def create(notifier_type: str, config: dict, io: IO):
         if notifier_type not in NotifierFactory._SUPPORTED:
             raise Exception('Unsupported notifier type "' + notifier_type + '"')
 
-        return NotifierFactory._SUPPORTED[notifier_type](config)
+        return NotifierFactory._SUPPORTED[notifier_type](config, io)

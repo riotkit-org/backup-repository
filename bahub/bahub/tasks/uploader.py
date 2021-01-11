@@ -1,14 +1,12 @@
 from argparse import ArgumentParser
 from rkd.api.contract import ExecutionContext
 from .base import BaseTask
+from ..exception import InvalidResponseException
 from ..model import ReadableStream, IOStream
 
 
 class UploaderTask(BaseTask):
-    """Uploader
-       ========
-
-       Uploads a given file to a remote collection on the server
+    """Uploads a given file to a remote collection on the server
     """
 
     def get_name(self) -> str:
@@ -34,15 +32,27 @@ class UploaderTask(BaseTask):
             self.io().error('Definition "{name}" is not valid'.format(name=definition_name))
             return False
 
-        self.api.send_backup(
-            collection_id=definition.get_collection_id(),
-            access=definition.get_access(),
-            attributes=definition.get_encryption().describe_as_attributes(),
-            source=source
-        )
+        try:
+            response = self.api.send_backup(
+                collection_id=definition.get_collection_id(),
+                access=definition.get_access(),
+                attributes=definition.get_encryption().describe_as_attributes(),
+                source=source
+            )
+
+            self.notifier.backup_was_uploaded(definition)
+
+        except InvalidResponseException as response_exc:
+            self.io().error(response_exc.get_error())
+            self.notifier.failed_to_upload_backup(definition, response_exc.get_error())
+
+            return False
 
         if source:
             source.close()
+
+        if response:
+            self.io().outln(response.to_status_message())
 
         return True
 
