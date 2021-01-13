@@ -54,3 +54,9 @@ class ParsingException(ApplicationException):
                 import_str, class_name
             )
         )
+
+
+class BufferingError(ApplicationException):
+    @staticmethod
+    def from_early_buffer_exit() -> 'BufferingError':
+        return BufferingError('Buffering ended earlier with error')

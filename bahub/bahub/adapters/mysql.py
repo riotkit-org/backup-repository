@@ -5,6 +5,7 @@ MySQL Adapter
 
 from bahub.adapters.base import AdapterInterface
 from bahub.model import BackupDefinition
+from bahub.transports.base import StreamableBuffer
 
 
 class Definition(BackupDefinition):
@@ -51,8 +52,11 @@ class Definition(BackupDefinition):
 class Adapter(AdapterInterface):
     """Contains a logic specific to MySQL - how to backup, and how to restore"""
 
-    def backup(self, definition: BackupDefinition) -> bool:
-        return True
+    def backup(self, definition: Definition) -> StreamableBuffer:
+        sh = definition.get_transport().buffered_execute
+
+        # @todo: Implement it correctly, replace debug with mysqldump
+        return sh('cat /home/krzysiek/Projekty/riotkit/file-repository/bahub/README.md; echo "this is stderr" >&2; exit 1')
 
     def restore(self, definition: BackupDefinition) -> bool:
         return True

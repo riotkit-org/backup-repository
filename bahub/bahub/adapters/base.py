@@ -1,5 +1,6 @@
 from abc import ABC as AbstractClass, abstractmethod
-from bahub.model import BackupDefinition
+from ..model import BackupDefinition
+from ..transports.base import StreamableBuffer
 
 
 class AdapterInterface(AbstractClass):
@@ -12,7 +13,7 @@ class AdapterInterface(AbstractClass):
         pass
 
     @abstractmethod
-    def backup(self, definition: BackupDefinition) -> bool:
+    def backup(self, definition: BackupDefinition) -> StreamableBuffer:
         pass
 
     @abstractmethod

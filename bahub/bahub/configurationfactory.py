@@ -1,8 +1,12 @@
 
 import os
 import re
+from typing import Tuple, Type
+
 from rkd.api.inputoutput import IO
 from rkd.yaml_parser import YamlFileLoader
+
+from .adapters.base import AdapterInterface
 from .importing import Importing
 from .model import Encryption
 from .model import ServerAccess
@@ -10,17 +14,20 @@ from .model import BackupDefinition
 from .errorhandler import ErrorHandlerFactory, ErrorHandlerInterface
 from .notifier import NotifierInterface, NotifierFactory
 from .exception import ConfigurationFactoryException, ConfigurationError
+from .transports.base import TransportInterface
 
 
 class ConfigurationFactory(object):
     """ Constructs objects basing on the configuration file """
 
-    _accesses = {}        # type: dict[ServerAccess]
-    _encryption = {}      # type: dict[Encryption]
-    _backups = {}         # type: dict[BackupDefinition]
-    _error_handlers = {}  # type: dict[ErrorHandlerInterface]
-    _notifiers = {}       # type: dict[NotifierInterface]
-    _debug = False        # type: bool
+    _accesses: dict        # type: dict[ServerAccess]
+    _encryption: dict      # type: dict[Encryption]
+    _backups: dict         # type: dict[BackupDefinition]
+    _error_handlers: dict  # type: dict[ErrorHandlerInterface]
+    _notifiers: dict       # type: dict[NotifierInterface]
+    _transports: dict      # type: dict[TransportInterface]
+    _adapters: dict        # type: dict[Type[AdapterInterface]]
+    _debug = False         # type: bool
     _config_dir: str
     _io: IO
 
@@ -31,8 +38,17 @@ class ConfigurationFactory(object):
         self._parse(parser.load_from_file(configuration_path, 'org.riotkit.bahub'))
 
     def _parse(self, config: dict):
+        self._accesses = {}
+        self._encryption = {}
+        self._backups = {}
+        self._error_handlers = {}
+        self._notifiers = {}
+        self._transports = {}
+        self._adapters = {}
+
         self._parse_accesses(config['accesses'])
         self._parse_encryption(config['encryption'])
+        self._parse_transports(config['transports'])
         self._parse_backups(config['backups'])
         self._parse_monitoring_error_handlers(config.get('error_handlers', {}))
         self._parse_notifiers(config.get('notifiers', {}))
@@ -57,23 +73,36 @@ class ConfigurationFactory(object):
         return content
 
     def _parse_accesses(self, config: dict):
-        """ Access tokens """
+        """Access tokens"""
 
         for key, values in config.items():
             with DefinitionFactoryErrorCatcher('accesses.' + key, self._debug):
                 self._accesses[key] = ServerAccess.from_config(values)
 
     def _parse_encryption(self, config: dict):
-        """ Security/Encryption """
+        """Security - Encryption"""
 
-        for key, values in config.items():
-            with DefinitionFactoryErrorCatcher('encryption.' + key, self._debug):
+        for enc_name, config in config.items():
+            with DefinitionFactoryErrorCatcher('encryption.' + enc_name, self._debug):
                 try:
-                    self._encryption[key] = Encryption.from_config(values)
+                    self._encryption[enc_name] = Encryption.from_config(config)
 
                 except KeyError as config_key_name:
                     raise ConfigurationError('Encryption "%s" is missing "%s" configuration option' %
-                                             (key, config_key_name))
+                                             (enc_name, config_key_name))
+
+    def _parse_transports(self, config: dict) -> None:
+        """Transports - eg. sh, docker"""
+
+        for transport_name, config in config.items():
+            with DefinitionFactoryErrorCatcher('transports.' + transport_name, self._debug):
+                try:
+                    transport = Importing.import_transport(config['type'])
+                    self._transports[transport_name] = transport(config['spec'])
+
+                except KeyError as config_key_name:
+                    raise ConfigurationError('Transport "%s" is missing "%s" configuration option' %
+                                             (transport_name, config_key_name))
 
     def _parse_backups(self, config: dict):
         """Backups"""
@@ -90,19 +119,28 @@ class ConfigurationFactory(object):
                 if "encryption" in config['meta']:
                     config['meta']['encryption'] = self._encryption[config['meta']['encryption']]
 
-                self._backups[backup_name] = self._create_definition(
+                config['meta']['transport'] = self._transports[config['meta']['transport']]
+
+                adapter, definition = self._create_definition(
                     config['meta']['type'],
                     config,
                     backup_name
                 )
 
-    def _create_definition(self, def_type: str, config: dict, name: str) -> BackupDefinition:
+                self._backups[backup_name] = definition
+                self._adapters[backup_name] = adapter
+
+    @staticmethod
+    def _create_definition(def_type: str, config: dict,
+                           name: str) -> Tuple[Type[AdapterInterface], BackupDefinition]:
+        """Imports and creates a BackupDefinition basing on selected adapter that implements AdapterInterface"""
+
         adapter, definition = Importing.import_adapter(def_type)
 
-        return adapter.create_definition(config, name)
+        return adapter, adapter.create_definition(config, name)
 
     def _parse_monitoring_error_handlers(self, config: dict):
-        """ Error handlers integration """
+        """Error handlers integration"""
 
         for key, values in config.items():
             with DefinitionFactoryErrorCatcher('error_handlers.' + key, self._debug):
@@ -146,6 +184,16 @@ class ConfigurationFactory(object):
 
         return self._backups[name]
 
+    def get_adapter(self, definition_name: str) -> Type[AdapterInterface]:
+        """Finds and returns an AdapterInterface type (not a class object)"""
+
+        if definition_name not in self._adapters:
+            raise ConfigurationFactoryException(
+                'No such backup definition, maybe a typo? Please check the configuration file'
+            )
+
+        return self._adapters[definition_name]
+
     def get_all_sensitive_data(self) -> list:
         sensitive_data = []
 
@@ -160,9 +208,6 @@ class ConfigurationFactory(object):
             sensitive_data += self._backups[backup].get_sensitive_information()
 
         return sensitive_data
-
-    def find_definition(self, name: str) -> BackupDefinition:
-        return self._backups[name] if name in self._backups else None
 
 
 class DefinitionFactoryErrorCatcher:
@@ -180,6 +225,8 @@ class DefinitionFactoryErrorCatcher:
         if exc_type:
             if self._debug:
                 return
+
+            # @todo: Support ConfigurationError
 
             raise ConfigurationFactoryException(
                 ' ERROR: There was a problem during parsing the configuration at section "' +

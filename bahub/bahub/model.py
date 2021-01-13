@@ -5,6 +5,7 @@ from json import dumps as json_dumps
 from abc import ABC, abstractmethod
 from jsonschema import validate, draft7_format_checker
 from bahub.exception import ConfigurationFactoryException
+from bahub.transports.base import TransportInterface
 
 
 class VersionAttributes(object):
@@ -113,15 +114,17 @@ class BackupDefinition(ABC):
     _collection_id: str
     _name: str
     _spec: dict
+    _transport: TransportInterface
 
     def __init__(self, access: ServerAccess, _type: str, collection_id: str, encryption: Encryption,
-                 name: str, spec: dict):
+                 name: str, spec: dict, transport: TransportInterface):
         self._access = access
         self._type = _type
         self._encryption = encryption
         self._collection_id = collection_id
         self._name = name
         self._spec = spec
+        self._transport = transport
 
     @staticmethod
     def from_config(cls, config: dict, name: str):
@@ -133,7 +136,8 @@ class BackupDefinition(ABC):
             collection_id=config['meta']['collection_id'],
             encryption=config['meta']['encryption'],
             name=name,
-            spec=config['spec']
+            spec=config['spec'],
+            transport=config['meta']['transport']
         )
 
     @staticmethod
@@ -179,6 +183,9 @@ class BackupDefinition(ABC):
 
     def get_collection_id(self) -> str:
         return self._collection_id
+
+    def get_transport(self) -> TransportInterface:
+        return self._transport
 
     def get_sensitive_information(self) -> list:
         return []

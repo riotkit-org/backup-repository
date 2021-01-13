@@ -10,10 +10,12 @@ Provides shell commands such as:
 
 """
 from rkd.api.syntax import TaskDeclaration
+from .prepare import BackupPreparationTask
 from .uploader import UploaderTask
 
 
 def imports():
     return [
-        TaskDeclaration(UploaderTask())
+        TaskDeclaration(UploaderTask()),
+        TaskDeclaration(BackupPreparationTask())
     ]

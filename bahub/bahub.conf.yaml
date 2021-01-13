@@ -36,4 +36,4 @@ backups:
 notifiers:
     mattermost:
         type: slack
-        url: "${BACKUPS_SLACK_URL}"
+        url: "http://localhost"

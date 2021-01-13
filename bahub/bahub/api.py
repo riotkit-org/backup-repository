@@ -10,6 +10,7 @@ import pycurl
 from rkd.api.inputoutput import IO
 
 from bahub.exception import InvalidResponseException, HttpException
+from bahub.inputoutput import StreamableBuffer
 from bahub.model import ServerAccess, VersionAttributes, ReadableStream
 from bahub.response import VersionUploadedResponse
 
@@ -21,7 +22,7 @@ class BackupRepository(object):
         self.io = io
 
     def send_backup(self, collection_id: str, access: ServerAccess, attributes: VersionAttributes,
-                    source: ReadableStream) -> VersionUploadedResponse:
+                    source: StreamableBuffer) -> VersionUploadedResponse:
 
         response_body_stream = BytesIO()
         url = access.build_url(

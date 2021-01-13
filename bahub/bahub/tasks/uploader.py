@@ -2,7 +2,7 @@ from argparse import ArgumentParser
 from rkd.api.contract import ExecutionContext
 from .base import BaseTask
 from ..exception import InvalidResponseException
-from ..model import ReadableStream, IOStream
+from ..inputoutput import StreamableBuffer
 
 
 class UploaderTask(BaseTask):
@@ -25,7 +25,7 @@ class UploaderTask(BaseTask):
         super().execute(context)
 
         definition_name = context.get_arg('definition')
-        definition = self.config.find_definition(definition_name)
+        definition = self.config.get_definition(definition_name)
         source = self.read_source(context.get_arg('--path'))
 
         if not definition:
@@ -37,7 +37,7 @@ class UploaderTask(BaseTask):
                 collection_id=definition.get_collection_id(),
                 access=definition.get_access(),
                 attributes=definition.get_encryption().describe_as_attributes(),
-                source=source
+                source=source.get_read_buffer()
             )
 
             self.notifier.backup_was_uploaded(definition)
@@ -56,9 +56,8 @@ class UploaderTask(BaseTask):
 
         return True
 
-    def read_source(self, path: str) -> ReadableStream:
+    def read_source(self, path: str) -> StreamableBuffer:
         if not path:
-            # todo: Rewrite to RKD's IO
-            return IOStream(open('/dev/stdin', 'rb'))
+            return StreamableBuffer.from_file('/dev/stdin')
 
-        return IOStream(open(path, 'rb'))
+        return StreamableBuffer.from_file(path)

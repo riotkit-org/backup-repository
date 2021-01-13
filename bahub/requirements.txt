@@ -3,3 +3,4 @@ requests>=2.25
 pycurl>=7.43
 certifi>=2020.12.5
 PyYAML>=5.3.1
+jsonschema>=3.2.0
