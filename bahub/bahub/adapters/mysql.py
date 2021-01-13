@@ -23,7 +23,7 @@ class Definition(BackupDefinition):
         return {
             "$schema": "http://json-schema.org/draft-07/schema#",
             "type": "object",
-            "required": ["host", "user", "password"],
+            "required": ["host", "user"],
             "properties": {
                 "host": {
                     "type": "string"
@@ -48,15 +48,30 @@ class Definition(BackupDefinition):
             self._spec['password']
         ]
 
+    def get_parameters(self):
+        parameters = '-h {host} -u {user} '.format(host=self._spec['host'], user=self._spec['user'])
+
+        if self._spec.get('password'):
+            parameters += ' -p{password} '.format(password=self._spec.get('password'))
+
+        if self._spec.get('port'):
+            parameters += ' -P {port} '.format(port=str(self._spec.get('port')))
+
+        if self._spec.get('database'):
+            parameters += ' {database} '.format(database=self._spec.get('database'))
+        else:
+            parameters += ' --all-databases '
+
+        return parameters
+
 
 class Adapter(AdapterInterface):
     """Contains a logic specific to MySQL - how to backup, and how to restore"""
 
     def backup(self, definition: Definition) -> StreamableBuffer:
-        sh = definition.get_transport().buffered_execute
+        backup_process = definition.get_transport().buffered_execute
 
-        # @todo: Implement it correctly, replace debug with mysqldump
-        return sh('cat /home/krzysiek/Projekty/riotkit/file-repository/bahub/README.md; echo "this is stderr" >&2; exit 1')
+        return backup_process('mysqldump %s' % definition.get_parameters())
 
     def restore(self, definition: BackupDefinition) -> bool:
         return True

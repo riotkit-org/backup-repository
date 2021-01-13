@@ -1,12 +1,15 @@
 from abc import abstractmethod
 from ..inputoutput import StreamableBuffer
+from rkd.api.inputoutput import IO
 
 
 class TransportInterface(object):
     _spec: dict
+    _io: IO
 
-    def __init__(self, spec: dict):
+    def __init__(self, spec: dict, io: IO):
         self._spec = spec
+        self._io = io
 
     @abstractmethod
     def execute(self, command: str):
@@ -15,3 +18,6 @@ class TransportInterface(object):
     @abstractmethod
     def buffered_execute(self, command: str) -> StreamableBuffer:
         pass
+
+    def io(self) -> IO:
+        return self._io

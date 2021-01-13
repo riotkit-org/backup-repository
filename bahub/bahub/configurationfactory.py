@@ -1,7 +1,7 @@
 
 import os
 import re
-from typing import Tuple, Type
+from typing import Tuple, Type, Union
 
 from rkd.api.inputoutput import IO
 from rkd.yaml_parser import YamlFileLoader
@@ -97,8 +97,10 @@ class ConfigurationFactory(object):
         for transport_name, config in config.items():
             with DefinitionFactoryErrorCatcher('transports.' + transport_name, self._debug):
                 try:
-                    transport = Importing.import_transport(config['type'])
-                    self._transports[transport_name] = transport(config['spec'])
+                    transport: Union[Type[TransportInterface], TransportInterface.__init__] = \
+                        Importing.import_transport(config['type'])
+
+                    self._transports[transport_name] = transport(config['spec'], self._io)
 
                 except KeyError as config_key_name:
                     raise ConfigurationError('Transport "%s" is missing "%s" configuration option' %

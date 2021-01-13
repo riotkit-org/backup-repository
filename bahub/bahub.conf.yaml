@@ -27,7 +27,7 @@ backups:
             collection_id: "eb5eca0a-885e-4cc1-b116-564d53b0804d"
             transport: local
         spec:
-            host: "localhost"
+            host: "172.18.0.3"
             port: 3306
             user: "chomsky"
             password: "chomsky"

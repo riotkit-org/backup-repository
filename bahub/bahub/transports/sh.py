@@ -16,6 +16,7 @@ class Transport(TransportInterface):
         check_call(command)
 
     def buffered_execute(self, command: str) -> StreamableBuffer:
+        self.io().debug('buffered_execute({command})'.format(command=command))
         proc = Popen(command, shell=True, stdout=PIPE, stderr=sys.stderr.fileno())
 
         def close_stream():
