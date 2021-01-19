@@ -10,8 +10,11 @@ accesses:
 
 encryption:
     strong:
+        gnupg_home: "~/.bahub-gnupg"
         passphrase: "some-string-passphrase"
         method: "aes256"
+        username: "Mikhali Bakunin"
+        email: "bakunin@anarchista.net"
 
 transports:
     local:
@@ -19,6 +22,17 @@ transports:
         spec:
 
 backups:
+    fs:
+        meta:
+            type: bahub.adapters.filesystem
+            access: secured
+            encryption: strong
+            collection_id: "eb5eca0a-885e-4cc1-b116-564d53b0804d"
+            transport: local
+        spec:
+            paths:
+                - ./
+
     database:
         meta:
             type: bahub.adapters.mysql
@@ -33,7 +47,7 @@ backups:
             password: "chomsky"
             database: "chomsky"
 
-notifiers:
-    mattermost:
-        type: slack
-        url: "http://localhost"
+#notifiers:
+    #mattermost:
+    #    type: slack
+    #    url: "http://localhost"

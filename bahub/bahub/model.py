@@ -74,15 +74,25 @@ class Encryption(object):
     _passphrase: str
     _algorithm: str
     _gnupg_home_path: str
+    _key_length: int
+    _key_type: str
+    _username: str
+    _user_email: str
 
     SUPPORTED_ALGORITHMS = ['aes256']
 
-    def __init__(self, name: str, passphrase: str, algorithm: str = 'aes256', gnupg_home_path: str = '~/.bahub-gnupg'):
+    def __init__(self, name: str, passphrase: str, username: str, email: str, algorithm: str = 'aes256',
+                 gnupg_home_path: str = '~/.bahub-gnupg', key_length: int = 2048,
+                 key_type: str = 'RSA'):
 
         self._name = name
         self._passphrase = passphrase
         self._algorithm = algorithm
         self._gnupg_home_path = os.path.expanduser(gnupg_home_path)
+        self._key_length = key_length
+        self._key_type = key_type
+        self._username = username
+        self._user_email = email
 
         if algorithm not in self.SUPPORTED_ALGORITHMS:
             raise ConfigurationFactoryException('Crypto "' + algorithm + '" is not supported. Please use one of: ' +
@@ -98,10 +108,14 @@ class Encryption(object):
                     raise KeyError(key)
 
         return Encryption(
-            name,
-            config.get('passphrase', ''),
-            config['method'],
-            config.get('gnupg_home', '~/.bahub-gnupg')
+            name=name,
+            passphrase=config.get('passphrase', ''),
+            algorithm=config['method'],
+            username=config['username'],
+            email=config['email'],
+            gnupg_home_path=config.get('gnupg_home', '~/.bahub-gnupg'),
+            key_length=int(config.get('key_length', 2048)),
+            key_type=config.get('key_type', 'RSA')
         )
 
     def describe_as_attributes(self) -> VersionAttributes:
@@ -114,22 +128,22 @@ class Encryption(object):
         return self._gnupg_home_path
 
     def get_key_length(self) -> int:
-        return 2048
+        return self._key_length
 
     def get_key_type(self) -> str:
-        return 'RSA'
+        return self._key_type
 
     def get_username(self) -> str:
-        return 'Mikhail Bakunin'
+        return self._username
 
     def get_userid(self) -> str:
-        return 'bakunin@anarchista.net'
+        return self._user_email
 
     def recipient(self):
         return self.get_userid()
 
     def get_passphrase(self) -> str:
-        return 'test'
+        return self._passphrase
 
     def name(self) -> str:
         return self._name

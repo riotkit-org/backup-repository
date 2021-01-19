@@ -55,16 +55,42 @@
 
         "Encryption": {
             "type": "object",
-            "required": ["passphrase", "method"],
+            "required": ["passphrase", "method", "passphrase", "email", "username"],
             "properties": {
                 "passphrase": {
                     "type": "string"
                 },
                 "method": {
-                    "type": "string"
+                    "type": "string",
+                    "default": "aes256",
+                    "examples": [
+                        "aes256"
+                    ]
                 },
                 "gnupg_home": {
-                    "type": "string"
+                    "type": "string",
+                    "default": "~/.bahub-gnupg"
+                },
+                "key_length": {
+                    "type": "integer",
+                    "default": 2048
+                },
+                "key_type": {
+                    "type": "string",
+                    "default": "RSA"
+                },
+                "username": {
+                    "type": "string",
+                    "examples": [
+                        "Mikhali Bakunin",
+                        "Peter Kropotkin"
+                    ]
+                },
+                "email": {
+                    "type": "string",
+                    "examples": [
+                        "example@riseup.net"
+                    ]
                 }
             }
         },
