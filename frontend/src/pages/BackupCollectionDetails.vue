@@ -17,7 +17,7 @@
                                 <base-input type="text"
                                             label="File name"
                                             placeholder="international-workers-association-db-and-files.tar.gz"
-                                            :value="collection.filename"
+                                            :initial-value="collection.filename"
                                             @input="(value) => collection.filename = value"
                                             >
                                 </base-input>
@@ -46,7 +46,7 @@
                                     type="number"
                                     label="Max backups count"
                                     placeholder="14"
-                                    :value="collection.maxBackupsCount"
+                                    :initial-value="collection.maxBackupsCount"
                                     @input="(value) => collection.maxBackupsCount = value"
                                 />
                             </div>
@@ -55,7 +55,7 @@
                                     type="string"
                                     label="Max one version size"
                                     placeholder="150MB"
-                                    :value="collection.getPrettyMaxOneVersionSize()"
+                                    :initial-value="collection.getPrettyMaxOneVersionSize()"
                                     @input="(value) => collection.setMaxOneVersionSize(value)"
                                 />
                             </div>
@@ -64,7 +64,7 @@
                                     type="string"
                                     label="Max overall collection size"
                                     placeholder="150MB"
-                                    :value="collection.getPrettyMaxCollectionSize()"
+                                    :initial-value="collection.getPrettyMaxCollectionSize()"
                                     @input="(value) => collection.setMaxCollectionSize(value)"
                                 />
                             </div>
