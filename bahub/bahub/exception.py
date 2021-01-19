@@ -58,5 +58,16 @@ class ParsingException(ApplicationException):
 
 class BufferingError(ApplicationException):
     @staticmethod
-    def from_early_buffer_exit() -> 'BufferingError':
-        return BufferingError('Buffering ended earlier with error')
+    def from_early_buffer_exit(stream_description: str) -> 'BufferingError':
+        return BufferingError('Buffering of stream "{}" ended earlier with error'.format(stream_description))
+
+
+class CryptographyConfigurationError(ApplicationException):
+    pass
+
+
+class CryptographyKeysAlreadyCreated(CryptographyConfigurationError):
+    @staticmethod
+    def from_keys_already_created(user_id: str) -> 'CryptographyConfigurationError':
+        return CryptographyKeysAlreadyCreated('Cryptography keys for "{uid}" already created, skipping creation'
+                                              .format(uid=user_id))

@@ -12,10 +12,13 @@ Provides shell commands such as:
 from rkd.api.syntax import TaskDeclaration
 from .prepare import BackupPreparationTask
 from .uploader import UploaderTask
+from .cryptsetup import CryptographyKeysSetupTask, ListCryptoKeys
 
 
 def imports():
     return [
         TaskDeclaration(UploaderTask()),
-        TaskDeclaration(BackupPreparationTask())
+        TaskDeclaration(BackupPreparationTask()),
+        TaskDeclaration(CryptographyKeysSetupTask()),
+        TaskDeclaration(ListCryptoKeys())
     ]

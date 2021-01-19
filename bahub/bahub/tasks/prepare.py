@@ -11,18 +11,18 @@ class BackupPreparationTask(BaseTask):
     """
 
     def get_name(self) -> str:
-        return ':prepare'
+        return ':make'
 
     def get_group_name(self) -> str:
-        return ''
+        return ':backup'
 
-    def configure_argparse(self, parser: ArgumentParser):
-        super().configure_argparse(parser)
-        parser.add_argument('definition', help='Backup definition name from the configuration file')
+    def configure_argparse(self, parser: ArgumentParser, with_definition: bool = True):
+        super().configure_argparse(parser, with_definition=with_definition)
         parser.add_argument('--target', default='/dev/stdout', help='Target path where to output backup')
 
     def execute(self, context: ExecutionContext) -> bool:
-        super().execute(context)
+        if not super().execute(context):
+            return False
 
         definition_name = context.get_arg('definition')
         target_path = context.get_arg('--target')
@@ -41,10 +41,12 @@ class BackupPreparationTask(BaseTask):
         try:
             enc_buffer.copy_to_raw_stream(out)
 
-        except BufferingError:
+        except BufferingError as e:
             out.close()
             self.io().error_msg('Backup process died unexpectedly at early buffering stage. '
                                 'The errors from stderr should be above, if there were any')
+            self.io().error_msg('Details: {}'.format(str(e)))
+
             return False
 
         out.close()

@@ -4,7 +4,7 @@ from argparse import ArgumentParser
 from typing import Dict, Union
 from rkd.api.contract import TaskInterface, ExecutionContext, ArgumentEnv
 from rkd.yaml_parser import YamlFileLoader
-from rkd.exception import YAMLFileValidationError
+from rkd.exception import YAMLFileValidationError, InterruptExecution
 from ..api import BackupRepository
 from ..configurationfactory import ConfigurationFactory
 from ..notifier import MultiplexedNotifiers, NotifierInterface
@@ -34,12 +34,14 @@ class BaseTask(TaskInterface, ABC):
             return False
 
         self.api = BackupRepository(self._io)
-        self.notifier = MultiplexedNotifiers(self.config.get_notifiers())
+        self.notifier = MultiplexedNotifiers(self.config.notifiers())
 
-        # execute() needs to be inherited, not directly executed
-        return False
+        return True
 
-    def configure_argparse(self, parser: ArgumentParser):
+    def configure_argparse(self, parser: ArgumentParser, with_definition: bool = True):
         # do not require as switch, allow to use env
         parser.add_argument('--config', '-c', default=os.path.expanduser('~/.bahub.yaml'), required=False)
         parser.add_argument('--debug', action='store_true')
+
+        if with_definition:
+            parser.add_argument('definition', help='Backup definition name from the configuration file')

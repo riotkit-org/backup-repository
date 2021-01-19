@@ -1,7 +1,7 @@
 
 import os
 import re
-from typing import Tuple, Type, Union
+from typing import Tuple, Type, Union, Dict
 
 from rkd.api.inputoutput import IO
 from rkd.yaml_parser import YamlFileLoader
@@ -85,7 +85,7 @@ class ConfigurationFactory(object):
         for enc_name, config in config.items():
             with DefinitionFactoryErrorCatcher('encryption.' + enc_name, self._debug):
                 try:
-                    self._encryption[enc_name] = Encryption.from_config(config)
+                    self._encryption[enc_name] = Encryption.from_config(enc_name, config)
 
                 except KeyError as config_key_name:
                     raise ConfigurationError('Encryption "%s" is missing "%s" configuration option' %
@@ -175,8 +175,11 @@ class ConfigurationFactory(object):
     def get_error_handlers(self):
         return self._error_handlers
 
-    def get_notifiers(self):
+    def notifiers(self):
         return self._notifiers
+
+    def definitions(self) -> Dict[str, BackupDefinition]:
+        return self._backups
 
     def get_definition(self, name: str) -> BackupDefinition:
         if name not in self._backups:

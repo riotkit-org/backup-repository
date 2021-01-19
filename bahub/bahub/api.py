@@ -50,15 +50,20 @@ class BackupRepository(object):
         response_body = response_body_stream.getvalue().decode('utf-8')
 
         self.io.debug('Request: ' + str(url))
-        self.io.debug('response(' + response_body + ')')
+        self.io.debug('response_body=' + response_body)
 
         try:
             _json = json_loads(response_body)
         except JSONDecodeError:
             _json = {}
 
-        if curl.getinfo(pycurl.HTTP_CODE) >= 400:
-            raise InvalidResponseException(response_body, _json, _json.get('error_code', 0))
+        response_code = curl.getinfo(pycurl.HTTP_CODE)
+
+        self.io.debug('response_code={}'.format(response_code))
+
+        if response_code >= 400:
+            raise InvalidResponseException('HTTP error, code {}, body: {}'.format(response_code, response_body), _json,
+                                           _json.get('error_code', 0))
 
         curl.close()
 

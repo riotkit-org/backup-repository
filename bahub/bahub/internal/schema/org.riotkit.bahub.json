@@ -62,6 +62,9 @@
                 },
                 "method": {
                     "type": "string"
+                },
+                "gnupg_home": {
+                    "type": "string"
                 }
             }
         },

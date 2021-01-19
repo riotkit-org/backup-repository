@@ -1,4 +1,4 @@
-
+import os
 from typing import BinaryIO
 from urllib.parse import quote as url_quote
 from json import dumps as json_dumps
@@ -70,22 +70,26 @@ class ServerAccess(object):
 class Encryption(object):
     """ Cryptography support (using OpenSSL command implementation) """
 
+    _name: str
     _passphrase: str
     _algorithm: str
+    _gnupg_home_path: str
 
     SUPPORTED_ALGORITHMS = ['aes256']
 
-    def __init__(self, passphrase: str, algorithm: str = 'aes256'):
+    def __init__(self, name: str, passphrase: str, algorithm: str = 'aes256', gnupg_home_path: str = '~/.bahub-gnupg'):
 
+        self._name = name
         self._passphrase = passphrase
         self._algorithm = algorithm
+        self._gnupg_home_path = os.path.expanduser(gnupg_home_path)
 
         if algorithm not in self.SUPPORTED_ALGORITHMS:
             raise ConfigurationFactoryException('Crypto "' + algorithm + '" is not supported. Please use one of: ' +
                                                 str(self.SUPPORTED_ALGORITHMS))
 
     @staticmethod
-    def from_config(config: dict):
+    def from_config(name: str, config: dict):
         is_encrypting = config.get('method', '') != ''
 
         if is_encrypting:
@@ -94,15 +98,41 @@ class Encryption(object):
                     raise KeyError(key)
 
         return Encryption(
+            name,
             config.get('passphrase', ''),
-            config['method']
+            config['method'],
+            config.get('gnupg_home', '~/.bahub-gnupg')
         )
 
     def describe_as_attributes(self) -> VersionAttributes:
         return VersionAttributes({
-            'recipient': 'somebody@example.org',  # todo
+            'recipient': self.recipient(),
             'algorithm': self._algorithm
         })
+
+    def get_home_dir(self) -> str:
+        return self._gnupg_home_path
+
+    def get_key_length(self) -> int:
+        return 2048
+
+    def get_key_type(self) -> str:
+        return 'RSA'
+
+    def get_username(self) -> str:
+        return 'Mikhail Bakunin'
+
+    def get_userid(self) -> str:
+        return 'bakunin@anarchista.net'
+
+    def recipient(self):
+        return self.get_userid()
+
+    def get_passphrase(self) -> str:
+        return 'test'
+
+    def name(self) -> str:
+        return self._name
 
 
 class BackupDefinition(ABC):
@@ -189,6 +219,9 @@ class BackupDefinition(ABC):
 
     def get_sensitive_information(self) -> list:
         return []
+
+    def name(self) -> str:
+        return self._name
 
     def __repr__(self):
         return 'Definition<name=' + self._name + ',collection_id=' + str(self.get_collection_id()) + '>'

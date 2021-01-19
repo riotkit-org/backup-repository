@@ -13,16 +13,16 @@ class UploaderTask(BaseTask):
         return ':send'
 
     def get_group_name(self) -> str:
-        return ''
+        return ':backup'
 
-    def configure_argparse(self, parser: ArgumentParser):
-        super().configure_argparse(parser)
-        parser.add_argument('definition', help='Backup definition name from the configuration file')
+    def configure_argparse(self, parser: ArgumentParser, with_definition: bool = True):
+        super().configure_argparse(parser, with_definition=with_definition)
         parser.add_argument('--path', required=False,
                             help='File path from the disk. Defaults to empty and reading from stdin')
 
     def execute(self, context: ExecutionContext) -> bool:
-        super().execute(context)
+        if not super().execute(context):
+            return False
 
         definition_name = context.get_arg('definition')
         definition = self.config.get_definition(definition_name)
@@ -37,12 +37,13 @@ class UploaderTask(BaseTask):
                 collection_id=definition.get_collection_id(),
                 access=definition.get_access(),
                 attributes=definition.get_encryption().describe_as_attributes(),
-                source=source.get_read_buffer()
+                source=source
             )
 
             self.notifier.backup_was_uploaded(definition)
 
         except InvalidResponseException as response_exc:
+            self.io().error(str(response_exc))
             self.io().error(response_exc.get_error())
             self.notifier.failed_to_upload_backup(definition, response_exc.get_error())
 
