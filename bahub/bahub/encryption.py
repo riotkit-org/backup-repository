@@ -1,7 +1,7 @@
 import os
 import sys
 import gnupg
-from typing import Union
+from typing import Union, List
 from subprocess import Popen, PIPE
 from rkd.api.inputoutput import IO
 from .exception import CryptographyKeysAlreadyCreated
@@ -15,8 +15,27 @@ class EncryptionService(object):
     def __init__(self, io: IO):
         self._io = io
 
-    @staticmethod
-    def create_encryption_stream(encryption: Encryption, stdin: Union[int, 'StreamableBuffer'] = PIPE):
+    def create_decryption_stream(self, encryption: Encryption, stdin: Union[int, 'StreamableBuffer'] = PIPE) \
+            -> StreamableBuffer:
+
+        """Takes incoming encrypted buffer and returns a buffer that outputs a decrypted data"""
+
+        gpg_command = [
+            'gpg',
+            '--homedir', encryption.get_home_dir(),
+            '--decrypt',
+            '--recipient', encryption.recipient(),
+            '--armor',
+            '--passphrase', encryption.get_passphrase(),
+            '--batch',
+            '--yes',
+            '--pinentry-mode', 'loopback',
+            '--verbose',
+        ]
+
+        return self._create_stream(encryption, gpg_command, stdin)
+
+    def create_encryption_stream(self, encryption: Encryption, stdin: Union[int, 'StreamableBuffer'] = PIPE):
         gpg_command = [
             'gpg',
             '--homedir', encryption.get_home_dir(),
@@ -25,33 +44,56 @@ class EncryptionService(object):
             '--armor'
         ]
 
+        return self._create_stream(encryption, gpg_command, stdin)
+
+    def _create_stream(self, encryption: Encryption, gpg_command: List[str],
+                       stdin: Union[int, 'StreamableBuffer'] = PIPE) -> StreamableBuffer:
+
+        # expose passphrase as additional file descriptor (fd3)
+        # self._io.debug('Creating a fd no.4 and passing passphrase to pgp')
+        # fdr, fdw = os.pipe()
+        # os.write(fdw, encryption.get_passphrase().encode('utf-8'))
+
+        self._io.debug('popen({})'.format(gpg_command))
         proc = Popen(gpg_command,
                      stdout=PIPE,
-                     stdin=PIPE if stdin == PIPE else stdin.get_read_buffer(),
+                     stdin=PIPE if stdin == PIPE else stdin.get_buffer(),
                      stderr=sys.stderr.fileno(),
-                     close_fds=True)
+                     close_fds=True
+                     )
 
-        has_exited_with_failure = lambda: proc.poll() is not None and proc.poll() >= 1
-        is_success_callback = lambda: proc.poll() == 0
+        def is_success_callback():
+            if stdin != PIPE:
+                return proc.poll() == 0 and stdin.finished_with_success()
 
-        # case: we have a parent StreamableBuffer that we rely on
-        if stdin != PIPE:
-            has_exited_with_failure = lambda: (
-                (proc.poll() is not None and proc.poll() >= 0)
-                or stdin.has_exited_with_failure()
-            )
-            is_success_callback = lambda: proc.poll() == 0 and stdin.finished_with_success()
+            return proc.poll() == 0
+
+        def has_exited_with_failure():
+            exit_code = proc.poll()
+
+            if exit_code is not None and exit_code > 0:
+                self._io.error('Encryption stream exit_code={}'.format(exit_code))
+
+            if stdin != PIPE:
+                return (exit_code is not None and exit_code >= 1) or stdin.has_exited_with_failure()
+
+            return exit_code is not None and exit_code >= 1
 
         return StreamableBuffer(
-            read_buffer=proc.stdout,
+            read_callback=proc.stdout.read,
             close_callback=proc.terminate,
             eof_callback=lambda: proc.poll() is not None,
             is_success_callback=is_success_callback,
             has_exited_with_failure=has_exited_with_failure,
-            description='Encryption stream <{}>'.format(str(gpg_command))
+            description='Encryption stream <{}>'.format(str(gpg_command)),
+            buffer=proc.stdout,
+            in_buffer=proc.stdin,
+            parent=stdin
         )
 
     def create_keys(self, enc: Encryption):
+        """Generates GPG keys usable for backup encryption & decryption"""
+
         gpg = self._get_pgp(enc)
 
         for key in gpg.list_keys():
@@ -72,7 +114,9 @@ class EncryptionService(object):
 
         self._io.success_msg('Keys created, fingerprint: {fingerprint}'.format(fingerprint=result))
 
-    def list_keys(self, enc: Encryption) -> list:  # @todo: Typing
+    def list_keys(self, enc: Encryption) -> List[dict]:
+        """Lists GPG keys for given Encryption entry"""
+
         gpg = self._get_pgp(enc)
 
         return list(map(

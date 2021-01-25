@@ -2,19 +2,20 @@
 Server API connector
 ====================
 """
+from subprocess import Popen, PIPE
 
-from io import BytesIO
-from json import JSONDecodeError, loads as json_loads
 import certifi
 import pycurl
+from io import BytesIO
+from json import JSONDecodeError, loads as json_loads
 from rkd.api.inputoutput import IO
-
 from bahub.exception import InvalidResponseException, HttpException
 from bahub.inputoutput import StreamableBuffer
 from bahub.model import ServerAccess, VersionAttributes, ReadableStream
 from bahub.response import VersionUploadedResponse
 
 SEND_BACKUPS_URL = '/api/stable/repository/collection/{collectionId}/versions'
+RECEIVE_BACKUPS_URL = '/api/stable/repository/collection/{collectionId}/backup/{version}'
 
 
 class BackupRepository(object):
@@ -71,4 +72,27 @@ class BackupRepository(object):
             version=_json['version']['version'],
             fileid=_json['version']['id'],
             filename=_json['version']['file']['filename']
+        )
+
+    def read_backup(self, collection_id: str, version: str, access: ServerAccess) -> StreamableBuffer:
+        url = access.build_url(
+            RECEIVE_BACKUPS_URL.format(collectionId=collection_id, version=version)
+        )
+
+        process = ['curl', '--silent', '-X', 'GET', '-H', 'Authorization: Bearer {}'.format(access.get_token()), url]
+
+        self.io.debug('read_backup({})'.format(process))
+
+        # cannot be done with requests or urllib3 due to raw IO stream handles required to copy streams
+        # from process to process. Requests uses urllib3, which produces invalid streams that produces deadlocks
+        proc = Popen(process, stdout=PIPE)
+
+        return StreamableBuffer(
+            read_callback=proc.stdout.read,
+            close_callback=lambda: proc.stdout.close(),
+            eof_callback=lambda: proc.poll() is not None,
+            is_success_callback=lambda: proc.poll() == 0,
+            has_exited_with_failure=lambda: proc.poll() != 0,
+            description='API file read stream<{}, {}>'.format(collection_id, version),
+            buffer=proc.stdout
         )

@@ -5,10 +5,10 @@ Filesystem Adapter
 Packs files and directories into TAR.GZ packages
 """
 import os
-from typing import List
-from bahub.adapters.base import AdapterInterface
-from bahub.model import BackupDefinition
-from bahub.transports.base import StreamableBuffer
+from .base import AdapterInterface
+from ..exception import BackupRestoreError
+from ..model import BackupDefinition
+from ..transports.base import StreamableBuffer
 
 
 class Definition(BackupDefinition):
@@ -34,23 +34,60 @@ class Definition(BackupDefinition):
             }
         }
 
-    def get_parameters(self):
-        paths: List[str] = list(map(lambda path: '"{}"'.format(os.path.expanduser(path)), self._spec.get('paths')))
+    def get_backup_parameters(self):
+        """
+        Inside a package there could be multiple directories and files packaged from multiple paths
+        Every path is quoted and checked before usage
+        :return:
+        """
+
+        paths = []
+
+        for path in self._spec.get('paths'):
+            normalized = os.path.abspath(os.path.expanduser(path))
+
+            if not normalized:
+                continue
+
+            paths.append('"{}"'.format(normalized))
+
         parameters = '-cz -f - ' + ' '.join(paths)
 
         return parameters
+
+    def get_restore_parameters(self):
+        """
+        We unpack always at the root directory, because we allow to pack multiple paths
+        :return:
+        """
+
+        return '-xzf - -C /'
 
 
 class Adapter(AdapterInterface):
     """Defines how to make backup of files and directories"""
 
     def backup(self, definition: Definition) -> StreamableBuffer:
+        """Pack files into a TAR.GZ and return as a output buffer"""
+
         backup_process = definition.get_transport().buffered_execute
 
-        return backup_process('tar %s | cat' % definition.get_parameters())
+        return backup_process('tar %s | cat' % definition.get_backup_parameters())
 
-    def restore(self, definition: BackupDefinition) -> bool:
-        return True
+    def restore(self, definition: Definition, in_buffer: StreamableBuffer) -> bytes:
+        """Unpack files from the TAR.GZ provided by in_buffer"""
+
+        restore_process = definition.get_transport()\
+            .buffered_execute('tar %s' % definition.get_restore_parameters(), stdin=in_buffer)
+
+        log = restore_process.read_all()
+
+        if restore_process.has_exited_with_failure():
+            restore_process.close()
+
+            raise BackupRestoreError.from_generic_restore_failure(restore_process)
+
+        return log
 
     @staticmethod
     def create_definition(config: dict, name: str) -> Definition:

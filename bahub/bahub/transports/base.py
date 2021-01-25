@@ -1,5 +1,5 @@
 from abc import abstractmethod
-from typing import Union, List
+from typing import Union, List, Optional
 
 from ..inputoutput import StreamableBuffer
 from rkd.api.inputoutput import IO
@@ -18,7 +18,8 @@ class TransportInterface(object):
         pass
 
     @abstractmethod
-    def buffered_execute(self, command: Union[str, List[str]]) -> StreamableBuffer:
+    def buffered_execute(self, command: Union[str, List[str]],
+                         stdin: Optional[StreamableBuffer] = None) -> StreamableBuffer:
         pass
 
     def io(self) -> IO:

@@ -1,37 +1,52 @@
-import os
-from typing import BinaryIO, Union, Optional, IO
+from typing import BinaryIO, Union, Optional, IO, Callable
+from urllib3 import HTTPResponse
 from .exception import BufferingError
+
+BUFFER_CALLABLE_DEF = Callable[[Optional[int]], bytes]
 
 
 class StreamableBuffer(object):
-    _read_buffer: Union[BinaryIO, Optional[IO[bytes]]]
+    _read_callback: BUFFER_CALLABLE_DEF
     _close: callable
     _max_chunk_in_memory = 1024 * 1024 * 3
     _has_exited_with_failure: callable
     _description: str
+    _buffer: Union[BinaryIO, Optional[IO[bytes]], HTTPResponse]
+    _in_buffer: Optional[BUFFER_CALLABLE_DEF]
+    _parent: Optional['StreamableBuffer']
 
-    def __init__(self, read_buffer: Union[BinaryIO, Optional[IO[bytes]]],
+    def __init__(self, read_callback: BUFFER_CALLABLE_DEF,
                  close_callback: callable,
                  eof_callback: callable,
                  is_success_callback: callable,
+                 buffer: Union[BinaryIO, Optional[IO[bytes]], HTTPResponse],
                  has_exited_with_failure: callable = None,
-                 description: str = ''):
+                 description: str = '',
+                 in_buffer: Optional[BUFFER_CALLABLE_DEF] = None,
+                 parent: Optional['StreamableBuffer'] = None):
 
-        self._read_buffer = read_buffer
+        self._read_callback = read_callback
         self._close = close_callback
         self._is_eof = eof_callback
         self._is_success = is_success_callback
         self._has_exited_with_failure = has_exited_with_failure
         self._description = description
+        self._buffer = buffer
+        self._in_buffer = in_buffer
+        self._parent = parent
 
-    def get_read_buffer(self) -> Union[BinaryIO, Optional[IO[bytes]]]:
-        return self._read_buffer
+    def get_buffer(self) -> Union[BinaryIO, Optional[IO[bytes]]]:
+        return self._buffer
+
+    def get_in_buffer(self) -> Optional[BUFFER_CALLABLE_DEF]:
+        return self._in_buffer
 
     def read(self, size: int = 64 * 1024) -> bytes:
-        if self._read_buffer.fileno():
-            return os.read(self._read_buffer.fileno(), size)
+        return self._read_callback(size)
 
-        return self._read_buffer.read(size)
+    def read_all(self) -> bytes:
+        # noinspection PyArgumentList
+        return self._read_callback()
 
     def close(self):
         return self._close()
@@ -56,11 +71,12 @@ class StreamableBuffer(object):
         handle = open(path, 'rb')
 
         return StreamableBuffer(
-            read_buffer=handle,
+            read_callback=handle.read,
             close_callback=lambda: handle.close(),
             eof_callback=lambda: handle.closed,
             is_success_callback=lambda: handle.closed,
-            description='File stream <{}>'.format(path)
+            description='File stream <{}>'.format(path),
+            buffer=handle
         )
 
     def copy_to_raw_stream(self, out: Union[BinaryIO, Optional[IO[bytes]]]):
@@ -101,3 +117,14 @@ class StreamableBuffer(object):
         # data was smaller than internal memory buffer
         if pre_chunk and not has_any_write:
             out.write(pre_chunk)
+
+    def find_failure_cause(self) -> str:
+        """Find a stream that broke the pipeline"""
+
+        if self._parent and self._parent.has_exited_with_failure():
+            return self._parent.find_failure_cause()
+
+        if self.has_exited_with_failure():
+            return self._description
+
+        return ''

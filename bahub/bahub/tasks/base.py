@@ -1,12 +1,14 @@
 import os
 from abc import ABC
 from argparse import ArgumentParser
-from typing import Dict, Union
+from typing import Dict, Union, Optional
 from rkd.api.contract import TaskInterface, ExecutionContext, ArgumentEnv
 from rkd.yaml_parser import YamlFileLoader
-from rkd.exception import YAMLFileValidationError, InterruptExecution
+from rkd.exception import YAMLFileValidationError
 from ..api import BackupRepository
 from ..configurationfactory import ConfigurationFactory
+from ..encryption import EncryptionService
+from ..model import BackupDefinition
 from ..notifier import MultiplexedNotifiers, NotifierInterface
 
 
@@ -14,6 +16,7 @@ class BaseTask(TaskInterface, ABC):
     config: ConfigurationFactory
     api: BackupRepository
     notifier: Union[MultiplexedNotifiers, NotifierInterface]
+    encryption_service: EncryptionService
 
     def get_declared_envs(self) -> Dict[str, Union[str, ArgumentEnv]]:
         return {
@@ -35,6 +38,7 @@ class BaseTask(TaskInterface, ABC):
 
         self.api = BackupRepository(self._io)
         self.notifier = MultiplexedNotifiers(self.config.notifiers())
+        self.encryption_service = EncryptionService(self._io)
 
         return True
 
@@ -45,3 +49,12 @@ class BaseTask(TaskInterface, ABC):
 
         if with_definition:
             parser.add_argument('definition', help='Backup definition name from the configuration file')
+
+    def retrieve_definition(self, context: ExecutionContext) -> Optional[BackupDefinition]:
+        definition_name = context.get_arg('definition')
+        definition = self.config.get_definition(definition_name)
+
+        if not definition:
+            self.io().error('Definition "{name}" is not valid'.format(name=definition_name))
+
+        return definition

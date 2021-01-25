@@ -1,4 +1,5 @@
 from abc import ABC as AbstractClass, abstractmethod
+
 from ..model import BackupDefinition
 from ..transports.base import StreamableBuffer
 
@@ -17,5 +18,7 @@ class AdapterInterface(AbstractClass):
         pass
 
     @abstractmethod
-    def restore(self, definition: BackupDefinition) -> bool:
+    def restore(self, definition: BackupDefinition, in_buffer: StreamableBuffer) -> bytes:
+        """Restores a backup, returns a log as output"""
+
         pass

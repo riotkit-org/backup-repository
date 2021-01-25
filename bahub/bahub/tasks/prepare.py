@@ -2,7 +2,6 @@ from argparse import ArgumentParser
 from rkd.api.contract import ExecutionContext
 from .base import BaseTask
 from ..adapters.base import AdapterInterface
-from ..encryption import EncryptionService
 from ..exception import BufferingError
 
 
@@ -33,8 +32,8 @@ class BackupPreparationTask(BaseTask):
         backup_buffer = adapter.backup(definition)
 
         # buffers
-        enc_buffer = EncryptionService.create_encryption_stream(definition.get_encryption(),
-                                                                stdin=backup_buffer)
+        enc_buffer = self.encryption_service.create_encryption_stream(definition.get_encryption(),
+                                                                      stdin=backup_buffer)
         out = open(target_path, 'wb')
 
         # copy encrypted stream to destination

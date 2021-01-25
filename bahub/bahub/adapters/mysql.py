@@ -73,8 +73,8 @@ class Adapter(AdapterInterface):
 
         return backup_process('mysqldump %s' % definition.get_parameters())
 
-    def restore(self, definition: BackupDefinition) -> bool:
-        return True
+    def restore(self, definition: BackupDefinition, in_buffer: StreamableBuffer) -> bytes:
+        return b""
 
     @staticmethod
     def create_definition(config: dict, name: str) -> Definition:

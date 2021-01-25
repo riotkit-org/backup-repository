@@ -1,5 +1,4 @@
 
-
 class ApplicationException(Exception):
     pass
 
@@ -71,3 +70,16 @@ class CryptographyKeysAlreadyCreated(CryptographyConfigurationError):
     def from_keys_already_created(user_id: str) -> 'CryptographyConfigurationError':
         return CryptographyKeysAlreadyCreated('Cryptography keys for "{uid}" already created, skipping creation'
                                               .format(uid=user_id))
+
+
+class BackupProcessError(ApplicationException):
+    """Errors related to backup/restore streaming"""
+
+
+class BackupRestoreError(BackupProcessError):
+    """When we cannot restore a backup - at least one stage failed in the process"""
+
+    @staticmethod
+    def from_generic_restore_failure(stream) -> 'BackupRestoreError':
+        return BackupRestoreError("Restore error. Process exited with a failure - read logs above.\nFailure cause: {}"
+                                  .format(stream.find_failure_cause()))
