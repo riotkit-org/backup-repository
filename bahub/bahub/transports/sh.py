@@ -6,7 +6,7 @@ Executes a command in the shell
 """
 
 import sys
-from subprocess import check_call, Popen, PIPE
+from subprocess import check_call, check_output, Popen, PIPE
 from typing import List, Union, Optional
 from time import sleep
 from ..inputoutput import StreamableBuffer
@@ -14,8 +14,11 @@ from .base import TransportInterface
 
 
 class Transport(TransportInterface):
-    def execute(self, command: str):
-        check_call(command)
+    def execute(self, command: Union[str, List[str]]):
+        check_call(command, shell=type(command) == str)
+
+    def capture(self, command: Union[str, List[str]]) -> bytes:
+        return check_output(command, shell=type(command) == str)
 
     def buffered_execute(self, command: Union[str, List[str]],
                          stdin: Optional[StreamableBuffer] = None) -> StreamableBuffer:

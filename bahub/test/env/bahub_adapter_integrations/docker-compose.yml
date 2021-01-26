@@ -15,3 +15,8 @@ services:
             POSTGRES_DB: "riotkit"
         ports:
             - "5433:5432"
+
+    redis:
+        image: "redis:6.2"
+        ports:
+            - "6379:6379"

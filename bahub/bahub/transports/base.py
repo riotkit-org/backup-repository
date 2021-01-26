@@ -18,6 +18,10 @@ class TransportInterface(object):
         pass
 
     @abstractmethod
+    def capture(self, command: Union[str, List[str]]) -> bytes:
+        pass
+
+    @abstractmethod
     def buffered_execute(self, command: Union[str, List[str]],
                          stdin: Optional[StreamableBuffer] = None) -> StreamableBuffer:
         pass
