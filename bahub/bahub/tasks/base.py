@@ -10,6 +10,7 @@ from ..configurationfactory import ConfigurationFactory
 from ..encryption import EncryptionService
 from ..model import BackupDefinition
 from ..notifier import MultiplexedNotifiers, NotifierInterface
+from ..security import create_sensitive_data_stripping_filter
 
 
 class BaseTask(TaskInterface, ABC):
@@ -36,6 +37,9 @@ class BaseTask(TaskInterface, ABC):
             self.io().error('Configuration file looks invalid, details: ' + str(e))
             return False
 
+        if not context.get_arg('--show-secrets'):
+            self._io.add_output_processor(create_sensitive_data_stripping_filter(self.config.get_all_sensitive_data()))
+
         self.api = BackupRepository(self._io)
         self.notifier = MultiplexedNotifiers(self.config.notifiers())
         self.encryption_service = EncryptionService(self._io)
@@ -46,6 +50,7 @@ class BaseTask(TaskInterface, ABC):
         # do not require as switch, allow to use env
         parser.add_argument('--config', '-c', default=os.path.expanduser('~/.bahub.yaml'), required=False)
         parser.add_argument('--debug', action='store_true')
+        parser.add_argument('--show-secrets', action='store_true', help='Do not hide secrets in output')
 
         if with_definition:
             parser.add_argument('definition', help='Backup definition name from the configuration file')
