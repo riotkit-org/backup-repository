@@ -5,8 +5,9 @@ Filesystem Adapter
 Packs files and directories into TAR.GZ packages
 """
 import os
+
+from rkd.api.inputoutput import IO
 from .base import AdapterInterface
-from ..exception import BackupRestoreError
 from ..model import BackupDefinition
 from ..transports.base import StreamableBuffer
 
@@ -74,20 +75,13 @@ class Adapter(AdapterInterface):
 
         return backup_process('tar %s | cat' % definition.get_backup_parameters())
 
-    def restore(self, definition: Definition, in_buffer: StreamableBuffer) -> bytes:
+    def restore(self, definition: Definition, in_buffer: StreamableBuffer, io: IO) -> None:
         """Unpack files from the TAR.GZ provided by in_buffer"""
 
         restore_process = definition.get_transport()\
             .buffered_execute('tar %s' % definition.get_restore_parameters(), stdin=in_buffer)
 
-        log = restore_process.read_all()
-
-        if restore_process.has_exited_with_failure():
-            restore_process.close()
-
-            raise BackupRestoreError.from_generic_restore_failure(restore_process)
-
-        return log
+        self._read_from_restore_process(restore_process, io)
 
     @staticmethod
     def create_definition(config: dict, name: str) -> Definition:

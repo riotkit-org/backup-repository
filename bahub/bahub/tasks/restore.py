@@ -3,6 +3,8 @@ from rkd.api.contract import ExecutionContext
 from .base import BaseTask
 from ..adapters.base import AdapterInterface
 from ..exception import BackupProcessError
+from ..inputoutput import StreamableBuffer
+from ..transports.sh import Transport as LocalShellTransport
 
 
 class RestoreTask(BaseTask):
@@ -20,6 +22,7 @@ class RestoreTask(BaseTask):
         parser.add_argument('--path', required=False,
                             help='File path from the disk. Defaults to empty and downloading from server')
         parser.add_argument('--version', default='latest', help='Version number. Defaults to "latest"')
+        parser.add_argument('--download', '-d', required=False, help='Set target path as argument to download only')
 
     def execute(self, context: ExecutionContext) -> bool:
         if not super().execute(context):
@@ -28,6 +31,7 @@ class RestoreTask(BaseTask):
         definition_name = context.get_arg('definition')
         definition = self.retrieve_definition(context)
         version = context.get_arg('--version')
+        download_to = context.get_arg('--download')
         backup_adapter: AdapterInterface = self.config.get_adapter(definition_name)()
 
         if not definition:
@@ -50,10 +54,13 @@ class RestoreTask(BaseTask):
         try:
             self.io().info('Spawning the backup adapter to start "restore" procedure specific to this backup type')
             self.io().info('Processing combined pipeline of buffers...')
-            log = backup_adapter.restore(definition, enc_buffer)
 
-            if log:
-                self.io().info(log)
+            # only download into a file
+            if download_to:
+                self._download_only(download_to, enc_buffer)
+            # restore
+            else:
+                backup_adapter.restore(definition, enc_buffer, self._io)
 
         except BackupProcessError as e:
             self.io().error_msg(e)
@@ -62,3 +69,12 @@ class RestoreTask(BaseTask):
         self.io().info_msg('Backup {} was restored to {}'.format(definition, version))
 
         return True
+
+    def _download_only(self, target_path: str, enc_buffer: StreamableBuffer):
+        """Downloads a file into a target path. Useful for data inspection"""
+
+        self.io().info('Downloading a file to "{}"'.format(target_path))
+
+        sh = LocalShellTransport({}, self._io)
+        buffer = sh.buffered_execute('cat - > "{}"'.format(target_path), stdin=enc_buffer)
+        buffer.read_all()

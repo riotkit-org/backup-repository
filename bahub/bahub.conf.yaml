@@ -37,19 +37,19 @@ backups:
             paths:
                 - ./
 
-    database:
+    db_mysql:
         meta:
             type: bahub.adapters.mysql
-            access: secured
+            access: full_permissions
             encryption: strong
-            collection_id: "54fd3658-c6bf-435f-a181-5069ddfc1701"
+            collection_id: "61792136-94d5-4670-9c69-950257467c56"
             transport: local
         spec:
-            host: "172.18.0.3"
+            host: "127.0.0.1"
             port: 3306
-            user: "chomsky"
-            password: "chomsky"
-            database: "chomsky"
+            user: "root"
+            password: "root"
+            #database: "chomsky"
 
 #notifiers:
     #mattermost:

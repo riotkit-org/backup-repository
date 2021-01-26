@@ -49,11 +49,6 @@ class EncryptionService(object):
     def _create_stream(self, encryption: Encryption, gpg_command: List[str],
                        stdin: Union[int, 'StreamableBuffer'] = PIPE) -> StreamableBuffer:
 
-        # expose passphrase as additional file descriptor (fd3)
-        # self._io.debug('Creating a fd no.4 and passing passphrase to pgp')
-        # fdr, fdw = os.pipe()
-        # os.write(fdw, encryption.get_passphrase().encode('utf-8'))
-
         self._io.debug('popen({})'.format(gpg_command))
         proc = Popen(gpg_command,
                      stdout=PIPE,
@@ -62,29 +57,12 @@ class EncryptionService(object):
                      close_fds=True
                      )
 
-        def is_success_callback():
-            if stdin != PIPE:
-                return proc.poll() == 0 and stdin.finished_with_success()
-
-            return proc.poll() == 0
-
-        def has_exited_with_failure():
-            exit_code = proc.poll()
-
-            if exit_code is not None and exit_code > 0:
-                self._io.error('Encryption stream exit_code={}'.format(exit_code))
-
-            if stdin != PIPE:
-                return (exit_code is not None and exit_code >= 1) or stdin.has_exited_with_failure()
-
-            return exit_code is not None and exit_code >= 1
-
         return StreamableBuffer(
             read_callback=proc.stdout.read,
             close_callback=proc.terminate,
             eof_callback=lambda: proc.poll() is not None,
-            is_success_callback=is_success_callback,
-            has_exited_with_failure=has_exited_with_failure,
+            is_success_callback=lambda: proc.poll() == 0,
+            has_exited_with_failure=lambda: proc.poll() is not None and proc.poll() >= 1,
             description='Encryption stream <{}>'.format(str(gpg_command)),
             buffer=proc.stdout,
             in_buffer=proc.stdin,

@@ -55,6 +55,10 @@ class StreamableBuffer(object):
         return self._is_eof()
 
     def finished_with_success(self) -> bool:
+        # fail, when parent fails
+        if self._parent and not self._parent.finished_with_success():
+            return False
+
         return self._is_success()
 
     def has_exited_with_failure(self) -> bool:
@@ -62,6 +66,10 @@ class StreamableBuffer(object):
 
         # not implemented
         if not self._has_exited_with_failure:
+            return False
+
+        # fail, when parent fails
+        if self._parent and self._parent.has_exited_with_failure():
             return False
 
         return self._has_exited_with_failure()
