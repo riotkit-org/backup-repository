@@ -30,7 +30,8 @@ class Definition(BackupDefinition):
                     "type": "array",
                     "items": {
                         "type": "string"
-                    }
+                    },
+                    "example": ["/var/lib/jenkins"]
                 }
             }
         }

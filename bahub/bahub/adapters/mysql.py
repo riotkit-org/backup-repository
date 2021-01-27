@@ -43,16 +43,45 @@ class Definition(BackupDefinition):
             }
         }
 
+    @classmethod
+    def get_example_configuration(cls):
+        return {
+            'meta': {
+                'type': 'bahub.adapters.mysql',
+                'access': 'my_backup_server',
+                'encryption': 'enc_backup_db',
+                'collection_id': '61792136-94d5-4670-9c69-950257467c56',
+                'transport': 'local'
+            },
+            'spec': {
+                'host': '127.0.0.1',
+                'port': 3306,
+                'database': 'gitea',
+                'user': 'git_mdbDhSIfMFerfyAK',
+                'password': 'boltcutter-goes-click-clack-KIVesvKc6dPIQ7scNsQsDg8mcc1x4SxQUVMjWPIq/VE='
+            }
+        }
+
     def get_sensitive_information(self) -> list:
+        """
+        Returns a list of keywords that needs to be stripped out from the console text
+        :return:
+        """
+
         return [
             self._spec['password']
         ]
 
     def _get_common_parameters(self) -> str:
+        """
+        Common commandline switches for mysql and mysqldump
+        :return:
+        """
+
         parameters = '-h {host} -u {user} '.format(host=self._spec['host'], user=self._spec['user'])
 
         if self._spec.get('password'):
-            parameters += ' -p{password} '.format(password=self._spec.get('password'))
+            parameters += ' -p"{password}" '.format(password=self._spec.get('password').replace('$', '\$'))
 
         if self._spec.get('port'):
             parameters += ' -P {port} '.format(port=str(self._spec.get('port')))
@@ -60,6 +89,11 @@ class Definition(BackupDefinition):
         return parameters
 
     def get_dump_parameters(self) -> str:
+        """
+        Commandline switches specific to mysqldump
+        :return:
+        """
+
         parameters = self._get_common_parameters()
         parameters += ' --skip-lock-tables --add-drop-table --add-drop-database --add-drop-trigger '
 
@@ -71,6 +105,11 @@ class Definition(BackupDefinition):
         return parameters
 
     def get_restore_parameters(self) -> str:
+        """
+        Parameters for mysql command used in restore process
+        :return:
+        """
+
         parameters = self._get_common_parameters()
 
         if self._spec.get('database'):

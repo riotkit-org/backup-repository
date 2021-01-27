@@ -6,11 +6,11 @@ from ..exception import BufferingError
 
 
 class BackupPreparationTask(BaseTask):
-    """Uploads a given file to a remote collection on the server
+    """Makes a backup and prints to stdout or into a file specified by --target parameter
     """
 
     def get_name(self) -> str:
-        return ':make'
+        return ':prepare'
 
     def get_group_name(self) -> str:
         return ':backup'

@@ -240,6 +240,35 @@ class BackupDefinition(ABC):
     def __repr__(self):
         return 'Definition<name=' + self._name + ',collection_id=' + str(self.get_collection_id()) + '>'
 
+    @classmethod
+    def get_example_configuration(cls) -> dict:
+        schema = cls.get_specification_schema()
+
+        if not schema or 'properties' not in schema:
+            return {}
+
+        def list_attributes(attributes: dict):
+            as_dict = {}
+
+            for key, attribute in attributes.items():
+                as_dict[key] = attribute['example'] if 'example' in attribute else attribute['type']
+
+                if 'properties' in attribute:
+                    as_dict[key] = list_attributes(attribute['properties'])
+
+            return as_dict
+
+        return {
+            'meta': {
+                'type': cls.__module__,
+                'access': 'my_backup_server',
+                'encryption': 'enc_backup_1',
+                'collection_id': '61792136-94d5-4670-9c69-950257467c56',
+                'transport': 'local'
+            },
+            'spec': list_attributes(schema['properties'])
+        }
+
 
 class ReadableStream(ABC):
     @abstractmethod
