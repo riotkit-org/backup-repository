@@ -25,6 +25,11 @@ transports:
         type: bahub.transports.sh
         spec:
 
+    docker_test:
+        type: bahub.transports.docker
+        spec:
+            container: "bahub_adapter_integrations_db_mysql_1"
+
 backups:
     fs:
         meta:
@@ -43,7 +48,7 @@ backups:
             access: full_permissions
             encryption: strong
             collection_id: "61792136-94d5-4670-9c69-950257467c56"
-            transport: local
+            transport: docker_test
         spec:
             host: "127.0.0.1"
             port: 3306

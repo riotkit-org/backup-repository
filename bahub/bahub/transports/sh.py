@@ -14,6 +14,13 @@ from .base import TransportInterface
 
 
 class Transport(TransportInterface):
+    """
+    Local shell transport
+    =====================
+
+    Executes commands in a local shell
+    """
+
     def execute(self, command: Union[str, List[str]]):
         check_call(command, shell=type(command) == str)
 

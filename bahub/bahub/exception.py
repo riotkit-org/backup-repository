@@ -3,6 +3,20 @@ class ApplicationException(Exception):
     pass
 
 
+class TransportException(ApplicationException):
+    pass
+
+
+class DockerContainerError(TransportException):
+    @staticmethod
+    def from_container_not_found(container_id: str) -> 'DockerContainerError':
+        return DockerContainerError('Container "{}" is not created'.format(container_id))
+
+    @staticmethod
+    def from_container_not_running(container_id: str, status: str) -> 'DockerContainerError':
+        return DockerContainerError('Container "{}" is not running but actually {}'.format(container_id, status))
+
+
 class ConfigurationFactoryException(ApplicationException):
     pass
 
