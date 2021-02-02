@@ -4,7 +4,7 @@ Shell Transport
 
 Executes a command in the shell
 """
-
+import os
 import sys
 from subprocess import check_call, check_output, Popen, PIPE
 from typing import List, Union, Optional
@@ -28,13 +28,20 @@ class Transport(TransportInterface):
         return check_output(command, shell=type(command) == str)
 
     def buffered_execute(self, command: Union[str, List[str]],
-                         stdin: Optional[StreamableBuffer] = None) -> StreamableBuffer:
+                         stdin: Optional[StreamableBuffer] = None,
+                         env: dict = None) -> StreamableBuffer:
+
+        proc_env = dict(os.environ)
+
+        if env:
+            proc_env.update(env)
 
         self.io().debug('buffered_execute({command})'.format(command=command))
         proc = Popen(command, shell=type(command) == str,
                      stdout=PIPE,
                      stderr=sys.stderr.fileno(),
-                     stdin=stdin.get_buffer() if stdin else PIPE)
+                     stdin=stdin.get_buffer() if stdin else PIPE,
+                     env=env)
 
         def close_stream():
             proc.stdout.close()

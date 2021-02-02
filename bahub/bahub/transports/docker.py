@@ -62,13 +62,15 @@ class Transport(ShellTransport):
         return super().capture(self._create_command(command))
 
     def buffered_execute(self, command: Union[str, List[str]],
-                         stdin: Optional[StreamableBuffer] = None) -> StreamableBuffer:
+                         stdin: Optional[StreamableBuffer] = None,
+                         env: dict = None) -> StreamableBuffer:
 
         self._assert_container_is_fine()
 
         return super().buffered_execute(
             command=self._create_command(command),
-            stdin=stdin
+            stdin=stdin,
+            env=env
         )
 
     def _create_command(self, cmd: Union[str, List[str]]) -> List[str]:

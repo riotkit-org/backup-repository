@@ -70,13 +70,15 @@ class TransportInterface(object):
 
     @abstractmethod
     def buffered_execute(self, command: Union[str, List[str]],
-                         stdin: Optional[StreamableBuffer] = None) -> StreamableBuffer:
+                         stdin: Optional[StreamableBuffer] = None,
+                         env: dict = None) -> StreamableBuffer:
 
         """
         Open a process with two pipes - IN & OUT for streaming
 
         :param command:
         :param stdin:
+        :param env:
         :return:
         """
 
