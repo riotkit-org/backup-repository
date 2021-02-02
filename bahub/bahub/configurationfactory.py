@@ -13,7 +13,7 @@ from .model import ServerAccess
 from .model import BackupDefinition
 from .errorhandler import ErrorHandlerFactory, ErrorHandlerInterface
 from .notifier import NotifierInterface, NotifierFactory
-from .exception import ConfigurationFactoryException, ConfigurationError
+from .exception import ConfigurationFactoryException, ConfigurationError, SpecificationError
 from .transports.base import TransportInterface
 
 
@@ -99,6 +99,8 @@ class ConfigurationFactory(object):
                 try:
                     transport: Union[Type[TransportInterface], TransportInterface.__init__] = \
                         Importing.import_transport(config['type'])
+
+                    transport.validate_spec(config['spec'])
 
                     self._transports[transport_name] = transport(config['spec'], self._io)
 
@@ -231,7 +233,8 @@ class DefinitionFactoryErrorCatcher:
             if self._debug:
                 return
 
-            # @todo: Support ConfigurationError
+            if exc_type == SpecificationError or exc_type == ConfigurationError:
+                raise ConfigurationFactoryException('Error parsing {}, details: {}'.format(self._key_name, exc_val))
 
             raise ConfigurationFactoryException(
                 ' ERROR: There was a problem during parsing the configuration at section "' +

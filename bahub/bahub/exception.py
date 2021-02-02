@@ -25,6 +25,10 @@ class ConfigurationError(ApplicationException):
     pass
 
 
+class SpecificationError(ConfigurationError):
+    pass
+
+
 class ApiException(ApplicationException):
     pass
 

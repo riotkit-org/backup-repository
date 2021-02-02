@@ -37,6 +37,20 @@ class Transport(ShellTransport):
         self._container_name = spec.get('container')
         self._client = DockerClient.from_env()
 
+    @staticmethod
+    def get_specification_schema() -> dict:
+        return {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "type": "object",
+            "required": ["container"],
+            "properties": {
+                "container": {
+                    "type": "string",
+                    "example": "bahub_adapter_integrations_db_mysql_1"
+                }
+            }
+        }
+
     def execute(self, command: Union[str, List[str]]):
         self._assert_container_is_fine()
 

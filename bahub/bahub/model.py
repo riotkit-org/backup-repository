@@ -3,8 +3,8 @@ from typing import BinaryIO
 from urllib.parse import quote as url_quote
 from json import dumps as json_dumps
 from abc import ABC, abstractmethod
-from jsonschema import validate, draft7_format_checker
-from bahub.exception import ConfigurationFactoryException
+from jsonschema import validate, draft7_format_checker, ValidationError
+from bahub.exception import ConfigurationFactoryException, SpecificationError
 from bahub.transports.base import TransportInterface
 
 
@@ -195,8 +195,10 @@ class BackupDefinition(ABC):
         spec_schema = cls.get_specification_schema()
 
         if spec_schema:
-            # @todo: Error handling
-            validate(instance=spec, schema=spec_schema, format_checker=draft7_format_checker)
+            try:
+                validate(instance=spec, schema=spec_schema, format_checker=draft7_format_checker)
+            except ValidationError as exc:
+                raise SpecificationError(str(exc))
 
     @staticmethod
     @abstractmethod
