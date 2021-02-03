@@ -10,3 +10,11 @@ Example of handlers:
   - Redis handler
   - Remote Mail Handler
 """
+
+from .filesystem import Adapter as FSAdapter
+from .mysql import Adapter as MySQLAdapter
+from .postgres_dump import Adapter as PostgresDumpAdapter
+
+
+def adapters() -> list:
+    return [FSAdapter, MySQLAdapter, PostgresDumpAdapter]

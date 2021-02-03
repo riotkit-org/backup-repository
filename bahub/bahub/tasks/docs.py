@@ -1,8 +1,10 @@
 import json
 import yaml
 from argparse import ArgumentParser
-from rkd.api.contract import ExecutionContext
+from rkd.api.contract import ExecutionContext, TaskInterface
 from ..importing import Importing
+from ..transports import transports
+from ..adapters import adapters
 from .base import BaseTask
 
 
@@ -30,7 +32,7 @@ class BackupTypeSchemaPrintingTask(BaseTask):
 
 
 class BackupTypeExampleTask(BaseTask):
-    """Shows a example configuration for a given backup type. See :info for list of builtin tasks"""
+    """Shows a example configuration for a given backup type. See :help:info for list of built-in tasks"""
 
     def get_name(self) -> str: return ':example'
     def get_group_name(self) -> str: return ':help:backup'
@@ -57,7 +59,7 @@ class BackupTypeExampleTask(BaseTask):
 
 
 class TransportTypeTask(BaseTask):
-    """Shows example transport configuration for given transport. See :info for list of builtin transports"""
+    """Shows example transport configuration for given transport. See :help:info for list of built-in transports"""
 
     def get_name(self) -> str: return ':example'
     def get_group_name(self) -> str: return ':help:transport'
@@ -82,3 +84,35 @@ class TransportTypeTask(BaseTask):
 
         return True
 
+
+class InfoTask(TaskInterface):
+    """Lists all built-in backup types and transports"""
+
+    def get_name(self) -> str: return ':info'
+    def get_group_name(self) -> str: return ':help'
+
+    def execute(self, context: ExecutionContext):
+
+        self.io().print_line()
+        self.io().outln('Standard built-in transports:')
+
+        for transport in transports():
+            self.io().outln('- {}'.format(transport.__module__))
+
+        self.io().print_line()
+        self.io().outln('Standard built-in backup types:')
+
+        for adapter in adapters():
+            self.io().outln('- {}'.format(adapter.__module__))
+
+        self.io().print_line()
+        self.io().info_msg('*The list includes ONLY officially distributed adapters and transports. '
+                           'You may be able to install additional adapters and transports via PyPI')
+
+        self.io().info_msg('Check also help for transports: `bahub :help:transport:example bahub.transports.sh`')
+        self.io().info_msg('Check also help for backup types: `bahub :help:backup:example bahub.adapters.filesystem`')
+
+        return True
+
+    def configure_argparse(self, parser: ArgumentParser):
+        pass
