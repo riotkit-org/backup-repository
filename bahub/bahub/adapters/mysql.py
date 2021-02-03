@@ -122,13 +122,13 @@ class Adapter(AdapterInterface):
     """Contains a logic specific to MySQL - how to backup, and how to restore"""
 
     def backup(self, definition: Definition) -> StreamableBuffer:
-        backup_process = definition.get_transport().buffered_execute
+        backup_process = definition.transport().buffered_execute
 
         return backup_process('mysqldump %s' % definition.get_dump_parameters())
 
     def restore(self, definition: Definition, in_buffer: StreamableBuffer, io: IO) -> None:
-        restore_process = definition.get_transport().buffered_execute('mysql %s' % definition.get_restore_parameters(),
-                                                                      stdin=in_buffer)
+        restore_process = definition.transport().buffered_execute('mysql %s' % definition.get_restore_parameters(),
+                                                                  stdin=in_buffer)
 
         self._read_from_restore_process(restore_process, io)
 

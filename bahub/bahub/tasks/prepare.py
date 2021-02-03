@@ -29,27 +29,30 @@ class BackupPreparationTask(BaseTask):
         adapter: AdapterInterface = self.config.get_adapter(definition_name)()
 
         # begin a backup, get a buffered reader
-        backup_buffer = adapter.backup(definition)
+        with definition.transport():
+            backup_buffer = adapter.backup(definition)
 
-        # buffers
-        enc_buffer = self.encryption_service.create_encryption_stream(definition.get_encryption(),
-                                                                      stdin=backup_buffer)
-        out = open(target_path, 'wb')
+            # buffers
+            enc_buffer = self.encryption_service.create_encryption_stream(definition.get_encryption(),
+                                                                          stdin=backup_buffer)
+            out = open(target_path, 'wb')
 
-        # copy encrypted stream to destination
-        try:
-            enc_buffer.copy_to_raw_stream(out)
+            # copy encrypted stream to destination
+            try:
+                enc_buffer.copy_to_raw_stream(out)
 
-        except BufferingError as e:
+            except BufferingError as e:
+                out.close()
+                self.io().error_msg('Backup process died unexpectedly at early buffering stage. '
+                                    'The errors from stderr should be above, if there were any')
+                self.io().error_msg('Details: {}'.format(str(e)))
+
+                return False
+
             out.close()
-            self.io().error_msg('Backup process died unexpectedly at early buffering stage. '
-                                'The errors from stderr should be above, if there were any')
-            self.io().error_msg('Details: {}'.format(str(e)))
+            backup_buffer.close()
 
-            return False
-
-        out.close()
-        is_success = backup_buffer.finished_with_success() and enc_buffer.finished_with_success()
+            is_success = backup_buffer.finished_with_success() and enc_buffer.finished_with_success()
 
         if not is_success:
             self.io().error_msg('Backup process did not return success. Check previous messages for details')

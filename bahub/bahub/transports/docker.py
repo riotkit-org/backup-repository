@@ -27,6 +27,7 @@ class Transport(ShellTransport):
     """
 
     _container_name: str
+    _shell: str
     _client: DockerClient
 
     def __init__(self, spec: dict, io: IO):
@@ -35,6 +36,7 @@ class Transport(ShellTransport):
         self._spec = spec
         self._io = io
         self._container_name = spec.get('container')
+        self._shell = spec.get('shell', '/bin/sh')
         self._client = DockerClient.from_env()
 
     @staticmethod
@@ -47,6 +49,11 @@ class Transport(ShellTransport):
                 "container": {
                     "type": "string",
                     "example": "bahub_adapter_integrations_db_mysql_1"
+                },
+                "shell": {
+                    "type": "string",
+                    "example": "/bin/sh",
+                    "default": "/bin/sh"
                 }
             }
         }
@@ -85,7 +92,7 @@ class Transport(ShellTransport):
 
                 prepared_inside_cmd += param + ' '
 
-        return ['docker', 'exec', '-i', self._container_name, '/bin/sh', '-c', prepared_inside_cmd]
+        return ['docker', 'exec', '-i', self._container_name, self._shell, '-c', prepared_inside_cmd]
 
     def get_failure_details(self) -> str:
         return 'Error occurred while trying to execute command inside docker container - {}, logs: {}'.format(

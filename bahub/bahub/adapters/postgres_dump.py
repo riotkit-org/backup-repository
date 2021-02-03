@@ -136,14 +136,14 @@ class Adapter(AdapterInterface):
         :return:
         """
 
-        return definition.get_transport()\
+        return definition.transport()\
             .buffered_execute(
             definition.get_dump_command(),
             env={'PGPASSWORD': definition.get_password()}
         )
 
     def restore(self, definition: Definition, in_buffer: StreamableBuffer, io: IO) -> None:
-        restore_process = definition.get_transport()\
+        restore_process = definition.transport()\
             .buffered_execute(
                 definition.get_restore_command(),
                 stdin=in_buffer,

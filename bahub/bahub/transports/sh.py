@@ -21,6 +21,10 @@ class Transport(TransportInterface):
     Executes commands in a local shell
     """
 
+    @staticmethod
+    def get_specification_schema() -> dict:
+        return {}
+
     def execute(self, command: Union[str, List[str]]):
         check_call(command, shell=type(command) == str)
 

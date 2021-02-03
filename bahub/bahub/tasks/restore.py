@@ -60,10 +60,11 @@ class RestoreTask(BaseTask):
                 self._download_only(download_to, enc_buffer)
             # restore
             else:
-                backup_adapter.restore(definition, enc_buffer, self._io)
+                with definition.transport():
+                    backup_adapter.restore(definition, enc_buffer, self._io)
 
         except BackupProcessError as e:
-            additional_info = definition.get_transport().get_failure_details()
+            additional_info = definition.transport().get_failure_details()
 
             if additional_info:
                 self.io().error_msg(additional_info)

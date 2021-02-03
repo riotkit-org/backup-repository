@@ -25,6 +25,23 @@ class TransportInterface(object):
         self._spec = spec
         self._io = io
 
+    def __enter__(self) -> 'TransportInterface':
+        """
+        Start using the transport. Here could be placed a code that will eg. spawn a docker container
+        or notify the user - any action before usage of the Transport
+        :return:
+        """
+
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_t) -> None:
+        """
+        Finalize usage of the Transport - close what remained, clean up
+        :return:
+        """
+
+        pass
+
     @staticmethod
     @abstractmethod
     def get_specification_schema() -> dict:

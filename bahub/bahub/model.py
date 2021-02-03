@@ -230,7 +230,7 @@ class BackupDefinition(ABC):
     def get_collection_id(self) -> str:
         return self._collection_id
 
-    def get_transport(self) -> TransportInterface:
+    def transport(self) -> TransportInterface:
         return self._transport
 
     def get_sensitive_information(self) -> list:

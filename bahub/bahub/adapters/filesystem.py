@@ -72,14 +72,14 @@ class Adapter(AdapterInterface):
     def backup(self, definition: Definition) -> StreamableBuffer:
         """Pack files into a TAR.GZ and return as a output buffer"""
 
-        backup_process = definition.get_transport().buffered_execute
+        backup_process = definition.transport().buffered_execute
 
-        return backup_process('tar %s | cat' % definition.get_backup_parameters())
+        return backup_process('set -euo pipefail; tar %s | cat' % definition.get_backup_parameters())
 
     def restore(self, definition: Definition, in_buffer: StreamableBuffer, io: IO) -> None:
         """Unpack files from the TAR.GZ provided by in_buffer"""
 
-        restore_process = definition.get_transport()\
+        restore_process = definition.transport()\
             .buffered_execute('tar %s' % definition.get_restore_parameters(), stdin=in_buffer)
 
         self._read_from_restore_process(restore_process, io)

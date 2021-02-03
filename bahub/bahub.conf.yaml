@@ -31,11 +31,11 @@ transports:
             container: "bahub_adapter_integrations_db_mysql_1"
 
     postgres_1:
-        type: bahub.transports.docker
+        type: bahub.transports.temporarydocker
         spec:
             container: "bahub_adapter_integrations_db_postgres_1"
-
-    # todo: support for transport that mounts other container directories turning it off temporarily
+            image: "postgres:13.1"
+            shell: /bin/bash
 
 backups:
     fs:
@@ -48,6 +48,17 @@ backups:
         spec:
             paths:
                 - ./
+
+    postgres_fs_cold_files_backup:
+        meta:
+            type: bahub.adapters.filesystem
+            access: full_permissions
+            encryption: strong
+            collection_id: "61792136-94d5-4670-9c69-950257467c56"
+            transport: postgres_1
+        spec:
+            paths:
+                - /var/lib/postgres
 
     db_mysql:
         meta:
