@@ -54,11 +54,11 @@ backups:
             type: bahub.adapters.filesystem
             access: full_permissions
             encryption: strong
-            collection_id: "61792136-94d5-4670-9c69-950257467c56"
+            collection_id: "19804c5a-221a-4ea5-9ad3-b2a8312d6e01"
             transport: postgres_1
         spec:
             paths:
-                - /var/lib/postgres
+                - /var/lib/postgresql
 
     db_mysql:
         meta:

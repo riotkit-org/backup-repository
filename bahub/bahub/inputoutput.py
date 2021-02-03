@@ -1,3 +1,4 @@
+from time import sleep
 from typing import BinaryIO, Union, Optional, IO, Callable
 from urllib3 import HTTPResponse
 from .exception import BufferingError
@@ -14,6 +15,9 @@ class StreamableBuffer(object):
     _buffer: Union[BinaryIO, Optional[IO[bytes]], HTTPResponse]
     _in_buffer: Optional[BUFFER_CALLABLE_DEF]
     _parent: Optional['StreamableBuffer']
+
+    # pre-validation of the buffer on read()
+    _pre_validation_taken_place: bool
 
     def __init__(self, read_callback: BUFFER_CALLABLE_DEF,
                  close_callback: callable,
@@ -35,6 +39,8 @@ class StreamableBuffer(object):
         self._in_buffer = in_buffer
         self._parent = parent
 
+        self._pre_validation_taken_place = False
+
     def get_buffer(self) -> Union[BinaryIO, Optional[IO[bytes]]]:
         return self._buffer
 
@@ -42,7 +48,26 @@ class StreamableBuffer(object):
         return self._in_buffer
 
     def read(self, size: int = 64 * 1024) -> bytes:
-        return self._read_callback(size)
+        """
+        Read stream of given length
+        At first read() call it performs stream validation to see if it didn't end prematurely
+
+        :param size:
+        :return:
+        """
+
+        buf = None
+
+        if self._pre_validation_taken_place is False:
+            self._pre_validation_taken_place = True
+
+            buf = self._read_callback(size)
+            sleep(5)
+
+        if self.has_exited_with_failure():
+            raise BufferingError.from_early_buffer_exit(self._description)
+
+        return self._read_callback(size) if buf is None else buf
 
     def read_all(self) -> bytes:
         # noinspection PyArgumentList
@@ -70,7 +95,7 @@ class StreamableBuffer(object):
 
         # fail, when parent fails
         if self._parent and self._parent.has_exited_with_failure():
-            return False
+            return True
 
         return self._has_exited_with_failure()
 
