@@ -53,7 +53,7 @@ class Transport(RegularDockerTransport):
 
     def __enter__(self) -> 'Transport':
         """
-        Spawn a temporary container
+        Spawns a temporary container
         :return:
         """
 
@@ -95,8 +95,6 @@ class Transport(RegularDockerTransport):
 
             self._io.debug('Bringing back the orginal container')
             self._client.start(self._original_container)
-
-        pass
 
     def _assert_container_is_fine(self):
         try:

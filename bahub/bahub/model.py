@@ -270,26 +270,3 @@ class BackupDefinition(ABC):
             },
             'spec': list_attributes(schema['properties'])
         }
-
-
-class ReadableStream(ABC):
-    @abstractmethod
-    def read(self, size) -> bytes:
-        pass
-
-    @abstractmethod
-    def close(self):
-        pass
-
-
-class IOStream(ReadableStream):
-    buff: BinaryIO
-
-    def __init__(self, buff: BinaryIO):
-        self.buff = buff
-
-    def read(self, size) -> bytes:
-        return self.buff.read(size)
-
-    def close(self):
-        self.buff.close()

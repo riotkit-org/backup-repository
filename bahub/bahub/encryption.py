@@ -35,7 +35,9 @@ class EncryptionService(object):
 
         return self._create_stream(encryption, gpg_command, stdin)
 
-    def create_encryption_stream(self, encryption: Encryption, stdin: Union[int, 'StreamableBuffer'] = PIPE):
+    def create_encryption_stream(self, encryption: Encryption, stdin: Union[int, 'StreamableBuffer'] = PIPE) \
+            -> StreamableBuffer:
+
         gpg_command = [
             'gpg',
             '--homedir', encryption.get_home_dir(),

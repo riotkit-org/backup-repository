@@ -13,7 +13,7 @@ class UploaderTask(BaseTask):
         return ':send'
 
     def get_group_name(self) -> str:
-        return ':backup'
+        return ':backup:raw'
 
     def configure_argparse(self, parser: ArgumentParser, with_definition: bool = True):
         super().configure_argparse(parser, with_definition=with_definition)

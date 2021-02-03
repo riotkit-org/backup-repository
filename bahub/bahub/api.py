@@ -11,7 +11,7 @@ from json import JSONDecodeError, loads as json_loads
 from rkd.api.inputoutput import IO
 from bahub.exception import InvalidResponseException, HttpException
 from bahub.inputoutput import StreamableBuffer
-from bahub.model import ServerAccess, VersionAttributes, ReadableStream
+from bahub.model import ServerAccess, VersionAttributes
 from bahub.response import VersionUploadedResponse
 
 SEND_BACKUPS_URL = '/api/stable/repository/collection/{collectionId}/versions'
