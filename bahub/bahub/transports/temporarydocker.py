@@ -27,6 +27,7 @@ class Transport(RegularDockerTransport):
         super().__init__(spec, io)
 
         self._shell = spec.get('shell', '/bin/bash')
+        self._container_name = spec.get('orig_container')
 
     @staticmethod
     def get_specification_schema() -> dict:
@@ -35,11 +36,11 @@ class Transport(RegularDockerTransport):
             "type": "object",
             "required": ["container"],
             "properties": {
-                "container": {
+                "orig_container": {
                     "type": "string",
                     "example": "bahub_adapter_integrations_db_mysql_1"
                 },
-                "image": {
+                "temp_container_image": {
                     "type": "string",
                     "example": "mariadb:10.3"
                 },
@@ -58,7 +59,7 @@ class Transport(RegularDockerTransport):
         """
 
         # stop the original container at first
-        self._original_container = self._spec.get('container')
+        self._original_container = self._spec.get('orig_container')
         self._io.debug('Stopping original container {}'.format(self._original_container))
         self._client.stop(self._original_container)
 
@@ -67,7 +68,7 @@ class Transport(RegularDockerTransport):
 
         try:
             info = self._client.create_container(
-                image=self._spec.get('image'),
+                image=self._spec.get('temp_container_image'),
                 entrypoint=['sleep'],
                 command=[str(86400 * 5)],
                 host_config=host_config

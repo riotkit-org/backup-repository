@@ -6,7 +6,7 @@ from ..importing import Importing
 from .base import BaseTask
 
 
-class TaskTypeSchemaPrintingTask(BaseTask):
+class BackupTypeSchemaPrintingTask(BaseTask):
     """Shows JSON schema of section 'spec' in backup of given type"""
 
     def get_name(self) -> str: return ':schema'
@@ -29,8 +29,8 @@ class TaskTypeSchemaPrintingTask(BaseTask):
         return True
 
 
-class TaskTypeExampleTask(BaseTask):
-    """Shows a example configuration for a task"""
+class BackupTypeExampleTask(BaseTask):
+    """Shows a example configuration for a given backup type. See :info for list of builtin tasks"""
 
     def get_name(self) -> str: return ':example'
     def get_group_name(self) -> str: return ':help:backup'
@@ -54,3 +54,31 @@ class TaskTypeExampleTask(BaseTask):
         )
 
         return True
+
+
+class TransportTypeTask(BaseTask):
+    """Shows example transport configuration for given transport. See :info for list of builtin transports"""
+
+    def get_name(self) -> str: return ':example'
+    def get_group_name(self) -> str: return ':help:transport'
+
+    def configure_argparse(self, parser: ArgumentParser, with_definition: bool = False):
+        super().configure_argparse(parser, with_definition)
+        parser.add_argument('type', help='Transport type (value of the field "type" in transport list)')
+
+    def execute(self, context: ExecutionContext) -> bool:
+        super().execute(context)
+
+        transport_name = context.get_arg('type')
+        transport = Importing.import_transport(transport_name)
+
+        self.io().outln(
+            yaml.dump({
+                'transports': {
+                    'example': transport.get_example_configuration()
+                }
+            }, indent=4)
+        )
+
+        return True
+

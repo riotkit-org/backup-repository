@@ -14,7 +14,7 @@ from .prepare import BackupPreparationTask
 from .uploader import UploaderTask
 from .restore import RestoreTask
 from .cryptsetup import CryptographyKeysSetupTask, ListCryptoKeys
-from .docs import TaskTypeSchemaPrintingTask, TaskTypeExampleTask
+from .docs import BackupTypeSchemaPrintingTask, BackupTypeExampleTask, TransportTypeTask
 
 
 def imports():
@@ -24,6 +24,7 @@ def imports():
         TaskDeclaration(BackupPreparationTask()),
         TaskDeclaration(CryptographyKeysSetupTask()),
         TaskDeclaration(ListCryptoKeys()),
-        TaskDeclaration(TaskTypeSchemaPrintingTask()),
-        TaskDeclaration(TaskTypeExampleTask())
+        TaskDeclaration(BackupTypeSchemaPrintingTask()),
+        TaskDeclaration(BackupTypeExampleTask()),
+        TaskDeclaration(TransportTypeTask())
     ]

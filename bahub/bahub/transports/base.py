@@ -1,9 +1,10 @@
 from abc import abstractmethod
 from typing import Union, List, Optional
 from jsonschema import validate, draft7_format_checker, ValidationError
+from rkd.api.inputoutput import IO
 from ..exception import SpecificationError
 from ..inputoutput import StreamableBuffer
-from rkd.api.inputoutput import IO
+from ..schema import list_attributes
 
 
 class TransportInterface(object):
@@ -51,7 +52,19 @@ class TransportInterface(object):
         :return:
         """
 
-        pass
+        return {}
+
+    @classmethod
+    def get_example_configuration(cls) -> dict:
+        schema = cls.get_specification_schema()
+
+        if not schema or 'properties' not in schema:
+            return {}
+
+        return {
+            'type': cls.__module__,
+            'spec': list_attributes(schema['properties'])
+        }
 
     @classmethod
     def validate_spec(cls, spec: dict):

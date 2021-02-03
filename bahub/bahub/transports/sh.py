@@ -23,7 +23,14 @@ class Transport(TransportInterface):
 
     @staticmethod
     def get_specification_schema() -> dict:
-        return {}
+        return {
+            "$schema": "http://json-schema.org/draft-07/schema#",
+            "type": "object",
+            "required": ["container"],
+            "properties": {
+
+            }
+        }
 
     def execute(self, command: Union[str, List[str]]):
         check_call(command, shell=type(command) == str)

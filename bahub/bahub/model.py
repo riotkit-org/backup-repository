@@ -1,11 +1,11 @@
 import os
-from typing import BinaryIO
 from urllib.parse import quote as url_quote
 from json import dumps as json_dumps
 from abc import ABC, abstractmethod
 from jsonschema import validate, draft7_format_checker, ValidationError
-from bahub.exception import ConfigurationFactoryException, SpecificationError
-from bahub.transports.base import TransportInterface
+from .exception import ConfigurationFactoryException, SpecificationError
+from .transports.base import TransportInterface
+from .schema import list_attributes
 
 
 class VersionAttributes(object):
@@ -248,17 +248,6 @@ class BackupDefinition(ABC):
 
         if not schema or 'properties' not in schema:
             return {}
-
-        def list_attributes(attributes: dict):
-            as_dict = {}
-
-            for key, attribute in attributes.items():
-                as_dict[key] = attribute['example'] if 'example' in attribute else attribute['type']
-
-                if 'properties' in attribute:
-                    as_dict[key] = list_attributes(attribute['properties'])
-
-            return as_dict
 
         return {
             'meta': {
