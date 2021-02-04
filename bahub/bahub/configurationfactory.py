@@ -1,11 +1,9 @@
 
 import os
 import re
-from typing import Tuple, Type, Union, Dict
-
+from typing import Tuple, Type, Union, Dict, List
 from rkd.api.inputoutput import IO
 from rkd.yaml_parser import YamlFileLoader
-
 from .adapters.base import AdapterInterface
 from .importing import Importing
 from .model import Encryption
@@ -192,7 +190,9 @@ class ConfigurationFactory(object):
         return self._backups[name]
 
     def get_adapter(self, definition_name: str) -> Type[AdapterInterface]:
-        """Finds and returns an AdapterInterface type (not a class object)"""
+        """
+        Finds and returns an AdapterInterface type (not a class object)
+        """
 
         if definition_name not in self._adapters:
             raise ConfigurationFactoryException(
@@ -201,7 +201,12 @@ class ConfigurationFactory(object):
 
         return self._adapters[definition_name]
 
-    def get_all_sensitive_data(self) -> list:
+    def get_all_sensitive_data(self) -> List[str]:
+        """
+        Collects sensitive data like passwords from the configuration file
+        :return:
+        """
+
         sensitive_data = []
 
         for access in self._accesses:
@@ -211,7 +216,6 @@ class ConfigurationFactory(object):
             if self._backups[backup].get_encryption().get_passphrase():
                 sensitive_data.append(self._backups[backup].get_encryption().get_passphrase())
 
-            sensitive_data.append(self._backups[backup].get_collection_id())
             sensitive_data += self._backups[backup].get_sensitive_information()
 
         return sensitive_data

@@ -1,11 +1,12 @@
 """
 Server API connector
 ====================
-"""
-from subprocess import Popen, PIPE
 
+Notice: Only E2E tests coverage
+"""
 import certifi
 import pycurl
+from subprocess import Popen, PIPE
 from io import BytesIO
 from json import JSONDecodeError, loads as json_loads
 from rkd.api.inputoutput import IO

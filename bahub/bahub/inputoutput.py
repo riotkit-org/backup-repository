@@ -112,7 +112,8 @@ class StreamableBuffer(object):
             eof_callback=lambda: handle.closed,
             is_success_callback=lambda: handle.closed,
             description='File stream <{}>'.format(path),
-            buffer=handle
+            buffer=handle,
+            pre_validation_sleep=0
         )
 
     def find_failure_cause(self) -> str:
