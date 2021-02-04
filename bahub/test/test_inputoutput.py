@@ -90,8 +90,7 @@ class TestStreamableBuffer(BasicTestingCase):
         )
 
         # technically it should fail, because parent_stream_obj has has_exited_with_failure = True
-        with self.assertRaises(BufferingError):
-            buf_obj.read(8)
+        self.assertTrue(buf_obj.has_exited_with_failure())
 
     def _create_successful_example(self) -> StreamableBuffer:
         """
