@@ -14,7 +14,7 @@ def create_sensitive_data_stripping_filter(words: List[str]) -> callable:
     :return:
     """
 
-    def sensitive_word_filter(text, origin: Union[str, bytes]) -> Union[str, bytes]:
+    def sensitive_word_filter(text, origin: Union[str, bytes] = '') -> Union[str, bytes]:
         for word in words:
             if word in text:
                 text = text.replace(word, '********')

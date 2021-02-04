@@ -5,7 +5,7 @@ from abc import ABC, abstractmethod
 from jsonschema import validate, draft7_format_checker, ValidationError
 from .exception import ConfigurationFactoryException, SpecificationError
 from .transports.base import TransportInterface
-from .schema import list_attributes
+from .schema import create_example_from_attributes
 
 
 class VersionAttributes(object):
@@ -257,5 +257,5 @@ class BackupDefinition(ABC):
                 'collection_id': '61792136-94d5-4670-9c69-950257467c56',
                 'transport': 'local'
             },
-            'spec': list_attributes(schema['properties'])
+            'spec': create_example_from_attributes(schema['properties'])
         }

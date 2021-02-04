@@ -23,7 +23,7 @@ encryption:
 transports:
     local:
         type: bahub.transports.sh
-        spec:
+        spec: {}
 
     docker_test:
         type: bahub.transports.docker
@@ -33,8 +33,8 @@ transports:
     postgres_1:
         type: bahub.transports.temporarydocker
         spec:
-            container: "bahub_adapter_integrations_db_postgres_1"
-            image: "postgres:13.1"
+            orig_container: "bahub_adapter_integrations_db_postgres_1"
+            temp_container_image: "postgres:13.1"
             shell: /bin/bash
 
 backups:
