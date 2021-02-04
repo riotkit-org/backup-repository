@@ -17,6 +17,7 @@ class StreamableBuffer(object):
 
     # pre-validation of the buffer on read()
     _pre_validation_taken_place: bool
+    _pre_validation_sleep: int
 
     def __init__(self, read_callback: BUFFER_CALLABLE_DEF,
                  close_callback: callable,
@@ -26,7 +27,8 @@ class StreamableBuffer(object):
                  has_exited_with_failure: callable = None,
                  description: str = '',
                  in_buffer: Optional[BUFFER_CALLABLE_DEF] = None,
-                 parent: Optional['StreamableBuffer'] = None):
+                 parent: Optional['StreamableBuffer'] = None,
+                 pre_validation_sleep: int = 5):
 
         self._read_callback = read_callback
         self._close = close_callback
@@ -37,6 +39,7 @@ class StreamableBuffer(object):
         self._buffer = buffer
         self._in_buffer = in_buffer
         self._parent = parent
+        self._pre_validation_sleep = pre_validation_sleep
 
         self._pre_validation_taken_place = False
 
@@ -61,7 +64,8 @@ class StreamableBuffer(object):
             self._pre_validation_taken_place = True
 
             buf = self._read_callback(size)
-            sleep(5)
+            # give the process / api request or other thing a little amount of time on first read
+            sleep(self._pre_validation_sleep)
 
         if self.has_exited_with_failure():
             raise BufferingError.from_early_buffer_exit(self._description)
