@@ -9,7 +9,6 @@ BUFFER_CALLABLE_DEF = Callable[[Optional[int]], bytes]
 class StreamableBuffer(object):
     _read_callback: BUFFER_CALLABLE_DEF
     _close: callable
-    _max_chunk_in_memory = 1024 * 1024 * 3
     _has_exited_with_failure: callable
     _description: str
     _buffer: Union[BinaryIO, Optional[IO[bytes]], HTTPResponse]
@@ -111,45 +110,6 @@ class StreamableBuffer(object):
             description='File stream <{}>'.format(path),
             buffer=handle
         )
-
-    def copy_to_raw_stream(self, out: Union[BinaryIO, Optional[IO[bytes]]]):
-        pre_chunk = bytes()
-        pre_chunk_tested = False
-        has_any_write = False
-
-        while True:
-            chunk = self.read(1024 * 64)
-
-            if not chunk:
-                break
-
-            # write first megabytes to internal memory, to check if process not exited early
-            if not pre_chunk_tested:
-                pre_chunk += chunk
-
-                if len(pre_chunk) < self._max_chunk_in_memory:  # accumulate pre-chunk
-                    continue
-
-                else:  # release if limit was reached (but before release check if process did not had a failure)
-                    pre_chunk_tested = True
-                    chunk = pre_chunk
-
-                    # that's the purpose of pre-chunk pattern: to not release any
-                    # byte if in first X megabytes process exits early
-                    if self.has_exited_with_failure():
-                        raise BufferingError.from_early_buffer_exit(self._description)
-
-            has_any_write = True
-            out.write(chunk)
-
-        # if buffer was closed after sending some bytes, and the status is failure
-        # then we do not send those bytes
-        if len(pre_chunk) < self._max_chunk_in_memory and self.has_exited_with_failure():
-            raise BufferingError.from_early_buffer_exit(self._description)
-
-        # data was smaller than internal memory buffer
-        if pre_chunk and not has_any_write:
-            out.write(pre_chunk)
 
     def find_failure_cause(self) -> str:
         """Find a stream that broke the pipeline"""

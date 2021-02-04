@@ -26,7 +26,7 @@ class Transport(TransportInterface):
         return {
             "$schema": "http://json-schema.org/draft-07/schema#",
             "type": "object",
-            "required": ["container"],
+            "required": [],
             "properties": {
 
             }

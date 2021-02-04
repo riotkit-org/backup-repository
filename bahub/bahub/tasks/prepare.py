@@ -1,3 +1,4 @@
+from shutil import copyfileobj
 from argparse import ArgumentParser
 from rkd.api.contract import ExecutionContext
 from .base import BaseTask
@@ -64,7 +65,7 @@ class BackupPreparationTask(BaseTask):
 
         # copy encrypted stream to destination
         try:
-            source.copy_to_raw_stream(out)
+            copyfileobj(source, out)
 
         except BufferingError as e:
             out.close()

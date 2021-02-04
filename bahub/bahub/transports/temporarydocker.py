@@ -34,7 +34,7 @@ class Transport(RegularDockerTransport):
         return {
             "$schema": "http://json-schema.org/draft-07/schema#",
             "type": "object",
-            "required": ["container"],
+            "required": ["temp_container_image", "orig_container"],
             "properties": {
                 "orig_container": {
                     "type": "string",
@@ -64,7 +64,7 @@ class Transport(RegularDockerTransport):
         self._client.stop(self._original_container)
 
         self._io.debug('Creating a temporary container...')
-        host_config = self._client.create_host_config(volumes_from=[self._spec.get('container')])
+        host_config = self._client.create_host_config(volumes_from=[self._original_container])
 
         try:
             info = self._client.create_container(

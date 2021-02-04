@@ -4,7 +4,7 @@ from jsonschema import validate, draft7_format_checker, ValidationError
 from rkd.api.inputoutput import IO
 from ..exception import SpecificationError
 from ..inputoutput import StreamableBuffer
-from ..schema import list_attributes
+from ..schema import create_example_from_attributes
 
 
 class TransportInterface(object):
@@ -63,7 +63,7 @@ class TransportInterface(object):
 
         return {
             'type': cls.__module__,
-            'spec': list_attributes(schema['properties'])
+            'spec': create_example_from_attributes(schema['properties'])
         }
 
     @classmethod
