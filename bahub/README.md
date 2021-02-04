@@ -6,5 +6,6 @@ Development
 -----------
 
 ```bash
-python -m bahub -rl debug :tasks :send --config=./bahub.conf.yaml
+export RKD_SYS_LOG_LEVEL=debug
+python -m bahub -rl debug :SOME-TASK-HERE --config=./bahub.conf.yaml
 ```
