@@ -1,5 +1,4 @@
 import os
-from io import BytesIO
 from tempfile import TemporaryDirectory
 from rkd.api.inputoutput import IO
 from rkd.api.testing import BasicTestingCase
@@ -40,7 +39,7 @@ class TestEncryptionService(BasicTestingCase):
 
     def test_encryption_and_decryption(self):
         """
-        Generates a key, then encrypts and decrypts a file
+        Generates a key, then encrypts and decrypts a file, compares decrypted file with original before encryption
         """
 
         io = IO()
