@@ -1,3 +1,4 @@
+import os
 from io import BytesIO
 
 from rkd.api.testing import BasicTestingCase
@@ -92,7 +93,20 @@ class TestStreamableBuffer(BasicTestingCase):
         # technically it should fail, because parent_stream_obj has has_exited_with_failure = True
         self.assertTrue(buf_obj.has_exited_with_failure())
 
-    def _create_successful_example(self) -> StreamableBuffer:
+    def test_factory_method_from_file(self):
+        """
+        Check that factory method properly opens file for reading
+        """
+
+        buf = StreamableBuffer.from_file(os.path.abspath(__file__))
+        text = buf.read()
+        buf.close()
+
+        self.assertIn(b'test_factory_method_from_file', text)
+        self.assertTrue(buf.eof())
+
+    @staticmethod
+    def _create_successful_example() -> StreamableBuffer:
         """
         Example data provider
         :return: StreamableBuffer
