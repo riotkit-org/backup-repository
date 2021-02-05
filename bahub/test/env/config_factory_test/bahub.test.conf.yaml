@@ -25,7 +25,7 @@ backups:
     fs:
         meta:
             type: bahub.adapters.filesystem
-            access: full_permissions
+            access: secured
             encryption: strong
             collection_id: "${COLLECTION_ID}"
             transport: local
