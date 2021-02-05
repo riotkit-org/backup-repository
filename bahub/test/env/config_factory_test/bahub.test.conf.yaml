@@ -13,7 +13,7 @@ encryption:
         gnupg_home: "~/.bahub-gnupg"
         passphrase: "some-string-passphrase"
         method: "aes256"
-        username: "Mikhali Bakunin"
+        username: "Mikhail Bakunin"
         email: "bakunin@anarchista.net"
 
 transports:

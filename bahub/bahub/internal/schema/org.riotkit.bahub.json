@@ -82,7 +82,7 @@
                 "username": {
                     "type": "string",
                     "examples": [
-                        "Mikhali Bakunin",
+                        "Mikhail Bakunin",
                         "Peter Kropotkin"
                     ]
                 },
