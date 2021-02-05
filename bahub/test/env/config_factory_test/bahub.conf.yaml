@@ -1,0 +1,34 @@
+#
+# Bahub - File Repository API client configuration
+# For documentation see: https://file-repository.readthedocs.io/en/latest/client/configuration-reference.html
+#
+
+accesses:
+    secured:
+        url: "http://localhost:8000"
+        token: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJpYXQiOjE2MTAzMTg1MTUsImVtYWlsIjoiZXhhbXBsZUByaXNldXAubmV0Iiwicm9sZXMiOlsidXBsb2FkLmFsbCIsImNvbGxlY3Rpb25zLnVwbG9hZF90b19hbGxvd2VkX2NvbGxlY3Rpb25zIiwiY29sbGVjdGlvbnMubGlzdF92ZXJzaW9uc19mb3JfYWxsb3dlZF9jb2xsZWN0aW9ucyIsImNvbGxlY3Rpb25zLmZldGNoX3NpbmdsZV92ZXJzaW9uX2ZpbGVfaW5fYWxsb3dlZF9jb2xsZWN0aW9ucyJdLCJleHAiOjE4NTkxNTA1MTV9.QFczAhwABWVlBxl043Gqo_ixb2GNqJcRJ-uVgahCdB2aP8TUTEW5RhVbR81FIBBREJFZlKHg042F3kFAtwFAPODwhp275e45YbMC-fvRZdQAFSXTumi5fh5oBvakTWWKlqcs9ZK2X0mxHtjv83F1QnfoEO-Cp_D9GSAIXBW4CIKlRaRjICH7417b_eHzboqBfCjdoDsO1wkjHh0aBkq-K12yT0EZUYEArNe76WP9_S8TLN8jx0UFQvoKFaPs6EoJVxsN_kyKEQinD2TkJ-TGHrdr0EHVch2GZYV1ZcuYP4CsjO8gIwK_v6ZJuiZ41N8p8WHGm0s5OJFdbIRMkVBtVlslx3cUdy8tUAJbHzGRxNPBhpblYoKqzYY2a2k_uJT8e7LUgS_qEhbaL6o21fdGSONhldxqLsWGAfVdv9_xY_7_j2PesExukYzD2hxZ2QPTbo7Vkpp0gtEmKH21uvFUBdeMalsaEPBJmyB6I3c76xTdleyu1fLb74thnfIiBqH07EeAL26H2fpnbxnOjoRyvTn4gI5rKUPT_SvYiCbSLR5OKOtOJOmFTgSWMimC3pS46RzAgt9Xztm46zUn7a2XnVQAszNWSgH9cZ23QGmqZ0QSW0lqXgvBuI5tDqgR9gNfrYgQeBoED5eCj9KOF3oesFPkropwbZnp67c3CGNbs64'
+
+encryption:
+    strong:
+        gnupg_home: "~/.bahub-gnupg"
+        passphrase: "some-string-passphrase"
+        method: "aes256"
+        username: "Mikhali Bakunin"
+        email: "bakunin@anarchista.net"
+
+transports:
+    local:
+        type: bahub.transports.sh
+        spec: {}
+
+backups:
+    fs:
+        meta:
+            type: bahub.adapters.filesystem
+            access: full_permissions
+            encryption: strong
+            collection_id: "${COLLECTION_ID}"
+            transport: local
+        spec:
+            paths:
+                - ./

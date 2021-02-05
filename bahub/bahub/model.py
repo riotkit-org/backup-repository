@@ -218,10 +218,10 @@ class BackupDefinition(ABC):
 
         return joined
 
-    def get_access(self) -> ServerAccess:
+    def access(self) -> ServerAccess:
         return self._access
 
-    def get_encryption(self) -> Encryption:
+    def encryption(self) -> Encryption:
         return self._encryption
 
     def get_type(self) -> str:

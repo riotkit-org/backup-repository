@@ -213,8 +213,8 @@ class ConfigurationFactory(object):
             sensitive_data.append(self._accesses[access].get_token())
 
         for backup in self._backups:
-            if self._backups[backup].get_encryption().get_passphrase():
-                sensitive_data.append(self._backups[backup].get_encryption().get_passphrase())
+            if self._backups[backup].encryption().get_passphrase():
+                sensitive_data.append(self._backups[backup].encryption().get_passphrase())
 
             sensitive_data += self._backups[backup].get_sensitive_information()
 

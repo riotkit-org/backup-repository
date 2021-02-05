@@ -43,12 +43,12 @@ class RestoreTask(BaseTask):
         self.io().info('Opening a backup buffer from server')
         remote_file_buffer = self.api.read_backup(
             collection_id=definition.get_collection_id(),
-            access=definition.get_access(),
+            access=definition.access(),
             version=version
         )
 
         self.io().info('Creating a decryption buffer')
-        enc_buffer = self.encryption_service.create_decryption_stream(definition.get_encryption(),
+        enc_buffer = self.encryption_service.create_decryption_stream(definition.encryption(),
                                                                       stdin=remote_file_buffer)
 
         try:

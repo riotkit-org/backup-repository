@@ -28,7 +28,7 @@ class CryptographyKeysSetupTask(BaseTask):
         ignore_errors = bool(context.get_arg('--ignore-errors'))
 
         try:
-            EncryptionService(self._io).create_keys(definition.get_encryption())
+            EncryptionService(self._io).create_keys(definition.encryption())
 
         except CryptographyKeysAlreadyCreated as e:
             self.io().error_msg(e) if not ignore_errors else self.io().info_msg(e)
@@ -62,10 +62,10 @@ class ListCryptoKeys(BaseTask):
         body = []
 
         for definition in definitions:
-            keys = EncryptionService(self._io).list_keys(definition.get_encryption())
+            keys = EncryptionService(self._io).list_keys(definition.encryption())
             body += list(map(lambda key: [
                 definition.name(),
-                definition.get_encryption().name(),
+                definition.encryption().name(),
                 key['fingerprint'],
                 key['email'],
                 key['gpg_home']

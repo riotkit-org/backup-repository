@@ -35,8 +35,8 @@ class UploaderTask(BaseTask):
         try:
             response = self.api.send_backup(
                 collection_id=definition.get_collection_id(),
-                access=definition.get_access(),
-                attributes=definition.get_encryption().describe_as_attributes(),
+                access=definition.access(),
+                attributes=definition.encryption().describe_as_attributes(),
                 source=source
             )
 

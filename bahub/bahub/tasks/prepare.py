@@ -41,7 +41,7 @@ class BackupPreparationTask(BaseTask):
             backup_buffer = adapter.backup(definition)
 
             # buffers
-            enc_buffer = self.encryption_service.create_encryption_stream(definition.get_encryption(),
+            enc_buffer = self.encryption_service.create_encryption_stream(definition.encryption(),
                                                                           stdin=backup_buffer)
 
             if target_path and target_path != '/dev/stdout':
@@ -82,8 +82,8 @@ class BackupPreparationTask(BaseTask):
         try:
             response = self.api.send_backup(
                 collection_id=definition.get_collection_id(),
-                access=definition.get_access(),
-                attributes=definition.get_encryption().describe_as_attributes(),
+                access=definition.access(),
+                attributes=definition.encryption().describe_as_attributes(),
                 source=source
             )
 
