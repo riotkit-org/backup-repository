@@ -47,7 +47,7 @@ backups:
     fs:
         meta:
             type: bahub.adapters.filesystem
-            access: strong
+            access: secured
             encryption: strong
             collection_id: "${TEST_COLLECTION_ID}"
             transport: local
@@ -58,7 +58,7 @@ backups:
     postgres_fs_cold_files_backup:
         meta:
             type: bahub.adapters.filesystem
-            access: strong
+            access: secured
             encryption: strong
             collection_id: "${TEST_COLLECTION_ID}"
             transport: docker_postgres_offline
@@ -69,7 +69,7 @@ backups:
     db_mysql:
         meta:
             type: bahub.adapters.mysql
-            access: strong
+            access: secured
             encryption: strong
             collection_id: "${TEST_COLLECTION_ID}"
             transport: docker_mysql
@@ -82,7 +82,7 @@ backups:
     db_postgres_dump_all_databases:
         meta:
             type: bahub.adapters.postgres_dump
-            access: strong
+            access: secured
             encryption: strong
             collection_id: "${TEST_COLLECTION_ID}"
             transport: docker_postgres
@@ -95,7 +95,7 @@ backups:
     db_postgres_dump_single_database:
         meta:
             type: bahub.adapters.postgres_dump
-            access: strong
+            access: secured
             encryption: strong
             collection_id: "${TEST_COLLECTION_ID}"
             transport: docker_postgres

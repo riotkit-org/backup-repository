@@ -2,6 +2,7 @@
 import os
 import re
 from typing import Tuple, Type, Union, Dict, List
+from json import dumps as json_encode, loads as json_decode
 from rkd.api.inputoutput import IO
 from rkd.yaml_parser import YamlFileLoader
 from .adapters.base import AdapterInterface
@@ -33,7 +34,7 @@ class ConfigurationFactory(object):
         self._io = io
         self._debug = debug
         self._config_dir = os.path.abspath(os.path.dirname(configuration_path))
-        self._parse(parser.load_from_file(configuration_path, 'org.riotkit.bahub'))
+        self._parse(self._process_env_variables(parser.load_from_file(configuration_path, 'org.riotkit.bahub')))
 
     def _parse(self, config: dict):
         self._accesses = {}
@@ -51,7 +52,9 @@ class ConfigurationFactory(object):
         self._parse_monitoring_error_handlers(config.get('error_handlers', {}))
         self._parse_notifiers(config.get('notifiers', {}))
 
-    def _process_env_variables(self, content: str) -> str:
+    def _process_env_variables(self, content: Union[dict, list]) -> Union[dict, list]:
+        content_as_str: str = json_encode(content)
+
         env_list = list(dict(os.environ).items())
         env_list.sort(key=lambda item: (-len(item[0]), item[0]))
 
@@ -59,16 +62,16 @@ class ConfigurationFactory(object):
         env_list.append(['CONFIG_DIR', self._config_dir])
 
         for env in env_list:
-            content = content.replace('${' + env[0] + '}', env[1])
+            content_as_str = content_as_str.replace('${' + env[0] + '}', env[1])
 
-        invalid_vars = set(re.findall('\${([A-Z0-9a-z_]+)}', content))
+        invalid_vars = set(re.findall('\${([A-Z0-9a-z_]+)}', content_as_str))
 
         if len(invalid_vars) > 0:
             raise ConfigurationFactoryException(
                 'Following environment variables are not resolved: ' + (', '.join(invalid_vars))
             )
 
-        return content
+        return json_decode(content_as_str)
 
     def _parse_accesses(self, config: dict):
         """Access tokens"""
