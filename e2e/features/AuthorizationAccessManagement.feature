@@ -15,7 +15,7 @@ Feature: I can manage my own access list
 
         Given I visit authorization page
         And I follow "Grant a new access"
-        And I select "+7 days" from "ttl"
+        And I select "+7 days" from "Select how long the token should be valid"
         And I fill in "description" with "Test token"
         And I follow "Create access token"
         Then I should see "Access token generated"
@@ -31,7 +31,7 @@ Feature: I can manage my own access list
 
         Given I visit authorization page
         When I follow "Grant a new access"
-        And I select "+7 days" from "ttl"
+        And I select "+7 days" from "Select how long the token should be valid"
         And I follow "collections.can_use_listing_endpoint"
         And I follow "collections.view_all_collections"
         And I fill in "description" with "Test token"
@@ -52,7 +52,7 @@ Feature: I can manage my own access list
 
         Given I visit authorization page
         When I follow "Grant a new access"
-        And I select "+1h" from "ttl"
+        And I select "+2h" from "Select how long the token should be valid"
         And I fill in "description" with "Test token"
         And I follow "Create access token"
         And I copy the authorization token

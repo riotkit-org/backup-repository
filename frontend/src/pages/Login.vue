@@ -25,7 +25,7 @@
                         <div class="col-md-3 form-group">
                             <div class="form-check form-switch">
                                 <label class="switch" style="float: left;">
-                                    <input type="checkbox" class="default" v-model="useJWT">
+                                    <input type="checkbox" class="default" v-model="useJWT" data-field="Use JSON Web Token">
                                     <span class="slider round"></span>
                                 </label>
                             </div>

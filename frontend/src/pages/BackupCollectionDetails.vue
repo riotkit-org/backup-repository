@@ -16,6 +16,7 @@
                             <div class="col-md-6">
                                 <base-input type="text"
                                             label="File name"
+                                            data-field="Filename"
                                             placeholder="international-workers-association-db-and-files.tar.gz"
                                             :initial-value="collection.filename"
                                             @input="(value) => collection.filename = value"
@@ -25,7 +26,7 @@
                             <div class="col-md-6">
                                 <div class="form-group input-group">
                                     <label class="control-label">Strategy</label>
-                                    <select v-model="collection.strategy" class="custom-select custom-select-md mb-3 form-control">
+                                    <select v-model="collection.strategy" class="custom-select custom-select-md mb-3 form-control" data-field="Strategy">
                                         <option value="delete_oldest_when_adding_new">FIFO - delete oldest on adding new</option>
                                         <option value="alert_when_backup_limit_reached">Alert on limit reached</option>
                                     </select>
@@ -36,7 +37,7 @@
                         <div class="row">
                             <div class="col-md-12">
                                 <label class="control-label">Description</label>
-                                <textarea class="form-control" v-model="collection.description" placeholder="Description"></textarea>
+                                <textarea class="form-control" v-model="collection.description" placeholder="Description" data-field="Description"></textarea>
                             </div>
                         </div>
 
@@ -45,6 +46,7 @@
                                 <base-input
                                     type="number"
                                     label="Max backups count"
+                                    data-field="Max backups count"
                                     placeholder="14"
                                     :initial-value="collection.maxBackupsCount"
                                     @input="(value) => collection.maxBackupsCount = value"
@@ -54,6 +56,7 @@
                                 <base-input
                                     type="string"
                                     label="Max one version size"
+                                    data-field="Max one version size"
                                     placeholder="150MB"
                                     :initial-value="collection.getPrettyMaxOneVersionSize()"
                                     @input="(value) => collection.setMaxOneVersionSize(value)"
@@ -63,6 +66,7 @@
                                 <base-input
                                     type="string"
                                     label="Max overall collection size"
+                                    data-field="Max overall collection size"
                                     placeholder="150MB"
                                     :initial-value="collection.getPrettyMaxCollectionSize()"
                                     @input="(value) => collection.setMaxCollectionSize(value)"

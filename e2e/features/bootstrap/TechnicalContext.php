@@ -194,6 +194,27 @@ class TechnicalContext extends MinkContext
         }
     }
 
+    public function selectOption($select, $option)
+    {
+        $this->iWait();
+
+        try {
+            parent::selectOption($select, $option);
+
+        } catch (ElementNotFoundException $exception) {
+            $input = $this->findByCSS('[alt="' . $select . '"], [data-field="' . $select . '"]');
+
+            if ($input) {
+                $input->click();
+                $input->selectOption($option);
+
+                return;
+            }
+
+            throw $exception;
+        }
+    }
+
     public function checkOption($option)
     {
         try {

@@ -25,7 +25,7 @@
             </template>
 
             <template slot="selector">
-                <select name="ttl" class="form-control" v-model="ttl">
+                <select name="ttl" class="form-control" v-model="ttl" data-field="Select how long the token should be valid">
                     <option value="0">Select how long the token should be valid</option>
                     <option v-for="(value, label) in ttlSelectorValues" :value="value" v-html="label"/>
                 </select>

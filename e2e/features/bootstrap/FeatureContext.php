@@ -10,6 +10,20 @@ require_once __DIR__ . '/TechnicalContext.php';
  */
 class FeatureContext extends TechnicalContext
 {
+    /**
+     * State: Keeps last created collection id
+     *
+     * @var string $lastCreatedCollectionId
+     */
+    protected string $lastCreatedCollectionId;
+
+    /**
+     * State: Keeps last created authorization token (not user account - but user access to existing account)
+     *
+     * @var string $lastAssignedAuthorizationToken
+     */
+    protected string $lastAssignedAuthorizationToken;
+
     //
     // Authentication
     //
@@ -122,6 +136,16 @@ class FeatureContext extends TechnicalContext
     }
 
     /**
+     * @When I visit backups page
+     *
+     * @throws ElementNotFoundException
+     */
+    public function iVisitBackupsPage(): void
+    {
+        $this->iClickMenuLink('/admin/backup/collections');
+    }
+
+    /**
      * @Then I should see user :email on the list
      *
      * @param string $email
@@ -213,5 +237,60 @@ class FeatureContext extends TechnicalContext
     public function iShouldSeeErrorOutputFromBahubContaining(string $text): void
     {
         Assertions::assertStringContainsStringIgnoringCase($text, $this->lastBahubCommandResponse);
+    }
+
+    /**
+     * @Given I create a backup with filename=:filename description=:description strategy=:strategy maxBackupsCount=:maxBackupsCount maxOneVersionSize=:maxOneVersionSize maxOverallCollectionSize=:maxOverallCollectionSize
+     *
+     * @param string $filename
+     * @param string $description
+     * @param string $strategy
+     * @param $maxBackupsCount
+     * @param $maxOneVersionSize
+     * @param $maxOverallCollectionSize
+     */
+    public function iCreateABackup(string $filename, string $description, string $strategy, $maxBackupsCount, $maxOneVersionSize, $maxOverallCollectionSize): void
+    {
+        $this->pressButton('Create a new backup collection');
+        $this->fillField('Filename', $filename);
+        $this->selectOption('Strategy', $strategy);
+        $this->fillField('Description', $description);
+        $this->fillField('Max backups count', $maxBackupsCount);
+        $this->fillField('Max one version size', $maxOneVersionSize);
+        $this->fillField('Max overall collection size', $maxOverallCollectionSize);
+        $this->pressButton('Create');
+        $this->iWait();
+
+        // get the collection id
+        $cellWithId = $this->findByCSS('td[data-column="Id"]');
+        $this->lastCreatedCollectionId = $cellWithId->getText();
+    }
+
+    /**
+     * @Given I copy the authorization token
+     */
+    public function iCopyTheAuthorizationToken(): void
+    {
+        $textarea = $this->findByCSS('.generated-token textarea');
+        $this->lastAssignedAuthorizationToken = (string) $textarea->getValue();
+    }
+
+    /**
+     * @When I login using copied JWT
+     */
+    public function iLoginUsingCopiedJWT()
+    {
+        $this->clickLink('Use JSON Web Token');
+        $this->fillField('Encoded JSON Web Token', $this->lastAssignedAuthorizationToken);
+        $this->pressButton('Log-in');
+        $this->iWait();
+    }
+
+    /**
+     * @When I visit collections page
+     */
+    public function iVisitCollectionsPage()
+    {
+        $this->iClickMenuLink('/admin/backup/collections');
     }
 }
