@@ -22,4 +22,22 @@ composer install
 
 # run one or multiple scenarios that begins with "As an administrator" description
 ./vendor/bin/behat --name="As an administrator"
+
+# run tests marked with "@bahub" tag
+./vendor/bin/behat --tags bahub
 ```
+
+Groups of suites
+----------------
+
+Test suites are grouped by application name and test type.
+
+**Application tags:**
+- `@bahub`
+- `@server`
+
+**Test types tags:**
+- `@security`
+- `@backup`
+
+To run `@bahub` tagged tests type `./vendor/bin/behat --tags bahub`
