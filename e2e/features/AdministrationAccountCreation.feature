@@ -1,3 +1,4 @@
+@server @security
 Feature: I can create an administrator account using server's shell interface,
     so I could gain access to the instance and start preparing it to my needs.
     The shell command should also implement validation, just same like in web API interface.

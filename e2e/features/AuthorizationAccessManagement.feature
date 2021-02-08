@@ -1,3 +1,4 @@
+@server @security
 Feature: I can manage my own access list
 
     Background:

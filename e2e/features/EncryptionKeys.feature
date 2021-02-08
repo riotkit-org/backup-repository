@@ -1,3 +1,4 @@
+@bahub @security
 Feature: Bahub should allow me to generate GPG keys and store them, so I can leave this thing and do not care
 
     Scenario: As a backup manager I would like to generate keys by just running a Bahub task

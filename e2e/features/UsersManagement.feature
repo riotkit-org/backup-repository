@@ -1,3 +1,4 @@
+@server @security
 Feature: Create users, edit basic fields in existing user profiles, searching the user list
 
     Background:
