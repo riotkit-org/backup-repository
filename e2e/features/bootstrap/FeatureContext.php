@@ -3,8 +3,6 @@
 use Behat\Mink\Exception\ElementNotFoundException;
 use PHPUnit\Framework\Assert as Assertions;
 
-define('SERVER_PATH', __DIR__ . '/../../../server');
-
 require_once __DIR__ . '/TechnicalContext.php';
 
 /**
@@ -173,5 +171,47 @@ class FeatureContext extends TechnicalContext
     public function iLogout(): void
     {
         $this->iClickMenuLink('/admin/logout');
+    }
+
+    /**
+     * @Given I generate keys for existing backup configuration entry :backupDefinition
+     *
+     * @param string $backupDefinition
+     */
+    public function iGenerateKeysForExistingBackupConfigurationEntry(string $backupDefinition): void
+    {
+        $this->execBahubCommand(':crypto:generate-keys ' . $backupDefinition . ' -rl debug', [
+            // values are example - the keys generation and listing does not use them
+            'API_TOKEN'          => '1111-2222-3333',
+            'TEST_COLLECTION_ID' => '1111-2222-3333',
+            'BUILD_DIR'          => BUILD_DIR
+        ]);
+    }
+
+    /**
+     * @Then I should have gpg key described as :descriptionPart
+     *
+     * @param string $descriptionPart
+     */
+    public function iShouldHaveGpgKeyDescribedAs(string $descriptionPart): void
+    {
+        $result = $this->execBahubCommand(':crypto:list-keys', [
+            // values are example - the keys generation and listing does not use them
+            'API_TOKEN'          => '1111-2222-3333',
+            'TEST_COLLECTION_ID' => '1111-2222-3333',
+            'BUILD_DIR'          => BUILD_DIR
+        ]);
+
+        Assertions::assertStringContainsStringIgnoringCase($descriptionPart, $result['out']);
+    }
+
+    /**
+     * @Then I should see error output from bahub containing :text
+     *
+     * @param string $text
+     */
+    public function iShouldSeeErrorOutputFromBahubContaining(string $text): void
+    {
+        Assertions::assertStringContainsStringIgnoringCase($text, $this->lastBahubCommandResponse);
     }
 }

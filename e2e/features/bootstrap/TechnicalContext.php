@@ -11,15 +11,21 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use PHPUnit\Framework\Assert as Assertions;
 
+define('SERVER_PATH', __DIR__ . '/../../../server');
+define('BAHUB_PATH', __DIR__ . '/../../../bahub');
 define('BACKEND_URL', 'http://localhost:8000');
+define('BUILD_DIR', __DIR__ . '/../../build');
 
 class TechnicalContext extends MinkContext
 {
-    private string $lastShellCommandResponse = '';
-    private int $lastShellCommandExitCode = 1;
+    protected string $lastShellCommandResponse = '';
+    protected int $lastShellCommandExitCode = 1;
+
+    protected string $lastBahubCommandResponse = '';
+    protected int $lastBahubCommandExitCode = 1;
 
     /**
-     * After each scenario clear the browser session - logout user
+     * Before each scenario clear the browser session - logout user
      *
      * @param AfterScenarioScope $event
      *
@@ -30,8 +36,21 @@ class TechnicalContext extends MinkContext
         try {
             $script = 'sessionStorage.clear(); localStorage.clear();';
             $this->getSession()->executeScript($script);
-        } catch (\Exception $e) {
+        } catch (Throwable $e) {
         }
+    }
+
+    /**
+     * Clear temporary build directory after each scenario
+     *
+     * @param BeforeScenarioScope $event
+     *
+     * @BeforeScenario
+     */
+    public function clearTemporaryDirectory(BeforeScenarioScope $event)
+    {
+        shell_exec('rm -rf ' . BUILD_DIR . '/*');
+        shell_exec('touch ' . BUILD_DIR . '/.gitkeep');
     }
 
     /**
@@ -72,6 +91,28 @@ class TechnicalContext extends MinkContext
         $this->lastShellCommandExitCode = $returnCode;
 
         return ['out' => $output, 'exit_code' => $returnCode];
+    }
+
+    public function execBahubCommand(string $command, array $env = []): array
+    {
+        $envsAsString = '';
+
+        foreach ($env as $name => $value) {
+            $envsAsString .= ' && export ' . $name . '=' . escapeshellarg($value) . ' ';
+        }
+
+        $fullCommand = 'cd ' . BAHUB_PATH . ' ' .
+            '&& source .venv/bin/activate ' .
+            $envsAsString .
+            '&& export CONFIG=' . BAHUB_PATH . '/bahub.conf.yaml ' .
+            '&& python3 -m bahub ' . $command . ' 2>&1';
+
+        exec($fullCommand, $output, $returnCode);
+
+        $this->lastBahubCommandResponse = implode("\n", $output);
+        $this->lastBahubCommandExitCode = $returnCode;
+
+        return ['out' => $this->lastBahubCommandResponse, 'exit_code' => $returnCode];
     }
 
     /**

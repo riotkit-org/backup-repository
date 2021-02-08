@@ -15,7 +15,7 @@ accesses:
 
 encryption:
     strong:
-        gnupg_home: "${BUILD_DIR}/.bahub-gnupg"
+        gnupg_home: "${BUILD_DIR}/bahub-gnupg"
         passphrase: "capitalism-must-end"
         method: "aes256"
         username: "Mikhail Bakunin"
