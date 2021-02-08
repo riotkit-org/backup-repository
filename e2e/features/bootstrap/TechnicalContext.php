@@ -105,11 +105,11 @@ class TechnicalContext extends MinkContext
             '&& source .venv/bin/activate ' .
             $envsAsString .
             '&& export CONFIG=' . BAHUB_PATH . '/bahub.conf.yaml ' .
-            '&& python3 -m bahub ' . $command . ' 2>&1';
+            '&& xterm -e "python3 -m bahub ' . str_replace('"', '\"', $command) . ' 2>&1 | tee -a ' . BUILD_DIR . '/shell.out; sleep 1"';
 
         exec($fullCommand, $output, $returnCode);
 
-        $this->lastBahubCommandResponse = implode("\n", $output);
+        $this->lastBahubCommandResponse = file_get_contents(BUILD_DIR . '/shell.out');
         $this->lastBahubCommandExitCode = $returnCode;
 
         return ['out' => $this->lastBahubCommandResponse, 'exit_code' => $returnCode];
