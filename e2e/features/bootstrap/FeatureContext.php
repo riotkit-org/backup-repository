@@ -278,7 +278,7 @@ class FeatureContext extends TechnicalContext
     /**
      * @When I login using copied JWT
      */
-    public function iLoginUsingCopiedJWT()
+    public function iLoginUsingCopiedJWT(): void
     {
         $this->clickLink('Use JSON Web Token');
         $this->fillField('Encoded JSON Web Token', $this->lastAssignedAuthorizationToken);
@@ -289,8 +289,90 @@ class FeatureContext extends TechnicalContext
     /**
      * @When I visit collections page
      */
-    public function iVisitCollectionsPage()
+    public function iVisitCollectionsPage(): void
     {
         $this->iClickMenuLink('/admin/backup/collections');
+    }
+
+    /**
+     * @Given I generate a new access key with all permissions
+     */
+    public function iGenerateANewAccessKeyWithAllPermissions(): void
+    {
+        $this->iVisitAuthorizationPage();
+        $this->pressButton('Grant a new access');
+        $this->selectOption('Select how long the token should be valid', '+7 days');
+        $this->fillField('description', 'Test token, ' . (string) microtime(true));
+        $this->clickLink('Create access token');
+        $this->iCopyTheAuthorizationToken();
+        $this->iExitModal();
+    }
+
+    /**
+     * #Type Bahub
+     *
+     * @When I submit a new backup as part of :backupDefinition definition for collection I just created
+     *
+     * @param string $backupDefinition
+     */
+    public function iSubmitANewBackup(string $backupDefinition): void
+    {
+        $result = $this->execBahubCommand(':backup:make ' . $backupDefinition . ' -rl debug', [
+            'API_TOKEN'          => $this->lastAssignedAuthorizationToken,
+            'TEST_COLLECTION_ID' => $this->lastCreatedCollectionId,
+            'BUILD_DIR'          => BUILD_DIR
+        ]);
+
+        Assertions::assertEquals(0, $result['exit_code']);
+    }
+
+    /**
+     * #Type Bahub
+     *
+     * @When I issue a backup restore of :version version using :backupDefinition definition for a collection I recently created
+     *
+     * @param string $backupDefinition
+     * @param string $version
+     */
+    public function iIssueABackupRestore(string $backupDefinition, string $version): void
+    {
+        $result = $this->execBahubCommand(':backup:restore ' . $backupDefinition . ' --version="' . $version . '" -rl debug', [
+            'API_TOKEN'          => $this->lastAssignedAuthorizationToken,
+            'TEST_COLLECTION_ID' => $this->lastCreatedCollectionId,
+            'BUILD_DIR'          => BUILD_DIR
+        ]);
+
+        Assertions::assertEquals(0, $result['exit_code']);
+    }
+
+    /**
+     * @Given I visit recently created collection page
+     */
+    public function iVisitRecentlyCreatedCollectionPage(): void
+    {
+        $this->iVisitBackupsPage();
+        $link = $this->findByCSS('small:contains("' . $this->lastCreatedCollectionId . '")');
+        $link->click();
+    }
+
+    /**
+     * @Then I expect that there is :backupNum backup present
+     *
+     * @param string $backupNum
+     *
+     * @throws ElementNotFoundException
+     */
+    public function iExpectThatThereIsBackupPresent(string $backupNum): void
+    {
+        $version = $this->findByCSS('.versions-table [data-column="Version"]:contains("' . $backupNum . '")');
+        Assertions::assertEquals($backupNum, $version->getText());
+    }
+
+    /**
+     * @Then I expect bahub command finished with success
+     */
+    public function iExpectBahubCommandFinishedWithSuccess(): void
+    {
+        Assertions::assertEquals(0, $this->lastBahubCommandExitCode);
     }
 }

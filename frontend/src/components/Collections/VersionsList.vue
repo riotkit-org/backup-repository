@@ -6,7 +6,7 @@
                 Recently stored versions in this collection
             </p>
         </template>
-        <div class="table-responsive">
+        <div class="table-responsive versions-table">
             <l-table class="table-hover"
                      :columns="versions.columns"
                      :data="versions.data">
@@ -52,7 +52,7 @@ export default {
                     let version = versions[versionNum]
 
                     that.versions.data.push({
-                        version: version.version,
+                        version: 'v' + version.version,
                         id: version.id,
                         date: version.creationDate.date,
                         _url: '',
