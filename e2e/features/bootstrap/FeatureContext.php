@@ -311,11 +311,12 @@ class FeatureContext extends TechnicalContext
     /**
      * #Type Bahub
      *
-     * @When I submit a new backup as part of :backupDefinition definition for collection I just created
+     * @When /^(I|I again) submit a new backup as part of "([^"]*)" definition for collection I just created$/
      *
+     * @param string $a
      * @param string $backupDefinition
      */
-    public function iSubmitANewBackup(string $backupDefinition): void
+    public function iSubmitANewBackup(string $a, string $backupDefinition): void
     {
         $result = $this->execBahubCommand(':backup:make ' . $backupDefinition . ' -rl debug', [
             'API_TOKEN'          => $this->lastAssignedAuthorizationToken,
@@ -356,16 +357,37 @@ class FeatureContext extends TechnicalContext
     }
 
     /**
-     * @Then I expect that there is :backupNum backup present
+     * @Then I expect that there are :backupNum backups present
      *
-     * @param string $backupNum
+     * @param string $backupsNum
      *
      * @throws ElementNotFoundException
      */
-    public function iExpectThatThereIsBackupPresent(string $backupNum): void
+    public function iExpectThatThereIsBackupPresent(string $backupsNum): void
     {
-        $version = $this->findByCSS('.versions-table [data-column="Version"]:contains("' . $backupNum . '")');
-        Assertions::assertEquals($backupNum, $version->getText());
+        foreach (explode(',', $backupsNum) as $backupNum) {
+            $backupNum = trim($backupNum);
+            $version = $this->findByCSS('.versions-table [data-column="Version"]:contains("' . $backupNum . '")');
+            Assertions::assertEquals($backupNum, $version->getText());
+        }
+    }
+
+    /**
+     * @Then I expect that :backupNum backups are not present
+     *
+     * @param string $backupsNum
+     */
+    public function iExpectThatThereIsNoGivenBackupPresent(string $backupsNum): void
+    {
+        foreach (explode(',', $backupsNum) as $backupNum) {
+            $backupNum = trim($backupNum);
+
+            try {
+                $this->findByCSS('.versions-table [data-column="Version"]:contains("' . $backupNum . '")');
+                Assertions::assertEquals(false, true, 'Expected that version ' . $backupNum . ' will not be present');
+
+            } catch (ElementNotFoundException $exception) { }
+        }
     }
 
     /**
