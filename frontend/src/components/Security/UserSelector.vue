@@ -1,7 +1,7 @@
 <template>
     <!-- @todo: Use a paginated selector eg. https://terryz.github.io/vue/#/selectpage -->
 
-    <select class="form-control" @change="onSelected">
+    <select class="form-control" @change="onSelected" data-field="-- Please select a user">
         <option value="">-- Please select a user</option>
         <option v-for="user in users" :value="user.id" v-html="user.email"/>
     </select>

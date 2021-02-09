@@ -5,7 +5,7 @@
 
 <template>
     <div class="form-group">
-        <label class="clickable-label" v-html="title" @click="(value) => this.isVisible = !this.isVisible"></label> <small> ({{selectedRoles.length}})</small>
+        <label class="clickable-label" :data-field="title" v-html="title" @click="(value) => this.isVisible = !this.isVisible"></label> <small> ({{selectedRoles.length}})</small>
         <slot name="toolbar">
             <slot name="toolbar-toggle">
                 <i class="bi-wrench clickable-label toolbar" @click="(value) => this.isVisible = !this.isVisible" v-tooltip.top-center="'Show/hide roles list assigned to this user access'"></i>
@@ -15,7 +15,7 @@
                 <i class="bi-trash clickable-label toolbar" alt="Revoke access" v-tooltip.top-center="'Revoke access'" @click="onAccessRevoking"></i>
             </slot>
             <slot name="toolbar-new" v-if="isNew">
-                <i class="bi bi-person-plus-fill clickable-label toolbar" @click="onNewUserAccessAdding" v-tooltip.top-center="'Submit new access to this collection'"></i>
+                <i class="bi bi-person-plus-fill clickable-label toolbar" data-field="Submit new access to this collection" @click="onNewUserAccessAdding" v-tooltip.top-center="'Submit new access to this collection'"></i>
             </slot>
         </slot>
 
