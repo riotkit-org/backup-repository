@@ -95,11 +95,10 @@ class BackupCollection implements \JsonSerializable
     public function withAnonymousData(): BackupCollection
     {
         $clone                = clone $this;
-        $clone->id            = null;
         $clone->description   = 'Anonymous';
         $clone->allowedTokens = [];
 
-        return $clone;
+        return $this;
     }
 
     /**

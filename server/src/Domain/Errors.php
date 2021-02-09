@@ -190,8 +190,8 @@ final class Errors
     public const ERR_REQUEST_PREDICTABLE_ID_FORBIDDEN      = 40301;
     public const ERR_MSG_REQUEST_PREDICTABLE_ID_FORBIDDEN  = 'Current access does not allow setting predictable identifiers for users';
 
-    public const ERR_MSG_REQUEST_READ_ACCESS_DENIED        = 40302;
-    public const ERR_REQUEST_READ_ACCESS_DENIED            = 'Got access denied while trying to access the object';
+    public const ERR_REQUEST_READ_ACCESS_DENIED            = 40302;
+    public const ERR_MSG_REQUEST_READ_ACCESS_DENIED        = 'Got access denied while trying to access the object';
 
     public const ERR_REQUEST_CANNOT_DELETE                 = 40303;
     public const ERR_MSG_REQUEST_CANNOT_DELETE             = 'No permissions to delete this object';
