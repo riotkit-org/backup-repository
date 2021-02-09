@@ -28,7 +28,7 @@
                                     <label class="control-label">Strategy</label>
                                     <select v-model="collection.strategy" class="custom-select custom-select-md mb-3 form-control" data-field="Strategy">
                                         <option value="delete_oldest_when_adding_new">FIFO - delete oldest on adding new</option>
-                                        <option value="alert_when_backup_limit_reached">Alert on limit reached</option>
+                                        <option value="alert_when_too_many_versions">Block on too many versions submitted</option>
                                     </select>
                                 </div>
                             </div>

@@ -42,3 +42,22 @@ Scenario: To keep storage space maintainable, every backup needs to be rotated a
     And I reload the page
     Then I expect that there are "v5, v4, v3" backups present
     And I expect that "v1, v2, v6" backups are not present
+
+
+Scenario: To accidentally not overwrite any backup there should be a possibility to define a backup in a strategy "alert_when_too_many_versions"
+          that will not rotate and raise error on uploading too many versions
+
+    Given I am authenticated as administrator
+    And I visit backups page
+    And I create a backup with filename="strategy-two.tar.gz" description="Strategy two" strategy="Block on too many versions submitted" maxBackupsCount=1 maxOneVersionSize=50MB maxOverallCollectionSize=51MB
+    And I generate a new access key with all permissions
+    And I generate keys for existing backup configuration entry "fs"
+
+    When I visit recently created collection page
+    And I submit a new backup as part of "fs" definition for collection I just created
+    And I again submit a new backup as part of "fs" definition for collection I just created
+    And I reload the page
+    Then I expect that there are "v1" backups present
+    And I expect that "v2" backups are not present
+    And I expect last bahub command output contains "Maximum count of files reached in the collection. Any of previous files should be deleted before uploading new"
+

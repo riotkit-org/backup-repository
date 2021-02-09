@@ -397,4 +397,14 @@ class FeatureContext extends TechnicalContext
     {
         Assertions::assertEquals(0, $this->lastBahubCommandExitCode);
     }
+
+    /**
+     * @Then I expect last bahub command output contains :text
+     *
+     * @param string $text
+     */
+    public function iExpectBahubCommandOutputContains(string $text): void
+    {
+        Assertions::assertStringContainsStringIgnoringCase($text, $this->lastBahubCommandResponse);
+    }
 }

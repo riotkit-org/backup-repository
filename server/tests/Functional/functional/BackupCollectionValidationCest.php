@@ -31,7 +31,7 @@ class BackupCollectionValidationCest
                     "code" => 42010
                 ],
                 "strategy" => [
-                    "message" => "Invalid collection strategy picked \"invalid_strategy\". Choices: delete_oldest_when_adding_new, alert_when_backup_limit_reached",
+                    "message" => "Invalid collection strategy picked \"invalid_strategy\". Choices: delete_oldest_when_adding_new, alert_when_too_many_versions",
                     "code" => 42021
                 ]
             ],
@@ -47,7 +47,7 @@ class BackupCollectionValidationCest
             'maxBackupsCount'   => 4,
             'maxOneVersionSize' => "11MB",
             'maxCollectionSize' => '10MB',
-            'strategy'          => 'alert_when_backup_limit_reached',
+            'strategy'          => 'alert_when_too_many_versions',
             'description'       => 'https://zsp.net.pl | https://iwa-ait.org',
             'filename'          => 'zsp-net-pl.sql.gz'
         ]);
@@ -68,7 +68,7 @@ class BackupCollectionValidationCest
             'maxBackupsCount'   => 2,
             'maxOneVersionSize' => "50GB",
             'maxCollectionSize' => '150GB',
-            'strategy'          => 'alert_when_backup_limit_reached',
+            'strategy'          => 'alert_when_too_many_versions',
             'description'       => 'https://zsp.net.pl | https://iwa-ait.org',
             'filename'          => 'zsp-net-pl.sql.gz'
         ]);
@@ -89,7 +89,7 @@ class BackupCollectionValidationCest
             'maxBackupsCount'   => 2,
             'maxOneVersionSize' => "5MB",
             'maxCollectionSize' => '150TB',
-            'strategy'          => 'alert_when_backup_limit_reached',
+            'strategy'          => 'alert_when_too_many_versions',
             'description'       => 'https://zsp.net.pl | https://iwa-ait.org',
             'filename'          => 'zsp-net-pl.sql.gz'
         ]);
@@ -110,7 +110,7 @@ class BackupCollectionValidationCest
             'maxBackupsCount'   => 99999999,
             'maxOneVersionSize' => "5MB",
             'maxCollectionSize' => '100MB',
-            'strategy'          => 'alert_when_backup_limit_reached',
+            'strategy'          => 'alert_when_too_many_versions',
             'description'       => 'https://zsp.net.pl | https://iwa-ait.org',
             'filename'          => 'zsp-net-pl.sql.gz'
         ]);
@@ -131,7 +131,7 @@ class BackupCollectionValidationCest
             'maxBackupsCount'   => 5,
             'maxOneVersionSize' => "5MB",
             'maxCollectionSize' => '5MB',
-            'strategy'          => 'alert_when_backup_limit_reached',
+            'strategy'          => 'alert_when_too_many_versions',
             'description'       => 'https://zsp.net.pl | https://iwa-ait.org',
             'filename'          => 'zsp-net-pl.sql.gz'
         ]);

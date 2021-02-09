@@ -38,7 +38,7 @@ class BackupCollectionUploadAlertOnLimitStrategyCest
             "maxBackupsCount"   => 2,
             "maxOneVersionSize" => "1MB",
             "maxCollectionSize" => "5MB",
-            "strategy"    => "alert_when_backup_limit_reached",
+            "strategy"    => "alert_when_too_many_versions",
             "description" => "Title: Brighton Solidarity Federation: the first five months of 2018",
             "password"    => "solfed",
             "filename"    => "solfed-state"
