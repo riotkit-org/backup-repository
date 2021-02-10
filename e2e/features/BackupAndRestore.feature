@@ -15,7 +15,7 @@ Scenario: As an system administrator I will upload a backup, and then immediatel
 
     # 1. Verify that the backup was sent
     When I visit recently created collection page
-    And I submit a new backup as part of "fs" definition for collection I just created
+    And I submit a new backup as part of "fs" definition for collection I recently created
     And I reload the page
     Then I expect that there are "v1" backups present
 
@@ -34,11 +34,11 @@ Scenario: To keep storage space maintainable, every backup needs to be rotated a
     And I generate keys for existing backup configuration entry "fs"
 
     When I visit recently created collection page
-    And I submit a new backup as part of "fs" definition for collection I just created
-    And I again submit a new backup as part of "fs" definition for collection I just created
-    And I again submit a new backup as part of "fs" definition for collection I just created
-    And I again submit a new backup as part of "fs" definition for collection I just created
-    And I again submit a new backup as part of "fs" definition for collection I just created
+    And I submit a new backup as part of "fs" definition for collection I recently created
+    And I again submit a new backup as part of "fs" definition for collection I recently created
+    And I again submit a new backup as part of "fs" definition for collection I recently created
+    And I again submit a new backup as part of "fs" definition for collection I recently created
+    And I again submit a new backup as part of "fs" definition for collection I recently created
     And I reload the page
     Then I expect that there are "v5, v4, v3" backups present
     And I expect that "v1, v2, v6" backups are not present
@@ -54,8 +54,8 @@ Scenario: To accidentally not overwrite any backup there should be a possibility
     And I generate keys for existing backup configuration entry "fs"
 
     When I visit recently created collection page
-    And I submit a new backup as part of "fs" definition for collection I just created
-    And I again submit a new backup as part of "fs" definition for collection I just created
+    And I submit a new backup as part of "fs" definition for collection I recently created
+    And I again submit a new backup as part of "fs" definition for collection I recently created
     And I reload the page
     Then I expect that there are "v1" backups present
     And I expect that "v2" backups are not present
@@ -71,7 +71,7 @@ Scenario: As a backup user I would expect that backup version will be possible t
     And I generate keys for existing backup configuration entry "fs"
 
     When I visit recently created collection page
-    And I submit a new backup as part of "fs" definition for collection I just created
+    And I submit a new backup as part of "fs" definition for collection I recently created
     And I issue a backup restore of "latest" version using "fs" definition for a collection I recently created
     And I issue a backup restore of "latest" version using "fs" definition for a collection I recently created
     Then I expect last bahub command output contains "Successfully"

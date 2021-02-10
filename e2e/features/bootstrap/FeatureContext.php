@@ -248,6 +248,8 @@ class FeatureContext extends TechnicalContext
      * @param $maxBackupsCount
      * @param $maxOneVersionSize
      * @param $maxOverallCollectionSize
+     *
+     * @throws ElementNotFoundException
      */
     public function iCreateABackup(string $filename, string $description, string $strategy, $maxBackupsCount, $maxOneVersionSize, $maxOverallCollectionSize): void
     {
@@ -261,6 +263,16 @@ class FeatureContext extends TechnicalContext
         $this->pressButton('Create');
         $this->iWait();
 
+        $this->iCopyCollectionIdFromSearch();
+    }
+
+    /**
+     * @Then I copy id of a just created backup collection
+     *
+     * @throws ElementNotFoundException
+     */
+    public function iCopyCollectionIdFromSearch(): void
+    {
         // get the collection id
         $cellWithId = $this->findByCSS('td[data-column="Id"]');
         $this->lastCreatedCollectionId = $cellWithId->getText();
@@ -311,7 +323,7 @@ class FeatureContext extends TechnicalContext
     /**
      * #Type Bahub
      *
-     * @When /^(I|I again) submit a new backup as part of "([^"]*)" definition for collection I just created$/
+     * @When /^(I|I again) submit a new backup as part of "([^"]*)" definition for collection I recently created$/
      *
      * @param string $a
      * @param string $backupDefinition
@@ -406,5 +418,73 @@ class FeatureContext extends TechnicalContext
     public function iExpectBahubCommandOutputContains(string $text): void
     {
         Assertions::assertStringContainsStringIgnoringCase($text, $this->lastBahubCommandResponse);
+    }
+
+    /**
+     * @Given I start creating user account :email identified by :password for organization :organization
+     *
+     * @param string $email
+     * @param string $password
+     * @param string $organization
+     *
+     * @throws ElementNotFoundException
+     */
+    public function iStartCreatingUserAccountIdentifiedByForOrganization(string $email, string $password, string $organization): void
+    {
+        $this->iVisitUsersSearchPage();
+        $this->pressButton('Add user');
+        $this->fillField('Email', $email);
+        $this->fillField('Organization', $organization);
+        $this->fillField('New password', $password);
+        $this->fillField('Repeat password', $password);
+    }
+
+    /**
+     * @Given I submit creation of user account
+     */
+    public function iSubmitCreationOfUserAccount(): void
+    {
+        $this->pressButton('Add new user');
+    }
+
+    /**
+     * @Given I start creating collection :collection described :description and :strategy strategy
+     *
+     * @param string $collection
+     * @param string $description
+     * @param string $strategy
+     *
+     * @throws ElementNotFoundException
+     */
+    public function iStartCreatingCollection(string $collection, string $description, string $strategy): void
+    {
+        $this->iVisitBackupsPage();
+        $this->pressButton('Create a new backup collection');
+        $this->fillField('Filename', $collection);
+        $this->fillField('Description', $description);
+        $this->selectOption('Strategy', $strategy);
+    }
+
+    /**
+     * @Given I start adding new permissions to collection for user :email
+     *
+     * @param string $email
+     *
+     * @throws ElementNotFoundException
+     */
+    public function iStartAddingNewPermissionsToCollectionForUser(string $email): void
+    {
+        $this->findByCSS('[data-field="Grant a new access"]')->click();
+        $this->selectOption('-- Please select a user', $email);
+    }
+
+    /**
+     * @Then I finalize adding new permissions to collection
+     *
+     * @throws ElementNotFoundException
+     */
+    public function iFinalizeAddingNewPermissionsToCollection(): void
+    {
+        $this->findByCSS('i[data-field="Submit new access to this collection"]')->click();
     }
 }

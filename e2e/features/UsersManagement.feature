@@ -11,7 +11,7 @@ Feature: Create users, edit basic fields in existing user profiles, searching th
     Scenario: As an administrator I create with success an example user, then I delete that created profile
         Given I visit users search page
         When I press "Add user" button
-        And I fill in "Email" with "info@abcf.net"
+        And I fill in "Email" with "anarchist-black-cross@example.org"
         And I fill in "Organization" with "Anarchist Black Cross"
         And I fill in "New password" with "anarchist-test123456789_"
         And I fill in "Repeat password" with "anarchist-test123456789_"
@@ -19,8 +19,8 @@ Feature: Create users, edit basic fields in existing user profiles, searching th
         Then I should see message "User account saved"
 
         When I visit users search page
-        And I follow "info@abcf.net"
-        And I prepare to confirm the prompt with "info@abcf.net"
+        And I follow "anarchist-black-cross@example.org"
+        And I prepare to confirm the prompt with "anarchist-black-cross@example.org"
         And I press "Delete User" button
         Then I should see message "User account deleted"
 
@@ -66,7 +66,7 @@ Feature: Create users, edit basic fields in existing user profiles, searching th
         # I. Create
         Given I visit users search page
         When I press "Add user" button
-        And I fill in "Email" with "info@abcf.net"
+        And I fill in "Email" with "anarchist-black-cross@example.org"
         And I fill in "Organization" with "Anarchist Black Cross"
         And I fill in "New password" with "anarchist-test123456789_"
         And I fill in "Repeat password" with "anarchist-test123456789_"
@@ -75,7 +75,7 @@ Feature: Create users, edit basic fields in existing user profiles, searching th
 
         # II. Edit
         Given I visit users search page
-        When I follow "info@abcf.net"
+        When I follow "anarchist-black-cross@example.org"
         And I follow "Toggle role names/description"
         And I check "security.administrator"
         And I press "Update Profile" button
@@ -83,9 +83,9 @@ Feature: Create users, edit basic fields in existing user profiles, searching th
 
         # III. Verify by logging in
         Given I logout
-        And I login as "info@abcf.net" with "anarchist-test123456789_"
+        And I login as "anarchist-black-cross@example.org" with "anarchist-test123456789_"
         When I visit users search page
-        Then I should see user "info@abcf.net" on the list
+        Then I should see user "anarchist-black-cross@example.org" on the list
         And I expect that the footer containing application version is visible
 
 
@@ -93,7 +93,7 @@ Feature: Create users, edit basic fields in existing user profiles, searching th
         # I. Create a user that is able to only upload backups, nothing else
         Given I visit users search page
         When I press "Add user" button
-        And I fill in "Email" with "info@abcf.net"
+        And I fill in "Email" with "anarchist-black-cross@example.org"
         And I fill in "Organization" with "Anarchist Black Cross"
         And I fill in "New password" with "anarchist-test123456789_"
         And I fill in "Repeat password" with "anarchist-test123456789_"
@@ -105,7 +105,7 @@ Feature: Create users, edit basic fields in existing user profiles, searching th
 
         # II. Verify by logging in
         Given I logout
-        And I login as "info@abcf.net" with "anarchist-test123456789_"
+        And I login as "anarchist-black-cross@example.org" with "anarchist-test123456789_"
         When I visit users search page
         Then I should see message "No permission to search for users"
 
@@ -113,7 +113,7 @@ Feature: Create users, edit basic fields in existing user profiles, searching th
         Given I logout
         And I am authenticated as administrator
         And I visit users search page
-        And I follow "info@abcf.net"
+        And I follow "anarchist-black-cross@example.org"
         And I follow "Toggle role names/description"
         And I check "security.search_for_users"
         And I check "security.authentication_lookup"
@@ -122,6 +122,6 @@ Feature: Create users, edit basic fields in existing user profiles, searching th
 
         # IV. Verify that additional permissions were granted on the limited permissions user
         Given I logout
-        And I login as "info@abcf.net" with "anarchist-test123456789_"
+        And I login as "anarchist-black-cross@example.org" with "anarchist-test123456789_"
         When I visit users search page
         Then I should not see message "No permission to search for users"

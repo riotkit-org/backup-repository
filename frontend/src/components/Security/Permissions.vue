@@ -5,7 +5,7 @@
 
 <template>
     <div class="form-group">
-        <label class="clickable-label" :data-field="title" v-html="title" @click="(value) => this.isVisible = !this.isVisible"></label> <small> ({{selectedRoles.length}})</small>
+        <label class="clickable-label" :data-field="stripTitle(title)" v-html="title" @click="(value) => this.isVisible = !this.isVisible"></label> <small> ({{selectedRoles.length}})</small>
         <slot name="toolbar">
             <slot name="toolbar-toggle">
                 <i class="bi-wrench clickable-label toolbar" @click="(value) => this.isVisible = !this.isVisible" v-tooltip.top-center="'Show/hide roles list assigned to this user access'"></i>
@@ -147,6 +147,13 @@ export default {
 
         onAccessRevoking() {
             this.$emit('access-revoked', this.userId)
+        },
+
+        stripTitle(title) {
+            let tmp = document.createElement("DIV");
+            tmp.innerHTML = title;
+
+            return tmp.textContent || tmp.innerText;
         }
     }
 }
