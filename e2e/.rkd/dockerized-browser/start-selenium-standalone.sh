@@ -1,5 +1,11 @@
 #!/bin/bash
 
+#
+# This file replaces Selenium startup with Google Chrome startup
+# We do not need Selenium, we use Chrome directly - but we use Selenium's image, because it is enough mature
+# like no other image publicly available
+#
+
 # workaround: --remote-debugging-address=0.0.0.0 does not work in Google Chrome
 sudo apt-get update
 sudo apt-get install socat -y
