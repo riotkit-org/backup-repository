@@ -15,7 +15,8 @@ Running
 -------
 
 ```bash
-composer install
+rkd :e2e:install
+rkd :e2e:browser:spawn-without-docker
 
 # do not use on CI! When test fails wait for user input in console - pause the execution for debugging
 export WAIT_BEFORE_FAILURE=true
@@ -28,6 +29,23 @@ export WAIT_BEFORE_FAILURE=true
 
 # run tests marked with "@bahub" tag
 ./vendor/bin/behat --tags bahub
+```
+
+Running on CI
+-------------
+
+**CI assumptions are:**
+- Application is running in PROD mode inside a docker container
+- Bahub is running in a production-like container with configuration from `bahub/bahub.conf.yaml`
+- There are test containers running like PostgreSQL, MySQL and other from docker-compose project placed there: `bahub/test/env/bahub_adapter_integrations`
+- Browser is dockerized with a VNC available optionally
+
+```bash
+# setup - one time
+rkd :e2e:browser:spawn-container :e2e:install
+
+# running tests
+rkd :e2e:test
 ```
 
 Groups of suites
