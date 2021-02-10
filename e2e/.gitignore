@@ -1,4 +1,5 @@
 .rkd/logs
+.rkd/browser-profile
 *.pyc
 *__pycache__*
 /.venv
