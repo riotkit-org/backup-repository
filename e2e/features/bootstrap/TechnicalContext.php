@@ -38,6 +38,10 @@ class TechnicalContext extends MinkContext
             $this->getSession()->executeScript($script);
         } catch (Throwable $e) {
         }
+
+        if (!$event->getTestResult()->isPassed() && getenv('WAIT_BEFORE_FAILURE') === 'true') {
+            $this->iWaitForUserInput();
+        }
     }
 
     /**
@@ -105,18 +109,20 @@ class TechnicalContext extends MinkContext
             '&& source .venv/bin/activate ' .
             $envsAsString .
             '&& export CONFIG=' . BAHUB_PATH . '/bahub.conf.yaml ' .
-            '&& xterm -e "python3 -m bahub ' . str_replace('"', '\"', $command) . ' 2>&1 | tee -a ' . BUILD_DIR . '/shell.out; ret=$?; sleep 1; exit $ret"';
+            '&& xterm -e /bin/bash -c "python3 -m bahub ' . str_replace('"', '\"', $command) . ' 2>&1 | tee -a ' . BUILD_DIR . '/shell.out; ' .
+            'RET=\${PIPESTATUS[0]}; echo "@BAHUB_RET=\${RET}" >> ' . BUILD_DIR . '/shell.out; sleep 2; exit \${RET};"';
 
-        exec($fullCommand, $output, $returnCode);
+        exec($fullCommand, $output);
 
         $this->lastBahubCommandResponse = file_get_contents(BUILD_DIR . '/shell.out');
-        $this->lastBahubCommandExitCode = $returnCode;
+        preg_match('/@BAHUB_RET=([0-9]+)/', $this->lastBahubCommandResponse, $exitCodeParsingMatches);
+        $this->lastBahubCommandExitCode = (integer) $exitCodeParsingMatches[0][1];
 
-        if ($returnCode !== 0) {
+        if ($this->lastBahubCommandExitCode !== 0) {
             var_dump($this->lastBahubCommandResponse, $this->lastShellCommandExitCode);
         }
 
-        return ['out' => $this->lastBahubCommandResponse, 'exit_code' => $returnCode];
+        return ['out' => $this->lastBahubCommandResponse, 'exit_code' => $this->lastBahubCommandExitCode];
     }
 
     /**
