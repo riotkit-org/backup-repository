@@ -1,6 +1,5 @@
 import os
 from rkd import main as rkd_main, RiotKitDoApplication
-from . import imports
 
 
 def main():
