@@ -3,3 +3,4 @@
 *.pyc
 *.log
 *__pycache__*
+.rkd/docker/Dockerfile

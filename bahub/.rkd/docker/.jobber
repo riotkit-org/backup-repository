@@ -1,0 +1,17 @@
+version: 1.4
+
+prefs:
+    logPath: /home/bahub/logs/jobber.log
+    runLog:
+        type: file
+        path: /home/bahub/logs/
+        maxFileLen: 25m
+        maxHistories: 2
+
+jobs:
+#    mysql:
+#        cmd: "bahub :backup:make mysql"
+#        time: "35 01 * * *"
+#        onError: Continue
+#        notifyOnFailure:
+#            - type: system-email

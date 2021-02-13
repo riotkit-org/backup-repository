@@ -6,5 +6,12 @@ setup(
     setup_requires=['pbr'],
     pbr=True,
     package_dir={'': './'},
-    packages=find_packages(where='./')
+    packages=find_packages(where='./'),
+    package_data={
+        'bahub': [
+            'internal/*',
+            'internal/**/*',
+            'internal/schema/*'
+        ]
+    }
 )
