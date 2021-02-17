@@ -11,8 +11,6 @@ services:
     App\Domain\Authentication\ActionHandler\UserCreationHandler:
         public: true
         autowire: true
-        arguments:
-            $expirationTime: "+2 hours"
 
     App\Domain\Authentication\Factory\Context\SecurityContextFactory:
         public: true

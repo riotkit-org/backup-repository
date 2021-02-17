@@ -6,7 +6,7 @@ from rkd_python import imports as PythonBuildTasksImports
 IMPORTS = PythonBuildTasksImports()
 
 TASKS = [
-    Task(':build:docker', [':sh', '-c', ''' set -x
+    Task(':release:docker-image', [':sh', '-c', ''' set -x
         cd ../ && docker build . -f bahub/.rkd/docker/Dockerfile -t quay.io/riotkit/bahub:latest
     ''']),
 

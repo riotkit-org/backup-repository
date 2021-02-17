@@ -62,6 +62,7 @@ class UserCreationHandler
 
     /**
      * @param AuthenticationManagementContext $context
+     * @param AuthForm $form
      *
      * @throws AuthenticationException
      */
