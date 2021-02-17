@@ -1,7 +1,7 @@
 Backup Repository
 =================
 
-A specialized ninja for backup storage. Fully multi-tenant, with its very granular permissions and client-side (E2E) encryption can act as a farm of backups for various people and organizations.
+A specialized ninja for backup making - complete backups ecosystem. Fully multi-tenant, with its very granular permissions and client-side (E2E) encryption can act as a farm of backups for various people and organizations.
 
 Features
 --------
@@ -14,11 +14,12 @@ Features
 - Fully compatible with containerized workflows (**Docker supported** out-of-the-box by both client and server)
 - Administrative **frontend in web browser**
 - **JSON API**, JSON Web Token (JWT), SWAGGER documentation for the API
+- On client side the backups are made on-the-fly, you don't need extra disk space for temporary storage
 
 #### For installation, guides and more information please check the documentation: https://file-repository.readthedocs.io/en/latest/index.html
 
 **Requirements for the server:**
-- A Cheap VM - minimum of 0.5 vCPU, 256 MB ram (for about 10 backups each night)
+- A Cheap VM - minimum of 0.5 vCPU, 256 MB ram (for about 10 backups each night, but it depends on many factors, you need to check it and adjust by yourself before using on production)
 - PHP 8.0+ with bcmath, iconv, ctype, fileinfo, json, pdo, pdo_sqlite, pdo_pgsql
 - Composer (PHP package manager)
 - "file" standard unix shell command
@@ -42,7 +43,7 @@ Features
 Developers
 ----------
 
-Technically this repository consists of 3 applications placed in following directories:
+Technically this repository consists of 3 applications + functional tests placed in following directories:
 - ./server - server written in PHP
 - ./frontend - web administration panel written in Vue.js
 - ./bahub-client - backup sending/downloading client written in Python

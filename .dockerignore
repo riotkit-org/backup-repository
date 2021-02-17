@@ -18,3 +18,4 @@ server/composer.phar
 server/.phpunit.result.cache
 frontend/node_modules
 frontend/public
+Dockerfile
