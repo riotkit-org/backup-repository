@@ -78,3 +78,21 @@ jobs:
               with:
                   name: logs
                   path: server/var/log
+
+    "build_dockers":
+        runs-on: ubuntu-20.04
+        steps:
+            - name: "Checkout"
+              uses: actions/checkout@v1
+
+            - name: "Install build dependencies"
+              run: "sudo pip install -r ./requirements.txt"
+              working-directory: "server"
+
+            - name: "Build and push server"
+              run: "rkd :release:docker-image ${{ github.ref }}"
+              working-directory: "server"
+
+            - name: "Build and push server"
+              run: "rkd :release:docker-image"
+              working-directory: "bahub"
