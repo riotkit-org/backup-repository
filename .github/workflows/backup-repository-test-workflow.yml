@@ -85,14 +85,21 @@ jobs:
             - name: "Checkout"
               uses: actions/checkout@v1
 
+            - name: "Login to quay"
+              uses: docker/login-action@v1
+              with:
+                  registry: quay.io
+                  username: ${{ secrets.QUAY_USERNAME }}
+                  password: ${{ secrets.QUAY_PASSWORD }}
+
             - name: "Install build dependencies"
               run: "sudo pip install -r ./requirements.txt"
               working-directory: "server"
 
-            - name: "Build and push server"
+            - name: "Build and push Server"
               run: "rkd :release:docker-image ${{ github.ref }}"
               working-directory: "server"
 
-            - name: "Build and push server"
+            - name: "Build and push Bahub client"
               run: "rkd :release:docker-image"
               working-directory: "bahub"
