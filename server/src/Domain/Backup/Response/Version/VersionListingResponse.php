@@ -3,28 +3,15 @@
 namespace App\Domain\Backup\Response\Version;
 
 use App\Domain\Backup\Collection\VersionsCollection;
+use App\Domain\Backup\Entity\StoredVersion;
+use App\Domain\Common\Response\NormalResponse;
 
-class VersionListingResponse implements \JsonSerializable
+class VersionListingResponse extends NormalResponse implements \JsonSerializable
 {
     /**
-     * @var string
+     * @var StoredVersion[]
      */
-    private $status = '';
-
-    /**
-     * @var int
-     */
-    private $exitCode = 0;
-
-    /**
-     * @var int|null
-     */
-    private $errorCode;
-
-    /**
-     * @var array
-     */
-    private $versions;
+    private array $versions;
 
     public static function fromCollection(VersionsCollection $versions, callable $publicUrlFactory): VersionListingResponse
     {
@@ -38,35 +25,19 @@ class VersionListingResponse implements \JsonSerializable
         }
 
         $new = new static();
-        $new->status   = 'OK';
-        $new->exitCode = 200;
+        $new->status    = true;
+        $new->message   = 'OK';
+        $new->httpCode  = 200;
         $new->versions = $mappedVersions;
 
         return $new;
     }
 
-    public static function createWithNotFoundError(): VersionListingResponse
+    public function jsonSerialize(): array
     {
-        $new = new static();
-        $new->status    = 'Object not found';
-        $new->errorCode = 404;
-        $new->exitCode  = 404;
+        $data = parent::jsonSerialize();
+        $data['versions'] = $this->versions;
 
-        return $new;
-    }
-
-    public function jsonSerialize()
-    {
-        return [
-            'status'     => $this->status,
-            'error_code' => $this->errorCode,
-            'exit_code'  => $this->exitCode,
-            'versions'   => $this->versions
-        ];
-    }
-
-    public function getExitCode(): int
-    {
-        return $this->exitCode;
+        return $data;
     }
 }

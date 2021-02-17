@@ -3,7 +3,6 @@
 namespace App\Domain\Backup\ActionHandler\Collection;
 
 use App\Domain\Backup\Exception\AuthenticationException;
-use App\Domain\Backup\Exception\ValidationException;
 use App\Domain\Backup\Form\Collection\DeleteForm;
 use App\Domain\Backup\Manager\CollectionManager;
 use App\Domain\Backup\Response\Collection\CrudResponse;
@@ -11,10 +10,7 @@ use App\Domain\Backup\Security\CollectionManagementContext;
 
 class DeleteHandler
 {
-    /**
-     * @var CollectionManager
-     */
-    private $manager;
+    private CollectionManager $manager;
 
     public function __construct(CollectionManager $manager)
     {
@@ -25,30 +21,19 @@ class DeleteHandler
      * @param DeleteForm                  $form
      * @param CollectionManagementContext $securityContext
      *
-     * @return CrudResponse
+     * @return ?CrudResponse
      *
      * @throws \Exception
      * @throws AuthenticationException
      */
-    public function handle(DeleteForm $form, CollectionManagementContext $securityContext): CrudResponse
+    public function handle(DeleteForm $form, CollectionManagementContext $securityContext): ?CrudResponse
     {
         if (!$form->collection) {
-            return CrudResponse::createWithNotFoundError();
+            return null;
         }
 
         $this->assertHasRights($securityContext, $form);
-
-        try {
-            $this->manager->delete($form->collection);
-
-        } catch (ValidationException $validationException) {
-            return CrudResponse::createWithDomainError(
-                $validationException->getMessage(),
-                $validationException->getField(),
-                $validationException->getCode(),
-                $validationException->getReference()
-            );
-        }
+        $this->manager->delete($form->collection);
 
         return CrudResponse::deletionSuccessfulResponse($form->collection);
     }
@@ -70,10 +55,7 @@ class DeleteHandler
     private function assertHasRights(CollectionManagementContext $securityContext, DeleteForm $form): void
     {
         if (!$securityContext->canDeleteCollection($form)) {
-            throw new AuthenticationException(
-                'Current token does not allow to delete this collection',
-                AuthenticationException::CODES['not_authenticated']
-            );
+            throw AuthenticationException::fromDeletionProhibited();
         }
     }
 }

@@ -17,11 +17,6 @@ class FetchVersionForm
     public $versionId;
 
     /**
-     * @var bool
-     */
-    public $redirect;
-
-    /**
      * @var string
      */
     public $password;
@@ -35,14 +30,4 @@ class FetchVersionForm
      * @var string
      */
     public $httpBytesRange;
-
-    /**
-     * @var string
-     */
-    public $httpIfNoneMatch;
-
-    /**
-     * @var string
-     */
-    public $httpIfModifiedSince;
 }

@@ -2,14 +2,14 @@
 
 namespace App\Domain\Backup\ValueObject\Collection;
 
-use App\Domain\Common\ValueObject\Text;
+use App\Domain\Common\ValueObject\TextField;
 
-class Description extends Text
+class Description extends TextField
 {
-    public function __construct(string $value)
+    public static function fromString(string $value)
     {
         $value = \strip_tags($value);
 
-        parent::__construct($value);
+        return parent::fromString($value);
     }
 }

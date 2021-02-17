@@ -2,14 +2,12 @@
 
 namespace App\Domain\Common\ValueObject\Numeric;
 
+use App\Domain\Common\Exception\CommonValueException;
 use App\Domain\Common\ValueObject\BaseValueObject;
 
 class PositiveNumber extends BaseValueObject implements \JsonSerializable
 {
-    /**
-     * @var int
-     */
-    protected $value;
+    protected int $value;
 
     public function __construct(int $number)
     {
@@ -19,8 +17,7 @@ class PositiveNumber extends BaseValueObject implements \JsonSerializable
     protected function setValue($number): void
     {
         if ($number < 1) {
-            $exceptionType = static::getExceptionType();
-            throw new $exceptionType('Number cannot be 0 or negative, got "' . $number . '"');
+            throw CommonValueException::fromNumberCannotBeNegative($number);
         }
 
         $this->value = $number;
@@ -81,6 +78,8 @@ class PositiveNumber extends BaseValueObject implements \JsonSerializable
      * @param int $num
      *
      * @return static
+     *
+     * @throws CommonValueException
      */
     public function addInteger(int $num)
     {
@@ -88,9 +87,7 @@ class PositiveNumber extends BaseValueObject implements \JsonSerializable
         $new->value += $num;
 
         if ($new->value < 0) {
-            $exceptionClass = static::getExceptionType();
-
-            throw new $exceptionClass('After adding an integer the number is no longer positive');
+            throw CommonValueException::fromSumOperationResultNoLongerPositiveNumberCause();
         }
 
         return $new;

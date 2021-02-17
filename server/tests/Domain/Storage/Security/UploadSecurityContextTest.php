@@ -2,12 +2,11 @@
 
 namespace Tests\Domain\Storage\Security;
 
-use App\Domain\Authentication\Entity\Token;
+use App\Domain\Authentication\Entity\User;
 use App\Domain\Storage\Entity\StoredFile;
 use App\Domain\Storage\Form\UploadForm;
 use App\Domain\Storage\Security\UploadSecurityContext;
 use App\Domain\Storage\ValueObject\Filesize;
-use App\Domain\Storage\ValueObject\Mime;
 use PHPUnit\Framework\TestCase;
 
 /**
@@ -20,7 +19,6 @@ class UploadSecurityContextTest extends TestCase
         return [
             'Only plaintext files allowed, only one tag, 5000bytes max file size, can set password' => [
                 'context' => new UploadSecurityContext(
-                    ['text/plain'],     // allowed mime types
                     ['food-not-bombs'], // allowed tags
                     false, // can upload any file type
                     true,  // can overwrite
@@ -29,7 +27,7 @@ class UploadSecurityContextTest extends TestCase
                     false, // enforce no-password
                     false,  // is administrator
                     false,
-                    new Token()
+                    new User()
                 ),
                 'booleanExpects' => [
                     'canSetPassword'   => true
@@ -45,8 +43,6 @@ class UploadSecurityContextTest extends TestCase
     }
 
     /**
-     * @see UploadSecurityContext::canSetPassword()
-     * @see UploadSecurityContext::isMimeAllowed()
      * @see UploadSecurityContext::isTagAllowed()
      * @see UploadSecurityContext::isFileSizeOk()
      *
@@ -75,7 +71,6 @@ class UploadSecurityContextTest extends TestCase
             $this->assertSame($expectedReturnValue, $context->{$method}());
         }
 
-        $this->assertSame($expectsMimeIsCorrect, $context->isMimeAllowed(new Mime($mime)));
         $this->assertSame($expectsTagIsAllowed,  $context->isTagAllowed($tag));
         $this->assertSame($expectsIsSizeOk,      $context->isFileSizeOk(new Filesize($size)));
     }
@@ -88,7 +83,6 @@ class UploadSecurityContextTest extends TestCase
     public function testCannotOverwriteAFileIfPasswordDoesNotMatch(): void
     {
         $ctx = new UploadSecurityContext(
-            ['text/plain'],
             ['food-not-bombs'],
             false,
             true,  // can overwrite
@@ -97,12 +91,10 @@ class UploadSecurityContextTest extends TestCase
             false,
             false,
             false,
-            new Token()
+            new User()
         );
 
         $formWithInvalidPassword = new UploadForm();
-        $formWithInvalidPassword->password      = 'this-password-does-not-match-hello-password';
-        $formWithInvalidPassword->fileOverwrite = true;
 
         $formWithMatchingPassword = new UploadForm();
         $formWithMatchingPassword->password      = 'hello';
@@ -171,7 +163,6 @@ class UploadSecurityContextTest extends TestCase
         bool $expectedWouldOverwrite
     ): void {
         $ctx = new UploadSecurityContext(
-            ['text/plain'],
             ['food-not-bombs'],
             false,
             $allowedTo,  // can overwrite
@@ -180,7 +171,7 @@ class UploadSecurityContextTest extends TestCase
             false,
             false,
             false,
-            new Token()
+            new User()
         );
 
         $dto = new UploadForm();

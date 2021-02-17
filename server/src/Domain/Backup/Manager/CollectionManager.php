@@ -2,13 +2,15 @@
 
 namespace App\Domain\Backup\Manager;
 
-use App\Domain\Backup\Entity\Authentication\Token;
+use App\Domain\Backup\Entity\Authentication\User;
 use App\Domain\Backup\Entity\BackupCollection;
-use App\Domain\Backup\Exception\CollectionMappingError;
-use App\Domain\Backup\Exception\ValidationException;
-use App\Domain\Backup\Mapper\CollectionMapper;
+use App\Domain\Backup\Entity\UserAccess;
+use App\Domain\Backup\Exception\BackupLogicException;
 use App\Domain\Backup\Repository\CollectionRepository;
+use App\Domain\Backup\Repository\UserAccessRepository;
+use App\Domain\Backup\Repository\UserRepository;
 use App\Domain\Backup\Validation\CollectionValidator;
+use App\Domain\Backup\ValueObject\CollectionSpecificRoles;
 
 /**
  * Manages the collections
@@ -17,15 +19,21 @@ use App\Domain\Backup\Validation\CollectionValidator;
  */
 class CollectionManager
 {
-    private CollectionValidator $validator;
+    private CollectionValidator  $validator;
     private CollectionRepository $repository;
+    private UserAccessRepository $userAccessRepository;
+    private UserRepository       $userRepository;
 
     public function __construct(
         CollectionValidator $validator,
-        CollectionRepository $repository
+        CollectionRepository $repository,
+        UserAccessRepository $userAccess,
+        UserRepository $userRepository
     ) {
         $this->validator  = $validator;
         $this->repository = $repository;
+        $this->userAccessRepository = $userAccess;
+        $this->userRepository       = $userRepository;
     }
 
     /**
@@ -34,7 +42,7 @@ class CollectionManager
      *
      * @return BackupCollection
      *
-     * @throws ValidationException
+     * @throws BackupLogicException
      * @throws \Exception
      */
     public function create(BackupCollection $collection, ?string $customId): BackupCollection
@@ -58,7 +66,7 @@ class CollectionManager
      *
      * @return BackupCollection
      *
-     * @throws ValidationException
+     * @throws BackupLogicException
      */
     public function edit(BackupCollection $collection): BackupCollection
     {
@@ -76,7 +84,7 @@ class CollectionManager
      *
      * @return BackupCollection
      *
-     * @throws ValidationException
+     * @throws BackupLogicException
      */
     public function delete(BackupCollection $collection): BackupCollection
     {
@@ -92,25 +100,40 @@ class CollectionManager
         $this->repository->flushAll();
     }
 
-    public function appendToken(Token $token, BackupCollection $collection): BackupCollection
+    public function appendUser(User $user, BackupCollection $collection, CollectionSpecificRoles $roles): BackupCollection
     {
-        $modifiedCollection = $collection->withTokenAdded($token);
+        $userAccess = $this->userAccessRepository->findForCollectionAndUser($collection, $user);
 
-        $this->repository->persist(
-            $this->repository->merge($modifiedCollection)
-        );
+        if (!$userAccess) {
+            $userAccess = UserAccess::createFrom(
+                $collection,
+                $this->userRepository->findUserById($user->getId())
+            );
+        }
 
-        return $modifiedCollection;
+        // replace roles in existing UserAccess or set roles in new UserAccess
+        $userAccess->setRoles($roles);
+        $this->userAccessRepository->persist($userAccess);
+
+        return $collection;
     }
 
-    public function revokeToken(Token $token, BackupCollection $collection): BackupCollection
+    public function revokeToken(User $user, BackupCollection $collection): BackupCollection
     {
-        $modifiedCollection = $collection->withoutToken($token);
+        $userAccess = $this->userAccessRepository->findForCollectionAndUser($collection, $user);
 
-        $this->repository->persist(
-            $this->repository->merge($modifiedCollection)
-        );
+        if ($userAccess) {
+            $this->userAccessRepository->remove($userAccess);
+        }
 
-        return $modifiedCollection;
+        return $collection;
+    }
+
+    public function replaceUserRoles(User $user, BackupCollection $collection, CollectionSpecificRoles $roles)
+    {
+        $access = $this->userAccessRepository->findForCollectionAndUser($collection, $user);
+        $access->setRoles($roles);
+
+        $this->userAccessRepository->persist($access);
     }
 }

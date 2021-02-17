@@ -4,16 +4,12 @@
 # IDE
 /server/.idea
 /bahub-client/.idea
-/little-copy-machine-client/.idea
 
 /.idea
 /supervisord.log
 /supervisord.pid
 /docs/build
 /examples/docker-s3-api-client/.env
-
-# bower
-/public/minimumui/components
 
 /config/ids_mapping.yaml
 
@@ -38,4 +34,15 @@
 /env/.current-env
 
 # lcm
-/little-copy-machine-client/src/database.db
+/bahub-client/.eggs/
+/bahub-client/src/bahub.egg-info/
+/server/tests/Functional/_output/
+
+!.gitkeep
+/frontend/vendor/
+/server/.composer/
+/server/.symfony/
+/server/composer.phar
+/server/.bash_history
+/e2e/vendor/
+/e2e/.idea/

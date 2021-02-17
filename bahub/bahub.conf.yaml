@@ -1,0 +1,112 @@
+#
+# Bahub - File Repository API client configuration
+# For documentation see: https://file-repository.readthedocs.io/en/latest/client/configuration-reference.html
+#
+# This is a reference configuration file that should contain all options.
+#
+# Maintainers: Please change with caution, this file is used in automated E2E tests
+# Notice: To test this configuration you need to run `docker-compose up` in ./test/env/bahub_adapter_integrations directory
+#
+
+accesses:
+    secured:
+        url: "http://localhost:8000"
+        token: "${API_TOKEN}"
+
+encryption:
+    strong:
+        gnupg_home: "${BUILD_DIR}/bahub-gnupg"
+        passphrase: "capitalism-must-end"
+        method: "aes256"
+        username: "Mikhail Bakunin"
+        email: "bakunin@example.org"
+
+transports:
+    local:
+        type: bahub.transports.sh
+        spec: {}
+
+    docker_mysql:
+        type: bahub.transports.docker
+        spec:
+            container: "bahub_adapter_integrations_db_mysql_1"
+
+    docker_postgres:
+        type: bahub.transports.docker
+        spec:
+            container: "bahub_adapter_integrations_db_postgres_1"
+
+    docker_postgres_offline:
+        type: bahub.transports.temporarydocker
+        spec:
+            orig_container: "bahub_adapter_integrations_db_postgres_1"
+            temp_container_image: "postgres:13.1"
+            shell: /bin/bash
+
+backups:
+    fs:
+        meta:
+            type: bahub.adapters.filesystem
+            access: secured
+            encryption: strong
+            collection_id: "${TEST_COLLECTION_ID}"
+            transport: local
+        spec:
+            paths:
+                - ./
+
+    postgres_fs_cold_files_backup:
+        meta:
+            type: bahub.adapters.filesystem
+            access: secured
+            encryption: strong
+            collection_id: "${TEST_COLLECTION_ID}"
+            transport: docker_postgres_offline
+        spec:
+            paths:
+                - /var/lib/postgresql
+
+    db_mysql:
+        meta:
+            type: bahub.adapters.mysql
+            access: secured
+            encryption: strong
+            collection_id: "${TEST_COLLECTION_ID}"
+            transport: docker_mysql
+        spec:
+            host: "127.0.0.1"
+            port: 3306
+            user: "root"
+            password: "root"
+
+    db_postgres_dump_all_databases:
+        meta:
+            type: bahub.adapters.postgres_dump
+            access: secured
+            encryption: strong
+            collection_id: "${TEST_COLLECTION_ID}"
+            transport: docker_postgres
+        spec:
+            host: "127.0.0.1"
+            port: 5432
+            user: "bakunin"
+            password: "communism-cannot-be-enforced"
+
+    db_postgres_dump_single_database:
+        meta:
+            type: bahub.adapters.postgres_dump
+            access: secured
+            encryption: strong
+            collection_id: "${TEST_COLLECTION_ID}"
+            transport: docker_postgres
+        spec:
+            host: "127.0.0.1"
+            port: 5432
+            user: "bakunin"
+            password: "communism-cannot-be-enforced"
+            database: "riotkit"
+
+#notifiers:
+    #mattermost:
+    #    type: slack
+    #    url: "http://localhost"

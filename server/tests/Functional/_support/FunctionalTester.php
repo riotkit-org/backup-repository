@@ -1,5 +1,6 @@
-<?php
+<?php declare(strict_types=1);
 
+use Ramsey\Uuid\Uuid;
 use Tests\Urls;
 
 require_once __DIR__ . '/../Urls.php';
@@ -27,17 +28,36 @@ class FunctionalTester extends \Codeception\Actor
 
     public function amAdmin(): void
     {
-        $this->amToken('test-token-full-permissions');
+        $this->amGuest();
+        $this->haveHttpHeader('Test-Token', 'test-token-full-permissions');
     }
 
     public function amGuest(): void
     {
         $this->deleteHeader('token');
+        $this->deleteHeader('Test-Token');
+        $this->deleteHeader('authorization');
     }
 
-    public function amToken(string $token): void
+    public function amUser(string $email, string $password): void
     {
+        $this->amGuest();
+
+        $this->haveHttpHeader('Content-Type', 'application/json');
+        $this->sendPOST(Urls::URL_JWT_AUTH_LOGIN, [
+            'username' => $email,
+            'password' => $password
+        ]);
+
+        $this->iHaveToken($this->grabDataFromResponseByJsonPath('.token')[0] ?? '');
+    }
+
+    public function iHaveToken(string $token): void
+    {
+        $this->amGuest();
+
         $this->haveHttpHeader('token', $token);
+        $this->amBearerAuthenticated($token);
     }
 
     public function assertSame($expected, $actual, $message = '')
@@ -50,20 +70,21 @@ class FunctionalTester extends \Codeception\Actor
         \PHPUnit\Framework\Assert::assertTrue($condition, $message);
     }
 
-    public function haveRoles(array $roles, array $params = [], bool $assert = true): string
+    public function haveRoles(array $roles, array $params = [], bool $assert = true): User
     {
         $this->amAdmin();
 
-        $token = $this->createToken(
+        $user = $this->createStandardUser(
             array_merge(
                 ['roles' => $roles],
                 $params
             ),
             $assert
         );
-        $this->amToken($token);
 
-        return $token;
+        $this->amUser($user->email, $user->password);
+
+        return $user;
     }
 
     public function postJson(string $url, $params = null, $files = []): void
@@ -78,17 +99,17 @@ class FunctionalTester extends \Codeception\Actor
         $this->sendPUT($url, $params, $files);
     }
 
-    public function lookupToken(string $tokenId): void
+    public function lookupUser(string $userId): void
     {
         $this->sendGET(
             $this->fill(
-                Urls::URL_TOKEN_LOOKUP,
-                ['token' => $tokenId]
+                Urls::URL_USER_LOOKUP,
+                ['userId' => $userId]
             )
         );
     }
 
-    public function searchForTokens(string $searchPhrase, int $page, int $limit): void
+    public function searchForUsers(string $searchPhrase, int $page, int $limit): void
     {
         $this->sendGET(
             $this->fill(
@@ -98,9 +119,9 @@ class FunctionalTester extends \Codeception\Actor
         );
     }
 
-    public function createToken(array $data, bool $assert = true): string
+    public function createUser(array $data, bool $assert = true): User
     {
-        $this->postJson(Urls::URL_TOKEN_GENERATE,
+        $this->postJson(Urls::URL_USER_CREATE,
             \array_merge(
                 [
                     'roles' => [],
@@ -110,55 +131,44 @@ class FunctionalTester extends \Codeception\Actor
             )
         );
 
-        $status = $this->grabDataFromResponseByJsonPath('.status')[0] ?? '';
-
         if ($assert) {
-            $this->assertNotSame('Validation error', $status);
+            $this->canSeeResponseCodeIs(201);
         }
 
-        return $this->grabDataFromResponseByJsonPath('.token.id')[0] ?? '';
+        return new User(
+            $this->grabDataFromResponseByJsonPath('.user.id')[0] ?? '',
+            $this->grabDataFromResponseByJsonPath('.user.email')[0] ?? '',
+            $data['password'] ?? ''
+        );
     }
 
-    public function deleteToken(string $tokenId): void
+    /**
+     * Creates a user with standard fields filled up like email, password, organization, about
+     *
+     * @param array $data
+     * @param bool $assert
+     *
+     * @return User
+     */
+    public function createStandardUser(array $data, bool $assert = true): User
+    {
+        $data = array_merge([
+            'password'     => 'food-not-bombs-1980',
+            'email'        => Uuid::uuid4()->getHex() . '@riseup.net',
+            'organization' => 'Food Not Bombs',
+            'about'        => 'A loose-knit group of independent collectives, sharing free vegan and vegetarian food with others. Food Not Bombs\' ideology is that myriad corporate and government priorities are skewed to allow hunger to persist in the midst of abundance. To demonstrate this (and to reduce costs), a large amount of the food served by the group is surplus food from grocery stores, bakeries and markets that would otherwise go to waste (or, occasionally, has already been thrown away). This group exhibits a form of franchise activism.',
+        ], $data);
+
+        return $this->createUser($data, $assert);
+    }
+
+    public function revokeAccess(string $userId): void
     {
         $this->sendDELETE(
             $this->fill(
                 Urls::URL_TOKEN_DELETE,
-                ['token' => $tokenId]
+                ['userId' => $userId]
             )
-        );
-    }
-
-    public function uploadByUrl(string $url, array $overrideParams = []): void
-    {
-        $templateParams = [
-            'fileUrl' => $url,
-            'tags'    => [],
-            'public'  => true
-        ];
-
-        $params = \array_merge(
-            $templateParams,
-            ['fileUrl' => $url],
-            $overrideParams
-        );
-
-        $this->sendPOST(Urls::URL_REPOSITORY_UPLOAD_BY_URL, $params);
-    }
-
-    public function uploadByPayload(string $payload, array $params = []): void
-    {
-        $this->sendPOST(Urls::URL_REPOSITORY_UPLOAD_RAW . '?' . http_build_query($params), $payload);
-    }
-
-    public function deleteFile(string $filename, array $params = []): void
-    {
-        $this->sendDELETE(
-            $this->fill(
-                Urls::URL_REPOSITORY_DELETE_FILE,
-                ['fileName' => $filename]
-            ),
-            $params
         );
     }
 
@@ -171,22 +181,6 @@ class FunctionalTester extends \Codeception\Actor
             ),
             $params
         );
-    }
-
-    public function receiveListOfElementsFromSecureCopy(string $type): void
-    {
-        $this->sendGET($this->fill(Urls::URL_SECURE_COPY, ['type' => $type]));
-    }
-
-    public function downloadFileFromSecureCopy(string $fileId): string
-    {
-        $this->sendGET($this->fill(Urls::URL_SECURE_COPY_DOWNLOAD_FILE, ['file' => $fileId]));
-        return $this->grabResponse();
-    }
-
-    public function retrieveFileMetadataFromSecureCopy(string $filename): void
-    {
-        $this->sendGET($this->fill(Urls::URL_SECURE_COPY_RETRIEVE_FILE_METADATA, ['file' => $filename]));
     }
 
     public function listFiles(array $params = []): void
@@ -227,6 +221,15 @@ class FunctionalTester extends \Codeception\Actor
                 ['collectionId' => $id]
             )
         );
+    }
+
+    public function canSeeResponseOfICanBrowseCollectionVersions(): void
+    {
+        $this->seeResponseContainsJson([
+            'message'  => 'OK',
+            'status'   => true,
+            'versions' => []
+        ]);
     }
 
     public function downloadCollectionVersion(string $id, string $version): void
@@ -281,14 +284,20 @@ class FunctionalTester extends \Codeception\Actor
         $this->assertEquals($expectedAmount, \count($elements));
     }
 
-    public function grantTokenAccessToCollection(string $collectionId, string $tokenId): void
+    public function grantUserAccessToCollection(string $collectionId, string $tokenId, array $roles = null): void
     {
+        $payload = ['user' => $tokenId];
+
+        if ($roles !== null) {
+            $payload['roles'] = $roles;
+        }
+
         $this->postJson(
             $this->fill(
                 Urls::URL_COLLECTION_GRANT_TOKEN,
-                ['collectionId' => $collectionId]
+                ['collection' => $collectionId]
             ),
-            ['token' => $tokenId]
+            $payload
         );
     }
 
@@ -298,10 +307,110 @@ class FunctionalTester extends \Codeception\Actor
             $this->fill(
                 Urls::URL_COLLECTION_REVOKE_TOKEN,
                 [
-                    'collectionId' => $collectionId,
-                    'tokenId' => $tokenId
+                    'collection' => $collectionId,
+                    'user'       => $tokenId
                 ]
             )
         );
+    }
+
+    public function canSeeResponseOfRevokedAccessIsSuccessful(): void
+    {
+        $this->canSeeResponseCodeIsSuccessful();
+        $this->canSeeResponseContainsJson([
+            "message" => "OK",
+            "status"  => true,
+            'data'   => [
+                'user'       => [],
+                'collection' => []
+            ]
+        ]);
+    }
+
+    public function canSeeResponseOfGrantedAccessIsSuccessful(): void
+    {
+        // it is the same
+        $this->canSeeResponseOfRevokedAccessIsSuccessful();
+    }
+
+    public function canSeeResponseCannotGrantAccessToCollection(): void
+    {
+        $this->canSeeErrorResponse(
+            'No permissions to grant and/or revoke access for other users in this collection',
+            40308,
+            'request.auth-error'
+        );
+
+        $this->canSeeResponseCodeIsClientError();
+    }
+
+    public function canSeeResponseCannotGrantTooMuchAccessThanWeHave(): void
+    {
+        $this->canSeeErrorResponse(
+            'Cannot give roles to other user that current context user does not have',
+            40315,
+            'request.auth-error'
+        );
+
+        $this->canSeeResponseCodeIsClientError();
+    }
+
+    public function canSeeResponseCannotUploadToCollection(): void
+    {
+        $this->canSeeResponseContainsJson([
+            "error" => "Current access does not grant you a possibility to upload to this backup collection",
+            "code"  => 40308,
+            "type"  => "request.auth-error"
+        ]);
+
+        $this->canSeeResponseCodeIsClientError();
+    }
+
+    public function canSeeResponseOfUploadingToCollectionIsSuccessful(): void
+    {
+        $this->canSeeResponseContainsJson([
+            'message'    => "File was uploaded",
+            'status'     => true,
+            'version'    => [],
+            'collection' => []
+        ]);
+
+        $this->canSeeResponseCodeIsSuccessful();
+    }
+
+    public function canSeeErrorResponse(string $error, int $code, string $type): void
+    {
+        $this->canSeeResponseContainsJson([
+            "error" => $error,
+            "code"  => $code,
+            "type"  => $type
+        ]);
+    }
+
+    public function amCollectionManager(): void
+    {
+        $this->amAdmin();
+        $this->haveRoles([
+            'upload.all',
+            'collections.create_new',
+            'collections.manage_users_in_allowed_collections',
+            'collections.upload_to_allowed_collections',
+            'collections.list_versions_for_allowed_collections'
+        ]);
+    }
+}
+
+
+class User
+{
+    public string $id;
+    public string $email;
+    public string $password;
+
+    public function __construct(string $id, string $email, string $password)
+    {
+        $this->id       = $id;
+        $this->email    = $email;
+        $this->password = $password;
     }
 }

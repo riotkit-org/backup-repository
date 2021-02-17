@@ -2,10 +2,11 @@
 
 namespace App\Domain\Storage\Manager;
 
-use App\Domain\Authentication\Entity\Token;
+use App\Domain\Authentication\Entity\User;
 use App\Domain\Storage\Entity\StagedFile;
 use App\Domain\Storage\Entity\StoredFile;
 use App\Domain\Storage\Exception\DuplicatedContentException;
+use App\Domain\Storage\Exception\InvalidAttributeException;
 use App\Domain\Storage\Exception\StorageException;
 use App\Domain\Storage\Exception\ValidationException;
 use App\Domain\Storage\Factory\FileInfoFactory;
@@ -78,7 +79,6 @@ class WriteManager
             $existingFromRepository->getStoragePath(),
             $securityContext,
             $existingFromRepository,
-            '',
             $encoding
         );
     }
@@ -100,6 +100,7 @@ class WriteManager
      *
      * @throws StorageException
      * @throws ValidationException
+     * @throws InvalidAttributeException
      */
     public function submitFileLostInRepositoryButExistingInStorage(
         Filename              $filename,
@@ -127,7 +128,7 @@ class WriteManager
      * @param UploadForm $form
      * @param InputEncoding $encoding
      * @param Path $path
-     * @param Token $token
+     * @param User $token
      *
      * @return StoredFile
      *
@@ -140,7 +141,7 @@ class WriteManager
         UploadForm            $form,
         InputEncoding         $encoding,
         Path                  $path,
-        Token                 $token
+        User                 $token
     ): StoredFile {
         return $this->submitFileToBothRepositoryAndStorage(
             $stream,
@@ -245,14 +246,14 @@ class WriteManager
     }
 
     /**
-     * @param StagedFile|Path $stagedFile
+     * @param StagedFile      $stagedFile
      * @param StoredFile      $file
      * @param StoredFile|null $originForReference
      *
      * @return StoredFile
      * @throws ValidationException
      */
-    private function commitToRegistry($stagedFile, StoredFile $file,
+    private function commitToRegistry(StagedFile $stagedFile, StoredFile $file,
                                       ?StoredFile $originForReference = null): StoredFile
     {
         // case: $file is a duplicate of $originForReference (the second one was already upload and has same content)
@@ -268,7 +269,7 @@ class WriteManager
             $info = $this->fileInfoFactory->generateForStagedFile($stagedFile);
 
             $file->setContentHash($info->getChecksum());
-            $file->setMimeType($info->getMime());
+            $file->setFilesize($stagedFile->getFilesize());
 
             $this->validator->assertThereIsNoFileByFilename($file);
         }

@@ -7,15 +7,8 @@ use Throwable;
 
 class DatabaseException extends CommonDatabaseException
 {
-    /**
-     * @var string|null
-     */
-    private $sqlState;
-
-    /**
-     * @var string|null
-     */
-    private $driverErrorCode;
+    private ?string $sqlState;
+    private ?string $driverErrorCode;
 
     public function __construct(string $message, int $code, ?string $sqlState, ?string $driverErrorCode, Throwable $previous = null)
     {

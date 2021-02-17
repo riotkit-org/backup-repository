@@ -2,7 +2,7 @@
 
 namespace Tests\Domain\Authentication\Entity;
 
-use App\Domain\Authentication\Entity\Token;
+use App\Domain\Authentication\Entity\User;
 use PHPUnit\Framework\TestCase;
 
 class TokenTest extends TestCase
@@ -93,7 +93,7 @@ class TokenTest extends TestCase
      */
     public function testIsValid(array $data, string $inputUA, string $inputIP, \DateTimeImmutable $expirationDate, bool $expectation): void
     {
-        $token = new Token();
+        $token = new User();
         $token->setData($data);
         $token->setExpirationDate($expirationDate);
 

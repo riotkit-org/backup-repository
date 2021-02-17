@@ -2,16 +2,18 @@
 
 namespace App\Domain\Backup\ActionHandler\Version;
 
-use App\Domain\Authentication\Entity\Token;
+use App\Domain\Authentication\Entity\User;
 use App\Domain\Backup\Entity\BackupCollection;
 use App\Domain\Backup\Exception\AuthenticationException;
-use App\Domain\Backup\Exception\CollectionMappingError;
-use App\Domain\Backup\Exception\ValidationException;
+use App\Domain\Backup\Exception\BackupLogicException;
 use App\Domain\Backup\Form\BackupSubmitForm;
 use App\Domain\Backup\Manager\BackupManager;
 use App\Domain\Backup\Security\VersioningContext;
 use App\Domain\Backup\Service\FileUploader;
 use App\Domain\Backup\Response\Version\BackupSubmitResponse;
+use App\Domain\Common\Exception\DomainAssertionFailure;
+use App\Domain\Common\Exception\DomainInputValidationConstraintViolatedError;
+use App\Domain\Errors;
 
 class BackupSubmitHandler
 {
@@ -27,15 +29,17 @@ class BackupSubmitHandler
     /**
      * @param BackupSubmitForm $form
      * @param VersioningContext $securityContext
-     * @param Token $token
+     * @param User $token
      *
      * @return BackupSubmitResponse
      *
      * @throws AuthenticationException
+     * @throws DomainAssertionFailure
+     * @throws BackupLogicException
+     * @throws \Throwable
      */
-    public function handle(BackupSubmitForm $form, VersioningContext $securityContext, Token $token): BackupSubmitResponse
+    public function handle(BackupSubmitForm $form, VersioningContext $securityContext, User $token): BackupSubmitResponse
     {
-
         $this->assertHasPermissions($securityContext, $form->collection);
         $result = null;
 
@@ -54,33 +58,30 @@ class BackupSubmitHandler
                 $this->backupManager->flushAll();
 
                 return BackupSubmitResponse::createSuccessResponse($backup, $form->collection);
+
+            } else {
+                $this->fileUploader->rollback($result);
+
+                throw DomainAssertionFailure::fromErrors([
+                    DomainInputValidationConstraintViolatedError::fromString(
+                        '?', $result->getStatus(), $result->getErrorCode()
+                    )
+                ]);
             }
 
-        } catch (CollectionMappingError $mappingError) {
-            $this->fileUploader->rollback($result);
-
-            return BackupSubmitResponse::createWithValidationErrors($mappingError->getErrors());
-
-        } catch (ValidationException $validationException) {
+        } catch (DomainAssertionFailure $assertionException) {
             // corner case: cannot delete a file that was reported as duplication because we would delete an origin file
-            if ($validationException->getCode() !== ValidationException::CODE_BACKUP_VERSION_DUPLICATED) {
+            if ($assertionException->getCode() !== Errors::ERR_UPLOADED_FILE_NOT_UNIQUE) {
                 $this->fileUploader->rollback($result);
             }
 
-            return BackupSubmitResponse::createFromFailure(
-                $validationException->getMessage(),
-                $validationException->getCode(),
-                $validationException->getField()
-            );
+            throw $assertionException;
+
+        } catch (\Throwable $exception) {
+            $this->fileUploader->rollback($result);
+
+            throw $exception;
         }
-
-        $this->fileUploader->rollback($result);
-
-        return BackupSubmitResponse::createFromFailure(
-            $result->getStatus(),
-            $result->getErrorCode(),
-            ''
-        );
     }
 
     /**
@@ -92,10 +93,7 @@ class BackupSubmitHandler
     private function assertHasPermissions(VersioningContext $securityContext, BackupCollection $collection): void
     {
         if (!$securityContext->canUploadToCollection($collection)) {
-            throw new AuthenticationException(
-                'Current token does not allow to upload to this collection',
-                AuthenticationException::CODES['not_authenticated']
-            );
+            throw AuthenticationException::fromBackupUploadActionDisallowed();
         }
     }
 }

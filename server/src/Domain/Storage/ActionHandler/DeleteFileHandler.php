@@ -2,6 +2,7 @@
 
 namespace App\Domain\Storage\ActionHandler;
 
+use App\Domain\Common\Exception\CommonStorageException;
 use App\Domain\Storage\Exception\AuthenticationException;
 use App\Domain\Storage\Exception\StorageException;
 use App\Domain\Storage\Form\DeleteFileForm;
@@ -12,15 +13,8 @@ use App\Domain\Storage\ValueObject\Filename;
 
 class DeleteFileHandler
 {
-    /**
-     * @var StorageManager
-     */
-    private $storageManager;
-
-    /**
-     * @var FileRepository
-     */
-    private $repository;
+    private StorageManager $storageManager;
+    private FileRepository $repository;
 
     public function __construct(StorageManager $storageManager, FileRepository $repository)
     {
@@ -35,7 +29,7 @@ class DeleteFileHandler
      * @return bool
      *
      * @throws AuthenticationException
-     * @throws StorageException
+     * @throws StorageException|CommonStorageException
      */
     public function handle(DeleteFileForm $form, ManagementSecurityContext $securityContext): bool
     {
@@ -62,10 +56,7 @@ class DeleteFileHandler
         }
 
         if (!$securityContext->canDeleteElement($file)) {
-            throw new AuthenticationException(
-                'Current token does not allow user to delete the file',
-                AuthenticationException::CODES['auth_cannot_delete_file']
-            );
+            throw AuthenticationException::fromDeletionProhibited();
         }
     }
 }

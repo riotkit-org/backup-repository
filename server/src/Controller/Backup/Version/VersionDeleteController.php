@@ -4,9 +4,10 @@ namespace App\Controller\Backup\Version;
 
 use App\Controller\BaseController;
 use App\Domain\Backup\ActionHandler\Version\BackupVersionDeleteHandler;
+use App\Domain\Backup\Entity\Authentication\User;
 use App\Domain\Backup\Factory\SecurityContextFactory;
 use App\Domain\Backup\Form\Version\VersionDeleteForm;
-use App\Infrastructure\Backup\Form\Version\VersionDeleteFormType;
+use App\Domain\Common\Exception\ResourceNotFoundException;
 use App\Infrastructure\Common\Http\JsonFormattedResponse;
 use Exception;
 use Symfony\Component\HttpFoundation\Request;
@@ -36,27 +37,39 @@ class VersionDeleteController extends BaseController
      */
     public function handleAction(Request $request, string $collectionId, string $backupId): Response
     {
-        $form = new VersionDeleteForm();
-        $infrastructureForm = $this->createForm(VersionDeleteFormType::class, $form);
-        $infrastructureForm->submit([
+        $requestData = [
             'collection' => $collectionId,
             'version'    => $backupId
-        ]);
+        ];
 
-        if (!$infrastructureForm->isValid()) {
-            return $this->createValidationErrorResponse($infrastructureForm);
+        /**
+         * @var VersionDeleteForm $form
+         */
+        $form = $this->decodeRequestIntoDTO($requestData, VersionDeleteForm::class);
+
+        /**
+         * @var User $user
+         */
+        $user = $this->getLoggedUser(User::class);
+
+        if (!$form->collection) {
+            throw ResourceNotFoundException::createFromMessage('Collection not found');
         }
 
-        return $this->wrap(
-            function () use ($form, $request) {
-                $response = $this->handler->handle(
-                    $form,
-                    $this->authFactory->createVersioningContext($this->getLoggedUserToken()),
-                    strtolower((string) $request->get('simulate')) !== 'true'
-                );
+        if (!$form->version) {
+            throw ResourceNotFoundException::createFromMessage('Version not found');
+        }
 
-                return new JsonFormattedResponse($response, $response->getExitCode());
-            }
+        if (!$user) {
+            throw ResourceNotFoundException::createFromMessage('Current user not found');
+        }
+
+        $response = $this->handler->handle(
+            $form,
+            $this->authFactory->createVersioningContext($user, $form->collection),
+            strtolower((string) $request->get('simulate')) !== 'true'
         );
+
+        return new JsonFormattedResponse($response, $response->getHttpCode());
     }
 }

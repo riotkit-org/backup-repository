@@ -2,35 +2,17 @@
 
 namespace App\Domain\Storage\Response;
 
+use App\Domain\Common\Http;
+use App\Domain\Common\Response\NormalResponse;
 use App\Domain\Storage\ValueObject\Filename;
 use App\Domain\Storage\ValueObject\Url;
 
-class FileUploadedResponse implements \JsonSerializable
+class FileUploadedResponse extends NormalResponse implements \JsonSerializable
 {
-    /**
-     * @var string
-     */
-    private $status;
-
-    /**
-     * @var int
-     */
-    private $exitCode;
-
-    /**
-     * @var int
-     */
-    private $errorCode;
-
     /**
      * @var Url
      */
     private $url;
-
-    /**
-     * @var null|Url
-     */
-    private $backUrl;
 
     /**
      * @var int|null
@@ -48,25 +30,18 @@ class FileUploadedResponse implements \JsonSerializable
     private $requestedFilename;
 
     /**
-     * @var array
-     */
-    private $context;
-
-    /**
      * @param Url $url
-     * @param Url $backUrl
      * @param string|int $id
      * @param Filename $filename
      *
      * @return FileUploadedResponse
      */
-    public static function createWithMeaningFileWasUploaded(Url $url, Url $backUrl, $id, Filename $filename, Filename $requestedFilename): FileUploadedResponse
+    public static function createWithMeaningFileWasUploaded(Url $url, $id, Filename $filename, Filename $requestedFilename): FileUploadedResponse
     {
         $new = new static();
-        $new->status   = 'OK';
-        $new->exitCode = 200;
+        $new->status   = true;
+        $new->httpCode = Http::HTTP_OK;
         $new->url      = $url;
-        $new->backUrl  = $backUrl->withVar('back', $url->getValue());
         $new->id       = $id;
         $new->filename = $filename->getValue();
         $new->requestedFilename = $requestedFilename->getValue();
@@ -84,8 +59,8 @@ class FileUploadedResponse implements \JsonSerializable
     public static function createWithMeaningFileWasAlreadyUploaded(Url $url, $id, Filename $filename, Filename $requestedFilename): FileUploadedResponse
     {
         $new = new static();
-        $new->status   = 'Not-Changed';
-        $new->exitCode = 202;
+        $new->status   = true;
+        $new->httpCode = Http::HTTP_ACCEPTED;
         $new->url      = $url;
         $new->id       = $id;
         $new->filename = $filename->getValue();
@@ -94,74 +69,20 @@ class FileUploadedResponse implements \JsonSerializable
         return $new;
     }
 
-    /**
-     * @param string $message
-     * @param int    $code
-     * @param array  $context
-     *
-     * @return FileUploadedResponse
-     */
-    public static function createWithValidationError(string $message, int $code, array $context): FileUploadedResponse
+    public function jsonSerialize(): array
     {
-        $new = new static();
-        $new->status       = $message;
-        $new->errorCode    = $code;
-        $new->exitCode     = 400;
-        $new->url          = null;
-        $new->context      = $context;
+        $data = parent::jsonSerialize();
+        $data['url']                = $this->url;
+        $data['id']                 = $this->id;
+        $data['filename']           = $this->filename;
+        $data['requested_filename'] = $this->requestedFilename;
 
-        return $new;
-    }
-
-    /**
-     * @param string $detail
-     *
-     * @return FileUploadedResponse
-     */
-    public static function createWithNoAccessError(string $detail = ''): FileUploadedResponse
-    {
-        $new = new static();
-        $new->status    = 'No enough permissions on the token to perform the operation. ' . $detail;
-        $new->errorCode = 403;
-        $new->exitCode  = 403;
-        $new->url       = null;
-
-        return $new;
-    }
-
-    /**
-     * @param int $code
-     *
-     * @return FileUploadedResponse
-     */
-    public static function createWithServerError(int $code): FileUploadedResponse
-    {
-        $new = new static();
-        $new->status   = 'Server error with code ' . $code;
-        $new->exitCode = 503;
-        $new->url      = null;
-
-        return $new;
-    }
-
-    public function jsonSerialize()
-    {
-        return [
-            'status'             => $this->status,
-            'error_code'         => $this->errorCode,
-            'http_code'          => $this->exitCode,
-            'url'                => $this->url,
-            'back'               => $this->backUrl,
-            'id'                 => $this->id,
-            'filename'           => $this->filename,
-            'requested_filename' => $this->requestedFilename,
-            'context'            => $this->context
-       ];
+        return $data;
     }
 
     public function isOk(): bool
     {
-        return $this->exitCode <= 299;
+        return $this->httpCode <= 299;
     }
 
     /**
@@ -169,7 +90,7 @@ class FileUploadedResponse implements \JsonSerializable
      */
     public function getExitCode(): int
     {
-        return $this->exitCode;
+        return $this->httpCode;
     }
 
     /**

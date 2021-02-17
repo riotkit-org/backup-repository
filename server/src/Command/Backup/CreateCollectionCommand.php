@@ -2,11 +2,12 @@
 
 namespace App\Command\Backup;
 
-use App\Domain\Backup\Exception\ValidationException;
+use App\Domain\Backup\Exception\BackupLogicException;
 use App\Domain\Backup\Factory\SecurityContextFactory;
 use App\Domain\Backup\ActionHandler\Collection\CreationHandler;
 use App\Domain\Backup\Form\Collection\CreationForm;
 use App\Domain\Backup\ValueObject\BackupStrategy;
+use App\Domain\Errors;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -80,8 +81,8 @@ class CreateCollectionCommand extends Command
 
         try {
             $this->handler->flush();
-        } catch (ValidationException $exception) {
-            if (!$input->getOption('ignore-error-if-exists')) {
+        } catch (BackupLogicException $exception) {
+            if ($exception->getCode() === Errors::ERR_COLLECTION_ID_EXISTS && !$input->getOption('ignore-error-if-exists')) {
                 throw $exception;
             }
 

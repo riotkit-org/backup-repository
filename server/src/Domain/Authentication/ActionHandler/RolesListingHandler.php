@@ -2,9 +2,11 @@
 
 namespace App\Domain\Authentication\ActionHandler;
 
+use App\Domain\Authentication\Entity\User;
 use App\Domain\Authentication\Exception\AuthenticationException;
 use App\Domain\Authentication\Response\RoleSearchResponse;
 use App\Domain\Authentication\Security\Context\AuthenticationManagementContext;
+use App\Domain\Authentication\Service\RolesFilter;
 use App\Domain\Authentication\Service\Security\RolesInformationProvider;
 
 class RolesListingHandler
@@ -18,20 +20,24 @@ class RolesListingHandler
 
     /**
      * @param AuthenticationManagementContext $context
+     * @param User  $user
+     * @param array $limits
      *
      * @return RoleSearchResponse
      *
      * @throws AuthenticationException
      */
-    public function handle(AuthenticationManagementContext $context): RoleSearchResponse
+    public function handle(AuthenticationManagementContext $context, User $user, array $limits): RoleSearchResponse
     {
-        if (!$context->canUseTechnicalEndpoints()) {
-            throw new AuthenticationException(
-                'Current token does not allow access to technical endpoints',
-                AuthenticationException::CODES['not_authenticated']
-            );
+        if (!$context->canListRoles()) {
+            throw AuthenticationException::fromPermissionDeniedToListPermissions();
         }
 
-        return RoleSearchResponse::createResultsResponse($this->provider->findAllRolesWithTheirDescription());
+        $allPermissions = $this->provider->findAllRolesWithTheirDescription();
+
+        return RoleSearchResponse::createResultsResponse(
+            RolesFilter::filterBy($allPermissions, $limits, $user),
+            $allPermissions
+        );
     }
 }

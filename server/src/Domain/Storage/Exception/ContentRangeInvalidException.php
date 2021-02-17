@@ -2,54 +2,52 @@
 
 namespace App\Domain\Storage\Exception;
 
-use App\Domain\Common\Exception\ValueObjectException;
+use App\Domain\Common\Exception\CommonValueException;
+use App\Domain\Errors;
 use Throwable;
 
-class ContentRangeInvalidException extends ValueObjectException
+class ContentRangeInvalidException extends CommonValueException
 {
     /**
      * @var int
      */
-    private $from;
+    private int $from;
 
     /**
      * @var int
      */
-    private $to;
+    private int $to;
 
     /**
      * @var int
      */
-    private $length;
+    private int $length;
 
-    public function __construct($from, $to, $length, int $code = 0, Throwable $previous = null)
+    public static function createFromRange(int $from, int $to, int $length, Throwable $previous = null)
     {
-        $this->from   = $from;
-        $this->to     = $to;
-        $this->length = $length;
+        $exc = new static(
+            Errors::ERR_MSG_STORAGE_READ_CONTENT_RANGE_INVALID,
+            Errors::ERR_STORAGE_READ_CONTENT_RANGE_INVALID,
+            $previous
+        );
 
-        parent::__construct('Content range invalid', $code, $previous);
+        $exc->from   = $from;
+        $exc->to     = $to;
+        $exc->length = $length;
+
+        return $exc;
     }
 
-    /**
-     * @return int
-     */
     public function getFrom(): int
     {
         return $this->from;
     }
 
-    /**
-     * @return int
-     */
     public function getTo(): int
     {
         return $this->to;
     }
 
-    /**
-     * @return int
-     */
     public function getLength(): int
     {
         return $this->length;

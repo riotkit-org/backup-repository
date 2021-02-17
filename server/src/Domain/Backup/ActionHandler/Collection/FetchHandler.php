@@ -13,15 +13,15 @@ class FetchHandler
      * @param DeleteForm                  $form
      * @param CollectionManagementContext $securityContext
      *
-     * @return CrudResponse
+     * @return ?CrudResponse
      *
      * @throws \Exception
      * @throws AuthenticationException
      */
-    public function handle(DeleteForm $form, CollectionManagementContext $securityContext): CrudResponse
+    public function handle(DeleteForm $form, CollectionManagementContext $securityContext): ?CrudResponse
     {
         if (!$form->collection) {
-            return CrudResponse::createWithNotFoundError();
+            return null;
         }
 
         $this->assertHasRights($securityContext, $form);
@@ -38,10 +38,7 @@ class FetchHandler
     private function assertHasRights(CollectionManagementContext $securityContext, DeleteForm $form): void
     {
         if (!$securityContext->canViewCollection($form)) {
-            throw new AuthenticationException(
-                'Current token does not allow to delete this collection',
-                AuthenticationException::CODES['not_authenticated']
-            );
+            throw AuthenticationException::fromFileReadAccessDenied();
         }
     }
 }

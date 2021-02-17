@@ -2,9 +2,7 @@
 
 namespace App\Domain\Storage\Entity;
 
-use App\Domain\Common\ValueObject\Password;
 use App\Domain\Storage\ValueObject\Filename;
-use App\Domain\Storage\ValueObject\Mime;
 use App\Domain\Common\SharedEntity\StoredFile as StoredFileFromCommon;
 use App\Domain\Storage\ValueObject\Path;
 
@@ -15,44 +13,25 @@ use App\Domain\Storage\ValueObject\Path;
  */
 class StoredFile extends StoredFileFromCommon implements \JsonSerializable
 {
-    /**
-     * @var \DateTimeImmutable
-     */
-    protected $dateAdded;
-
-    /**
-     * @var string
-     */
-    protected $timezone;
-
-    /**
-     * @var string
-     */
-    protected $password = '';
-
-    /**
-     * @var string
-     */
-    protected $mimeType;
-
-    /**
-     * @var bool
-     */
-    protected $public;
+    protected \DateTimeImmutable $dateAdded;
+    protected string $timezone;
 
     /**
      * @var Tag[]
      */
     private $tags;
 
+    private int $filesize;
+
     /**
      * @throws \Exception
      */
     public function __construct()
     {
-        $this->dateAdded = new \DateTimeImmutable();
-        $this->timezone  = \date_default_timezone_get();
-        $this->tags      = [];
+        $this->dateAdded  = new \DateTimeImmutable();
+        $this->timezone   = \date_default_timezone_get();
+        $this->tags       = [];
+        $this->filesize   = 0;
     }
 
     /**
@@ -66,10 +45,10 @@ class StoredFile extends StoredFileFromCommon implements \JsonSerializable
     public static function newFromFilename(Filename $filename, string $submittedBy): StoredFile
     {
         $new = new static();
-        $new->fileName  = $filename->getValue();
+        $new->fileName    = $filename->getValue();
         $new->submittedBy = $submittedBy;
-        $new->dateAdded = new \DateTimeImmutable();
-        $new->tags      = [];
+        $new->dateAdded   = new \DateTimeImmutable();
+        $new->tags        = [];
 
         return $new;
     }
@@ -129,18 +108,6 @@ class StoredFile extends StoredFileFromCommon implements \JsonSerializable
         return false;
     }
 
-    /**
-     * @param Mime $mimeType
-     *
-     * @return StoredFile
-     */
-    public function setMimeType(Mime $mimeType): StoredFile
-    {
-        $this->mimeType = $mimeType->getValue();
-
-        return $this;
-    }
-
     public function setDateAdded(\DateTimeImmutable $date): StoredFile
     {
         $this->dateAdded = $date;
@@ -148,68 +115,9 @@ class StoredFile extends StoredFileFromCommon implements \JsonSerializable
         return $this;
     }
 
-    public function setPublic(bool $public): void
-    {
-        $this->public = $public;
-    }
-
-    /**
-     * @return string
-     */
-    public function getMimeType(): string
-    {
-        return $this->mimeType;
-    }
-
-    public function isPasswordProtected(): bool
-    {
-        return !empty($this->password);
-    }
-
-    public function replaceEncodedPassword(Password $password): void
-    {
-        $this->password = $password->getValue();
-    }
-
-    public function changePassword(?string $newPassword): void
-    {
-        if (!$newPassword) {
-            $this->password = '';
-
-            return;
-        }
-
-        $this->password = $this->encryptPassword($newPassword);
-    }
-
-    public function checkPasswordMatchesWith(string $password): bool
-    {
-        if (!$this->isPasswordProtected()) {
-            return true;
-        }
-
-        return $this->encryptPassword($password) === $this->password;
-    }
-
-    private function encryptPassword(string $password): string
-    {
-        return hash('sha256', $password);
-    }
-
     public function getDateAdded(): \DateTimeImmutable
     {
         return $this->dateAdded;
-    }
-
-
-    public function isPublic(): bool
-    {
-        return $this->public;
-    }
-
-    public function checkContentHashMatchesEtag(string $etag): bool
-    {
-        return $this->contentHash === $etag;
     }
 
     public function jsonSerialize(): array
@@ -220,32 +128,14 @@ class StoredFile extends StoredFileFromCommon implements \JsonSerializable
             'contentHash' => $this->getContentHash(),
             'dateAdded'   => $this->getDateAdded(),
             'timezone'    => $this->getTimezone(),
-            'mimeType'    => $this->getMimeType(),
             'tags'        => $this->getTags(),
-            'public'      => $this->public,
-            'attributes'  => [
-                'isPasswordProtected' => $this->isPasswordProtected()
-            ]
-        ];
-    }
-
-    public function jsonSerializeAdmin(): array
-    {
-        return [
-            'attributes' => [
-                'path' => $this->getStoragePath()->getValue()
-            ]
+            'filesize'    => $this->getFilesize()
         ];
     }
 
     protected static function getFilenameClass(): string
     {
         return Filename::class;
-    }
-
-    public function getPassword(): string
-    {
-        return $this->password;
     }
 
     /**
@@ -280,8 +170,13 @@ class StoredFile extends StoredFileFromCommon implements \JsonSerializable
         return $this->getFilename()->getValue() !== $this->getStoragePath()->getValue();
     }
 
-    public function wasSubmittedByTokenId(?string $id): bool
+    public function setFilesize(int $filesize): void
     {
-        return $id === $this->submittedBy;
+        $this->filesize = $filesize;
+    }
+
+    public function getFilesize(): int
+    {
+        return $this->filesize;
     }
 }

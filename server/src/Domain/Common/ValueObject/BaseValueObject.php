@@ -2,12 +2,8 @@
 
 namespace App\Domain\Common\ValueObject;
 
-use App\Domain\Common\Exception\ValueObjectException;
+use App\Domain\Common\Exception\CommonValueException;
 
 abstract class BaseValueObject
 {
-    protected static function getExceptionType(): string
-    {
-        return ValueObjectException::class;
-    }
 }

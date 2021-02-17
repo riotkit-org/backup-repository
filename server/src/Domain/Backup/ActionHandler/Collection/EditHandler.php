@@ -3,8 +3,6 @@
 namespace App\Domain\Backup\ActionHandler\Collection;
 
 use App\Domain\Backup\Exception\AuthenticationException;
-use App\Domain\Backup\Exception\CollectionMappingError;
-use App\Domain\Backup\Exception\ValidationException;
 use App\Domain\Backup\Form\Collection\EditForm;
 use App\Domain\Backup\Manager\CollectionManager;
 use App\Domain\Backup\Mapper\CollectionMapper;
@@ -13,15 +11,8 @@ use App\Domain\Backup\Security\CollectionManagementContext;
 
 class EditHandler
 {
-    /**
-     * @var CollectionManager
-     */
-    private $manager;
-
-    /**
-     * @var CollectionMapper
-     */
-    private $mapper;
+    private CollectionManager $manager;
+    private CollectionMapper  $mapper;
 
     public function __construct(CollectionManager $manager, CollectionMapper $mapper)
     {
@@ -33,35 +24,22 @@ class EditHandler
      * @param EditForm $form
      * @param CollectionManagementContext $securityContext
      *
-     * @return CrudResponse
+     * @return null|CrudResponse
      *
      * @throws AuthenticationException
      * @throws \Exception
      */
-    public function handle(EditForm $form, CollectionManagementContext $securityContext): CrudResponse
+    public function handle(EditForm $form, CollectionManagementContext $securityContext): ?CrudResponse
     {
         if (!$form->collection) {
-            return CrudResponse::createWithNotFoundError();
+            return null;
         }
 
         $this->assertHasRights($securityContext, $form);
 
-        try {
-            $collection = $this->manager->edit(
-                $this->mapper->mapFormIntoCollection($form, $form->collection)
-            );
-
-        } catch (CollectionMappingError $mappingError) {
-            return CrudResponse::createWithValidationErrors($mappingError->getErrors());
-
-        } catch (ValidationException $validationException) {
-            return CrudResponse::createWithDomainError(
-                $validationException->getMessage(),
-                $validationException->getField(),
-                $validationException->getCode(),
-                $validationException->getReference()
-            );
-        }
+        $collection = $this->manager->edit(
+            $this->mapper->mapFormIntoCollection($form, $form->collection)
+        );
 
         return CrudResponse::createSuccessfulResponse($collection);
     }
@@ -83,10 +61,7 @@ class EditHandler
     private function assertHasRights(CollectionManagementContext $securityContext, EditForm $form): void
     {
         if (!$securityContext->canModifyCollection($form)) {
-            throw new AuthenticationException(
-                'Current token does not allow to modify this collection',
-                AuthenticationException::CODES['not_authenticated']
-            );
+            throw AuthenticationException::fromEditProhibited();
         }
     }
 }

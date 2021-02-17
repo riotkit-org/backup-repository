@@ -6,6 +6,8 @@ use FunctionalTester;
 
 /**
  * FEATURE: Deduplication feature in backups domain
+ *
+ * @group Domain/Backup
  */
 class BackupDeduplicationCest
 {

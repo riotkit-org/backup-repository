@@ -7,7 +7,7 @@ use App\Domain\Backup\Exception\ValueObjectException;
 class BackupStrategy implements \JsonSerializable
 {
     public const STRATEGY_AUTO = 'delete_oldest_when_adding_new';
-    public const STRATEGY_MANUAL = 'alert_when_backup_limit_reached';
+    public const STRATEGY_MANUAL = 'alert_when_too_many_versions';
 
     public const STRATEGIES = [
         self::STRATEGY_AUTO,
@@ -27,9 +27,7 @@ class BackupStrategy implements \JsonSerializable
     public function __construct(string $strategy)
     {
         if (!\in_array($strategy, self::STRATEGIES, true)) {
-            throw new ValueObjectException(
-                'unknown_strategy_allowed___delete_oldest_when_adding_new___or__alert_when_backup_limit_reached'
-            );
+            throw ValueObjectException::fromBackupStrategyInvalid($strategy, self::STRATEGIES);
         }
 
         $this->value = $strategy;

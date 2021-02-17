@@ -2,25 +2,32 @@
 
 namespace App\Domain\Common\ValueObject;
 
+use App\Domain\Common\Exception\CommonStorageException;
 use App\Domain\Common\ValueObject\Numeric\PositiveNumberOrZero;
+
+use ByteUnits\Metric;
+use function ByteUnits\parse;
 
 class DiskSpace extends PositiveNumberOrZero implements \JsonSerializable
 {
+    /**
+     * @param string|int $size
+     *
+     * @throws CommonStorageException
+     */
     public function __construct($size)
     {
-        $exceptionType = static::getExceptionType();
-
         if (!\is_string($size) && !\is_int($size)) {
-            throw new $exceptionType('cannot_parse_disk_space_check_format');
+            throw CommonStorageException::fromDiskSpaceFormatParsingErrorCause();
         }
 
         try {
-            $valueInBytes = (int) \ByteUnits\parse($size)->numberOfBytes();
+            $valueInBytes = (int) parse($size)->numberOfBytes();
 
             parent::__construct($valueInBytes);
 
         } catch (\Exception $exception) {
-            throw new $exceptionType('cannot_parse_disk_space_check_format');
+            throw CommonStorageException::fromDiskSpaceFormatParsingErrorCause($exception);
         }
     }
 
@@ -31,7 +38,7 @@ class DiskSpace extends PositiveNumberOrZero implements \JsonSerializable
 
     public function toHumanReadable(): string
     {
-        return \ByteUnits\Metric::bytes($this->value)->format();
+        return Metric::bytes($this->value)->format();
     }
 
     /**

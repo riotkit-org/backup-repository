@@ -4,35 +4,19 @@ namespace App\Domain\Backup\Validation;
 
 use App\Domain\Backup\Entity\BackupCollection;
 use App\Domain\Backup\Entity\StoredVersion;
-use App\Domain\Backup\Exception\ValidationException;
+use App\Domain\Backup\Exception\BackupLogicException;
 use App\Domain\Backup\Repository\VersionRepository;
 use App\Domain\Backup\Service\Filesystem;
 use App\Domain\Backup\Service\UuidValidator;
 use App\Domain\Backup\Settings\BackupSettings;
 use App\Domain\Backup\ValueObject\Filesize;
-use App\Domain\Common\ValueObject\DiskSpace;
 
 class CollectionValidator
 {
-    /**
-     * @var BackupSettings
-     */
-    private $settings;
-
-    /**
-     * @var VersionRepository
-     */
-    private $versionRepository;
-
-    /**
-     * @var Filesystem
-     */
-    private $fs;
-
-    /**
-     * @var UuidValidator
-     */
-    private $uuidValidator;
+    private BackupSettings $settings;
+    private VersionRepository $versionRepository;
+    private Filesystem $fs;
+    private UuidValidator $uuidValidator;
 
     public function __construct(BackupSettings $settings, VersionRepository $versionRepository, Filesystem $fs,
                                 UuidValidator $uuidValidator)
@@ -46,7 +30,7 @@ class CollectionValidator
     /**
      * @param BackupCollection $collection
      *
-     * @throws ValidationException
+     * @throws BackupLogicException
      */
     public function validateBeforeCreation(BackupCollection $collection, ?string $customId): void
     {
@@ -61,7 +45,7 @@ class CollectionValidator
     /**
      * @param BackupCollection $collection
      *
-     * @throws ValidationException
+     * @throws BackupLogicException
      */
     public function validateBeforeEditing(BackupCollection $collection): void
     {
@@ -77,18 +61,14 @@ class CollectionValidator
     private function validateCustomId(?string $customId): void
     {
         if ($customId && !$this->uuidValidator->isValid($customId)) {
-            throw ValidationException::createFromFieldError(
-                'custom_id_is_not_uuid_format',
-                'id',
-                ValidationException::COLLECTION_ID_INVALID_FORMAT
-            );
+            throw BackupLogicException::fromIdNotProperlyFormatted();
         }
     }
 
     /**
      * @param BackupCollection $collection
      *
-     * @throws ValidationException
+     * @throws BackupLogicException
      */
     public function validateBeforeDeletion(BackupCollection $collection): void
     {
@@ -99,7 +79,7 @@ class CollectionValidator
      * @param BackupCollection $collection
      * @param StoredVersion $version
      *
-     * @throws ValidationException
+     * @throws BackupLogicException
      */
     public function validateBeforeAddingBackup(BackupCollection $collection, StoredVersion $version): void
     {
@@ -112,7 +92,7 @@ class CollectionValidator
     /**
      * @param BackupCollection $collection
      *
-     * @throws ValidationException
+     * @throws BackupLogicException
      */
     private function validateMaxBackupsCount(BackupCollection $collection): void
     {
@@ -121,13 +101,8 @@ class CollectionValidator
         }
 
         if ($collection->getMaxBackupsCount()->isHigherThan($this->settings->getMaxBackupsCountPerCollection())) {
-            $max = $this->settings->getMaxBackupsCountPerCollection();
-
-            throw ValidationException::createFromFieldError(
-                'max_backups_count_too_many',
-                'maxBackupsCount',
-                ValidationException::CODE_MAX_BACKUPS_COUNT_EXCEEDED,
-                ['max' => $max]
+            throw BackupLogicException::fromMaxBackupsCountReached(
+                $this->settings->getMaxBackupsCountPerCollection()
             );
         }
     }
@@ -135,7 +110,7 @@ class CollectionValidator
     /**
      * @param BackupCollection $collection
      *
-     * @throws ValidationException
+     * @throws BackupLogicException
      */
     private function validateMaxOneVersionSize(BackupCollection $collection): void
     {
@@ -146,19 +121,14 @@ class CollectionValidator
         if ($collection->getMaxOneVersionSize()->isHigherThan($this->settings->getMaxOneBackupVersionSize())) {
             $max = $this->settings->getMaxOneBackupVersionSize();
 
-            throw ValidationException::createFromFieldError(
-                'max_one_version_size_too_big',
-                'maxOneVersionSize',
-                ValidationException::CODE_MAX_SINGLE_BACKUP_SIZE_EXCEEDED,
-                ['max' => $max->toHumanReadable()]
-            );
+            throw BackupLogicException::fromOneFileTooBigCause($max);
         }
     }
 
     /**
      * @param BackupCollection $collection
      *
-     * @throws ValidationException
+     * @throws BackupLogicException
      */
     private function validateMaxCollectionSize(BackupCollection $collection): void
     {
@@ -167,38 +137,26 @@ class CollectionValidator
         }
 
         if ($collection->getMaxCollectionSize()->isHigherThan($this->settings->getMaxWholeCollectionSize())) {
-            $max = $this->settings->getMaxWholeCollectionSize();
-
-            throw ValidationException::createFromFieldError(
-                'max_collection_size_too_big',
-                'maxCollectionSize',
-                ValidationException::CODE_MAX_COLLECTION_SIZE_EXCEEDED,
-                ['max' => $max->toHumanReadable()]
-            );
+            throw BackupLogicException::fromCollectionSizeTooBig($this->settings->getMaxWholeCollectionSize());
         }
     }
 
     /**
      * @param BackupCollection $collection
      *
-     * @throws ValidationException
+     * @throws BackupLogicException
      */
     private function validateCollectionSizeIsHigherThanSingleElementSize(BackupCollection $collection): void
     {
         if ($collection->getMaxOneVersionSize()->isHigherThan($collection->getMaxCollectionSize())) {
-            throw ValidationException::createFromFieldError(
-                'max_collection_size_is_lower_than_single_element_size',
-                'maxCollectionSize',
-                ValidationException::CODE_SINGLE_ELEMENT_SIZE_BIGGER_THAN_WHOLE_COLLECTION_SIZE,
-                []
-            );
+            throw BackupLogicException::fromCollectionSizeBiggerThanSingleElementSize();
         }
     }
 
     /**
      * @param BackupCollection $collection
      *
-     * @throws ValidationException
+     * @throws BackupLogicException
      */
     private function validateCollectionSizeHasEnoughSize(BackupCollection $collection): void
     {
@@ -211,22 +169,17 @@ class CollectionValidator
         $maxBytesCollectionCanHandle = $collection->getMaxDiskSpaceCollectionCanAllocate();
 
         if ($maxBytesCollectionCanHandle->isHigherThan($collection->getMaxCollectionSize())) {
-            throw ValidationException::createFromFieldError(
-                'max_collection_size_will_have_not_enough_space_to_keep_max_number_of_items',
-                'maxCollectionSize',
-                ValidationException::CODE_SINGLE_ELEMENT_SIZE_BIGGER_THAN_WHOLE_COLLECTION_SIZE,
-                [
-                    'needsAtLeastValue' => $maxBytesCollectionCanHandle->toHumanReadable(),
-                ]
+            throw BackupLogicException::createFromCollectionTooSmallCause(
+                $maxBytesCollectionCanHandle
             );
         }
     }
 
     /**
      * @param BackupCollection $collection
-     * @param \App\Domain\Backup\ValueObject\FileSize
+     * @param null|\App\Domain\Backup\ValueObject\FileSize
      *
-     * @throws ValidationException
+     * @throws BackupLogicException
      */
     private function validateExistingElementsDoesNotExceedSubmittedLimit(
         BackupCollection $collection,
@@ -239,31 +192,21 @@ class CollectionValidator
         }
 
         if ($existingDiskSpaceSum->isHigherThan($collection->getMaxDiskSpaceCollectionCanAllocate())) {
-            throw ValidationException::createFromFieldError(
-                'max_collection_size_is_smaller_than_real_sum_of_data_in_collection',
-                'maxCollectionSize',
-                ValidationException::CODE_COLLECTION_IS_ALREADY_TOO_BIG,
-                []
-            );
+            throw BackupLogicException::fromExistingElementsAlreadyExceedingSumOfMaximumSize($existingDiskSpaceSum);
         }
     }
 
     /**
      * @param BackupCollection $collection
      *
-     * @throws ValidationException
+     * @throws BackupLogicException
      */
     private function validateCollectionShouldBeEmpty(BackupCollection $collection): void
     {
         $versions = $this->versionRepository->findCollectionVersions($collection);
 
         if ($versions->areThereAny()) {
-            throw ValidationException::createFromFieldError(
-                'collection_cannot_be_deleted_while_it_contains_not_deleted_versions',
-                'collection',
-                ValidationException::CODE_COLLECTION_HAS_VERSIONS_INSIDE,
-                []
-            );
+            throw BackupLogicException::fromCollectionShouldBeEmptyWhenDeletingCause();
         }
     }
 }

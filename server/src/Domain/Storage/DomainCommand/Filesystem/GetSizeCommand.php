@@ -44,7 +44,7 @@ class GetSizeCommand implements CommandHandler
         $file = $this->repository->findByName(Filename::createFromBasicForm($filename));
 
         if (!$file) {
-            throw StorageException::fileNotFoundException();
+            throw StorageException::fromFileNotFoundCause();
         }
 
         return FileSize::fromBytes($this->fs->getFileSize($file->getStoragePath()));

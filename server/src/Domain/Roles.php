@@ -19,34 +19,23 @@ final class Roles
     public const TEST_TOKEN             = 'test-token-full-permissions';
     public const INTERNAL_CONSOLE_TOKEN = 'internal-console-token';
 
+    /** Recognized user in the system - default and enforced in Symfony */
+    public const ROLE_USER                       = 'ROLE_USER';
+
     //
     //
     // upload/creation
     //
     //
 
-    /** Allows to upload images */
-    public const ROLE_UPLOAD_IMAGES            = 'upload.images';
+    /** [Storage] Allows to upload files at all */
+    public const PERMISSION_UPLOAD                      = 'upload.all';
 
-    /** Allows to upload video files */
-    public const ROLE_UPLOAD_VIDEOS            = 'upload.videos';
+    /** [Storage] Enforce user tags. In result every uploaded file will have tags specified in user profile regardless if they were sent in request */
+    public const PERMISSION_UPLOAD_ENFORCE_USER_TAGS    = 'upload.enforce_tags_selected_in_user_account';
 
-    /** Allows to upload documents */
-    public const ROLE_UPLOAD_DOCS              = 'upload.documents';
-
-    /** Allows to submit backups */
-    public const ROLE_UPLOAD_BACKUP            = 'upload.backup';
-
-    /** Allows to upload ALL types of files regardless of mime type */
-    public const ROLE_UPLOAD                   = 'upload.all';
-
-    /** Enforce no password for all uploads for this token */
-    public const ROLE_UPLOAD_ENFORCE_NO_PASSWORD = 'upload.enforce_no_password';
-
-    /** Enforce token tags. In result every uploaded file will have tags specified in token regardless if they were sent in request */
-    public const ROLE_UPLOAD_ENFORCE_TOKEN_TAGS = 'upload.enforce_tags_selected_in_token';
-
-    public const ROLE_UPLOAD_ONLY_ONCE_SUCCESSFUL = 'upload.only_once_successful';
+    /** [Storage] Allow this user account to upload only one file, then deactivate the account */
+    public const PERMISSION_UPLOAD_ONLY_ONCE_SUCCESSFUL       = 'upload.only_once_successful';
 
     //
     //
@@ -54,41 +43,44 @@ final class Roles
     //
     //
 
-    /** User can check information about ANY token */
-    public const ROLE_LOOKUP_TOKENS                = 'security.authentication_lookup';
+    /** [Users] User can check information about ANY user */
+    public const PERMISSION_LOOKUP_USERS                = 'security.authentication_lookup';
 
-    /** User can browse/search for tokens */
-    public const ROLE_SEARCH_FOR_TOKENS            = 'security.search_for_tokens';
+    /** [Users] User can browse/search for users */
+    public const PERMISSION_SEARCH_FOR_USERS            = 'security.search_for_users';
 
-    /** User can overwrite files */
-    public const ROLE_ALLOW_OVERWRITE_FILES        = 'security.overwrite';
+    /** [Users] User can overwrite files */
+    public const PERMISSION_ALLOW_OVERWRITE_FILES        = 'security.overwrite';
 
-    /** User can generate tokens with ANY roles */
-    public const ROLE_GENERATE_TOKENS              = 'security.generate_tokens';
+    /** [Users] User can create user accounts with ANY roles */
+    public const PERMISSION_CREATE_UNLIMITED_USER_ACCOUNTS         = 'security.create_unlimited_accounts';
 
-    /** User can use technical endpoints to manage the application */
-    public const ROLE_USE_TECHNICAL_ENDPOINTS      = 'security.use_technical_endpoints';
+    /** [Users] Allow to specify user id when creating a user profile */
+    public const PERMISSION_CREATE_PREDICTABLE_USER_IDS = 'security.create_predictable_user_ids';
 
-    /** User can expire other token, so it will be not valid anymore */
-    public const ROLE_REVOKE_TOKENS                = 'security.revoke_tokens';
+    /** [Users] User can revoke access for other user */
+    public const PERMISSION_DELETE_USERS                = 'security.delete_users';
 
-    /** Special: Marking - tokens with this marking will not be able to be revoked by non-administrators */
-    public const ROLE_ADMINISTRATOR                = 'security.administrator';
+    /** [Users/Admin] List application permissions with possibility to limit the list by scope of current access token or user account */
+    public const PERMISSION_CAN_LIST_ROLES                   = 'security.list_roles';
 
-    /** Allow to specify token id when creating a token */
-    public const ROLE_CREATE_PREDICTABLE_TOKEN_IDS = 'security.create_predictable_token_ids';
+    /** [Admin] User can use technical endpoints to manage the application - healthcheck, unlimited read-only metrics dashboard */
+    public const PERMISSION_USE_TECHNICAL_ENDPOINTS      = 'security.use_technical_endpoints';
 
-    /** Prevent token user from seeing other tokens in listings */
-    public const ROLE_CANNOT_SEE_FULL_TOKEN_ID     = 'security.cannot_see_full_token_ids';
+    /** [ADMIN ROLE] Administrator */
+    public const PERMISSION_ADMINISTRATOR                = 'security.administrator';
 
-    //
-    //
-    // deletion
-    //
-    //
+    /** [API/JWT] Browse list of authorized accesses on self account. Does not reveal JWT token used to authenticate */
+    public const PERMISSION_CAN_SEE_SELF_USER_ACCESS_TOKENS = 'security.can_see_own_access_tokens';
 
-    /** Delete files that do not have a password, and password protected without a password */
-    public const ROLE_DELETE_ALL_FILES        = 'deletion.all_files_including_protected_and_unprotected';
+    /** [API/JWT] Browse list of authorized accesses of all users. Does not reveal JWT token used to authenticate */
+    public const PERMISSION_CAN_LIST_ALL_USERS_ACCESS_TOKENS = 'security.can_see_all_users_access_tokens';
+
+    /** [API/JWT] Deactivate own API access tokens (JWT) and logged-in sessions */
+    public const PERMISSION_CAN_REVOKE_OWN_ACCESS_TOKEN = 'security.revoke_own_access_tokens';
+
+    /** [API/JWT] Deactivate API access tokens (JWT) and logged-in sessions of other users */
+    public const PERMISSION_CAN_REVOKE_TOKENS_OF_OTHER_USERS = 'security.revoke_other_users_access_tokens';
 
     //
     //
@@ -96,29 +88,20 @@ final class Roles
     //
     //
 
-    /** Allows to download ANY file, even if a file is password protected*/
-    public const ROLE_VIEW_ALL_PROTECTED_FILES = 'view.any_file';
+    /** [Storage Administration] Allows to download ANY file using storage technical endpoint (useful for administrators) */
+    public const PERMISSION_BROWSE_ALL_FILES = 'admin.view.any_file';
 
-    /** List files from ANY tag that was requested, else the user can list only files by tags allowed in token */
-    public const ROLE_BROWSE_LIST_OF_FILES_BY_ANY_TAG = 'view.files_from_all_tags';
+    /** [Storage Administration] List files from ANY tag that was requested, else the user can list only files by tags allowed in user profile */
+    public const PERMISSION_BROWSE_LIST_OF_FILES_BY_ANY_TAG = 'admin.view.files_from_all_tags';
 
-    /** Define that the user can use the listing endpoint (basic usage) */
-    public const ROLE_ACCESS_LISTING_ENDPOINT = 'view.can_use_listing_endpoint_at_all';
+    /** [Storage Administration] Define that the user can use the listing endpoint (basic usage) */
+    public const PERMISSION_ACCESS_LISTING_ENDPOINT = 'admin.view.can_use_listing_endpoint_at_all';
 
-    /** Can see extra, technical metadata such as storage path in the listing */
-    public const ROLE_CAN_SEE_EXTRA_ADMIN_METADATA = 'view.can_see_admin_metadata_in_listing';
+    /** [Storage Administration] Can see extra, technical metadata such as storage path in the listing */
+    public const PERMISSION_CAN_SEE_EXTRA_ADMIN_METADATA = 'admin.view.can_see_admin_metadata_in_listing';
 
-    //
-    //
-    // SecureCopy domain
-    //
-    //
-
-    /** Can use SecureCopy at all? */
-    public const ROLE_SECURE_COPY_READ_DATA_STREAM = 'securecopy.stream';
-
-    /** Read SecureCopy secrets: Encryption method, password, initialization vector. With following role can read secrets of any token in the system. */
-    public const ROLE_READ_SECURE_COPY_SECRETS = 'securecopy.all_secrets_read';
+    /** [Metrics / System] Can view system metrics such as how many users, collections were created, how many disk was allocated */
+    public const PERMISSION_VIEW_METRICS = 'view.metrics';
 
     //
     //
@@ -126,89 +109,112 @@ final class Roles
     //
     //
 
-    /** Allow person creating a new backup collection */
-    public const ROLE_COLLECTION_ADD = 'collections.create_new';
+    /** [Global scope] Allow person to create a new backup collection */
+    public const PERMISSION_COLLECTION_ADD = 'collections.create_new';
 
-    /** Allow to assign a specific id, when creating a collection */
-    public const ROLE_COLLECTION_CUSTOM_ID = 'collections.create_new.with_custom_id';
+    /** [Global scope] Allow to assign a specific id, when creating a collection (useful for automation software for provision of predictable elements) */
+    public const PERMISSION_COLLECTION_CUSTOM_ID = 'collections.create_new.with_custom_id';
 
-    /** Allow creating backup collections that have no limits on size and length */
-    public const ROLE_COLLECTION_ADD_WITH_INFINITE_LIMITS = 'collections.allow_infinite_limits';
+    /** [Global scope] Allow creating backup collections that have no limits on size and length */
+    public const PERMISSION_COLLECTION_ADD_WITH_INFINITE_LIMITS = 'collections.allow_infinite_limits';
 
-    /** Edit collections where token is added as allowed */
-    public const ROLE_MODIFY_ALLOWED_COLLECTIONS = 'collections.modify_details_of_allowed_collections';
+    /** [Global scope] Modify any collection, regardless of if user is in collection permissions list */
+    public const PERMISSION_COLLECTION_MODIFY_ANY_COLLECTION = 'collections.modify_any_collection_regardless_if_user_was_allowed_in_collection';
 
-    /** Allow to modify ALL collections. Collection don't have to allow such token which has this role */
-    public const ROLE_COLLECTION_MODIFY_ANY_COLLECTION = 'collections.modify_any_collection_regardless_if_token_was_allowed_by_collection';
+    /** [Global scope] Allow to browse any collection regardless of if the user was allowed by it or not */
+    public const PERMISSION_COLLECTION_VIEW_ANY_COLLECTION = 'collections.view_all_collections';
 
-    /** Allow to browse any collection regardless of if the user token was allowed by it or not */
-    public const ROLE_COLLECTION_VIEW_ANY_COLLECTION = 'collections.view_all_collections';
+    /** [Global scope] Can use an endpoint that will allow to browse and search collections? */
+    public const PERMISSION_CAN_USE_LISTING_COLLECTION_ENDPOINT = 'collections.can_use_listing_endpoint';
 
-    /** Can use an endpoint that will allow to browse and search collections? */
-    public const ROLE_CAN_USE_LISTING_COLLECTION_ENDPOINT = 'collections.can_use_listing_endpoint';
+    /** [Collection scope] Edit collection */
+    public const PERMISSION_MODIFY_ALLOWED_COLLECTIONS = 'collections.modify_details_of_allowed_collections';
 
-    /** Manage tokens in the collections where our current token is already added as allowed */
-    public const ROLE_CAN_MANAGE_TOKENS_IN_ALLOWED_COLLECTIONS = 'collections.manage_tokens_in_allowed_collections';
+    /** [Collection scope] Manage collection permissions */
+    public const PERMISSION_CAN_MANAGE_USERS_IN_ALLOWED_COLLECTIONS = 'collections.manage_users_in_allowed_collections';
 
-    /** Delete collections where token is added as allowed */
-    public const ROLE_CAN_DELETE_ALLOWED_COLLECTIONS = 'collections.delete_allowed_collections';
+    /** [Collection scope] Delete collection */
+    public const PERMISSION_CAN_DELETE_ALLOWED_COLLECTIONS = 'collections.delete_allowed_collections';
 
-    /** Can list tokens in all collections, where our token is added */
-    public const ROLE_CAN_LIST_TOKENS_IN_COLLECTION = 'collections.can_list_tokens_in_allowed_collections';
+    /** [Collection scope] List users */
+    public const PERMISSION_CAN_LIST_TOKENS_IN_COLLECTION = 'collections.can_list_users_in_allowed_collections';
 
-    /** Upload to allowed collections */
-    public const ROLE_CAN_UPLOAD_TO_ALLOWED_COLLECTIONS = 'collections.upload_to_allowed_collections';
+    /** [Collection scope] Upload a new version */
+    public const PERMISSION_CAN_UPLOAD_TO_ALLOWED_COLLECTIONS = 'collections.upload_to_allowed_collections';
 
-    /** List versions for collections where the token was added as allowed */
-    public const ROLE_LIST_VERSIONS_FOR_ALLOWED_COLLECTIONS = 'collections.list_versions_for_allowed_collections';
+    /** [Collection scope] List all versions */
+    public const PERMISSION_LIST_VERSIONS_FOR_ALLOWED_COLLECTIONS = 'collections.list_versions_for_allowed_collections';
 
-    /** Delete versions only from collections where the token was added as allowed */
-    public const ROLE_DELETE_VERSIONS_IN_ALLOWED_COLLECTIONS = 'collections.delete_versions_for_allowed_collections';
+    /** [Collection scope] DELETE any version */
+    public const PERMISSION_DELETE_VERSIONS_IN_ALLOWED_COLLECTIONS = 'collections.delete_versions_for_allowed_collections';
+
+    /** [Collection scope] Download any version */
+    public const PERMISSION_FETCH_SINGLE_VERSION_FILE_IN_ALLOWED_COLLECTIONS = 'collections.fetch_single_version_file_in_allowed_collections';
 
     public const GRANTS_LIST = [
-        self::ROLE_UPLOAD_IMAGES,
-        self::ROLE_UPLOAD_DOCS,
-        self::ROLE_UPLOAD_BACKUP,
-        self::ROLE_UPLOAD,
-        self::ROLE_LOOKUP_TOKENS,
-        self::ROLE_SEARCH_FOR_TOKENS,
-        self::ROLE_ALLOW_OVERWRITE_FILES,
-        self::ROLE_GENERATE_TOKENS,
-        self::ROLE_USE_TECHNICAL_ENDPOINTS,
-        self::ROLE_DELETE_ALL_FILES,
-        self::ROLE_VIEW_ALL_PROTECTED_FILES,
-        self::ROLE_BROWSE_LIST_OF_FILES_BY_ANY_TAG,
-        self::ROLE_ACCESS_LISTING_ENDPOINT,
-        self::ROLE_CAN_SEE_EXTRA_ADMIN_METADATA,
-        self::ROLE_REVOKE_TOKENS,
-        self::ROLE_ADMINISTRATOR,
+        self::ROLE_USER,
+        self::PERMISSION_UPLOAD,
+        self::PERMISSION_LOOKUP_USERS,
+        self::PERMISSION_SEARCH_FOR_USERS,
+        self::PERMISSION_ALLOW_OVERWRITE_FILES,
+        self::PERMISSION_CREATE_UNLIMITED_USER_ACCOUNTS,
+        self::PERMISSION_CREATE_PREDICTABLE_USER_IDS,
+        self::PERMISSION_USE_TECHNICAL_ENDPOINTS,
+        self::PERMISSION_BROWSE_ALL_FILES,
+        self::PERMISSION_BROWSE_LIST_OF_FILES_BY_ANY_TAG,
+        self::PERMISSION_ACCESS_LISTING_ENDPOINT,
+        self::PERMISSION_CAN_SEE_EXTRA_ADMIN_METADATA,
+        self::PERMISSION_VIEW_METRICS,
+        self::PERMISSION_DELETE_USERS,
+        self::PERMISSION_CAN_LIST_ROLES,
+        self::PERMISSION_ADMINISTRATOR,
+
+        // tokens
+        self::PERMISSION_CAN_SEE_SELF_USER_ACCESS_TOKENS,
+        self::PERMISSION_CAN_LIST_ALL_USERS_ACCESS_TOKENS,
+        self::PERMISSION_CAN_REVOKE_OWN_ACCESS_TOKEN,
+        self::PERMISSION_CAN_REVOKE_TOKENS_OF_OTHER_USERS,
 
         // collections
-        self::ROLE_COLLECTION_ADD,
-        self::ROLE_COLLECTION_CUSTOM_ID,
-        self::ROLE_COLLECTION_ADD_WITH_INFINITE_LIMITS,
-        self::ROLE_CAN_DELETE_ALLOWED_COLLECTIONS,
-        self::ROLE_CAN_LIST_TOKENS_IN_COLLECTION,
-        self::ROLE_COLLECTION_MODIFY_ANY_COLLECTION,
-        self::ROLE_MODIFY_ALLOWED_COLLECTIONS,
-        self::ROLE_COLLECTION_VIEW_ANY_COLLECTION,
-        self::ROLE_CAN_USE_LISTING_COLLECTION_ENDPOINT,
-        self::ROLE_CAN_MANAGE_TOKENS_IN_ALLOWED_COLLECTIONS,
-        self::ROLE_CAN_UPLOAD_TO_ALLOWED_COLLECTIONS,
-        self::ROLE_LIST_VERSIONS_FOR_ALLOWED_COLLECTIONS,
-        self::ROLE_DELETE_VERSIONS_IN_ALLOWED_COLLECTIONS,
+        self::PERMISSION_COLLECTION_ADD,
+        self::PERMISSION_COLLECTION_CUSTOM_ID,
+        self::PERMISSION_COLLECTION_ADD_WITH_INFINITE_LIMITS,
+        self::PERMISSION_CAN_DELETE_ALLOWED_COLLECTIONS,
+        self::PERMISSION_CAN_LIST_TOKENS_IN_COLLECTION,
+        self::PERMISSION_COLLECTION_MODIFY_ANY_COLLECTION,
+        self::PERMISSION_MODIFY_ALLOWED_COLLECTIONS,
+        self::PERMISSION_COLLECTION_VIEW_ANY_COLLECTION,
+        self::PERMISSION_CAN_USE_LISTING_COLLECTION_ENDPOINT,
+        self::PERMISSION_CAN_MANAGE_USERS_IN_ALLOWED_COLLECTIONS,
+        self::PERMISSION_CAN_UPLOAD_TO_ALLOWED_COLLECTIONS,
+        self::PERMISSION_LIST_VERSIONS_FOR_ALLOWED_COLLECTIONS,
+        self::PERMISSION_DELETE_VERSIONS_IN_ALLOWED_COLLECTIONS,
+        self::PERMISSION_FETCH_SINGLE_VERSION_FILE_IN_ALLOWED_COLLECTIONS
+    ];
 
-        // securecopy
-        self::ROLE_SECURE_COPY_READ_DATA_STREAM,
-        self::ROLE_READ_SECURE_COPY_SECRETS
+    /**
+     * List of permissions that could be assigned for GIVEN USER in context of GIVEN COLLECTION (ACL)
+     */
+    public const PER_BACKUP_COLLECTION_LIST = [
+        self::PERMISSION_CAN_DELETE_ALLOWED_COLLECTIONS,
+        self::PERMISSION_CAN_LIST_TOKENS_IN_COLLECTION,
+        self::PERMISSION_MODIFY_ALLOWED_COLLECTIONS,
+        self::PERMISSION_CAN_MANAGE_USERS_IN_ALLOWED_COLLECTIONS,
+        self::PERMISSION_CAN_UPLOAD_TO_ALLOWED_COLLECTIONS,
+        self::PERMISSION_LIST_VERSIONS_FOR_ALLOWED_COLLECTIONS,
+        self::PERMISSION_DELETE_VERSIONS_IN_ALLOWED_COLLECTIONS,
+        self::PERMISSION_FETCH_SINGLE_VERSION_FILE_IN_ALLOWED_COLLECTIONS
     ];
 
     public const RESTRICTIONS_LIST = [
-        self::ROLE_UPLOAD_ENFORCE_NO_PASSWORD,
-        self::ROLE_UPLOAD_ENFORCE_TOKEN_TAGS,
-        self::ROLE_UPLOAD_ONLY_ONCE_SUCCESSFUL,
-        self::ROLE_CANNOT_SEE_FULL_TOKEN_ID
+        self::PERMISSION_UPLOAD_ENFORCE_USER_TAGS,
+        self::PERMISSION_UPLOAD_ONLY_ONCE_SUCCESSFUL
     ];
+
+    public static function getRestrictionsList(): array
+    {
+        return self::RESTRICTIONS_LIST;
+    }
 
     public static function getRolesList(): array
     {

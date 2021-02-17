@@ -2,6 +2,8 @@
 
 namespace App\Domain\Common\ValueObject;
 
+use App\Domain\Common\Exception\CommonValueException;
+
 class Checksum
 {
     private const TYPES = [
@@ -13,11 +15,11 @@ class Checksum
     public function __construct(string $value, string $type)
     {
         if (!isset(self::TYPES[$type])) {
-            throw new \InvalidArgumentException('Unsupported checksum type');
+            throw CommonValueException::fromInvalidChecksumTypeCause();
         }
 
         if (\strlen($value) !== self::TYPES[$type]) {
-            throw new \InvalidArgumentException('The checksum length does not match');
+            throw CommonValueException::fromChecksumLengthNotMatchingCause();
         }
 
         $this->value = $value;

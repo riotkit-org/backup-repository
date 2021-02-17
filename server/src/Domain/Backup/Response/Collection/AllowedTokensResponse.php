@@ -2,67 +2,35 @@
 
 namespace App\Domain\Backup\Response\Collection;
 
-use App\Domain\Backup\Entity\Authentication\Token;
-use App\Domain\Common\Http;
+use App\Domain\Backup\Entity\UserAccess;
+use App\Domain\Common\Response\NormalResponse;
 
-class AllowedTokensResponse implements \JsonSerializable
+class AllowedTokensResponse extends NormalResponse implements \JsonSerializable
 {
-    private string $status;
-    private int    $exitCode;
-    private ?int   $errorCode;
-    private ?array $errors;
-    private array  $tokens;
+    private array $users;
 
     /**
-     * @param Token[] $tokens
-     * @param bool    $maskIds
+     * @param UserAccess[] $users
      * @param int     $status
      *
      * @return AllowedTokensResponse
      */
-    public static function createSuccessfulResponse(array $tokens, bool $maskIds, int $status = 201): AllowedTokensResponse
+    public static function createSuccessfulResponse(array $users, int $status = 201): AllowedTokensResponse
     {
         $new = new static();
-        $new->status     = 'OK';
-        $new->errorCode  = null;
-        $new->exitCode   = $status;
-        $new->errors     = [];
-        $new->tokens     = $tokens;
-
-        if ($maskIds) {
-            $new->tokens = array_map(
-                function (Token $token) {
-                    return $token->jsonSerialize(true);
-                },
-                $new->tokens
-            );
-        }
+        $new->status   = true;
+        $new->message  = 'OK';
+        $new->users    = $users;
+        $new->httpCode = $status;
 
         return $new;
     }
 
-    public static function createWithNotFoundError(): AllowedTokensResponse
+    public function jsonSerialize(): array
     {
-        $new = new static();
-        $new->status    = 'Object not found';
-        $new->exitCode  = Http::HTT_NOT_FOUND;
+        $data = parent::jsonSerialize();
+        $data['users'] = $this->users;
 
-        return $new;
-    }
-
-    public function jsonSerialize()
-    {
-        return [
-            'status'     => $this->status,
-            'error_code' => (int) $this->errorCode,
-            'http_code'  => (int) $this->exitCode,
-            'errors'     => $this->errors,
-            'tokens'     => $this->tokens
-        ];
-    }
-
-    public function getHttpCode(): int
-    {
-        return $this->exitCode;
+        return $data;
     }
 }

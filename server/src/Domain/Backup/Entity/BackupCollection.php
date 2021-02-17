@@ -2,7 +2,7 @@
 
 namespace App\Domain\Backup\Entity;
 
-use App\Domain\Backup\Entity\Authentication\Token;
+use App\Domain\Backup\Entity\Authentication\User;
 use App\Domain\Backup\ValueObject\BackupStrategy;
 use App\Domain\Backup\ValueObject\Collection\BackupSize;
 use App\Domain\Backup\ValueObject\Collection\CollectionLength;
@@ -53,7 +53,7 @@ class BackupCollection implements \JsonSerializable
     protected $maxCollectionSize;
 
     /**
-     * @var Token[]
+     * @var User[]
      */
     protected $allowedTokens = [];
 
@@ -95,15 +95,14 @@ class BackupCollection implements \JsonSerializable
     public function withAnonymousData(): BackupCollection
     {
         $clone                = clone $this;
-        $clone->id            = null;
         $clone->description   = 'Anonymous';
         $clone->allowedTokens = [];
 
-        return $clone;
+        return $this;
     }
 
     /**
-     * @immutable
+     * Immutable
      *
      * @param CollectionLength $param
      *
@@ -118,7 +117,7 @@ class BackupCollection implements \JsonSerializable
     }
 
     /**
-     * @immutable
+     * Immutable
      *
      * @param BackupSize $param
      *
@@ -133,7 +132,7 @@ class BackupCollection implements \JsonSerializable
     }
 
     /**
-     * @immutable
+     * Immutable
      *
      * @param CollectionSize $param
      *
@@ -148,7 +147,7 @@ class BackupCollection implements \JsonSerializable
     }
 
     /**
-     * @immutable
+     * Immutable
      *
      * @param BackupStrategy $param
      *
@@ -163,7 +162,7 @@ class BackupCollection implements \JsonSerializable
     }
 
     /**
-     * @immutable
+     * Immutable
      *
      * @param Description $param
      *
@@ -178,7 +177,7 @@ class BackupCollection implements \JsonSerializable
     }
 
     /**
-     * @immutable
+     * Immutable
      *
      * @param Password $password
      *
@@ -193,7 +192,7 @@ class BackupCollection implements \JsonSerializable
     }
 
     /**
-     * @immutable
+     * Immutable
      *
      * @param Filename $filename
      *
@@ -203,34 +202,6 @@ class BackupCollection implements \JsonSerializable
     {
         $self = clone $this;
         $self->filename = $filename;
-
-        return $self;
-    }
-
-    public function withTokenAdded(Token $token): BackupCollection
-    {
-        // don't allow to add same token twice
-        foreach ($this->getAllowedTokens() as $existingToken) {
-            if ($existingToken->getId() === $token->getId()) {
-                return $this;
-            }
-        }
-
-        $self = clone $this;
-        $self->allowedTokens[] = $token;
-
-        return $self;
-    }
-
-    public function withoutToken(Token $tokenToRevokeAccessToCollection): BackupCollection
-    {
-        $self = clone $this;
-        $self->allowedTokens = array_filter(
-            $this->getAllowedTokens(),
-            function (Token $token) use ($tokenToRevokeAccessToCollection) {
-                return !$token->isSameAs($tokenToRevokeAccessToCollection);
-            }
-        );
 
         return $self;
     }
@@ -304,9 +275,9 @@ class BackupCollection implements \JsonSerializable
     }
 
     /**
-     * @return Token[]
+     * @return User[]
      */
-    public function getAllowedTokens(): array
+    public function getAllowedUsers(): array
     {
         if (\is_object($this->allowedTokens)) {
             return $this->allowedTokens->toArray();

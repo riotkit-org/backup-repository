@@ -1,16 +1,47 @@
-File Repository Server
-======================
+Backup Repository Server
+========================
 
-A Symfony application designed to store bigger amounts of data, including metadata attributes.
+Developing
+----------
 
-**Features:**
+```bash
+# run dependencies - database, cache
+rkd :docker:up
 
-- Strict permissions (Role based)
-- Tokens
-- Upload forms ready to adapt for external application
-- Limits per item, per backup collection
-- Any kind of storage that is supported by Flysystem library (including AWS S3, Min.io, local filesystem, even FTP)
-- Versioned backups
+# generate required keys for JWT authorization
+rkd :create:keys
+
+# migrate database
+./bin/console doctrine:migrations:migrate -vv
+
+# run development web server (requires a Symfony CLI utility to be installed and in PATH)
+symfony serve
+
+#
+# Testing
+#
+
+# run all API test cases
+./vendor/bin/codecept run
+
+# run API test case from selected directory
+./vendor/bin/codecept run --html=file-repository.html functional Features/Security/FeatureLimitTokenAccessPerIpAndUserAgentCest
+
+# run API test case from root directory
+./vendor/bin/codecept run --html=file-repository.html functional AuthenticationCest
+
+# run API test - single test
+./vendor/bin/codecept run --html=file-repository.html functional AuthenticationCest:generateBasicToken
+
+# run API tests - by group
+./vendor/bin/codecept run --html=file-repository.html -g Domain/Backup
+
+# unit tests (all tests)
+./vendor/bin/phpunit
+
+# single unit test
+./vendor/bin/phpunit --filter 
+```
 
 Copyleft
 --------

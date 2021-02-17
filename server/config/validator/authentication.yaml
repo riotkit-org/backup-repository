@@ -1,8 +1,0 @@
-App\Domain\Authentication\Form\AuthForm:
-    properties:
-        roles:
-            - Choice:
-                  multiple: true
-                  callback: getAvailableRoles
-                  min: 1
-                  multipleMessage: "Please select valid roles"

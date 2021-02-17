@@ -1,0 +1,7 @@
+App\Domain\Authentication\ValueObject\Roles:
+    type: embeddable
+    fields:
+        value:
+            type: json_array
+            column: permissions
+            nullable: false

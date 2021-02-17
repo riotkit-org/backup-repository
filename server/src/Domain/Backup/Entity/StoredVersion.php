@@ -102,7 +102,7 @@ class StoredVersion implements \JsonSerializable
         return [
             'id'            => $this->getId(),
             'version'       => $this->getVersionNumber()->getValue(),
-            'creation_date' => $this->creationDate,
+            'creationDate'  => $this->creationDate,
             'file'          => $this->getFile()
         ];
     }

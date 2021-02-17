@@ -9,7 +9,7 @@ use App\Domain\Backup\Parameters\Repository\ListingParameters;
 use App\Domain\Backup\Repository\CollectionRepository;
 use App\Infrastructure\Common\Repository\BaseRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
-use Doctrine\DBAL\Driver\PDOException;
+use Doctrine\DBAL\Driver\Exception;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\QueryBuilder;
 
@@ -52,9 +52,9 @@ class CollectionDoctrineRepository extends BaseRepository implements CollectionR
             $this->getEntityManager()->flush();
 
         } catch (UniqueConstraintViolationException $exception) {
-            throw new CollectionIdNotUniqueException('Collection id is not unique');
+            throw new CollectionIdNotUniqueException('Collection id is not unique', 0, $exception);
 
-        } catch (PDOException $exception) {
+        } catch (Exception $exception) {
             throw new DatabaseException(
                 $exception->getMessage(),
                 $exception->getCode(),
@@ -115,7 +115,11 @@ class CollectionDoctrineRepository extends BaseRepository implements CollectionR
     private function appendSearchParameters(ListingParameters $parameters, QueryBuilder $qb): void
     {
         if ($parameters->getSearchQuery()) {
-            $qb->andWhere('collection.id LIKE :searchQuery OR collection.description.value LIKE :searchQuery');
+            $qb->andWhere('
+                collection.id LIKE :searchQuery 
+                OR collection.description.value LIKE :searchQuery
+                OR collection.filename.value LIKE :searchQuery
+            ');
             $qb->setParameter('searchQuery', '%' . $parameters->getSearchQuery() . '%');
         }
 
@@ -133,6 +137,10 @@ class CollectionDoctrineRepository extends BaseRepository implements CollectionR
             $qb->andWhere('collection.allowedTokens', 'token');
             $qb->where('token.id IN :tokens');
             $qb->setParameter('tokens', $parameters->allowedTokens);
+        }
+
+        if ($parameters->tags) {
+            // @todo: Implement tags support - https://github.com/riotkit-org/file-repository/issues/121
         }
     }
 }

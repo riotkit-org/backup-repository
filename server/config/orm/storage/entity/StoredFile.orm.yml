@@ -28,20 +28,6 @@ App\Domain\Storage\Entity\StoredFile:
             column: timezone
             length: 48
 
-        mimeType:
-            type: string
-            length: 48
-            column: mimeType
-
-        password:
-            type: string
-            length: 254
-            column: password
-
-        public:
-            type: boolean
-            column: public
-
         storagePath:
             type: string
             length: 1024
@@ -51,6 +37,12 @@ App\Domain\Storage\Entity\StoredFile:
             type: string
             length: 36
             column: submittedBy
+
+        filesize:
+            type: integer
+            length: 24
+            column: size
+
 
     manyToMany:
         tags:

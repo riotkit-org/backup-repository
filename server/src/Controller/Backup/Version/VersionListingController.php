@@ -4,12 +4,13 @@ namespace App\Controller\Backup\Version;
 
 use App\Controller\BaseController;
 use App\Domain\Backup\ActionHandler\Version\VersionsListingHandler;
+use App\Domain\Backup\Entity\Authentication\User;
 use App\Domain\Backup\Factory\SecurityContextFactory;
 use App\Domain\Backup\Form\Version\VersionsListingForm;
-use App\Infrastructure\Backup\Form\Version\VersionListingFormType;
 use App\Infrastructure\Common\Http\JsonFormattedResponse;
 use Exception;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
  * Attach/detach a token of given Id to the collection
@@ -36,25 +37,25 @@ class VersionListingController extends BaseController
      */
     public function handleAction(string $collectionId): Response
     {
-        $form = new VersionsListingForm();
-        $infrastructureForm = $this->createForm(VersionListingFormType::class, $form);
-        $infrastructureForm->submit([
-            'collection' => $collectionId
-        ]);
+        /**
+         * @var VersionsListingForm $form
+         */
+        $form = $this->decodeRequestIntoDTO(['collection' => $collectionId], VersionsListingForm::class);
 
-        if (!$infrastructureForm->isValid()) {
-            return $this->createValidationErrorResponse($infrastructureForm);
+        /**
+         * @var User $user
+         */
+        $user = $this->getLoggedUser(User::class);
+
+        $response = $this->handler->handle(
+            $form,
+            $this->authFactory->createVersioningContext($user, $form->collection)
+        );
+
+        if (!$response) {
+            throw new NotFoundHttpException();
         }
 
-        return $this->wrap(
-            function () use ($form) {
-                $response = $this->handler->handle(
-                    $form,
-                    $this->authFactory->createVersioningContext($this->getLoggedUserToken())
-                );
-
-                return new JsonFormattedResponse($response, $response->getExitCode());
-            }
-        );
+        return new JsonFormattedResponse($response, $response->getHttpCode());
     }
 }

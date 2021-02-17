@@ -10,6 +10,8 @@ use App\Domain\Common\SharedEntity\StoredFile as StoredFileFromCommon;
  */
 class StoredFile extends StoredFileFromCommon implements \JsonSerializable
 {
+    private int $filesize;
+
     protected static function getFilenameClass(): string
     {
         return Filename::class;
@@ -19,7 +21,8 @@ class StoredFile extends StoredFileFromCommon implements \JsonSerializable
     {
         return [
             'id'       => $this->getId(),
-            'filename' => $this->getFilename()
+            'filename' => $this->getFilename(),
+            'filesize' => $this->filesize
         ];
     }
 }

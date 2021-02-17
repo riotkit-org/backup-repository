@@ -4,19 +4,21 @@ namespace Tests\Functional;
 
 use FunctionalTester;
 
+/**
+ * @group Domain/Backup
+ */
 class BackupCollectionCRUDCest
 {
     public function testCreateEditDelete(FunctionalTester $I): void
     {
         $I->haveRoles([
             'collections.create_new',
-            'collections.manage_tokens_in_allowed_collections',
+            'collections.manage_users_in_allowed_collections',
             'collections.delete_allowed_collections',
             'collections.modify_details_of_allowed_collections'
         ], [
             'data' => [
                 'tags'               => ['user_uploads.u123', 'user_uploads'],
-                'allowedMimeTypes'   => ['image/jpeg', 'image/png', 'image/gif'],
                 'maxAllowedFileSize' => 145790
             ]
         ]);
@@ -63,8 +65,8 @@ class BackupCollectionCRUDCest
             'strategy'          => 'delete_oldest_when_adding_new',
             'filename'          => 'solfed.org.uk_database.tar.gz'
         ]);
-        $I->canSeeResponseCodeIs(400);
-        $I->canSeeResponseContains('collection_no_longer_exists');
+        $I->canSeeErrorResponse('Route or resource not found', 404, 'app.not-found');
+        $I->canSeeResponseCodeIs(404);
     }
 
     public function testFetchCollectionMetaData(FunctionalTester $I): void
@@ -73,7 +75,6 @@ class BackupCollectionCRUDCest
             [
                 'data' => [
                     'tags'               => ['user_uploads.u123', 'user_uploads'],
-                    'allowedMimeTypes'   => ['image/jpeg', 'image/png', 'image/gif'],
                     'maxAllowedFileSize' => 145790
             ]
         ]);
@@ -94,7 +95,7 @@ class BackupCollectionCRUDCest
     {
         $I->amAdmin();
         $I->fetchCollection('some-non-existing');
-        $I->canSeeResponseCodeIs(400);
-        $I->canSeeResponseContains('collection_no_longer_exists');
+        $I->canSeeErrorResponse('Route or resource not found', 404, 'app.not-found');
+        $I->canSeeResponseCodeIs(404);
     }
 }

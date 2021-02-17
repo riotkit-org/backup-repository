@@ -1,8 +1,9 @@
 # version in semver format eg. 3.0.0-dev, 3.0.0-alpha, 3.0.0-RC1, 3.0.0
-version: 3.0.0-dev
+version: 4.0.0-dev
 
 # release name
-name: Young Baker
+# https://anfenglishmobile.com/culture/bozkurt-the-art-of-working-with-copper-46698
+name: Coppersmith
 
 # development, testing, stable
 status: development

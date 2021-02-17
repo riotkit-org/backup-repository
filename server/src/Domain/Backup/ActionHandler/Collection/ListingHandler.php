@@ -55,10 +55,7 @@ class ListingHandler
     private function assertHasRights(CollectionManagementContext $securityContext): void
     {
         if (!$securityContext->canListMultipleCollections()) {
-            throw new AuthenticationException(
-                'Current token does not allow to use listing endpoint',
-                AuthenticationException::CODES['not_authenticated']
-            );
+            throw AuthenticationException::fromListingDenied();
         }
     }
 

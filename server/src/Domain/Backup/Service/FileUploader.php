@@ -2,12 +2,14 @@
 
 namespace App\Domain\Backup\Service;
 
-use App\Domain\Authentication\Entity\Token;
+use App\Domain\Authentication\Entity\User;
 use App\Domain\Backup\Entity\BackupCollection;
+use App\Domain\Backup\Exception\AuthenticationException;
 use App\Domain\Backup\Factory\NameFactory;
 use App\Domain\Backup\Response\Internal\StorageUploadResponse;
 use App\Domain\Backup\ValueObject\Filename;
 use App\Domain\Bus;
+use App\Domain\Common\Exception\BusException;
 use App\Domain\Common\Service\Bus\DomainBus;
 
 class FileUploader
@@ -28,7 +30,16 @@ class FileUploader
         $this->nameFactory = $nameFactory;
     }
 
-    public function upload(BackupCollection $collection, Token $token): StorageUploadResponse
+    /**
+     * @param BackupCollection $collection
+     * @param User $token
+     *
+     * @return StorageUploadResponse
+     *
+     * @throws AuthenticationException
+     * @throws BusException
+     */
+    public function upload(BackupCollection $collection, User $token): StorageUploadResponse
     {
         $responseAsArray = $this->bus->call(Bus::STORAGE_UPLOAD, [
             'form' => [
@@ -36,12 +47,15 @@ class FileUploader
                 'fileOverwrite'  => false,
                 'password'       => $collection->getPassword(),
                 'tags'           => [],
-                'backUrl'        => '',
                 'public'         => false
             ],
 
             'token' => $token
         ]);
+
+        if ($responseAsArray['status'] > 299) {
+            throw AuthenticationException::fromBackupUploadActionDisallowed();
+        }
 
         return StorageUploadResponse::createFromArray($responseAsArray);
     }

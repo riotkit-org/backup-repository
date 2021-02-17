@@ -17,17 +17,17 @@ class ListingParameters
     /**
      * @var string[]
      */
-    public $allowedTokens;
+    public ?array $allowedTokens;
 
     /**
      * @var \DateTimeImmutable
      */
-    public $createdFrom;
+    public ?\DateTimeImmutable $createdFrom;
 
     /**
      * @var \DateTimeImmutable
      */
-    public $createdTo;
+    public ?\DateTimeImmutable $createdTo;
 
     /**
      * @var int
@@ -44,9 +44,9 @@ class ListingParameters
         $self = new static();
         $self->searchQuery      = $input['searchQuery'] ?? [];
         $self->tags             = $input['tags'] ?? [];
-        $self->allowedTokens    = $input['allowedTokens'] ?? 20;
-        $self->createdFrom      = $input['createdFrom'] ?? '';
-        $self->createdTo        = $input['createdTo'] ?? '';
+        $self->allowedTokens    = $input['allowedTokens'] ?? [];
+        $self->createdFrom      = $input['createdFrom'] ?? null;
+        $self->createdTo        = $input['createdTo'] ?? null;
         $self->page             = $input['page'] ?? 1;
         $self->limit            = $input['limit'] ?? 20;
 

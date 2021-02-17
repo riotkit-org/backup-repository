@@ -2,10 +2,13 @@
 
 namespace App\Infrastructure\Authentication\Token;
 
-use App\Domain\Authentication\Entity\Token;
+use App\Domain\Authentication\Entity\User;
 use Symfony\Component\Security\Core\Authentication\Token\AbstractToken;
-use Symfony\Component\Security\Core\User\User;
+use Symfony\Component\Security\Core\User\User as SymfonyUser;
 
+/**
+ * @todo: JWT - verify if this class is still needed
+ */
 class TokenTransport extends AbstractToken
 {
     /**
@@ -14,18 +17,19 @@ class TokenTransport extends AbstractToken
     private $secret;
 
     /**
-     * @var Token
+     * @var ?User
      */
-    private $token;
+    private $user;
 
-    public function __construct(string $secret, Token $token)
+    public function __construct(string $secret, User $user)
     {
-        parent::__construct($token->getRoles());
+        parent::__construct($user->getRoles());
 
         $this->secret = $secret;
-        $this->token = $token;
+        $this->user   = $user;
+
         $this->setAuthenticated(true);
-        $this->setUser(new User('anonymous', $secret, $token->getRoles()));
+        $this->setUser(new SymfonyUser('anonymous', $secret, $user->getRoles()));
     }
 
     /**
@@ -64,10 +68,10 @@ class TokenTransport extends AbstractToken
     }
 
     /**
-     * @return Token
+     * @return ?User
      */
-    public function getToken(): Token
+    public function getUser(): ?User
     {
-        return $this->token;
+        return $this->user;
     }
 }

@@ -2,10 +2,10 @@
 
 namespace App\Domain\Storage\ActionHandler;
 
+use App\Domain\Common\Exception\CommonStorageException;
 use App\Domain\Common\Http;
 use App\Domain\Storage\Aggregate\BytesRangeAggregate;
 use App\Domain\Storage\Aggregate\FileRetrievedFromStorage;
-use App\Domain\Storage\Context\CachingContext;
 use App\Domain\Storage\Entity\StoredFile;
 use App\Domain\Storage\Exception\AuthenticationException;
 use App\Domain\Storage\Exception\ContentRangeInvalidException;
@@ -15,7 +15,6 @@ use App\Domain\Storage\Manager\FilesystemManager;
 use App\Domain\Storage\Manager\StorageManager;
 use App\Domain\Storage\Response\FileDownloadResponse;
 use App\Domain\Storage\Security\ReadSecurityContext;
-use App\Domain\Storage\Service\AlternativeFilenameResolver;
 use App\Domain\Storage\ValueObject\Filename;
 use GuzzleHttp\Psr7\Stream;
 use Psr\Http\Message\StreamInterface;
@@ -33,65 +32,43 @@ class ViewFileHandler
 {
     private StorageManager $storageManager;
     private FilesystemManager $fs;
-    private AlternativeFilenameResolver $nameResolver;
 
-    public function __construct(
-        StorageManager $storageManager,
-        FilesystemManager $fs,
-        AlternativeFilenameResolver $nameResolver
-    ) {
+    public function __construct(StorageManager $storageManager, FilesystemManager $fs)
+    {
         $this->storageManager = $storageManager;
         $this->fs             = $fs;
-        $this->nameResolver   = $nameResolver;
     }
 
     /**
-     * @param ViewFileForm        $form
+     * @param ViewFileForm $form
      * @param ReadSecurityContext $securityContext
-     * @param CachingContext      $cachingContext
      *
      * @return FileDownloadResponse
      *
      * @throws AuthenticationException
+     * @throws StorageException
+     * @throws CommonStorageException
      */
-    public function handle(ViewFileForm $form, ReadSecurityContext $securityContext, CachingContext $cachingContext): FileDownloadResponse
+    public function handle(ViewFileForm $form, ReadSecurityContext $securityContext): FileDownloadResponse
     {
-        $this->preProcessForm($form);
-
         try {
             $file = $this->storageManager->retrieve(new Filename((string) $form->filename));
 
         } catch (StorageException $exception) {
-
-            if ($exception->getCode() === StorageException::codes['file_not_found']) {
-                return new FileDownloadResponse($exception->getMessage(), 404);
+            if ($exception->isFileNotFoundError()) {
+                return new FileDownloadResponse(false, $exception->getMessage(), 404);
             }
 
-            return new FileDownloadResponse($exception->getMessage(), 500);
+            throw $exception;
         }
 
         if (!$securityContext->isAbleToViewFile($file->getStoredFile())) {
-            throw new AuthenticationException(
-                'No access to read the file, maybe invalid password?',
-                AuthenticationException::CODES['no_read_access_or_invalid_password']
-            );
+            throw AuthenticationException::fromFileReadAccessDenied();
         }
 
-        if (!$cachingContext->isCacheExpiredForFile($file->getStoredFile())) {
-            return new FileDownloadResponse('Not Modified', 304, function () use ($file) {
-                $this->sendHttpHeaders(
-                    $file->getStoredFile(),
-                    '',
-                    true,
-                    'bytes',
-                    $this->fs->getFileSize($file->getStoredFile()->getStoragePath())
-                );
-            });
-        }
+        [$code, $headers, $outputStream, $contentFlushCallback] = $this->createStreamHandler($file, $form);
 
-        [$code, $headersFlushCallback, $outputStream, $contentFlushCallback] = $this->createStreamHandler($file, $form);
-
-        return new FileDownloadResponse('OK', $code, $headersFlushCallback, $contentFlushCallback, $outputStream);
+        return new FileDownloadResponse(true, 'OK', $code, $headers, $contentFlushCallback, $outputStream);
     }
 
     /**
@@ -125,22 +102,17 @@ class ViewFileHandler
             }];
         }
 
-        $headersFlushCallback = function () use (
-            $fileAsStream, $maxLength, $offset, $etagSuffix, $allowLastModifiedHeader,
-            $file, $acceptRange, $contentLength
-        ) {
-            $this->sendHttpHeaders(
-                $file->getStoredFile(),
-                $etagSuffix,
-                $allowLastModifiedHeader,
-                $acceptRange,
-                $contentLength
-            );
-        };
+        $headers = $this->createHttpHeadersList(
+            $file->getStoredFile(),
+            $etagSuffix,
+            $allowLastModifiedHeader,
+            $acceptRange,
+            $contentLength
+        );
 
         return [
             $bytesRange->shouldServePartialContent() ? Http::HTTP_STREAM_PARTIAL_CONTENT : Http::HTTP_OK,
-            $headersFlushCallback,
+            $headers,
             $fileAsStream,
             /**
              * @param resource $a
@@ -152,42 +124,35 @@ class ViewFileHandler
         ];
     }
 
-    private function preProcessForm(ViewFileForm $form): void
+    private function createHttpHeadersList(StoredFile $file, string $eTagSuffix, bool $allowLastModifiedHeader, string $acceptRange, int $contentLength): array
     {
-        $form->filename = $this->nameResolver->resolveFilename(new Filename($form->filename))->getValue();
-    }
+        $headers = [];
 
-    private function sendHttpHeaders(StoredFile $file, string $eTagSuffix, bool $allowLastModifiedHeader, string $acceptRange, int $contentLength): void
-    {
         if ($acceptRange) {
-            $this->header('Accept-Ranges: bytes');
-            $this->header('Content-Range: ' . $acceptRange);
+            $headers['Accept-Ranges'] = 'bytes';
+            $headers['Content-Range'] = $acceptRange;
         }
 
         if ($contentLength) {
-            $this->header('Content-Length: ' . $contentLength);
+            $headers['Content-Length'] = $contentLength;
         }
 
         //
         // caching
         //
         if ($allowLastModifiedHeader) {
-            $this->header('Last-Modified:  ' . $file->getDateAdded()->format('D, d M Y H:i:s') . ' GMT');
+            $headers['Last-Modified'] = $file->getDateAdded()->format('D, d M Y H:i:s') . ' GMT';
         }
 
-        $this->header('ETag: ' . $file->getContentHash() . $eTagSuffix);
-        $this->header('Cache-Control: public, max-age=25200');
+        $headers['ETag'] = $file->getContentHash() . $eTagSuffix;
 
         //
         // others
         //
-        $this->header('Content-Type: ' . $file->getMimeType());
-        $this->header('Content-Disposition: attachment; filename="' . $file->getFilename()->getValue() . '"');
-    }
+        $headers['Content-Type'] = 'application/octet-stream';
+        $headers['Content-Disposition'] = 'attachment; filename="' . $file->getFilename()->getValue() . '"';
 
-    protected function header(string $content): void
-    {
-        header($content);
+        return $headers;
     }
 
     protected function fopen(string $filename, string $mode): StreamInterface

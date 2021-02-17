@@ -11,20 +11,9 @@ use App\Domain\Storage\ValueObject\Stream;
  */
 class StagedFile
 {
-    /**
-     * @var Path
-     */
-    private $path;
-
-    /**
-     * @var string
-     */
-    private $id;
-
-    /**
-     * @var Stream
-     */
-    private $stream;
+    private Path $path;
+    private string $id;
+    private ?Stream $stream = null;
 
     public function __construct(Path $path)
     {
@@ -44,6 +33,11 @@ class StagedFile
         }
 
         return $this->stream;
+    }
+
+    public function getFilesize(): int
+    {
+        return filesize($this->getFilePath()->getValue());
     }
 
     public function getId(): string

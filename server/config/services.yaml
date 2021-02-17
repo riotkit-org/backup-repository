@@ -14,14 +14,10 @@ parameters:
     env(TEMP_DIRECTORY): /tmp
     env(LONG_EXECUTION_TIME): "300"
     env(TOKEN_EXPIRATION_TIME): "+30 minutes"
-    env(ENC_TOKEN_PHRASE): "test123"
-    env(REPLICATION_SECRET): ''
-    env(REPLICATION_PRIMARY_URL): ''
     env(BASE_URL): ''
-    env(ENC_SALT): ''
-    env(ENC_ALGORITHM): 'aes-256-cbc'
-    env(ENC_DIGEST_ALGORITHM): 'sha512'
-    env(ENC_DIGEST_ROUNDS): "6000"
+    env(PASSWD_ALGORITHM): 'sha256'
+    env(PASSWD_ITERATIONS): '90000'
+    env(JWT_LIFETIME): '2 hours'
 
 services:
     # default configuration for services in *this* file
@@ -49,21 +45,32 @@ services:
         arguments:
             $secretCode: '%env(HEALTH_CHECK_CODE)%'
 
-    App\Domain\Authentication\ActionHandler\TokenGenerationHandler:
-        arguments:
-            $manager: '@App\Domain\Authentication\Manager\TokenManager'
-            $expirationTime: '%env(TOKEN_EXPIRATION_TIME)%'
-
-    App\Infrastructure\Authentication\Service\AESCryptoService:
-        arguments:
-            $secret: '%env(ENC_TOKEN_PHRASE)%'
-            $salt: '%env(ENC_SALT)%'
-            $encAlgorithm: '%env(ENC_ALGORITHM)%'
-            $digestAlgorithm: '%env(ENC_DIGEST_ALGORITHM)%'
-            $digestRounds: '%env(ENC_DIGEST_ROUNDS)%'
+    App\Infrastructure\Common\Service\SerializerORMEntityNormalizer:
+        public: false
         autowire: true
+        autoconfigure: true
+        tags:
+            - { name: serializer.normalizer }
 
-    App\Infrastructure\Authentication\Event\Subscriber\TokenSubscriber:
+    datetime_normalizer:
+        class: Symfony\Component\Serializer\Normalizer\DateTimeNormalizer
+        public: false
+        tags: [ serializer.normalizer ]
+
+    App\Infrastructure\Authentication\Event\Subscriber\DevelopmentTokenSubscriber:
+        autowire: true
+        autoconfigure: true
+        arguments:
+            $isDev: '%kernel.debug%'
+
+    App\Infrastructure\Common\Event\Subscriber\ErrorFormattingSubscriber:
+        autowire: true
+        autoconfigure: true
+        arguments:
+            $isDev: '%kernel.debug%'
+            $envName: '%kernel.environment%'
+
+    App\Infrastructure\Common\Event\Subscriber\CorsSubscriber:
         autowire: true
         autoconfigure: true
         arguments:
@@ -74,17 +81,6 @@ services:
         arguments:
             $tempPath: '%env(TEMP_DIRECTORY)%'
 
-    App\Infrastructure\Storage\Manager\DownloadViaGuzzleProvider:
-        class: App\Infrastructure\Storage\Manager\DownloadViaGuzzleProvider
-        arguments:
-            $state: '@App\Domain\Common\Manager\StateManager'
-            $httpTimeout: '%env(HTTP_TIMEOUT)%'
-
-    App\Infrastructure\Storage\Manager\TestHttpDownloadProvider:
-        class: App\Infrastructure\Storage\Manager\TestHttpDownloadProvider
-        arguments:
-            $parentProvider: '@App\Infrastructure\Storage\Manager\DownloadViaGuzzleProvider'
-
     App\Domain\Backup\Settings\BackupSettings:
         class: App\Domain\Backup\Settings\BackupSettings
         arguments:
@@ -93,6 +89,11 @@ services:
             $maxWholeCollectionSize: '%env(BACKUP_COLLECTION_MAX_SIZE)%'
 
     App\Infrastructure\Backup\Repository\CollectionDoctrineRepository:
+        autowire: true
+        arguments:
+            $readOnly: '%env(bool:READ_ONLY)%'
+
+    App\Infrastructure\Backup\Repository\UserAccessDoctrineRepository:
         autowire: true
         arguments:
             $readOnly: '%env(bool:READ_ONLY)%'
@@ -112,22 +113,17 @@ services:
         arguments:
             $readOnly: '%env(bool:READ_ONLY)%'
 
-    App\Infrastructure\Authentication\Repository\TokenDoctrineRepository:
+    App\Infrastructure\Authentication\Repository\UserDoctrineRepository:
         autowire: true
         arguments:
             $readOnly: '%env(bool:READ_ONLY)%'
 
-    App\Infrastructure\SecureCopy\Repository\TokenDoctrineRepository:
+    App\Infrastructure\Authentication\Repository\AccessTokenAuditDoctrineRepository:
         autowire: true
         arguments:
             $readOnly: '%env(bool:READ_ONLY)%'
 
-    App\Infrastructure\Backup\Repository\TokenDoctrineRepository:
-        autowire: true
-        arguments:
-            $readOnly: '%env(bool:READ_ONLY)%'
-
-    App\Infrastructure\SecureCopy\Repository\CryptoMapDoctrineRepository:
+    App\Infrastructure\Backup\Repository\UserDoctrineRepository:
         autowire: true
         arguments:
             $readOnly: '%env(bool:READ_ONLY)%'
@@ -138,33 +134,10 @@ services:
             $fs: '@App\Domain\Backup\Service\Filesystem'
             $readOnly: '%env(bool:READ_ONLY)%'
 
-    App\Infrastructure\SecureCopy\Service\AESCryptoService:
-        arguments:
-            $secret: '%env(ENC_TOKEN_PHRASE)%'
-            $salt: '%env(ENC_SALT)%'
-            $encAlgorithm: '%env(ENC_ALGORITHM)%'
-            $digestAlgorithm: '%env(ENC_DIGEST_ALGORITHM)%'
-            $digestRounds: '%env(ENC_DIGEST_ROUNDS)%'
-        autowire: true
-
-    App\Domain\Authentication\Factory\IncomingTokenFactory:
-        public: true
-        autowire: true
-
     App\Domain\Storage\Factory\PublicUrlFactory:
         autowire: true
         arguments:
             $baseUrl: '%env(BASE_URL)%'
-
-    App\Domain\SecureCopy\Factory\RepositoryLegendFactory:
-        autowire: true
-        arguments:
-            $baseUrl: '%env(BASE_URL)%'
-
-    App\Domain\Replication\Provider\ConfigurationProvider:
-        arguments:
-            $token: '%env(REPLICATION_SECRET)%'
-            $primaryUrl: '%env(REPLICATION_PRIMARY_URL)%'
 
     ro_fs:
         class: App\Infrastructure\Storage\Manager\FlysystemFilesystemManager
@@ -188,6 +161,10 @@ services:
             $readFS: '@ro_fs'
             $writeFS: '@rw_fs'
 
+    App\Domain\Authentication\Factory\IncomingUserFactory:
+        autowire: true
+        public: true
+
     App\Infrastructure\Common\Test\Database\RestoreDBInterface:
         alias: App\Infrastructure\Common\Test\Database\StateManager
 
@@ -203,14 +180,26 @@ services:
                   key: "%env(FS_AWSS3V3_KEY)%"
                   secret: "%env(FS_AWSS3V3_SECRET)%"
 
-    replication_primary_httpclient:
-        class: App\Infrastructure\Replication\Service\HttpClient
+    # SwaggerDocsProvider
+    App\Infrastructure\Technical\Service\SwaggerDocsProvider:
         autowire: true
-        factory: ['\App\Infrastructure\Replication\Factory\Http\PrimaryGuzzleClientFactory', 'createClient']
         arguments:
-            $primaryServerUrl: '%env(REPLICATION_PRIMARY_URL)%'
-            $token: '%env(REPLICATION_SECRET)%'
+            $swaggerYamlPath: '%kernel.project_dir%/config/swagger.yaml.j2'
+            $isDebug: '%kernel.debug%'
 
-    App\Infrastructure\Replication\Provider\GuzzlePrimaryServerVersionProvider:
+    #
+    # Configurations (from environment variables)
+    #
+    App\Domain\Authentication\Configuration\PasswordHashingConfiguration:
         arguments:
-            $client: '@replication_primary_httpclient'
+            $algorithm: '%env(PASSWD_ALGORITHM)%'
+            $iterations: '%env(int:PASSWD_ITERATIONS)%'
+
+    App\Domain\Authentication\Configuration\ApplicationInfo:
+        arguments:
+            $environmentType: '%kernel.environment%'
+
+    App\Domain\Authentication\Configuration\JWTConfiguration:
+        arguments:
+            $lifetime: '%env(JWT_LIFETIME)%'
+

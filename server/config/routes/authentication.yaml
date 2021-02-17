@@ -1,36 +1,48 @@
-authentication.generate_token:
-    path: /auth/token/generate
-    controller: 'App\Controller\Authentication\GenerateTokenController::generateAction'
+authentication.create_user:
+    path: /api/stable/auth/user
+    controller: 'App\Controller\Authentication\CreateEditUserController::modifyAction'
     methods: ['POST']
-    defaults:
-        _secured: true
 
-
-authentication.roles_listing:
-    path: /auth/roles
-    controller: 'App\Controller\Authentication\RolesListingController::handle'
-    methods: ['GET']
-    defaults:
-        _secured: true
-
-
-authentication.lookup:
-    path: /auth/token/{token}
-    controller: 'App\Controller\Authentication\LookupTokenController::handle'
-    methods: ['GET']
-    defaults:
-        _secured: true
+authentication.edit_user:
+    path: /api/stable/auth/user/{userId}
+    controller: 'App\Controller\Authentication\CreateEditUserController::modifyAction'
+    methods: ['PUT']
 
 authentication.search:
-    path: /auth/search
-    controller: '\App\Controller\Authentication\TokenSearchController::searchAction'
+    path: /api/stable/auth/user
+    controller: '\App\Controller\Authentication\UserSearchController::searchAction'
     methods: ['GET']
-    defaults:
-        _secured: true
+
+authentication.lookup:
+    path: /api/stable/auth/user/{userId}
+    controller: 'App\Controller\Authentication\LookupUserController::handle'
+    methods: ['GET']
 
 authentication.delete:
-    path: /auth/token/{token}
-    controller: 'App\Controller\Authentication\DeleteTokenController::handle'
+    path: /api/stable/auth/user/{userId}
+    controller: 'App\Controller\Authentication\RevokeUserAccountController::handle'
     methods: ['DELETE']
-    defaults:
-        _secured: true
+
+authentication.roles_listing:
+    path: /api/stable/auth/roles
+    controller: 'App\Controller\Authentication\RolesListingController::handle'
+    methods: ['GET']
+
+#
+# JWT access tokens management
+#
+
+authentication.generate_api_token:
+    path: /api/stable/auth/token
+    controller: 'App\Controller\Authentication\AccessTokenGenerationController::generateAction'
+    methods: ['POST']
+
+authentication.list_api_tokens:
+    path: /api/stable/auth/token
+    controller: 'App\Controller\Authentication\AccessTokenListingController::listAction'
+    methods: ['GET']
+
+authentication.revoke_api_token:
+    path: /api/stable/auth/token/{tokenHash}
+    controller: 'App\Controller\Authentication\AccessTokenRevokingController::revokeAction'
+    methods: ['DELETE']

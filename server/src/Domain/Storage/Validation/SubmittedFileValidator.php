@@ -40,19 +40,9 @@ class SubmittedFileValidator
     {
         $info = $this->fileInfoFactory->generateForStagedFile($stagedFile);
 
-        if (!$context->isMimeAllowed($info->getMime())) {
-            throw ValidationException::createWithContext(
-                'The mime type "' . $info->getMime()->getValue() . '" is not allowed to upload',
-                ValidationException::CODE_MIME_NOT_ALLOWED,
-                [
-                    'mime' => $info->getMime()->getValue()
-                ]
-            );
-        }
-
         if (!$context->isFileSizeOk($info->getFilesize())) {
             throw new ValidationException(
-                'The mime type "' . $info->getMime()->getValue() . '" is not allowed to upload',
+                'The file is too big',
                 ValidationException::CODE_LENGTH_EXCEEDED
             );
         }

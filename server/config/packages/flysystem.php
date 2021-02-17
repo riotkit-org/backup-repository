@@ -25,19 +25,6 @@ $configParser = new ConfigParser([
                 'override_visibility_on_copy' => [null, 'bool']
             ]
         ]
-    ],
-
-    'ftp' => [
-        'host'        => ['localhost', 'string'],
-        'port'        => [21, 'integer'],
-        'username'    => [null, 'string'],
-        'password'    => [null, 'string'],
-        'root'        => [null, 'string'],
-        'ssl'         => [null, 'bool'],
-        'timeout'     => [null, 'integer'],
-        'permPrivate' => [null, 'string'],
-        'permPublic'  => [null, 'string'],
-        'passive'     => [null, 'bool']
     ]
 ]);
 

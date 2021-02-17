@@ -2,6 +2,8 @@
 
 namespace App\Domain\Backup\Exception;
 
-class BackupException extends \Exception
+use App\Domain\Common\Exception\ApplicationException;
+
+class BackupException extends ApplicationException
 {
 }

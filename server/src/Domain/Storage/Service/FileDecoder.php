@@ -77,9 +77,6 @@ class FileDecoder
             return;
         }
 
-        throw new StorageException(
-            'Read error, temporary file not found',
-            StorageException::codes['file_not_found']
-        );
+        throw StorageException::fromFileNotFoundCause();
     }
 }

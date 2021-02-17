@@ -1,0 +1,8 @@
+.rkd/logs
+.rkd/browser-profile
+*.pyc
+*__pycache__*
+/.venv
+.venv-setup.log
+!/build/.gitkeep
+/build/*

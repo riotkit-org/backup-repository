@@ -1,0 +1,26 @@
+App\Domain\Backup\Entity\Authentication\User:
+    type: entity
+    table: users
+    read_only: true
+
+    id:
+        id:
+            type: guid
+            unique: true
+            nullable: false
+            id: true
+            length: 36
+            generator:
+                strategy: UUID
+
+    embedded:
+        roles:
+            # @todo: Move VO also to Backup domain
+            class: App\Domain\Authentication\ValueObject\Roles
+            columnPrefix: false
+
+        email:
+            class: App\Domain\Backup\ValueObject\Email
+            columnPrefix: false
+
+

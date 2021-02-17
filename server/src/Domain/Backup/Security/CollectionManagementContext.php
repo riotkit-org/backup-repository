@@ -2,10 +2,12 @@
 
 namespace App\Domain\Backup\Security;
 
+use App\Domain\Backup\Entity\Authentication\User;
 use App\Domain\Backup\Entity\BackupCollection;
 use App\Domain\Backup\Form\Collection\CreationForm;
 use App\Domain\Backup\Form\Collection\DeleteForm;
 use App\Domain\Backup\Form\Collection\EditForm;
+use App\Domain\Backup\ValueObject\CollectionSpecificRoles;
 
 class CollectionManagementContext
 {
@@ -16,12 +18,12 @@ class CollectionManagementContext
     private bool $canModifyAnyCollection;
     private bool $canUseListingEndpointToFindCollections;
     private bool $canAccessAnyCollection;
-    private bool $canManageTokensInAllowedCollections;
+    private bool $canManageUsersInAllowedCollections;
     private bool $canDeleteAllowedCollections;
     private bool $canSeeTokensInCollection;
-    private bool $cannotSeeFullTokenIds;
     private bool $isSystemAdmin;
-    private ?string $tokenId;
+    private ?string $userId;
+    private ?User $user;
 
     public function __construct(
         bool $canCreateCollections,
@@ -34,9 +36,9 @@ class CollectionManagementContext
         bool $canManageTokensInAllowedCollections,
         bool $canDeleteAllowedCollections,
         bool $canSeeTokensInCollection,
-        bool $cannotSeeFullTokenIds,
         bool $isSystemAdmin,
-        ?string $tokenId
+        ?string $userId,
+        ?User $user
     ) {
         $this->canCreateCollections             = $canCreateCollections;
         $this->canAssignCustomIdInNewCollection = $canAssignCustomIdInNewCollection;
@@ -45,12 +47,12 @@ class CollectionManagementContext
         $this->canModifyAnyCollection           = $canModifyAnyCollection;
         $this->canAccessAnyCollection           = $canAccessAnyCollection;
         $this->canUseListingEndpointToFindCollections = $canUseListingEndpoint;
-        $this->canManageTokensInAllowedCollections    = $canManageTokensInAllowedCollections;
+        $this->canManageUsersInAllowedCollections    = $canManageTokensInAllowedCollections;
         $this->canDeleteAllowedCollections            = $canDeleteAllowedCollections;
         $this->canSeeTokensInCollection         = $canSeeTokensInCollection;
-        $this->cannotSeeFullTokenIds            = $cannotSeeFullTokenIds;
         $this->isSystemAdmin                    = $isSystemAdmin;
-        $this->tokenId                          = $tokenId;
+        $this->userId                          = $userId;
+        $this->user                             = $user;
     }
 
     public function canCreateCollection(CreationForm $form): bool
@@ -129,20 +131,20 @@ class CollectionManagementContext
 
     private function isTokenAllowedFor(BackupCollection $collection): bool
     {
-        return $collection->isTokenIdAllowed($this->tokenId);
+        return $collection->isTokenIdAllowed($this->userId);
     }
 
     /**
      * @return string|null
      */
-    public function getTokenId(): ?string
+    public function getUserId(): ?string
     {
-        return $this->tokenId;
+        return $this->userId;
     }
 
     public function hasTokenAttached(): bool
     {
-        return $this->tokenId !== null;
+        return $this->userId !== null;
     }
 
     public function canListMultipleCollections(): bool
@@ -160,12 +162,33 @@ class CollectionManagementContext
             return true;
         }
 
-        return $collection->isTokenIdAllowed($this->tokenId);
+        return $collection->isTokenIdAllowed($this->userId);
+    }
+
+    public function canAssignThoseRolesToUsersInCollection(CollectionSpecificRoles $roles): bool
+    {
+        if ($this->isSystemAdmin) {
+            return true;
+        }
+
+        $allowed = $this->user->getRoles();
+
+        foreach ($roles->getAsList() as $role) {
+            if (!in_array($role, $allowed, true)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     public function canAddTokensToCollection(BackupCollection $collection): bool
     {
-        if (!$this->canManageTokensInAllowedCollections) {
+        if ($this->isSystemAdmin) {
+            return true;
+        }
+
+        if (!$this->canManageUsersInAllowedCollections) {
             return false;
         }
 
@@ -173,12 +196,16 @@ class CollectionManagementContext
             return true;
         }
 
-        return $collection->isTokenIdAllowed($this->tokenId);
+        return $collection->isTokenIdAllowed($this->userId);
     }
 
     public function canRevokeAccessToCollection(BackupCollection $collection): bool
     {
-        if (!$this->canManageTokensInAllowedCollections) {
+        if ($this->isSystemAdmin) {
+            return true;
+        }
+
+        if (!$this->canManageUsersInAllowedCollections) {
             return false;
         }
 
@@ -186,7 +213,7 @@ class CollectionManagementContext
             return true;
         }
 
-        return $collection->isTokenIdAllowed($this->tokenId);
+        return $collection->isTokenIdAllowed($this->userId);
     }
 
     public function canListCollectionTokens(BackupCollection $collection): bool
@@ -199,11 +226,11 @@ class CollectionManagementContext
             return false;
         }
 
-        return $collection->isTokenIdAllowed($this->tokenId);
+        return $collection->isTokenIdAllowed($this->userId);
     }
 
-    public function cannotSeeFullTokenIds(): bool
+    public function getUser(): ?User
     {
-        return $this->cannotSeeFullTokenIds;
+        return $this->user;
     }
 }

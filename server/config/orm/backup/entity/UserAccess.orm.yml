@@ -1,0 +1,22 @@
+App\Domain\Backup\Entity\UserAccess:
+    type: entity
+    table: collection_users
+
+    id:
+        collectionId:
+            type: string
+
+        userId:
+            type: string
+
+    embedded:
+        roles:
+            class: \App\Domain\Backup\ValueObject\CollectionSpecificRoles
+            columnPrefix: false
+
+    manyToOne:
+        user:
+            targetEntity: \App\Domain\Backup\Entity\Authentication\User
+            joinColumn:
+                name: user_id
+                referencedColumnName: id

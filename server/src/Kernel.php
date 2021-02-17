@@ -2,8 +2,8 @@
 
 namespace App;
 
+use App\Infrastructure\Authentication\DependencyInjection\JWTPass;
 use App\Infrastructure\Common\DependencyInjection\DomainBusPass;
-use App\Infrastructure\Storage\DependencyInjection\AntiHotlinkFeatureCompilerPass;
 use App\Infrastructure\Technical\DependencyInjection\VersionExtension;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
 use Symfony\Component\Config\Loader\LoaderInterface;
@@ -55,7 +55,7 @@ class Kernel extends BaseKernel
         $loader->load($confDir.'/{services}_' . $this->environment.self::CONFIG_EXTS, 'glob');
 
         $container->addCompilerPass(new DomainBusPass());
-        $container->addCompilerPass(new AntiHotlinkFeatureCompilerPass());
+        $container->addCompilerPass(new JWTPass());
 
         // other configuration stuff
         $this->configureTimeZone();

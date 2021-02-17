@@ -4,9 +4,9 @@ namespace App\Controller\Backup\Version;
 
 use App\Controller\BaseController;
 use App\Domain\Backup\ActionHandler\Version\BackupSubmitHandler;
+use App\Domain\Backup\Entity\Authentication\User;
 use App\Domain\Backup\Factory\SecurityContextFactory;
 use App\Domain\Backup\Form\BackupSubmitForm;
-use App\Infrastructure\Backup\Form\Version\BackupSubmitFormType;
 use App\Infrastructure\Common\Http\JsonFormattedResponse;
 use Exception;
 use Symfony\Component\HttpFoundation\Request;
@@ -31,7 +31,7 @@ class SubmitVersionController extends BaseController
      *
      * @return Response
      *
-     * @throws Exception
+     * @throws Exception|\Throwable
      */
     public function handleAction(Request $request, string $collectionId): Response
     {
@@ -48,30 +48,26 @@ class SubmitVersionController extends BaseController
      *
      * @return Response
      *
-     * @throws Exception
+     * @throws Exception|\Throwable
      */
     private function handleInternally(Request $request, string $collectionId): Response
     {
-        $form = new BackupSubmitForm();
-        $infrastructureForm = $this->createForm(BackupSubmitFormType::class, $form);
-        $infrastructureForm->submit([
-            'collection' => $collectionId,
-        ]);
+        /**
+         * @var BackupSubmitForm $form
+         */
+        $form = $this->decodeRequestIntoDTO(['collection' => $collectionId], BackupSubmitForm::class);
 
-        if (!$infrastructureForm->isValid()) {
-            return $this->createValidationErrorResponse($infrastructureForm);
-        }
+        /**
+         * @var User $user
+         */
+        $user = $this->getLoggedUser(User::class);
 
-        return $this->wrap(
-            function () use ($form, $request) {
-                $response = $this->handler->handle(
-                    $form,
-                    $this->authFactory->createVersioningContext($this->getLoggedUserToken()),
-                    $this->getLoggedUserToken()
-                );
-
-                return new JsonFormattedResponse($response, $response->getExitCode());
-            }
+        $response = $this->handler->handle(
+            $form,
+            $this->authFactory->createVersioningContext($user, $form->collection),
+            $this->getLoggedUser()
         );
+
+        return new JsonFormattedResponse($response, $response->getHttpCode());
     }
 }

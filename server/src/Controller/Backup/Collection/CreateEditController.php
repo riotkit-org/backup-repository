@@ -5,19 +5,17 @@ namespace App\Controller\Backup\Collection;
 use App\Controller\BaseController;
 use App\Domain\Backup\ActionHandler\Collection\CreationHandler;
 use App\Domain\Backup\ActionHandler\Collection\EditHandler;
+use App\Domain\Backup\Entity\Authentication\User;
 use App\Domain\Backup\Exception\AuthenticationException;
 use App\Domain\Backup\Factory\SecurityContextFactory;
 use App\Domain\Backup\Form\Collection\CreationForm;
 use App\Domain\Backup\Form\Collection\EditForm;
 use App\Domain\Backup\Response\Collection\CrudResponse;
-use App\Infrastructure\Backup\Form\Collection\CreationFormType;
-use App\Infrastructure\Backup\Form\Collection\EditFormType;
 use App\Infrastructure\Common\Http\JsonFormattedResponse;
 use Exception;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Nelmio\ApiDocBundle\Annotation\Model;
-use Swagger\Annotations as SWG;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class CreateEditController extends BaseController
 {
@@ -38,97 +36,6 @@ class CreateEditController extends BaseController
     /**
      * Create (POST), edit (PUT) a versioned file-collection that will keep historic versions of file, and rotate them.
      *
-     * @SWG\Parameter(
-     *     type="boolean",
-     *     in="query",
-     *     name="simulate",
-     *     description="Set to true to only simulate request, without commiting the changes. Optional parameter."
-     * )
-     *
-     * @SWG\Response(
-     *     response="201",
-     *     description="Collection was successfuly created",
-     *     @SWG\Schema(
-     *         type="object",
-     *         @SWG\Property(
-     *             property="status",
-     *             type="boolean",
-     *             example="true"
-     *         ),
-     *         @SWG\Property(
-     *             property="http_code",
-     *             type="integer",
-     *             example="201"
-     *         ),
-     *         @SWG\Property(
-     *             property="error_code",
-     *             type="integer",
-     *             example="50091"
-     *         ),
-     *         @SWG\Property(
-     *             property="errors",
-     *             type="array",
-     *             @SWG\Items(type="string")
-     *         ),
-     *         @SWG\Property(
-     *             property="message",
-     *             type="string",
-     *             example="OK"
-     *         ),
-     *         @SWG\Property(
-     *             property="collection",
-     *             ref=@Model(type=\App\Domain\Backup\Entity\Docs\Collection::class)
-     *         ),
-     *          @SWG\Property(
-     *             property="context",
-     *             type="array",
-     *             @SWG\Items(type="string")
-     *         )
-     *     )
-     * )
-     *
-     * @SWG\Response(
-     *     response="200",
-     *     description="Collection was modified",
-     *     @SWG\Schema(
-     *         type="object",
-     *         @SWG\Property(
-     *             property="status",
-     *             type="boolean",
-     *             example="true"
-     *         ),
-     *         @SWG\Property(
-     *             property="http_code",
-     *             type="integer",
-     *             example="201"
-     *         ),
-     *         @SWG\Property(
-     *             property="error_code",
-     *             type="integer",
-     *             example="50091"
-     *         ),
-     *         @SWG\Property(
-     *             property="errors",
-     *             type="array",
-     *             @SWG\Items(type="string")
-     *         ),
-     *         @SWG\Property(
-     *             property="message",
-     *             type="string",
-     *             example="OK"
-     *         ),
-     *         @SWG\Property(
-     *             property="collection",
-     *             ref=@Model(type=\App\Domain\Backup\Entity\Docs\Collection::class)
-     *         ),
-     *          @SWG\Property(
-     *             property="context",
-     *             type="array",
-     *             @SWG\Items(type="string")
-     *         )
-     *     )
-     * )
-     *
      * @param Request $request
      *
      * @return Response
@@ -139,32 +46,39 @@ class CreateEditController extends BaseController
     {
         $isCreation = strtoupper($request->getMethod()) === 'POST';
 
-        $form = $isCreation ? new CreationForm() : new EditForm();
-        $infrastructureForm = $this->submitFormFromJsonRequest(
-            $request,
-            $form,
-            $isCreation ? CreationFormType::class : EditFormType::class
-        );
-
-        if (!$infrastructureForm->isValid()) {
-            return $this->createValidationErrorResponse($infrastructureForm);
-        }
-
-        return $this->wrap(
-            function () use ($form, $request, $isCreation) {
-                $response = $this->handle(
-                    $form,
-                    $this->authFactory->createCollectionManagementContext($this->getLoggedUserToken()),
-                    $isCreation
-                );
-
-                if ($request->query->get('simulate') !== 'true') {
-                    $this->createHandler->flush();
+        /**
+         * @var CreationForm|EditForm $form
+         */
+        $form = $this->decodeRequestIntoDTO($request, $isCreation ? CreationForm::class : EditForm::class,
+            function (array $data) use ($isCreation) {
+                if (isset($data['id'])) {
+                    $data['collection'] = $data['id'];
                 }
 
-                return new JsonFormattedResponse($response, $response->getHttpCode());
+                return $data;
             }
         );
+
+        /**
+         * @var User $user
+         */
+        $user = $this->getLoggedUser(User::class);
+
+        $response = $this->handle(
+            $form,
+            $this->authFactory->createCollectionManagementContext($user, ($isCreation ? null : $form->collection)),
+            $isCreation
+        );
+
+        if (!$response) {
+            throw new NotFoundHttpException();
+        }
+
+        if ($request->query->get('simulate') !== 'true') {
+            $this->createHandler->flush();
+        }
+
+        return new JsonFormattedResponse($response, $response->getHttpCode());
     }
 
     /**
@@ -172,11 +86,11 @@ class CreateEditController extends BaseController
      * @param $auth
      * @param bool $isCreation
      *
-     * @return CrudResponse
+     * @return null|CrudResponse
      *
      * @throws AuthenticationException
      */
-    private function handle($form, $auth, bool $isCreation): CrudResponse
+    private function handle($form, $auth, bool $isCreation): ?CrudResponse
     {
         if ($isCreation) {
             return $this->createHandler->handle($form, $auth);

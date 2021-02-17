@@ -217,7 +217,7 @@ You should see something like this:
             "collections.modify_any_collection_regardless_if_token_was_allowed_by_collection": "Allow to modify ALL collections. Collection don't have to allow such token which has this role",
             "collections.view_all_collections": "Allow to browse any collection regardless of if the user token was allowed by it or not",
             "collections.can_use_listing_endpoint": "Can use an endpoint that will allow to browse and search collections?",
-            "collections.manage_tokens_in_allowed_collections": "Manage tokens in the collections where our current token is already added as allowed",
+            "collections.manage_users_in_allowed_collections": "Manage tokens in the collections where our current token is already added as allowed",
             "collections.delete_allowed_collections": "Delete collections where token is added as allowed",
             "collections.upload_to_allowed_collections": "Upload to allowed collections",
             "collections.list_versions_for_allowed_collections": "List versions for collections where the token was added as allowed",

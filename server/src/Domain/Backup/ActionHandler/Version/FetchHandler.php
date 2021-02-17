@@ -4,6 +4,7 @@ namespace App\Domain\Backup\ActionHandler\Version;
 
 use App\Domain\Backup\Entity\BackupCollection;
 use App\Domain\Backup\Exception\AuthenticationException;
+use App\Domain\Backup\Exception\BackupException;
 use App\Domain\Backup\Form\Version\FetchVersionForm;
 use App\Domain\Backup\Repository\VersionRepository;
 use App\Domain\Backup\Response\Version\FetchResponse;
@@ -28,15 +29,15 @@ class FetchHandler
      * @param FetchVersionForm $form
      * @param VersioningContext $securityContext
      *
-     * @return FetchResponse
+     * @return ?FetchResponse
      *
      * @throws AuthenticationException
      * @throws BusException
      */
-    public function handle(FetchVersionForm $form, VersioningContext $securityContext): FetchResponse
+    public function handle(FetchVersionForm $form, VersioningContext $securityContext): ?FetchResponse
     {
         if (!$form->collection) {
-            return FetchResponse::createWithNotFoundError();
+            return null;
         }
 
         $this->assertHasRights($securityContext, $form->collection);
@@ -47,7 +48,7 @@ class FetchHandler
                 ->find($form->versionId);
 
         if (!$version) {
-            return FetchResponse::createWithNotFoundError();
+            return null;
         }
 
         $response = $this->domain->call(Bus::STORAGE_VIEW_FILE, [
@@ -55,9 +56,7 @@ class FetchHandler
             'token'                  => $form->token,
             'filename'               => $version->getFile()->getFilename()->getValue(),
             'password'               => $form->password,
-            'bytesRange'             => $form->httpBytesRange,
-            'ifNoneMatch'            => $form->httpIfNoneMatch,
-            'ifModifiedSince'        => $form->httpIfModifiedSince
+            'bytesRange'             => $form->httpBytesRange
         ]);
 
         if ($response['stream'] ?? null) {
@@ -69,8 +68,11 @@ class FetchHandler
                     $stream = $response['stream'];
 
                     // headers first
-                    $headersCallback = $response['headersFlushCallback'];
-                    $headersCallback();
+                    $headers = $response['headers'];
+
+                    foreach ($headers as $header => $headerValue) {
+                        header($header . ': ' . $headerValue);
+                    }
 
                     // body then
                     $bodyCallback = $response['contentFlushCallback'];
@@ -79,7 +81,13 @@ class FetchHandler
             );
         }
 
-        return FetchResponse::createWithError($response['status'], $response['code']);
+        // unknown error happened, let's raise an exception and cause HTTP 500
+        if (!$response['success'] ?? false) {
+            throw new BackupException($response['message'], $response['code']);
+        }
+
+        // strange unknown error happened, response is success, but there is no file to stream
+        throw new \LogicException('Unknown error occurred. Expected that at least exception would be raised by Storage domain');
     }
 
     /**
@@ -91,10 +99,7 @@ class FetchHandler
     private function assertHasRights(VersioningContext $securityContext, BackupCollection $collection): void
     {
         if (!$securityContext->canFetchSingleVersion($collection)) {
-            throw new AuthenticationException(
-                'Current token does not allow to browse a single version in this collection',
-                AuthenticationException::CODES['not_authenticated']
-            );
+            throw AuthenticationException::fromBackupDownloadDisallowed();
         }
     }
 }

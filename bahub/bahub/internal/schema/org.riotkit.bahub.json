@@ -1,0 +1,156 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "required": ["accesses", "encryption", "transports", "backups"],
+    "properties": {
+        "accesses": {
+            "type": "object",
+            "items": {
+                "$ref": "#/Objects/Access"
+            }
+        },
+
+        "encryption": {
+            "type": "object",
+            "items": {
+                "$ref": "#/Objects/Encryption"
+            }
+        },
+
+        "transports": {
+            "type": "object",
+            "items": {
+                "$ref": "#/Objects/Transport"
+            }
+        },
+
+        "notifiers": {
+            "type": "object",
+            "items": {
+                "$ref": "#/Objects/Notifier"
+            }
+        },
+
+        "backups": {
+            "type": "object",
+            "items": {
+                "$ref": "#/Objects/Backup"
+            }
+        }
+    },
+
+    "Objects": {
+        "Access": {
+            "type": "object",
+            "required": ["url", "token"],
+            "properties": {
+                "url": {
+                    "type": "string"
+                },
+                "token": {
+                    "type": "token"
+                }
+            }
+        },
+
+        "Encryption": {
+            "type": "object",
+            "required": ["passphrase", "method", "passphrase", "email", "username"],
+            "properties": {
+                "passphrase": {
+                    "type": "string"
+                },
+                "method": {
+                    "type": "string",
+                    "default": "aes256",
+                    "examples": [
+                        "aes256"
+                    ]
+                },
+                "gnupg_home": {
+                    "type": "string",
+                    "default": "~/.bahub-gnupg"
+                },
+                "key_length": {
+                    "type": "integer",
+                    "default": 2048
+                },
+                "key_type": {
+                    "type": "string",
+                    "default": "RSA"
+                },
+                "username": {
+                    "type": "string",
+                    "examples": [
+                        "Mikhail Bakunin",
+                        "Peter Kropotkin"
+                    ]
+                },
+                "email": {
+                    "type": "string",
+                    "examples": [
+                        "example@riseup.net"
+                    ]
+                }
+            }
+        },
+
+        "Transport": {
+            "type": "object",
+            "required": ["type", "spec"],
+            "properties": {
+                "type": {
+                    "type": "string"
+                },
+                "spec": {
+                    "type": "object"
+                }
+            }
+        },
+
+        "Notifier": {
+            "type": "object",
+            "required": ["type", "url"],
+            "properties": {
+                "type": {
+                    "type": "string"
+                },
+                "url": {
+                    "type": "string"
+                }
+            }
+        },
+
+        "Backup": {
+            "type": "object",
+            "required": ["meta", "spec"],
+            "properties": {
+                "meta": {
+                    "type": "object",
+                    "required": ["type", "access", "encryption", "collection_id", "transport"],
+                    "properties": {
+                        "type": {
+                            "type": "string"
+                        },
+                        "access": {
+                            "type": "string"
+                        },
+                        "encryption": {
+                            "type": "string"
+                        },
+                        "collection_id": {
+                            "type": "string"
+                        },
+                        "transport": {
+                            "type": "string"
+                        }
+                    }
+                },
+
+                "spec": {
+                    "type": "object"
+                }
+            }
+        }
+    }
+}

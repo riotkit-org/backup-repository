@@ -1,0 +1,113 @@
+version: org.riotkit.rkd/yaml/v1
+imports:
+    - rkt_utils.docker
+
+env_file:
+    - ../.env
+
+tasks:
+    :docker:up:
+        become: root
+        description: Runs a dockerized environment
+        steps: |
+            docker rm -f s3pb_db_1 || true
+            docker-compose -p s3pb -f .infrastructure/docker/docker-compose.yml up -d --force-recreate
+
+    :ci:environment:
+        description: Setup environment for continuous integration
+        steps:
+            - cp -pr .infrastructure/ci-files/* ./
+            - cp -pr .infrastructure/ci-files/.env ./
+            - "%RKD% :dev"
+
+    :dev:
+        description: Prepare development environment
+        steps: |
+            %RKD% :docker:up
+            sleep 10
+            composer install
+            ./bin/console doctrine:migrations:migrate -n
+            symfony serve -d
+
+    :create:admin-account:
+        description: "Create a test admin user account, e-mail: example@riseup.net, password: example_1234"
+        steps: ./bin/console auth:create-admin-account --email=example@riseup.net --password=example_1234
+
+    :create:keys:
+        description: Create JWT encryption keys
+        steps:
+            - mkdir -p config/jwt
+            - openssl genpkey -out config/jwt/private.pem -aes256 -pass pass:$JWT_PASSPHRASE -algorithm rsa -pkeyopt rsa_keygen_bits:4096
+            - openssl pkey -in config/jwt/private.pem -out config/jwt/public.pem -pubout -passin pass:$JWT_PASSPHRASE
+
+    :test:api:
+        description: Run API tests
+        arguments:
+            "--filter":
+                help: "Execute only selected test case. Examples: Features/Security/FeatureOnlyOneFileAllowedToUploadCest, BackupCollectionListingCest, RegistryListingCest:testListingAllFiles"
+
+        steps:
+            - mkdir -p var/tests
+            - rm ./tests/Functional/_output/*.html 2>/dev/null || true
+            - |
+                set +e
+                SYMFONY_DEPRECATIONS_HELPER=weak ./vendor/bin/codecept run --html=../../../var/tests/api.html --xml=../../../var/tests/api.junit.xml functional ${ARG_FILTER};
+                exit_code=$?
+
+                cp -pr ./tests/Functional/_output/* var/tests/ 2>/dev/null
+                exit $exit_code
+
+    :test:unit:
+        description: Run unit tests
+        steps: |
+            mkdir -p var/tests
+            SYMFONY_DEPRECATIONS_HELPER=weak ./vendor/bin/phpunit --coverage-html=var/tests/coverage
+
+    :test:unit:html:
+        description: Create report in HTML format
+        steps: vjunit -f var/tests/unit.junit.xml -o var/tests/unit.junit.html
+
+    :release:dist-zip:
+        description: Creates a distribution package
+        steps:
+            - composer install
+            - rm -f ./var/dist.tar.gz
+            - |
+                tar -zcvf ./var/dist.tar.gz  \
+                    --exclude=.env \
+                    --exclude=.venv \
+                    --exclude=config/jwt \
+                    --exclude=var \
+                    --exclude=.phpunit.result.cache \
+                    --exclude=phpunit* \
+                    --exclude=codeception* \
+                    --exclude=tests \
+                    --exclude=.infrastructure \
+                    --exclude=.rkd \
+                    *
+
+    :release:swagger-docs:
+        description: Create API documentation in SWAGGER json format
+        steps:
+            - ./bin/console docs:swagger:json > swagger.json
+
+    :release:docs:
+        description: Build release manual documentation
+        steps:
+            - cd ../docs && sphinx-build -M html "source" "build"
+
+    :release:docker-image:
+        description: Build and release a docker image
+        arguments:
+            "ref":
+                help: "Tag name"
+        steps:
+            - cd .. && docker build . -f server/.infrastructure/Dockerfile -t quay.io/riotkit/backup-repository:latest
+            - docker tag quay.io/riotkit/backup-repository:latest quay.io/riotkit/backup-repository:${ARG_REF}
+            - |
+              if [[ $ARG_REF =~ ^v[0-9\.]$ ]]; then
+                  %RKD% @ --image quay.io/riotkit/backup-repository:${ARG_REF} --propagate :docker:tag :docker:push
+                  docker tag quay.io/riotkit/backup-repository:${ARG_REF} quay.io/riotkit/backup-repository:latest-release
+                  docker push quay.io/riotkit/backup-repository:latest-release
+              fi
+              docker push quay.io/riotkit/backup-repository:latest

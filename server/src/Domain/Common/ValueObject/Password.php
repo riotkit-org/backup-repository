@@ -2,6 +2,9 @@
 
 namespace App\Domain\Common\ValueObject;
 
+/**
+ * @todo: Check if this ValueObject is still needed. As the password field in stored files were deleted probably? Where it is used?
+ */
 class Password
 {
     /**

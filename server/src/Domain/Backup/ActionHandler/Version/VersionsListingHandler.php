@@ -26,14 +26,14 @@ class VersionsListingHandler
      * @param VersionsListingForm $form
      * @param VersioningContext $securityContext
      *
-     * @return VersionListingResponse
+     * @return null|VersionListingResponse
      *
      * @throws AuthenticationException
      */
-    public function handle(VersionsListingForm $form, VersioningContext $securityContext): VersionListingResponse
+    public function handle(VersionsListingForm $form, VersioningContext $securityContext): ?VersionListingResponse
     {
         if (!$form->collection) {
-            return VersionListingResponse::createWithNotFoundError();
+            return null;
         }
 
         $this->assertHasRights($securityContext, $form->collection);
@@ -53,10 +53,7 @@ class VersionsListingHandler
     private function assertHasRights(VersioningContext $securityContext, BackupCollection $collection): void
     {
         if (!$securityContext->canListCollectionVersions($collection)) {
-            throw new AuthenticationException(
-                'Current token does not allow to list versions in this collection',
-                AuthenticationException::CODES['not_authenticated']
-            );
+            throw AuthenticationException::fromListingBackupsDenied();
         }
     }
 }

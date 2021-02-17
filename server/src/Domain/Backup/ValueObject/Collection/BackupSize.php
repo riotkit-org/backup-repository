@@ -7,8 +7,4 @@ use App\Domain\Common\ValueObject\DiskSpace;
 
 class BackupSize extends DiskSpace
 {
-    protected static function getExceptionType(): string
-    {
-        return ValueObjectException::class;
-    }
 }

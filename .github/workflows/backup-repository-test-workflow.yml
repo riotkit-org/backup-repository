@@ -1,0 +1,80 @@
+name: "Backup Repository Server testing workflow"
+on:
+    push:
+    pull_request:
+        branches:
+            - master
+            - primary
+
+jobs:
+    "test_each_new_commit":
+        runs-on: ubuntu-20.04
+        steps:
+            - name: "Checkout"
+              uses: actions/checkout@v1
+
+            # —— Dependencies —————————————————————————————————————————————————————————
+            - name: "Install build dependencies"
+              run: "sudo pip install -r ./requirements.txt"
+              working-directory: "server"
+
+            - name: Setup PHP, extensions and composer
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: "7.4"
+                  extensions: mbstring, ctype, iconv, intl, fileinfo, openssl, filter, iconv, json, mbstring, pdo, pdo_pgsql
+                  tools: symfony, composer
+              env:
+                  update: true
+
+            # —— Cache —————————————————————————————————————————————————————————
+            - name: Validate composer.json and composer.lock
+              run: composer validate
+              working-directory: "server"
+
+            - name: Get composer cache directory
+              id: composer-cache
+              run: echo "::set-output name=dir::$(composer config cache-files-dir)"
+              working-directory: "server"
+
+            # —— Development environment ———————————————————————————————————————
+            - name: "Prepare development/testing environment"
+              run: "rkd :ci:environment"
+              working-directory: "server"
+
+            # —— Cache —————————————————————————————————————————————————————————
+            - name: Cache composer dependencies
+              uses: actions/cache@v1
+              with:
+                  path: ${{ steps.composer-cache.outputs.dir }}
+                  key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
+                  restore-keys: ${{ runner.os }}-composer-
+
+            # —— Tests —————————————————————————————————————————————————————————
+            - name: "Run API tests"
+              run: "rkd :test:api"
+              working-directory: "server"
+
+            - name: "Run Unit tests"
+              run: "rkd :test:unit"
+              working-directory: "server"
+
+            # —— Reports ———————————————————————————————————————————————————————
+            - name: "Make HTML report from unit tests"
+              run: "rkd :test:unit:html"
+              if: ${{ always() }}
+              working-directory: "server"
+
+            - name: "Archive results"
+              uses: actions/upload-artifact@v2
+              if: ${{ always() }}
+              with:
+                  name: tests-results
+                  path: server/var/tests
+
+            - name: "Archive logs"
+              uses: actions/upload-artifact@v2
+              if: ${{ always() }}
+              with:
+                  name: logs
+                  path: server/var/log

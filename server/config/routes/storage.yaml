@@ -1,42 +1,17 @@
+#
+# Read-only endpoints for the administrator to browse and download single files
+#
+
 storage.list_files:
-    path: /repository
+    path: /api/stable/repository
     controller: 'App\Controller\Storage\FilesListingController::handleListing'
     methods: ['GET']
     defaults:
         _secured: true
 
-
-storage.upload_by_url:
-    path: /repository/{type}/add-by-url
-    controller: 'App\Controller\Storage\UploadByUrlController::handle'
-    methods: ['POST']
+storage.get_file:
+    path: /api/stable/repository/file/{filename}
+    controller: '\App\Controller\Storage\ViewFileController::handle'
+    methods: ['GET']
     defaults:
         _secured: true
-
-        type: image
-
-storage.upload_by_post:
-    path: /repository/{type}/upload
-    controller: 'App\Controller\Storage\UploadByPostController::handle'
-    methods: ['POST']
-    defaults:
-        _secured: true
-
-        type: image
-
-# REST
-storage.rest_delete:
-    path: /repository/file/{filename}
-    controller: 'App\Controller\Storage\DeleteFileController::handle'
-    methods: ['DELETE']
-    defaults:
-        _secured: true
-
-
-storage.rest_upload_by_post:
-    path: /repository/file/{filename}
-    controller: 'App\Controller\Storage\UploadByPostController::handle'
-    methods: ['POST']
-    defaults:
-        _secured: true
-

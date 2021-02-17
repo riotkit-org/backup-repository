@@ -9,30 +9,15 @@ class ManagementSecurityContext
     /**
      * @var bool
      */
-    private $deleteAllFiles;
+    private $canDeleteFiles;
 
-    /**
-     * @var string
-     */
-    private $requestPassword;
-
-    public function __construct(bool $deleteAllFiles, string $requestPassword)
+    public function __construct(bool $canDeleteFiles)
     {
-        $this->deleteAllFiles  = $deleteAllFiles;
-        $this->requestPassword = $requestPassword;
+        $this->canDeleteFiles  = $canDeleteFiles;
     }
 
     public function canDeleteElement(StoredFile $file): bool
     {
-        if ($this->deleteAllFiles) {
-            return true;
-        }
-
-        // if password was not protected, then we cannot simply delete it as any guest can do same
-        if (!$file->isPasswordProtected()) {
-            return false;
-        }
-
-        return $file->checkPasswordMatchesWith($this->requestPassword);
+        return $this->canDeleteFiles;
     }
 }

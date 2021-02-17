@@ -2,7 +2,7 @@
 
 namespace Tests\Domain\Common\ValueObject;
 
-use App\Domain\Common\Exception\ValueObjectException;
+use App\Domain\Common\Exception\CommonValueException;
 use App\Domain\Common\ValueObject\Filename;
 use PHPUnit\Framework\TestCase;
 
@@ -39,7 +39,7 @@ class FilenameTest extends TestCase
      */
     public function testValidation_fails(string $name): void
     {
-        $this->expectException(ValueObjectException::class);
+        $this->expectException(CommonValueException::class);
 
         new Filename($name);
     }

@@ -4,9 +4,9 @@ namespace App\Domain\Backup\ActionHandler\Security;
 
 use App\Domain\Backup\Entity\BackupCollection;
 use App\Domain\Backup\Exception\AuthenticationException;
-use App\Domain\Backup\Form\TokenDeleteForm;
+use App\Domain\Backup\Form\UserAccessRevokeForm;
 use App\Domain\Backup\Manager\CollectionManager;
-use App\Domain\Backup\Response\Security\TokenManagementResponse;
+use App\Domain\Backup\Response\Security\CollectionAccessRightsResponse;
 use App\Domain\Backup\Security\CollectionManagementContext;
 
 class DisallowTokenHandler
@@ -19,24 +19,24 @@ class DisallowTokenHandler
     }
 
     /**
-     * @param TokenDeleteForm             $form
+     * @param UserAccessRevokeForm             $form
      * @param CollectionManagementContext $securityContext
      *
-     * @throws AuthenticationException
+     * @return ?CollectionAccessRightsResponse
      *
-     * @return TokenManagementResponse
+     * @throws AuthenticationException
      */
-    public function handle(TokenDeleteForm $form, CollectionManagementContext $securityContext): TokenManagementResponse
+    public function handle(UserAccessRevokeForm $form, CollectionManagementContext $securityContext): ?CollectionAccessRightsResponse
     {
-        if (!$form->collection || !$form->token) {
-            return TokenManagementResponse::createWithNotFoundError();
+        if (!$form->collection || !$form->user) {
+            return null;
         }
 
         $this->assertHasRights($securityContext, $form->collection);
 
-        $collection = $this->manager->revokeToken($form->token, $form->collection);
+        $collection = $this->manager->revokeToken($form->user, $form->collection);
 
-        return TokenManagementResponse::createFromResults($form->token, $collection);
+        return CollectionAccessRightsResponse::createFromResults($form->user, $collection);
     }
 
     public function flush(): void
@@ -53,10 +53,7 @@ class DisallowTokenHandler
     private function assertHasRights(CollectionManagementContext $securityContext, BackupCollection $collection): void
     {
         if (!$securityContext->canRevokeAccessToCollection($collection)) {
-            throw new AuthenticationException(
-                'Current token does not allow to revoke tokens at this collection',
-                AuthenticationException::CODES['not_authenticated']
-            );
+            throw AuthenticationException::fromCollectionAccessManagementDenied();
         }
     }
 }

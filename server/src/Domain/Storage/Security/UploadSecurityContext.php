@@ -2,56 +2,39 @@
 
 namespace App\Domain\Storage\Security;
 
-use App\Domain\Authentication\Entity\Token;
-use App\Domain\Storage\Entity\StoredFile;
+use App\Domain\Authentication\Entity\User;
 use App\Domain\Storage\Form\UploadForm;
 use App\Domain\Storage\ValueObject\Filesize;
-use App\Domain\Storage\ValueObject\Mime;
 
 class UploadSecurityContext
 {
-    private array  $allowedMimes;
     private bool   $isAllowedToUpload;
     private array  $allowedTags;
     private bool   $allowedToOverwrite;
     private int    $maxAllowedFileSize;
     private bool   $enforceTokenTags;
-    private bool   $enforceNoPassword;
     private bool   $isAdministrator;
     private bool   $canUploadOnlyOnce;
-    private Token  $uploaderToken;
+    private User  $uploaderToken;
 
     public function __construct(
-        array $allowedMimes,
         array $allowedTags,
         bool $isAllowedToUploadAnything,
         bool $allowedToOverwrite,
         int $maxAllowedFileSize,
         bool $enforceTokenTags,
-        bool $enforceNoPassword,
         bool $isAdministrator,
         bool $canUploadOnlyOnce,
-        Token $uploaderToken
+        User $uploaderToken
     ) {
-        $this->allowedMimes = $allowedMimes;
         $this->allowedTags = $allowedTags;
         $this->isAllowedToUpload = $isAllowedToUploadAnything;
         $this->allowedToOverwrite = $allowedToOverwrite;
         $this->maxAllowedFileSize = $maxAllowedFileSize;
         $this->enforceTokenTags   = $enforceTokenTags;
-        $this->enforceNoPassword  = $enforceNoPassword;
         $this->isAdministrator    = $isAdministrator;
         $this->canUploadOnlyOnce  = $canUploadOnlyOnce;
         $this->uploaderToken      = $uploaderToken;
-    }
-
-    public function isMimeAllowed(Mime $mime): bool
-    {
-        if ($this->isAdministrator) {
-            return true;
-        }
-
-        return !$this->allowedMimes || \in_array($mime->getValue(), $this->allowedMimes, true);
     }
 
     public function isTagAllowed(string $tag): bool
@@ -61,10 +44,6 @@ class UploadSecurityContext
 
     public function isActionAllowed(UploadForm $form): SecurityCheckResult
     {
-        if ($form->password && !$this->canSetPassword()) {
-            return new SecurityCheckResult(false, SecurityCheckResult::INVALID_PASSWORD);
-        }
-
         foreach ($form->tags as $tag) {
             if (!$this->isTagAllowed($tag)) {
                 return new SecurityCheckResult(false, SecurityCheckResult::TAG_NOT_ALLOWED);
@@ -87,27 +66,6 @@ class UploadSecurityContext
         return $fSize->getValue() < $this->getMaximumFileSize();
     }
 
-    public function canOverwriteFile(StoredFile $file, UploadForm $form): bool
-    {
-        // the user does not want to override the file
-        if (!$form->fileOverwrite) {
-            return false;
-        }
-
-        // token does not allow to overwrite
-        if (!$this->allowedToOverwrite) {
-            return false;
-        }
-
-        // do not allow a regular user to overwrite each anonymously uploaded file that does not have a password
-        if (!$this->isAdministrator && $file->checkPasswordMatchesWith('')) {
-            return false;
-        }
-
-        // password from form must match the old file password to confirm that the authorized person can replace the file
-        return $file->checkPasswordMatchesWith($form->password);
-    }
-
     public function getTagsThatShouldBeEnforced(): array
     {
         if (!$this->enforceTokenTags) {
@@ -117,23 +75,17 @@ class UploadSecurityContext
         return $this->allowedTags;
     }
 
-    public function canSetPassword(): bool
-    {
-        return !$this->enforceNoPassword;
-    }
-
     public function getMaximumFileSize(): int
     {
         return $this->maxAllowedFileSize;
     }
 
-    // @todo: Check usage of this, cover with tests
     public function isRestrictedToUploadOnlyOnce(): bool
     {
         return $this->canUploadOnlyOnce;
     }
 
-    public function getUploaderToken(): Token
+    public function getUploaderToken(): User
     {
         return $this->uploaderToken;
     }

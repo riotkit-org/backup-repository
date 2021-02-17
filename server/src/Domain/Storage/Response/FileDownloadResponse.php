@@ -2,20 +2,11 @@
 
 namespace App\Domain\Storage\Response;
 
+use App\Domain\Common\Response\NormalResponse;
 use Psr\Http\Message\StreamInterface;
 
-class FileDownloadResponse implements \JsonSerializable
+class FileDownloadResponse extends NormalResponse
 {
-    /**
-     * @var string
-     */
-    private $status;
-
-    /**
-     * @var int
-     */
-    private $code;
-
     /**
      * @var null|StreamInterface
      */
@@ -24,7 +15,7 @@ class FileDownloadResponse implements \JsonSerializable
     /**
      * @var callable|null
      */
-    private $headersFlushCallback;
+    private $headers;
 
     /**
      * @var callable|null
@@ -32,19 +23,21 @@ class FileDownloadResponse implements \JsonSerializable
     private $contentFlushCallback;
 
     /**
-     * @param string $status
-     * @param int $code
-     * @param callable|null $headersFlushCallback  Flushes headers (allows to decide if we flush them or not)
-     * @param callable|null $contentFlushCallback  Function that copies our content to output stream
+     * @param bool                 $status
+     * @param string               $message
+     * @param int                  $code
+     * @param array|null           $headers  Flushes headers (allows to decide if we flush them or not)
+     * @param callable|null        $contentFlushCallback  Function that copies our content to output stream
      * @param StreamInterface|null $stream         Raw stream for post-processing eg. encryption
      */
-    public function __construct(string $status, int $code, callable $headersFlushCallback = null,
+    public function __construct(bool $status, string $message, int $code, array $headers = null,
                                 callable $contentFlushCallback = null, StreamInterface $stream = null)
     {
-        $this->status = $status;
-        $this->code   = $code;
-        $this->stream = $stream;
-        $this->headersFlushCallback = $headersFlushCallback;
+        $this->status               = $status;
+        $this->message              = $message;
+        $this->httpCode             = $code;
+        $this->stream               = $stream;
+        $this->headers              = $headers;
         $this->contentFlushCallback = $contentFlushCallback;
     }
 
@@ -58,40 +51,38 @@ class FileDownloadResponse implements \JsonSerializable
      */
     public function getCode(): int
     {
-        return $this->code;
+        return $this->httpCode;
     }
 
     public function isFlushingFile(): bool
     {
-        return $this->contentFlushCallback && $this->stream && $this->headersFlushCallback;
+        return $this->contentFlushCallback && $this->stream && $this->headers;
     }
 
     /**
      * @return string
      */
-    public function getStatus(): string
+    public function getMessage(): string
     {
-        return $this->status;
+        return $this->message;
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return [
-            'status' => $this->status,
-            'code'   => $this->code
+            'status'  => $this->status,
+            'message' => $this->message
         ];
     }
 
     /**
-     * Flush-out the headers
+     * Dictionary of headers
      *
-     * Usage: $callback();
-     *
-     * @return callable|null
+     * @return array|null
      */
-    public function getHeadersFlushCallback(): ?callable
+    public function getHeaders(): ?array
     {
-        return $this->headersFlushCallback;
+        return $this->headers;
     }
 
     /**

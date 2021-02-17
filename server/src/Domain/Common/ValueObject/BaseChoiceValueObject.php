@@ -2,18 +2,16 @@
 
 namespace App\Domain\Common\ValueObject;
 
+use App\Domain\Common\Exception\CommonValueException;
+
 abstract class BaseChoiceValueObject extends BaseValueObject
 {
-    /**
-     * @var string
-     */
-    private $value;
+    private string $value;
 
     public function __construct(string $value)
     {
         if (!\in_array($value, $this->getChoices())) {
-            $excType = self::getExceptionType();
-            throw new $excType($value . ' is not a valid choice');
+            throw CommonValueException::fromInvalidChoice($value, $this->getChoices());
         }
 
         $this->value = $value;

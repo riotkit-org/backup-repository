@@ -2,7 +2,7 @@
 
 namespace Tests\Domain\Common\ValueObject\Numeric;
 
-use App\Domain\Common\Exception\ValueObjectException;
+use App\Domain\Common\Exception\CommonValueException;
 use App\Domain\Common\ValueObject\Numeric\PositiveNumberOrZero;
 use PHPUnit\Framework\TestCase;
 
@@ -49,7 +49,7 @@ class PositiveNumberOrZeroTest extends TestCase
         try {
             new PositiveNumberOrZero($number);
 
-        } catch (ValueObjectException $exception) {
+        } catch (CommonValueException $exception) {
             $hasException = true;
         }
 

@@ -5,6 +5,6 @@ namespace App\Domain\Common\Exception;
 /**
  * @codeCoverageIgnore
  */
-class DatabaseException extends \Exception
+class DatabaseException extends ApplicationException
 {
 }

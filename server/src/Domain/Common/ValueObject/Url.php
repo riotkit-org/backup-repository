@@ -2,6 +2,7 @@
 
 namespace App\Domain\Common\ValueObject;
 
+use App\Domain\Common\Exception\CommonValueException;
 use URL\Normalizer;
 
 class Url extends BaseValueObject implements \JsonSerializable
@@ -11,6 +12,12 @@ class Url extends BaseValueObject implements \JsonSerializable
      */
     private $value;
 
+    /**
+     * @param string $value
+     * @param BaseUrl|null $baseUrl
+     *
+     * @throws CommonValueException
+     */
     public function __construct(string $value, BaseUrl $baseUrl = null)
     {
         $this->value = $value;
@@ -23,8 +30,7 @@ class Url extends BaseValueObject implements \JsonSerializable
         $normalized = $this->normalize($this->value, false);
 
         if ($this->value && !filter_var($normalized, FILTER_VALIDATE_URL)) {
-            $exceptionType = static::getExceptionType();
-            throw new $exceptionType('Invalid URL address: ' . $normalized);
+            throw CommonValueException::fromInvalidUrl($normalized);
         }
     }
 
@@ -55,11 +61,6 @@ class Url extends BaseValueObject implements \JsonSerializable
         return $this->getValue();
     }
 
-    public function getReproducibleHash(): string
-    {
-        return hash('sha256', $this->value);
-    }
-
     public function withVar(string $name, string $value): Url
     {
         $new = clone $this;
@@ -67,35 +68,6 @@ class Url extends BaseValueObject implements \JsonSerializable
         $new->value = \preg_replace('/{{\s*' . \preg_quote($name, '/') . '\s*}}/', $value, $new->value);
 
         return $new;
-    }
-
-    /**
-     * @param string $key
-     * @param string $value
-     *
-     * @return static
-     */
-    public function withQueryParam(string $key, string $value)
-    {
-        $parsed = parse_url($this->value);
-        $urlWithoutQS = ($parsed['scheme'] ?? 'http') . '://' . ($parsed['host'] ?? '')
-            . (isset($parsed['port']) ? ':' . $parsed['port'] : '')
-            . ($parsed['path'] ?? '/');
-
-        $params = [];
-        parse_str($parsed['query'] ?? '', $params);
-        $params[$key] = $value;
-
-
-        $new = clone $this;
-        $new->value = $urlWithoutQS . '?' . http_build_query($params);
-
-        return $new;
-    }
-
-    public function isLocalFileUrl(): bool
-    {
-        return strtolower(parse_url($this->getValue(), PHP_URL_SCHEME)) === 'file';
     }
 
     private function normalize(string $value, bool $correctTemplateVariables)

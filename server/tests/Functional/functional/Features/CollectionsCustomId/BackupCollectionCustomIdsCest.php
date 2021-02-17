@@ -5,6 +5,9 @@ namespace Tests\Functional\Features\CollectionsCustomId;
 use FunctionalTester;
 use Ramsey\Uuid\Uuid;
 
+/**
+ * @group Domain/Backup
+ */
 class BackupCollectionCustomIdsCest
 {
     private function createValidCollection(FunctionalTester $I, string $generatedUuidForTest): string
@@ -43,20 +46,23 @@ class BackupCollectionCustomIdsCest
             'id'                => 'this-is-not-a-valid-uuid'
         ]);
 
-        $I->canSeeResponseContains('custom_id_is_not_uuid_format');
         $I->canSeeResponseCodeIs(400);
+        $I->canSeeResponseContainsJson([
+            "error" => "Collection ID is not a valid uuidv4 formatted string",
+            "code" => 40101,
+            "type" => "validation.error"
+        ]);
     }
 
     public function testCantAssignCustomIdWhenPermissionNotGrantedOnToken(FunctionalTester $I): void
     {
         $I->amAdmin();
-        $I->amToken(
-            $I->createToken([
-                'roles' => [
-                    'collections.create_new'
-                ]
-            ])
-        );
+        $user = $I->createStandardUser([
+            'roles' => [
+                'collections.create_new'
+            ]
+        ]);
+        $I->amUser($user->email, $user->password);
         $I->createCollection([
             'maxBackupsCount'   => 2,
             'maxOneVersionSize' => '50MB',
@@ -74,13 +80,12 @@ class BackupCollectionCustomIdsCest
         $expectedId = Uuid::uuid4()->toString();
 
         $I->amAdmin();
-        $I->amToken(
-            $I->createToken([
-                'roles' => [
-                    'collections.create_new', 'collections.create_new.with_custom_id'
-                ]
-            ])
-        );
+        $user = $I->createStandardUser([
+            'roles' => [
+                'collections.create_new', 'collections.create_new.with_custom_id'
+            ]
+        ]);
+        $I->amUser($user->email, $user->password);
         $I->createCollection([
             'maxBackupsCount'   => 2,
             'maxOneVersionSize' => '50MB',
@@ -105,6 +110,10 @@ class BackupCollectionCustomIdsCest
         $this->createValidCollection($I, $generatedUuidForTest);
 
         $I->canSeeResponseCodeIs(400);
-        $I->canSeeResponseContains('id_not_unique');
+        $I->canSeeResponseContainsJson([
+            "error" => "Collection ID is reserved already by other Collection",
+            "code" => 40100,
+            "type" => "validation.error"
+        ]);
     }
 }

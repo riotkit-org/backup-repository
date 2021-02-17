@@ -4,25 +4,28 @@ namespace Tests\Functional;
 
 use FunctionalTester;
 
+/**
+ * @group Domain/Backup
+ */
 class BackupCollectionUploadRotationStrategyCest
 {
     private string $id    = '';
-    private string $token = '';
+    private \User $user;
 
     public function prepareDataForTest(FunctionalTester $I): void
     {
         $I->amAdmin();
-        $this->token = $I->createToken([
+        $this->user = $I->createStandardUser([
             'roles' => [
                 "collections.create_new",
-                "collections.manage_tokens_in_allowed_collections",
+                "collections.manage_users_in_allowed_collections",
                 "collections.upload_to_allowed_collections",
                 "collections.list_versions_for_allowed_collections",
-                "upload.backup"
+                "upload.all"
             ]
         ]);
 
-        $I->amToken($this->token);
+        $I->amUser($this->user->email, $this->user->password);
 
         $this->id = $I->createCollection([
             "maxBackupsCount" => 2,
@@ -37,7 +40,7 @@ class BackupCollectionUploadRotationStrategyCest
 
     public function testFirstVersionWasUploaded(FunctionalTester $I): void
     {
-        $I->amToken($this->token);
+        $I->amUser($this->user->email, $this->user->password);
         $I->uploadToCollection($this->id,
             "ZSP-IWA calls for a week of protest action against the repression of workers from the Post Office in Poland");
 
@@ -46,26 +49,31 @@ class BackupCollectionUploadRotationStrategyCest
 
     public function testUploadingFirstVersionCannotBePossible(FunctionalTester $I): void
     {
-        $I->amToken($this->token);
+        $I->amUser($this->user->email, $this->user->password);
         $I->uploadToCollection($this->id,
             "ZSP-IWA calls for a week of protest action against the repression of workers from the Post Office in Poland");
 
-        $I->canSeeResponseContains('backup_version_uploaded_twice');
+        $I->canSeeResponseContainsJson([
+            "error" => "Content duplication: Uploaded backup file is of same content as one of previous backups",
+            "code"  => 41011,
+            "type"  => "validation.error"
+        ]);
     }
 
     public function testUploadingSecondVersionShouldStoreTheUploadedVersion(FunctionalTester $I): void
     {
-        $I->amToken($this->token);
+        $I->amUser($this->user->email, $this->user->password);
         $I->uploadToCollection($this->id,
             "ZSP-lWA calls for a week of protest action against the repression of workers from the Post Office in Poland
                      ===========================================================================================================
         ");
+
         $I->canSeeResponseContains('solidarity-with-postal-workers-article-v2"');
     }
 
     public function testByUploadingThirdVersionTheFirstIsDeletedByRotation(FunctionalTester $I): void
     {
-        $I->amToken($this->token);
+        $I->amUser($this->user->email, $this->user->password);
 
         // step 4:
         $I->uploadToCollection($this->id,

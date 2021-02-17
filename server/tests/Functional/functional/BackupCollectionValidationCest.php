@@ -4,6 +4,9 @@ namespace Tests\Functional;
 
 use FunctionalTester;
 
+/**
+ * @group Domain/Backup
+ */
 class BackupCollectionValidationCest
 {
     public function testWillValidateFormatOfSubmittedFields(FunctionalTester $I): void
@@ -17,9 +20,23 @@ class BackupCollectionValidationCest
             'filename'          => 'valid-filname.txt'
         ]);
 
-        $I->canSeeResponseContains('"maxBackupsCount": "number_cannot_be_negative_value"');
-        $I->canSeeResponseContains('"maxOneVersionSize": "cannot_parse_disk_space_check_format"');
-        $I->canSeeResponseContains('"unknown_strategy_allowed___delete_oldest_when_adding_new___or__alert_when_backup_limit_reached"');
+        $I->canSeeResponseContainsJson([
+            "fields" => [
+                "maxBackupsCount" => [
+                    "message" => "Number cannot be negative, got -5",
+                    "code" => 42016
+                ],
+                "maxOneVersionSize" => [
+                    "message" => "Disk space format parsing error",
+                    "code" => 42010
+                ],
+                "strategy" => [
+                    "message" => "Invalid collection strategy picked \"invalid_strategy\". Choices: delete_oldest_when_adding_new, alert_when_too_many_versions",
+                    "code" => 42021
+                ]
+            ],
+            "type" => "validation.error"
+        ]);
         $I->canSeeResponseCodeIs(400);
     }
 
@@ -30,12 +47,17 @@ class BackupCollectionValidationCest
             'maxBackupsCount'   => 4,
             'maxOneVersionSize' => "11MB",
             'maxCollectionSize' => '10MB',
-            'strategy'          => 'alert_when_backup_limit_reached',
+            'strategy'          => 'alert_when_too_many_versions',
             'description'       => 'https://zsp.net.pl | https://iwa-ait.org',
             'filename'          => 'zsp-net-pl.sql.gz'
         ]);
 
-        $I->canSeeResponseContains('max_collection_size_is_lower_than_single_element_size');
+        $I->canSeeResponseContainsJson([
+            "error" => "Collection size cannot be smaller than single version size",
+            "code"  => 40105,
+            "type"  => "validation.error"
+        ]);
+
         $I->canSeeResponseCodeIs(400);
     }
 
@@ -46,13 +68,17 @@ class BackupCollectionValidationCest
             'maxBackupsCount'   => 2,
             'maxOneVersionSize' => "50GB",
             'maxCollectionSize' => '150GB',
-            'strategy'          => 'alert_when_backup_limit_reached',
+            'strategy'          => 'alert_when_too_many_versions',
             'description'       => 'https://zsp.net.pl | https://iwa-ait.org',
             'filename'          => 'zsp-net-pl.sql.gz'
         ]);
 
-        $I->canSeeResponseContains('max_one_version_size_too_big');
-        $I->canSeeResponseContains('"max": "4.00GB"');
+        $I->canSeeResponseContainsJson([
+            "error" => "Maximum file size of 4.00GB reached",
+            "code"  => 40103,
+            "type"  => "validation.error"
+        ]);
+
         $I->canSeeResponseCodeIs(400);
     }
 
@@ -63,13 +89,17 @@ class BackupCollectionValidationCest
             'maxBackupsCount'   => 2,
             'maxOneVersionSize' => "5MB",
             'maxCollectionSize' => '150TB',
-            'strategy'          => 'alert_when_backup_limit_reached',
+            'strategy'          => 'alert_when_too_many_versions',
             'description'       => 'https://zsp.net.pl | https://iwa-ait.org',
             'filename'          => 'zsp-net-pl.sql.gz'
         ]);
 
-        $I->canSeeResponseContains('max_collection_size_too_big');
-        $I->canSeeResponseContains('"max": "15.00GB"');
+        $I->canSeeResponseContainsJson([
+            "error" => "Maximum collection size cannot exceed 15.00GB",
+            "code"  => 40104,
+            "type"  => "validation.error"
+        ]);
+
         $I->canSeeResponseCodeIs(400);
     }
 
@@ -80,13 +110,17 @@ class BackupCollectionValidationCest
             'maxBackupsCount'   => 99999999,
             'maxOneVersionSize' => "5MB",
             'maxCollectionSize' => '100MB',
-            'strategy'          => 'alert_when_backup_limit_reached',
+            'strategy'          => 'alert_when_too_many_versions',
             'description'       => 'https://zsp.net.pl | https://iwa-ait.org',
             'filename'          => 'zsp-net-pl.sql.gz'
         ]);
 
-        $I->canSeeResponseContains('max_backups_count_too_many');
-        $I->canSeeResponseContains('"max": 5');
+        $I->canSeeResponseContainsJson([
+            "error" => "Maximum count of 5 files reached",
+            "code"  => 40102,
+            "type"  => "validation.error"
+        ]);
+
         $I->canSeeResponseCodeIs(400);
     }
 
@@ -97,13 +131,17 @@ class BackupCollectionValidationCest
             'maxBackupsCount'   => 5,
             'maxOneVersionSize' => "5MB",
             'maxCollectionSize' => '5MB',
-            'strategy'          => 'alert_when_backup_limit_reached',
+            'strategy'          => 'alert_when_too_many_versions',
             'description'       => 'https://zsp.net.pl | https://iwa-ait.org',
             'filename'          => 'zsp-net-pl.sql.gz'
         ]);
 
-        $I->canSeeResponseContains('max_collection_size_will_have_not_enough_space_to_keep_max_number_of_items');
-        $I->canSeeResponseContains('"needsAtLeastValue": "25.00MB"');
+        $I->canSeeResponseContainsJson([
+            "error" => "Collection maximum size is too small, requires at least 25.00MB",
+            "code"  => 40106,
+            "type"  => "validation.error"
+        ]);
+
         $I->canSeeResponseCodeIs(400);
     }
 }

@@ -4,7 +4,7 @@ namespace App\Domain\Backup\ActionHandler\Version;
 
 use App\Domain\Backup\Entity\BackupCollection;
 use App\Domain\Backup\Exception\AuthenticationException;
-use App\Domain\Backup\Exception\ValidationException;
+use App\Domain\Backup\Exception\BackupLogicException;
 use App\Domain\Backup\Form\Version\VersionDeleteForm;
 use App\Domain\Backup\Manager\BackupManager;
 use App\Domain\Backup\Response\Version\BackupDeleteResponse;
@@ -12,10 +12,7 @@ use App\Domain\Backup\Security\VersioningContext;
 
 class BackupVersionDeleteHandler
 {
-    /**
-     * @var BackupManager
-     */
-    private $manager;
+    private BackupManager $manager;
 
     public function __construct(BackupManager $manager)
     {
@@ -27,15 +24,15 @@ class BackupVersionDeleteHandler
      * @param VersioningContext $context
      * @param bool $commitChanges
      *
-     * @return BackupDeleteResponse
+     * @return ?BackupDeleteResponse
      *
      * @throws AuthenticationException
-     * @throws ValidationException
+     * @throws BackupLogicException
      */
-    public function handle(VersionDeleteForm $form, VersioningContext $context, bool $commitChanges): BackupDeleteResponse
+    public function handle(VersionDeleteForm $form, VersioningContext $context, bool $commitChanges): ?BackupDeleteResponse
     {
         if (!$form->collection) {
-            return BackupDeleteResponse::createWithNotFoundError();
+            return null;
         }
 
         $this->assertHasPermissions($context, $form->collection);
@@ -58,10 +55,7 @@ class BackupVersionDeleteHandler
     private function assertHasPermissions(VersioningContext $securityContext, BackupCollection $collection): void
     {
         if (!$securityContext->canDeleteVersionsFromCollection($collection)) {
-            throw new AuthenticationException(
-                'Current token does not allow to delete versions in this collection',
-                AuthenticationException::CODES['not_authenticated']
-            );
+            throw AuthenticationException::fromBackupVersionDeletionDisallowed();
         }
     }
 }

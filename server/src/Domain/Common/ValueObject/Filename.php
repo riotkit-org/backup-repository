@@ -3,6 +3,7 @@
 namespace App\Domain\Common\ValueObject;
 
 use App\Domain\Backup\Exception\ValueObjectException;
+use App\Domain\Common\Exception\CommonStorageException;
 
 class Filename extends BaseValueObject implements \JsonSerializable
 {
@@ -15,7 +16,6 @@ class Filename extends BaseValueObject implements \JsonSerializable
 
     public function __construct(string $value, bool $stripOut = false)
     {
-        $exceptionType = static::getExceptionType();
         $this->value = $value;
 
         // allow to strip out the filename for better user experience
@@ -24,11 +24,11 @@ class Filename extends BaseValueObject implements \JsonSerializable
         }
 
         if (!$this->value) {
-            throw new $exceptionType('The filename is empty. Maybe it become after stripping out bad characters?');
+            throw CommonStorageException::fromEmptyFilenameCause();
         }
 
         if (!preg_match('/^([' . self::ALLOWED_CHARACTERS . ']+)$/', $this->value)) {
-            throw new $exceptionType('Filename is not valid, please normalize it');
+            throw CommonStorageException::fromNotValidCharactersInFilename();
         }
     }
 
@@ -59,10 +59,5 @@ class Filename extends BaseValueObject implements \JsonSerializable
         }
 
         return $self;
-    }
-
-    protected static function getExceptionType(): string
-    {
-        return ValueObjectException::class;
     }
 }

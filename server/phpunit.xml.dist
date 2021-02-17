@@ -13,15 +13,7 @@
         <env name="APP_ENV" value="test" />
         <env name="APP_DEBUG" value="1" />
         <env name="FS_ADAPTER" value="local" />
-
-        <server name="DATABASE_HOST" value="" />
-        <server name="DATABASE_PATH" value="./var/data.db" />
-        <server name="DATABASE_URL" value="sqlite3://./var/data.db" />
-        <server name="DATABASE_USER" value="" />
-        <server name="DATABASE_PORT" value="" />
-        <server name="DATABASE_NAME" value="" />
-        <server name="DATABASE_PASSWORD" value="" />
-        <server name="DATABASE_DRIVER" value="pdo_sqlite" />
+        <server name="DATABASE_URL" value="postgres://chomsky:chomsky@127.0.0.1:5432/chomsky" />
     </php>
 
     <testsuites>
@@ -32,9 +24,7 @@
 
     <filter>
         <whitelist>
-            <directory suffix=".php">./bundles/</directory>
             <directory suffix=".php">./src/</directory>
-
             <exclude>
                 <directory suffix=".php">./src/Controller</directory>
                 <directory suffix=".php">./src/Migrations</directory>
@@ -54,6 +44,7 @@
     </listeners>
 
     <logging>
-        <log type="coverage-clover" target="clover.xml"/>
+        <log type="coverage-clover" target="var/tests/unit.coverage.xml"/>
+        <log type="junit" target="var/tests/unit.junit.xml"/>
     </logging>
 </phpunit>

@@ -3,10 +3,9 @@
 namespace App\Domain\Backup\Mapper;
 
 use App\Domain\Backup\Entity\BackupCollection;
-use App\Domain\Backup\Exception\CollectionMappingError;
 use App\Domain\Backup\Exception\ValueObjectException;
 use App\Domain\Backup\Form\Collection\CreationForm;
-use App\Domain\Backup\Repository\TokenRepository;
+use App\Domain\Backup\Repository\UserRepository;
 use App\Domain\Backup\ValueObject\BackupStrategy;
 use App\Domain\Backup\ValueObject\Collection\BackupSize;
 use App\Domain\Backup\ValueObject\Collection\CollectionLength;
@@ -14,27 +13,31 @@ use App\Domain\Backup\ValueObject\Collection\CollectionSize;
 use App\Domain\Backup\ValueObject\Collection\Description;
 use App\Domain\Backup\ValueObject\Filename;
 use App\Domain\Backup\ValueObject\Password;
+use App\Domain\Common\Exception\CommonStorageException;
+use App\Domain\Common\Exception\CommonValueException;
+use App\Domain\Common\Exception\DomainAssertionFailure;
+use App\Domain\Common\Exception\DomainInputValidationConstraintViolatedError;
+use App\Domain\Errors;
 
 class CollectionMapper
 {
-    /**
-     * @var TokenRepository
-     */
-    private $tokenRepository;
+    private UserRepository $tokenRepository;
 
-    public function __construct(TokenRepository $tokenRepository)
+    public function __construct(UserRepository $tokenRepository)
     {
         $this->tokenRepository = $tokenRepository;
     }
 
     /**
+     * Maps FORM into internal DTO and ValueObjects
+     *
      * @param CreationForm     $form
      * @param BackupCollection $collection
      *
      * @return BackupCollection
      *
      * @throws \Exception
-     * @throws CollectionMappingError
+     * @throws DomainAssertionFailure
      */
     public function mapFormIntoCollection(CreationForm $form, BackupCollection $collection): BackupCollection
     {
@@ -45,37 +48,40 @@ class CollectionMapper
             try {
                 $mapper();
 
-            } catch (ValueObjectException $exception) {
-                $mappingErrors[$formField] = $exception->getMessage();
+            } catch (DomainInputValidationConstraintViolatedError $exception) {
+                $mappingErrors[] = $exception;
 
+            } catch (CommonValueException | CommonStorageException | ValueObjectException $exception) {
+                $mappingErrors[] = $mappingErrors[] = DomainInputValidationConstraintViolatedError::fromString(
+                    $formField,
+                    $exception->getMessage(),
+                    $exception->getCode(),
+                    $exception
+                );
+
+            // generic typing errors
             } catch (\TypeError $exception) {
                 preg_match('/the type ([a-z]+),/', $exception->getMessage(), $matches);
-                $mappingErrors[$formField] = $matches ? 'expected_' . $matches[1] . '_type' : 'invalid_format';
+
+                $mappingErrors[] = DomainInputValidationConstraintViolatedError::fromString(
+                    $formField,
+                    Errors::ERR_MSG_REQUEST_INPUT_GENERIC_INVALID_FORMAT,
+                    Errors::ERR_REQUEST_INPUT_GENERIC_INVALID_FORMAT,
+                    $exception
+                );
             }
         }
 
         if ($mappingErrors) {
-            throw CollectionMappingError::createFromErrors($mappingErrors);
+            throw DomainAssertionFailure::fromErrors($mappingErrors);
         }
 
         return $collection;
     }
 
-    public function mapTokenIntoCollection(BackupCollection $collection, string $tokenId): BackupCollection
-    {
-        $token = $this->tokenRepository->findTokenById($tokenId);
-
-        if (!$token) {
-            return $collection;
-        }
-
-        return $collection->withTokenAdded($token);
-    }
-
     /**
      * @param BackupCollection $collection The reference needs to be there. PHP is loosing the reference without it.
      * @param CreationForm $form
-     * @param bool $isNewElement
      *
      * @return array
      */
@@ -95,7 +101,7 @@ class CollectionMapper
                 $collection = $collection->withStrategy(new BackupStrategy($form->strategy));
             },
             'description'       => function () use (&$collection, $form) {
-                $collection = $collection->withDescription(new Description((string) $form->description));
+                $collection = $collection->withDescription(Description::fromString((string) $form->description));
             },
             'password'          => function () use (&$collection, $form) {
                 $collection = $collection->withPassword(new Password((string) $form->password));

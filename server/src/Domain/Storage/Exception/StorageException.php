@@ -2,17 +2,90 @@
 
 namespace App\Domain\Storage\Exception;
 
-class StorageException extends \Exception
-{
-    public const codes = [
-        'file_not_found'                => 7016100,
-        'io_perm_error'                 => 7016101,
-        'consistency_not_found_on_disk' => 7016102,
-        'storage_unavailable'           => 7016103
-    ];
+use App\Domain\Backup\Exception\BackupException;
+use App\Domain\Errors;
 
-    public static function fileNotFoundException(): StorageException
+class StorageException extends BackupException
+{
+    /**
+     * @return static
+     */
+    public static function fromFileNotFoundCause(\Throwable $previous = null)
     {
-        return new StorageException('File not found in the storage', StorageException::codes['file_not_found']);
+        return new static(
+            Errors::ERR_MSG_STORAGE_FILE_NOT_FOUND,
+            Errors::ERR_STORAGE_FILE_NOT_FOUND,
+            $previous
+        );
+    }
+
+    /**
+     * @return static
+     */
+    public static function fromPermissionsErrorCause()
+    {
+        return new static(
+            Errors::ERR_MSG_STORAGE_PERMISSION_ERROR,
+            Errors::ERR_STORAGE_PERMISSION_ERROR
+        );
+    }
+
+    /**
+     * @return static
+     */
+    public static function fromFileNotFoundOnDiskButFoundInRegistry()
+    {
+        return new static(
+            Errors::ERR_MSG_STORAGE_CONSISTENCY_FAILURE_NOT_FOUND_ON_DISK,
+            Errors::ERR_STORAGE_CONSISTENCY_FAILURE_NOT_FOUND_ON_DISK
+        );
+    }
+
+    /**
+     * @param \Throwable|null $previous
+     *
+     * @return static
+     */
+    public static function fromStorageNotAvailableErrorCause(\Throwable $previous = null)
+    {
+        return new static(
+            str_replace('{{ cause }}', ($previous ? $previous->getMessage() : ''), Errors::ERR_MSG_STORAGE_NOT_AVAILABLE),
+            Errors::ERR_STORAGE_NOT_AVAILABLE,
+            $previous
+        );
+    }
+
+    /**
+     * @return static
+     */
+    public static function fromInconsistentWriteCause()
+    {
+        return new static(
+            Errors::ERR_MSG_STORAGE_INCONSISTENT_WRITE,
+            Errors::ERR_STORAGE_INCONSISTENT_WRITE,
+        );
+    }
+
+    public function isFileNotFoundError(): bool
+    {
+        return $this->getCode() === Errors::ERR_STORAGE_FILE_NOT_FOUND;
+    }
+
+    public function getHttpCode(): int
+    {
+        if ($this->isFileNotFoundError()) {
+            return 404;
+        }
+
+        return 500;
+    }
+
+    public function canBeDisplayedPublic(): bool
+    {
+        if ($this->isFileNotFoundError()) {
+            return true;
+        }
+
+        return false;
     }
 }
