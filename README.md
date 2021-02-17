@@ -3,6 +3,11 @@ Backup Repository
 
 A specialized ninja for backup making - complete backups ecosystem. Fully multi-tenant, with its very granular permissions and client-side (E2E) encryption can act as a farm of backups for various people and organizations.
 
+[![Build Status](https://travis-ci.org/riotkit-org/file-repository.svg?branch=master)](https://travis-ci.org/riotkit-org/backup-repository)
+[![Documentation Status](https://readthedocs.org/projects/file-repository/badge/?version=latest)](https://file-repository.docs.riotkit.org/en/latest/?badge=latest)
+[![Maintainability](https://api.codeclimate.com/v1/badges/4ed37b276f5379c3dc52/maintainability)](https://codeclimate.com/github/riotkit-org/backup-repository/maintainability)
+[![codecov](https://codecov.io/gh/riotkit-org/file-repository/branch/master/graph/badge.svg)](https://codecov.io/gh/riotkit-org/backup-repository)
+
 Features
 --------
 
@@ -103,7 +108,7 @@ Copyleft
 --------
 
 Created by **RiotKit Collective**.
-Project initially created for three purposes: 
+Project initially created for three purposes:
 
 - To store static files uploaded for users (libertarian/anarchist portal)
 - To store and serve training video files (video archive)
