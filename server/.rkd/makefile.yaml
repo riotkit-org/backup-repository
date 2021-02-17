@@ -103,9 +103,9 @@ tasks:
                 help: "Tag name"
         steps:
             - cd .. && docker build . -f server/.infrastructure/Dockerfile -t quay.io/riotkit/backup-repository:latest
-            - docker tag quay.io/riotkit/backup-repository:latest quay.io/riotkit/backup-repository:${ARG_REF}
             - |
               if [[ $ARG_REF =~ ^v[0-9\.]$ ]]; then
+                  docker tag quay.io/riotkit/backup-repository:latest quay.io/riotkit/backup-repository:${ARG_REF}
                   %RKD% @ --image quay.io/riotkit/backup-repository:${ARG_REF} --propagate :docker:tag :docker:push
                   docker tag quay.io/riotkit/backup-repository:${ARG_REF} quay.io/riotkit/backup-repository:latest-release
                   docker push quay.io/riotkit/backup-repository:latest-release

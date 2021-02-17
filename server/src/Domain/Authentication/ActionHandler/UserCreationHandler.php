@@ -63,7 +63,7 @@ class UserCreationHandler
     /**
      * @param AuthenticationManagementContext $context
      * @param AuthForm $form
-     * 
+     *
      * @throws AuthenticationException
      */
     private function assertHasRights(AuthenticationManagementContext $context, AuthForm $form): void
