@@ -101,7 +101,7 @@ jobs:
               working-directory: "server"
 
             - name: "Install build dependencies"
-              run: "sudo pip install -r ./requirements.txt"
+              run: "sudo pip install -r ./requirements-dev.txt"
               working-directory: "bahub"
 
             - name: "Build and push Bahub client"
