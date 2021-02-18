@@ -2,7 +2,7 @@
 
 namespace App\Domain\Storage\Security;
 
-use App\Domain\Authentication\Entity\User;
+use App\Domain\Common\SharedEntity\User;
 use App\Domain\Storage\Form\UploadForm;
 use App\Domain\Storage\ValueObject\Filesize;
 

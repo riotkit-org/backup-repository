@@ -6,6 +6,7 @@ use App\Domain\Authentication\Entity\User;
 use App\Domain\Authentication\Factory\IncomingUserFactory;
 use App\Domain\Authentication\Service\Security\TokenExtractorFromHttp;
 use App\Domain\Common\Exception\CommonValueException;
+use App\Domain\Common\ValueObject\JWT;
 use App\Infrastructure\Authentication\Token\TokenTransport;
 use App\Infrastructure\Common\Exception\JsonRequestException;
 use App\Infrastructure\Common\Service\Http\FormTypeCaster;
@@ -88,9 +89,10 @@ abstract class BaseController implements ContainerAwareInterface
         return $sessionToken->getUser();
     }
 
-    protected function getCurrentSessionToken(Request $request): string
+    protected function getCurrentSessionToken(Request $request, string $class): JWT
     {
-        return TokenExtractorFromHttp::extractFromHeaders($request->headers->all());
+        /** @see JWT::__construct() */
+        return new $class(TokenExtractorFromHttp::extractFromHeaders($request->headers->all()));
     }
 
     protected function getLoggedUserOrAnonymousToken(?string $className = null)

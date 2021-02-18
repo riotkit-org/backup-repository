@@ -26,7 +26,7 @@ class UploadCommand implements CommandHandler
         $form->stream          = $input['form']['stream'] ?? null;
 
         return \json_decode(
-            \json_encode($this->handler->handle($form, $input['token']), JSON_THROW_ON_ERROR, 512),
+            \json_encode($this->handler->handle($form, $input['user'], $input['accessToken']), JSON_THROW_ON_ERROR, 512),
             true, 512, JSON_THROW_ON_ERROR
         );
     }

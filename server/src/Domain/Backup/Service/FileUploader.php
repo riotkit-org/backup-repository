@@ -2,12 +2,13 @@
 
 namespace App\Domain\Backup\Service;
 
-use App\Domain\Authentication\Entity\User;
+use App\Domain\Backup\Entity\Authentication\User;
 use App\Domain\Backup\Entity\BackupCollection;
 use App\Domain\Backup\Exception\AuthenticationException;
 use App\Domain\Backup\Factory\NameFactory;
 use App\Domain\Backup\Response\Internal\StorageUploadResponse;
 use App\Domain\Backup\ValueObject\Filename;
+use App\Domain\Backup\ValueObject\JWT;
 use App\Domain\Bus;
 use App\Domain\Common\Exception\BusException;
 use App\Domain\Common\Service\Bus\DomainBus;
@@ -32,14 +33,15 @@ class FileUploader
 
     /**
      * @param BackupCollection $collection
-     * @param User $token
+     * @param User $user
+     * @param JWT $accessToken
      *
      * @return StorageUploadResponse
      *
      * @throws AuthenticationException
      * @throws BusException
      */
-    public function upload(BackupCollection $collection, User $token): StorageUploadResponse
+    public function upload(BackupCollection $collection, User $user, JWT $accessToken): StorageUploadResponse
     {
         $responseAsArray = $this->bus->call(Bus::STORAGE_UPLOAD, [
             'form' => [
@@ -50,7 +52,8 @@ class FileUploader
                 'public'         => false
             ],
 
-            'token' => $token
+            'user'        => $user,
+            'accessToken' => $accessToken
         ]);
 
         if ($responseAsArray['status'] > 299) {

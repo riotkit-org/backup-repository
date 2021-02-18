@@ -14,7 +14,7 @@ class BackupDeduplicationCest
     private string $firstCollection;
     private string $secondCollection;
 
-    public function seedData(FunctionalTester $I): void
+    private function seedData(FunctionalTester $I): void
     {
         $I->amAdmin();
         $this->firstCollection = $I->createCollection([
@@ -50,6 +50,8 @@ class BackupDeduplicationCest
 
     public function deletingOneVersionWillKeepOthers(FunctionalTester $I): void
     {
+        $this->seedData($I);
+
         $I->amAdmin();
         $I->deleteVersionFromCollection($this->firstCollection, $I->getPreviouslyStoredIdOf('FIRST_COLLECTION_VERSION_ID'));
 

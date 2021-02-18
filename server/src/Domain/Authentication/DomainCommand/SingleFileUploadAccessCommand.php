@@ -2,10 +2,11 @@
 
 namespace App\Domain\Authentication\DomainCommand;
 
-use App\Domain\Authentication\Manager\UserManager;
-use App\Domain\Authentication\Repository\UserRepository;
+use App\Domain\Authentication\Exception\RepeatableJWTException;
+use App\Domain\Authentication\Repository\AccessTokenAuditRepository;
 use App\Domain\Bus;
 use App\Domain\Common\Service\Bus\CommandHandler;
+use App\Domain\Common\ValueObject\JWT;
 use App\Domain\Roles;
 
 /**
@@ -13,35 +14,40 @@ use App\Domain\Roles;
  */
 class SingleFileUploadAccessCommand implements CommandHandler
 {
-    private UserManager $tokenManager;
-    private UserRepository $repository;
+    private AccessTokenAuditRepository $repository;
 
-    public function __construct(UserManager $userManager, UserRepository $repository)
+    public function __construct(AccessTokenAuditRepository $repository)
     {
-        $this->tokenManager = $userManager;
-        $this->repository   = $repository;
+        $this->repository = $repository;
     }
 
     /**
-     * @param mixed $input {tokenId, fileId}
+     * @param mixed $input {jwtSecret, fileId}
      * @param string $path
      *
      * @return void
+     *
+     * @throws RepeatableJWTException
      */
     public function handle($input, string $path): void
     {
-        $user = $this->repository->findUserByUserId($input[0] ?? '');
+        /**
+         * @var JWT $jwt
+         */
+        $jwt = $input[0] ?? null;
 
-        if (!$user) {
+        $accessToken = $this->repository->findByBearerSecret($jwt->getSecretValue());
+
+        if (!$accessToken) {
             throw new \LogicException('Incorrectly passed parameters to event EVENT_STORAGE_UPLOADED_OK');
         }
 
         // the event is executing right after successful upload
-        // and revoking the token after a upload is done,
-        // when ROLE_UPLOAD_ONLY_ONCE_SUCCESSFUL role is present in the token
-        if ($user->hasRole(Roles::PERMISSION_UPLOAD_ONLY_ONCE_SUCCESSFUL)) {
-            $this->tokenManager->revokeAccessForUser($user);
-            $this->tokenManager->flushAll();
+        // and revoking the token after a upload is done
+        if ($accessToken->getUser()->hasRole(Roles::PERMISSION_UPLOAD_ONLY_ONCE_SUCCESSFUL)) {
+            $accessToken->revokeSelf();
+            $this->repository->persist($accessToken);
+            $this->repository->flush();
         }
     }
 

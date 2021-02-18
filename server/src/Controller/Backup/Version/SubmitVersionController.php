@@ -7,6 +7,7 @@ use App\Domain\Backup\ActionHandler\Version\BackupSubmitHandler;
 use App\Domain\Backup\Entity\Authentication\User;
 use App\Domain\Backup\Factory\SecurityContextFactory;
 use App\Domain\Backup\Form\BackupSubmitForm;
+use App\Domain\Backup\ValueObject\JWT;
 use App\Infrastructure\Common\Http\JsonFormattedResponse;
 use Exception;
 use Symfony\Component\HttpFoundation\Request;
@@ -59,13 +60,16 @@ class SubmitVersionController extends BaseController
 
         /**
          * @var User $user
+         * @var JWT $accessToken
          */
         $user = $this->getLoggedUser(User::class);
+        $accessToken = $this->getCurrentSessionToken($request, JWT::class);
 
         $response = $this->handler->handle(
             $form,
             $this->authFactory->createVersioningContext($user, $form->collection),
-            $this->getLoggedUser()
+            $user,
+            $accessToken
         );
 
         return new JsonFormattedResponse($response, $response->getHttpCode());

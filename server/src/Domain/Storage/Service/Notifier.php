@@ -4,21 +4,19 @@ namespace App\Domain\Storage\Service;
 
 use App\Domain\Bus;
 use App\Domain\Common\Service\Bus\DomainBus;
+use App\Domain\Common\ValueObject\JWT;
 
 class Notifier
 {
-    /**
-     * @var DomainBus
-     */
-    private $bus;
+    private DomainBus $bus;
 
     public function __construct(DomainBus $bus)
     {
         $this->bus = $bus;
     }
 
-    public function notifyFileWasUploadedSuccessfully(string $byTokenId, ?string $filename): void
+    public function notifyFileWasUploadedSuccessfully(JWT $byAccessToken, ?string $filename): void
     {
-        $this->bus->broadcast(Bus::EVENT_STORAGE_UPLOADED_OK, [$byTokenId, $filename]);
+        $this->bus->broadcast(Bus::EVENT_STORAGE_UPLOADED_OK, [$byAccessToken, $filename]);
     }
 }

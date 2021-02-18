@@ -13,6 +13,10 @@ App\Domain\Backup\Entity\Authentication\User:
             generator:
                 strategy: UUID
 
+    fields:
+        data:
+            type: json
+
     embedded:
         roles:
             # @todo: Move VO also to Backup domain

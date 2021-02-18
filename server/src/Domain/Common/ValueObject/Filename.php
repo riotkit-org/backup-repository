@@ -2,7 +2,6 @@
 
 namespace App\Domain\Common\ValueObject;
 
-use App\Domain\Backup\Exception\ValueObjectException;
 use App\Domain\Common\Exception\CommonStorageException;
 
 class Filename extends BaseValueObject implements \JsonSerializable

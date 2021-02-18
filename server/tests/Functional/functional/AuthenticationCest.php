@@ -21,7 +21,7 @@ class AuthenticationCest
             'organization' => 'Wolna Biblioteka',
             'about'        => 'A libertarian library',
             'roles' => [
-                'upload.all', 'upload.enforce_tags_selected_in_token'
+                'upload.all', 'upload.enforce_tags_selected_in_user_account'
             ],
             'data' => [
                 'tags' => ['gallery']
@@ -70,7 +70,7 @@ class AuthenticationCest
     public function verifyUserCanBeFoundInSearchByOneOfItsRoles(FunctionalTester $I): void
     {
         $I->amAdmin();
-        $I->searchForUsers('upload.enforce_tags_selected_in_token', 1, 50);
+        $I->searchForUsers('upload.enforce_tags_selected_in_user_account', 1, 50);
         $I->canSeeResponseContains($I->getPreviouslyStoredIdOf('BASIC_USER_ACCESS_ID'));
         $I->canSeeResponseCodeIs(200);
     }
@@ -382,7 +382,7 @@ class AuthenticationCest
             'about'        => 'A libertarian library',
 
             'roles' => [
-                'security.generate_tokens',
+                'security.create_unlimited_accounts',
             ],
             'data' => []
         ]);
@@ -431,8 +431,8 @@ class AuthenticationCest
         $I->sendGET('/api/stable/auth/roles');
 
         $I->canSeeResponseContainsJson([
-            'data' => [
-                'upload.all' => 'Allows to upload files at all',
+            'permissions' => [
+                'upload.all' => '[Storage] Allows to upload files at all',
             ]
         ]);
     }

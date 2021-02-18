@@ -2,7 +2,8 @@
 
 namespace App\Domain\Storage\ActionHandler;
 
-use App\Domain\Authentication\Entity\User;
+use App\Domain\Common\ValueObject\JWT;
+use App\Domain\Common\SharedEntity\User;
 use App\Domain\Backup\Exception\BackupLogicException;
 use App\Domain\Backup\Exception\ValueObjectException;
 use App\Domain\Common\Response\Response;
@@ -56,9 +57,9 @@ abstract class AbstractUploadHandler
         $this->notifier         = $notifier;
     }
 
-    public function handle(UploadForm $form, User $token): Response
+    public function handle(UploadForm $form, User $user, JWT $accessToken): Response
     {
-        $context = $this->securityFactory->createUploadContextFromToken($token);
+        $context = $this->securityFactory->createUploadContextFromToken($user);
 
         $this->applyRestrictionsOfTheTokenAndContext($form, $context);
         $actionPermissionsCheck = $context->isActionAllowed($form);
@@ -66,7 +67,7 @@ abstract class AbstractUploadHandler
         if (!$actionPermissionsCheck->isOk()) {
             return $this->finalize(
                 NoAccessToFileResponse::createAccessDeniedResponse($actionPermissionsCheck->getReason()),
-                $token
+                $accessToken
             );
         }
 
@@ -81,7 +82,7 @@ abstract class AbstractUploadHandler
                     $uploadedFile->getFilename(),
                     $this->getRequestedFilename($form)
                 ),
-                $token
+                $accessToken
             );
 
         } catch (FileUploadedTwiceException $exception) {
@@ -92,21 +93,21 @@ abstract class AbstractUploadHandler
                     $exception->getAlreadyExistingFile()->getFilename(),
                     $this->getRequestedFilename($form)
                 ),
-                $token
+                $accessToken
             );
 
         } catch (BackupLogicException | ValueObjectException | FileRetrievalError | StorageException $exception) {
-            $this->finalize(null, $token);
+            $this->finalize(null, $accessToken);
             throw $exception;
         }
     }
 
-    private function finalize(?Response $response, User $token): ?Response
+    private function finalize(?Response $response, JWT $accessToken): ?Response
     {
         $this->staging->deleteAllTemporaryFiles();
 
         if ($response && $response->isOk()) {
-            $this->notifier->notifyFileWasUploadedSuccessfully($token->getId(), $response->getFilename());
+            $this->notifier->notifyFileWasUploadedSuccessfully($accessToken, $response->getFilename());
         }
 
         return $response;

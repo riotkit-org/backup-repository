@@ -4,9 +4,13 @@ namespace App\Infrastructure\Authentication\Repository;
 
 use App\Domain\Authentication\Entity\AccessTokenAuditEntry;
 use App\Domain\Authentication\Entity\User;
+use App\Domain\Authentication\Exception\RepeatableJWTException;
 use App\Domain\Authentication\Repository\AccessTokenAuditRepository;
 use App\Domain\Authentication\Service\Security\HashEncoder;
 use App\Infrastructure\Common\Repository\BaseRepository;
+use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
+use Doctrine\ORM\OptimisticLockException;
+use Doctrine\ORM\ORMException;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -22,19 +26,27 @@ class AccessTokenAuditDoctrineRepository extends BaseRepository implements Acces
         $this->getEntityManager()->persist($entry);
     }
 
+    /**
+     * @throws RepeatableJWTException
+     * @throws ORMException
+     * @throws OptimisticLockException
+     */
     public function flush(): void
     {
-        $this->getEntityManager()->flush();
+        try {
+            $this->getEntityManager()->flush();
+
+        } catch (UniqueConstraintViolationException $exception) {
+            throw RepeatableJWTException::fromJWTAlreadyRecorded();
+        }
     }
 
     public function isActiveToken(string $jwt): bool
     {
-        $hash = HashEncoder::encode($jwt);
-
         /**
          * @var AccessTokenAuditEntry|null $match
          */
-        $match = $this->findOneBy(['tokenHash' => $hash]);
+        $match = $this->findByBearerSecret($jwt);
 
         if (!$match) {
             return false;
@@ -81,5 +93,10 @@ class AccessTokenAuditDoctrineRepository extends BaseRepository implements Acces
     public function findByTokenHash(string $tokenHash): ?AccessTokenAuditEntry
     {
         return $this->findOneBy(['tokenHash' => $tokenHash]);
+    }
+
+    public function findByBearerSecret(string $secret): ?AccessTokenAuditEntry
+    {
+        return $this->findByTokenHash(HashEncoder::encode($secret));
     }
 }

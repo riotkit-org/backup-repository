@@ -76,7 +76,6 @@ class ErrorFormattingSubscriber implements EventSubscriberInterface
         // Infrastructure / routing / http / internal errors
         // (Are formatted only on PROD environment. On dev/test are shown as raised exception for debugging)
         //
-
         if (!$this->isDebugEnvironment || $this->isTestEnvironment) {
             if ($exc instanceof NotFoundHttpException || $exc instanceof ResourceNotFoundException) {
                 $httpError = $exc instanceof ResourceNotFoundException ? HttpError::fromNotFoundError($exc->getMessage()) : HttpError::fromNotFoundError();

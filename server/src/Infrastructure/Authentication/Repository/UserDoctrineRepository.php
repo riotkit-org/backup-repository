@@ -42,11 +42,12 @@ class UserDoctrineRepository extends CommonTokenRepository implements UserReposi
         }
     }
 
-    public function remove(User $token): void
+    public function remove(User $user): void
     {
-        $this->_em->remove($token);
+        $this->_em->remove($user);
     }
 
+    // @todo check usages
     public function deactivate(User $token): void
     {
         $token->deactivate();

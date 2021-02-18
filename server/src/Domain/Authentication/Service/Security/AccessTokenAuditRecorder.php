@@ -3,8 +3,10 @@
 namespace App\Domain\Authentication\Service\Security;
 
 use App\Domain\Authentication\Entity\AccessTokenAuditEntry;
+use App\Domain\Authentication\Exception\RepeatableJWTException;
 use App\Domain\Authentication\Exception\UserNotFoundException;
 use App\Domain\Authentication\Factory\JWTFactory;
+use App\Domain\Authentication\Manager\UserManager;
 use App\Domain\Authentication\Repository\AccessTokenAuditRepository;
 use App\Domain\Authentication\Repository\UserRepository;
 
@@ -22,12 +24,15 @@ class AccessTokenAuditRecorder
     private JWTFactory $factory;
     private UserRepository $userRepository;
     private AccessTokenAuditRepository $repository;
+    private UserManager $manager;
 
-    public function __construct(JWTFactory $factory, UserRepository $userRepository, AccessTokenAuditRepository $repository)
+    public function __construct(JWTFactory $factory, UserRepository $userRepository,
+                                AccessTokenAuditRepository $repository, UserManager $manager)
     {
-        $this->factory = $factory;
+        $this->factory        = $factory;
         $this->userRepository = $userRepository;
-        $this->repository = $repository;
+        $this->repository     = $repository;
+        $this->manager        = $manager;
     }
 
     /**
@@ -45,11 +50,18 @@ class AccessTokenAuditRecorder
 
         $user = $this->userRepository->findOneByEmail($email);
 
-        if (!$user) {
+        if (!$user || !$user->isNotExpired() || !$user->isActive()) {
             throw UserNotFoundException::fromNoLongerFoundCause();
         }
 
-        $this->repository->persist(AccessTokenAuditEntry::createFrom($jwtToken, $user, $permissions, $expiration, $description));
-        $this->repository->flush();
+        try {
+            $accessToken = AccessTokenAuditEntry::createFrom($jwtToken, $user, $permissions, $expiration, $description);
+
+            $this->repository->persist($accessToken);
+            $this->repository->flush();
+
+        } catch (RepeatableJWTException $exception) {
+            // pass: the JWT's are repeatable in short period of time
+        }
     }
 }

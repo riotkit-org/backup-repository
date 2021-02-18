@@ -3,7 +3,7 @@
 namespace Tests\Functional\Features\Security;
 
 /**
- * FEATURE: GIVEN the token is assigned a restriction role, THEN only one file can be uploaded using this token
+ * FEATURE: GIVEN the access token is assigned a restriction role, THEN only one file can be uploaded using this token
  *
  * @group Domain/Backup
  * @group Security
@@ -43,6 +43,6 @@ class FeatureOnlyOneFileAllowedToUploadCest
             "ZSP-IWA calls for a week of protest action against the repression of workers from the Post Office in Poland"
         );
 
-        $I->canSeeResponseCodeIs(401);
+        $I->canSeeResponseCodeIs(403);
     }
 }

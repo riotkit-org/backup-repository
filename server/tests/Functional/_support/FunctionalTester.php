@@ -2,8 +2,13 @@
 
 use Ramsey\Uuid\Uuid;
 use Tests\Urls;
+use PHPUnit\Framework\Assert as Assertions;
 
 require_once __DIR__ . '/../Urls.php';
+
+define('SERVER_PATH', __DIR__ . '/../../../../server/');
+define('ADMIN_EMAIL', 'unity@solidarity.local');
+define('ADMIN_PASSWORD', 'you-cant-break-it');
 
 
 /**
@@ -26,10 +31,22 @@ class FunctionalTester extends \Codeception\Actor
     use _generated\FunctionalTesterActions;
     use \Codeception\Util\Shared\Asserts;
 
+    private function execServerConsoleCommand(string $command): void
+    {
+        exec('cd ' . SERVER_PATH . ' && ./bin/console ' . $command, $output, $exitCode);
+
+        Assertions::assertEquals(0, $exitCode, 'Exit code of "' . $command . '" should be 0');
+    }
+
     public function amAdmin(): void
     {
         $this->amGuest();
-        $this->haveHttpHeader('Test-Token', 'test-token-full-permissions');
+        $this->execServerConsoleCommand(
+            'auth:create-admin-account ' .
+            '--email="' . ADMIN_EMAIL . '" ' .
+            '--password="' . ADMIN_PASSWORD . '" ' .
+            '--ignore-error-if-already-exists');
+        $this->amUser(ADMIN_EMAIL, ADMIN_PASSWORD);
     }
 
     public function amGuest(): void
@@ -133,6 +150,10 @@ class FunctionalTester extends \Codeception\Actor
 
         if ($assert) {
             $this->canSeeResponseCodeIs(201);
+        }
+
+        if (!$this->grabDataFromResponseByJsonPath('.user.id') ?? '') {
+            dump('Notice: User not created', $this->grabResponse());
         }
 
         return new User(
@@ -381,10 +402,12 @@ class FunctionalTester extends \Codeception\Actor
     public function canSeeErrorResponse(string $error, int $code, string $type): void
     {
         $this->canSeeResponseContainsJson([
-            "error" => $error,
             "code"  => $code,
             "type"  => $type
         ]);
+
+        $response = json_decode($this->grabResponse(), true);
+        Assertions::assertStringContainsString($error, $response['error']);
     }
 
     public function amCollectionManager(): void

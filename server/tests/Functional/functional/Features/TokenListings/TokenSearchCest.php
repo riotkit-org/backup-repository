@@ -20,7 +20,7 @@ class TokenSearchCest
         for ($num = 1; $num <= self::USERS_COUNT; $num++) {
             $I->createStandardUser([
                 'roles' => [
-                    'upload.all', 'upload.enforce_tags_selected_in_token'
+                    'upload.all', 'upload.enforce_tags_selected_in_user_account'
                 ],
                 'data' => [
                     'tags' => ['role_generated_' . $num]
@@ -33,7 +33,7 @@ class TokenSearchCest
     public function checkPagesCountIsValid(FunctionalTester $I): void
     {
         $I->amAdmin();
-        $I->searchForUsers('upload.enforce_tags_selected_in_token', 1, 10);
+        $I->searchForUsers('upload.enforce_tags_selected_in_user_account', 1, 10);
         $I->canSeeResponseContainsJson([
             'context' => [
                 'pagination' => [
@@ -54,7 +54,7 @@ class TokenSearchCest
 
         // 26 pages
         for ($pageNum = 1; $pageNum <= 30; $pageNum++) {
-            $I->searchForUsers('upload.enforce_tags_selected_in_token', $pageNum, 10);
+            $I->searchForUsers('upload.enforce_tags_selected_in_user_account', $pageNum, 10);
 
             $tokens = $I->grabDataFromResponseByJsonPath('.data')[0] ?? [];
             $I->canSeeResponseContainsJson([
@@ -83,7 +83,7 @@ class TokenSearchCest
             ]
         ]);
         $I->amUser($user->email, $user->password);
-        $I->searchForUsers('upload.enforce_tags_selected_in_token', 1, 10);
+        $I->searchForUsers('upload.enforce_tags_selected_in_user_account', 1, 10);
         $I->canSeeResponseCodeIs(403);
     }
 
@@ -92,7 +92,7 @@ class TokenSearchCest
         $I->amAdmin();
         $user = $I->createStandardUser([
             'roles' => [
-                'security.search_for_tokens',
+                'security.search_for_users',
                 'security.authentication_lookup'
             ]
         ]);

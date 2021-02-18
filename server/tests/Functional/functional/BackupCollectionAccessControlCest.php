@@ -202,7 +202,7 @@ class BackupCollectionAccessControlCest
         $collectionId = $this->createExampleCollection($I);
 
         $I->grantUserAccessToCollection($collectionId, $secondUser->id, [
-            'security.generate_tokens',
+            'security.create_unlimited_accounts',
         ]);
 
         $I->canSeeResponseCodeIsClientError();

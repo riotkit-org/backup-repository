@@ -1,6 +1,7 @@
 <?php
 
 use App\Kernel;
+use Ramsey\Uuid\Uuid;
 use Symfony\Component\ErrorHandler\Debug;
 use Symfony\Component\Dotenv\Dotenv;
 use Symfony\Component\HttpFoundation\Request;
@@ -17,6 +18,7 @@ if (!isset($_SERVER['APP_ENV'])) {
 
 $env = $_SERVER['APP_ENV'] ?? 'dev';
 $debug = (bool) ($_SERVER['APP_DEBUG'] ?? ('prod' !== $env));
+$_SERVER['REQUEST_ID'] = Uuid::uuid4()->toString();
 
 if ($debug) {
     umask(0000);

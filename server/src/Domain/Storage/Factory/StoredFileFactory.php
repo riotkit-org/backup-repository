@@ -2,7 +2,7 @@
 
 namespace App\Domain\Storage\Factory;
 
-use App\Domain\Authentication\Entity\User;
+use App\Domain\Common\SharedEntity\User;
 use App\Domain\Storage\Entity\StoredFile;
 use App\Domain\Storage\Form\UploadForm;
 use App\Domain\Storage\Repository\TagRepository;

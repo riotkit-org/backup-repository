@@ -2,7 +2,7 @@
 
 namespace App\Domain\Backup\ActionHandler\Version;
 
-use App\Domain\Authentication\Entity\User;
+use App\Domain\Backup\Entity\Authentication\User;
 use App\Domain\Backup\Entity\BackupCollection;
 use App\Domain\Backup\Exception\AuthenticationException;
 use App\Domain\Backup\Exception\BackupLogicException;
@@ -11,6 +11,7 @@ use App\Domain\Backup\Manager\BackupManager;
 use App\Domain\Backup\Security\VersioningContext;
 use App\Domain\Backup\Service\FileUploader;
 use App\Domain\Backup\Response\Version\BackupSubmitResponse;
+use App\Domain\Backup\ValueObject\JWT;
 use App\Domain\Common\Exception\DomainAssertionFailure;
 use App\Domain\Common\Exception\DomainInputValidationConstraintViolatedError;
 use App\Domain\Errors;
@@ -29,16 +30,19 @@ class BackupSubmitHandler
     /**
      * @param BackupSubmitForm $form
      * @param VersioningContext $securityContext
-     * @param User $token
+     * @param User $user
+     * @param JWT $accessToken
      *
      * @return BackupSubmitResponse
      *
      * @throws AuthenticationException
-     * @throws DomainAssertionFailure
      * @throws BackupLogicException
+     * @throws DomainAssertionFailure
+     * @throws \App\Domain\Common\Exception\BusException
      * @throws \Throwable
      */
-    public function handle(BackupSubmitForm $form, VersioningContext $securityContext, User $token): BackupSubmitResponse
+    public function handle(BackupSubmitForm $form,
+                           VersioningContext $securityContext, User $user, JWT $accessToken): BackupSubmitResponse
     {
         $this->assertHasPermissions($securityContext, $form->collection);
         $result = null;
@@ -51,7 +55,7 @@ class BackupSubmitHandler
         //
 
         try {
-            $result = $this->fileUploader->upload($form->collection, $token);
+            $result = $this->fileUploader->upload($form->collection, $user, $accessToken);
 
             if ($result->isSuccess()) {
                 $backup = $this->backupManager->submitNewVersion($form->collection, $result->getFileId());

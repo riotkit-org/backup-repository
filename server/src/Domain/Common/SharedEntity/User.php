@@ -25,6 +25,11 @@ class User
      */
     protected bool $cannotBePersisted = false;
 
+    /**
+     * @var string[]|array[]
+     */
+    protected $data = [];
+
     public function __construct()
     {
         $this->roles = Roles::fromArray([\App\Domain\Roles::ROLE_USER]);
@@ -126,5 +131,31 @@ class User
     public function canBePersisted(): bool
     {
         return $this->id !== self::ANONYMOUS_TOKEN_ID && !$this->cannotBePersisted;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getTags(): array
+    {
+        return isset($this->data[self::FIELD_TAGS]) && \is_array($this->data[self::FIELD_TAGS])
+            ? $this->data[self::FIELD_TAGS] : [];
+    }
+
+    public function setData(array $data)
+    {
+        $this->data = $data;
+        return $this;
+    }
+
+    public function getData(): array
+    {
+        return $this->data;
+    }
+
+    public function getMaxAllowedFileSize(): int
+    {
+        return isset($this->data[self::FIELD_MAX_ALLOWED_FILE_SIZE]) && \is_int($this->data[self::FIELD_MAX_ALLOWED_FILE_SIZE])
+            ? $this->data[self::FIELD_MAX_ALLOWED_FILE_SIZE] : 0;
     }
 }

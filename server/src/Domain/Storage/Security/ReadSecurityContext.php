@@ -2,7 +2,7 @@
 
 namespace App\Domain\Storage\Security;
 
-use App\Domain\Authentication\Entity\User;
+use App\Domain\Common\SharedEntity\User;
 use App\Domain\Storage\Entity\StoredFile;
 
 class ReadSecurityContext
@@ -43,6 +43,7 @@ class ReadSecurityContext
         return $this->viewAllProtectedFiles;
     }
 
+    // @todo
     public function canUserSeeFileOnList(StoredFile $file): bool
     {
         return $file->isFileTaggedWithAnyOfThose($this->allowedTags) || $this->listAllFilesInAllTags;
@@ -53,6 +54,7 @@ class ReadSecurityContext
         return $this->canListAnything;
     }
 
+    // @todo
     public function canSeeAdminMetadata(): bool
     {
         return $this->canSeeAdminMetadata;

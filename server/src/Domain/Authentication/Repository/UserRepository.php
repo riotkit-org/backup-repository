@@ -7,7 +7,7 @@ use App\Domain\Authentication\Entity\User;
 interface UserRepository extends \App\Domain\Common\Repository\UserRepository
 {
     public function persist(User $user): void;
-    public function remove(User $token): void;
+    public function remove(User $user): void;
     public function flush(): void;
 
     /**

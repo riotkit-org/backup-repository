@@ -50,6 +50,7 @@ class SecurityContextFactory
             $roles->hasRole(Roles::PERMISSION_LIST_VERSIONS_FOR_ALLOWED_COLLECTIONS),
             $roles->hasRole(Roles::PERMISSION_DELETE_VERSIONS_IN_ALLOWED_COLLECTIONS),
             $roles->hasRole(Roles::PERMISSION_FETCH_SINGLE_VERSION_FILE_IN_ALLOWED_COLLECTIONS),
+            $roles->hasRole(Roles::PERMISSION_ADMINISTRATOR),
             $user->getId()
         );
     }

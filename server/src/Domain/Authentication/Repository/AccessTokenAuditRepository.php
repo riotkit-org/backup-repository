@@ -4,6 +4,7 @@ namespace App\Domain\Authentication\Repository;
 
 use App\Domain\Authentication\Entity\AccessTokenAuditEntry;
 use App\Domain\Authentication\Entity\User;
+use App\Domain\Authentication\Exception\RepeatableJWTException;
 
 interface AccessTokenAuditRepository
 {
@@ -18,6 +19,9 @@ interface AccessTokenAuditRepository
 
     public function persist(AccessTokenAuditEntry $entry): void;
 
+    /**
+     * @throws RepeatableJWTException
+     */
     public function flush(): void;
 
     /**
@@ -35,6 +39,15 @@ interface AccessTokenAuditRepository
      * @return AccessTokenAuditEntry|null
      */
     public function findByTokenHash(string $tokenHash): ?AccessTokenAuditEntry;
+
+    /**
+     * Finds Access Token entry by secret that is used by the user
+     *
+     * @param string $secret
+     *
+     * @return AccessTokenAuditEntry|null
+     */
+    public function findByBearerSecret(string $secret): ?AccessTokenAuditEntry;
 
     /**
      * Finds how many results are for findForUser()

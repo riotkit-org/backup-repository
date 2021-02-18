@@ -12,7 +12,6 @@ use App\Domain\Authentication\ValueObject\Roles;
 use App\Domain\Common\Exception\DomainAssertionFailure;
 use App\Domain\Common\SharedEntity\EntityValidationTrait;
 use DateTimeImmutable;
-use Swagger\Annotations as SWG;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 class User extends \App\Domain\Common\SharedEntity\User implements \JsonSerializable, UserInterface
@@ -20,30 +19,14 @@ class User extends \App\Domain\Common\SharedEntity\User implements \JsonSerializ
     use EntityValidationTrait;
 
     /**
-     * @SWG\Property(type="string", maxLength=32, example="2020-05-01 08:00:00")
-     *
      * @var DateTimeImmutable $creationDate
      */
     protected $creationDate;
 
     /**
-     * @SWG\Property(type="string", maxLength=32, example="2020-05-01 08:00:00")
-     *
      * @var null|ExpirationDate
      */
     protected ?ExpirationDate $expirationDate;
-
-    /**
-     * @SWG\Property(
-     *     type="array",
-     *     @SWG\Items(
-     *         type="object"
-     *     )
-     * )
-     *
-     * @var string[]|array[]
-     */
-    protected $data = [];
 
     protected string        $salt;
     protected Password      $passphrase;
@@ -52,8 +35,6 @@ class User extends \App\Domain\Common\SharedEntity\User implements \JsonSerializ
     protected About         $about;
 
     /**
-     * @SWG\Property(type="boolean")
-     *
      * @var bool
      */
     protected bool $active;
@@ -187,30 +168,9 @@ class User extends \App\Domain\Common\SharedEntity\User implements \JsonSerializ
         return $this;
     }
 
-    public function setData(array $data): User
+    public function isActive(): bool
     {
-        $this->data = $data;
-        return $this;
-    }
-
-    public function getData(): array
-    {
-        return $this->data;
-    }
-
-    /**
-     * @return string[]
-     */
-    public function getTags(): array
-    {
-        return isset($this->data[self::FIELD_TAGS]) && \is_array($this->data[self::FIELD_TAGS])
-            ? $this->data[self::FIELD_TAGS] : [];
-    }
-
-    public function getMaxAllowedFileSize(): int
-    {
-        return isset($this->data[self::FIELD_MAX_ALLOWED_FILE_SIZE]) && \is_int($this->data[self::FIELD_MAX_ALLOWED_FILE_SIZE])
-            ? $this->data[self::FIELD_MAX_ALLOWED_FILE_SIZE] : 0;
+        return $this->active;
     }
 
     public function isValid(string $userAgent, string $ipAddress): bool

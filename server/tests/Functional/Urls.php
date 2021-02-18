@@ -7,9 +7,9 @@ class Urls
     public const URL_JWT_AUTH_LOGIN = '/api/stable/login_check';
 
     public const URL_USER_CREATE    = '/api/stable/auth/user';
-    public const URL_USER_LOOKUP    = '/api/stable/auth/user/by-id/{{ userId }}';
-    public const URL_TOKEN_DELETE   = '/api/stable/auth/user/by-id/{{ userId }}';
-    public const URL_TOKEN_SEARCH   = '/api/stable/auth/user/search?page={{ page }}&limit={{ limit }}&q={{ query }}';
+    public const URL_USER_LOOKUP    = '/api/stable/auth/user/{{ userId }}';
+    public const URL_TOKEN_DELETE   = '/api/stable/auth/user/{{ userId }}';
+    public const URL_TOKEN_SEARCH   = '/api/stable/auth/user?page={{ page }}&limit={{ limit }}&q={{ query }}';
     public const ROLES_LISTING      = '/api/stable/auth/roles';
 
     public const URL_REPOSITORY_FILE_UPLOAD      = '/api/stable/repository/file/upload';

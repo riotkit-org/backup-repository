@@ -93,6 +93,7 @@ class UserManager
 
     public function revokeAccessForUser(User $user): void
     {
+        $user->deactivate();
         $this->repository->remove($user);
     }
 
