@@ -24,17 +24,17 @@ class SecurityContextFactory
         $roles = $this->getRolesIncludingContextOfACollection($collection, $user);
 
         return new CollectionManagementContext(
-            $roles->hasRole(Roles::PERMISSION_COLLECTION_ADD),
-            $roles->hasRole(Roles::PERMISSION_COLLECTION_CUSTOM_ID),
-            $roles->hasRole(Roles::PERMISSION_COLLECTION_ADD_WITH_INFINITE_LIMITS),
-            $roles->hasRole(Roles::PERMISSION_MODIFY_ALLOWED_COLLECTIONS),
-            $roles->hasRole(Roles::PERMISSION_COLLECTION_MODIFY_ANY_COLLECTION),
-            $roles->hasRole(Roles::PERMISSION_COLLECTION_VIEW_ANY_COLLECTION),
-            $roles->hasRole(Roles::PERMISSION_CAN_USE_LISTING_COLLECTION_ENDPOINT),
-            $roles->hasRole(Roles::PERMISSION_CAN_MANAGE_USERS_IN_ALLOWED_COLLECTIONS),
-            $roles->hasRole(Roles::PERMISSION_CAN_DELETE_ALLOWED_COLLECTIONS),
-            $roles->hasRole(Roles::PERMISSION_CAN_LIST_TOKENS_IN_COLLECTION),
-            $roles->hasRole(Roles::PERMISSION_ADMINISTRATOR),
+            $roles->has(Roles::PERMISSION_COLLECTION_ADD),
+            $roles->has(Roles::PERMISSION_COLLECTION_CUSTOM_ID),
+            $roles->has(Roles::PERMISSION_COLLECTION_ADD_WITH_INFINITE_LIMITS),
+            $roles->has(Roles::PERMISSION_MODIFY_ALLOWED_COLLECTIONS),
+            $roles->has(Roles::PERMISSION_COLLECTION_MODIFY_ANY_COLLECTION),
+            $roles->has(Roles::PERMISSION_COLLECTION_VIEW_ANY_COLLECTION),
+            $roles->has(Roles::PERMISSION_CAN_USE_LISTING_COLLECTION_ENDPOINT),
+            $roles->has(Roles::PERMISSION_CAN_MANAGE_USERS_IN_ALLOWED_COLLECTIONS),
+            $roles->has(Roles::PERMISSION_CAN_DELETE_ALLOWED_COLLECTIONS),
+            $roles->has(Roles::PERMISSION_CAN_LIST_TOKENS_IN_COLLECTION),
+            $roles->has(Roles::PERMISSION_ADMINISTRATOR),
             $user->getId(),
             $user
         );
@@ -45,12 +45,12 @@ class SecurityContextFactory
         $roles = $this->getRolesIncludingContextOfACollection($collection, $user);
 
         return new VersioningContext(
-            $roles->hasRole(Roles::PERMISSION_COLLECTION_MODIFY_ANY_COLLECTION),
-            $roles->hasRole(Roles::PERMISSION_CAN_UPLOAD_TO_ALLOWED_COLLECTIONS),
-            $roles->hasRole(Roles::PERMISSION_LIST_VERSIONS_FOR_ALLOWED_COLLECTIONS),
-            $roles->hasRole(Roles::PERMISSION_DELETE_VERSIONS_IN_ALLOWED_COLLECTIONS),
-            $roles->hasRole(Roles::PERMISSION_FETCH_SINGLE_VERSION_FILE_IN_ALLOWED_COLLECTIONS),
-            $roles->hasRole(Roles::PERMISSION_ADMINISTRATOR),
+            $roles->has(Roles::PERMISSION_COLLECTION_MODIFY_ANY_COLLECTION),
+            $roles->has(Roles::PERMISSION_CAN_UPLOAD_TO_ALLOWED_COLLECTIONS),
+            $roles->has(Roles::PERMISSION_LIST_VERSIONS_FOR_ALLOWED_COLLECTIONS),
+            $roles->has(Roles::PERMISSION_DELETE_VERSIONS_IN_ALLOWED_COLLECTIONS),
+            $roles->has(Roles::PERMISSION_FETCH_SINGLE_VERSION_FILE_IN_ALLOWED_COLLECTIONS),
+            $roles->has(Roles::PERMISSION_ADMINISTRATOR),
             $user->getId()
         );
     }

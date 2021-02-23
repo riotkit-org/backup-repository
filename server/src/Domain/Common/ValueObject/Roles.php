@@ -16,25 +16,25 @@ class Roles implements \JsonSerializable
     private array $requestedRoles            = [];
 
     /**
-     * @param array $roles
+     * @param array $permissionsToSet
      *
      * @return static
      *
      * @throws CommonValueException
      */
-    public static function fromArray(array $roles)
+    public static function fromArray(array $permissionsToSet)
     {
-        $availableRoles = static::getAvailableRoles();
+        $availablePermissions = static::getAvailablePermissions();
 
-        foreach ($roles as $role) {
-            if (!\in_array($role, $availableRoles, true)) {
-                throw CommonValueException::fromInvalidRolesSelected($role, $availableRoles);
+        foreach ($permissionsToSet as $role) {
+            if (!\in_array($role, $availablePermissions, true)) {
+                throw CommonValueException::fromInvalidPermissionsSelected($role, $availablePermissions);
             }
         }
 
         $new = new static();
-        $new->value = $roles;
-        $new->prepareAdministrationRole();
+        $new->value = $permissionsToSet;
+        $new->prepareAdministrationPermission();
 
         return $new;
     }
@@ -47,21 +47,21 @@ class Roles implements \JsonSerializable
         return new static();
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return $this->value;
     }
 
     /**
-     * @param Roles $roles
+     * @param Roles $permissions
      *
      * @return static
      */
-    public function mergeWith(Roles $roles)
+    public function mergeWith(Roles $permissions)
     {
         $new = clone $this;
-        $new->value = array_unique(array_merge($this->value, $roles->value));
-        $new->prepareAdministrationRole();
+        $new->value = array_unique(array_merge($this->value, $permissions->value));
+        $new->prepareAdministrationPermission();
 
         return $new;
     }
@@ -75,10 +75,10 @@ class Roles implements \JsonSerializable
         return $this->value;
     }
 
-    public function hasRole(string $roleName): bool
+    public function has(string $roleName): bool
     {
-        $this->prepareAdministrationRole();
-        $this->recordRoleRequest($roleName);
+        $this->prepareAdministrationPermission();
+        $this->recordPermissionRequest($roleName);
 
         return \in_array($roleName, $this->getAsList(), true);
     }
@@ -99,26 +99,26 @@ class Roles implements \JsonSerializable
      *
      * @return array
      */
-    public function getRequestedRolesList(): array
+    public function getRequestedPermissionsAsList(): array
     {
         return $this->requestedRoles;
     }
 
-    protected static function getAvailableRoles(): array
+    protected static function getAvailablePermissions(): array
     {
-        return RolesConst::getRolesList();
+        return RolesConst::getPermissionsList();
     }
 
-    private function recordRoleRequest(string $roleName): void
+    private function recordPermissionRequest(string $name): void
     {
-        if (!\in_array($roleName, RolesConst::getRolesList(), true)) {
+        if (!\in_array($name, RolesConst::getPermissionsList(), true)) {
             return;
         }
 
-        $this->requestedRoles[] = $roleName;
+        $this->requestedRoles[] = $name;
     }
 
-    private function prepareAdministrationRole(): void
+    private function prepareAdministrationPermission(): void
     {
         if (!$this->alreadyGrantedAdminAccess && in_array(RolesConst::PERMISSION_ADMINISTRATOR, $this->value, true)) {
             $this->value = array_merge($this->value, RolesConst::GRANTS_LIST);

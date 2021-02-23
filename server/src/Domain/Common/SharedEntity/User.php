@@ -103,12 +103,12 @@ class User
 
     public function hasRole(string $roleName): bool
     {
-        return $this->roles->hasRole($roleName);
+        return $this->roles->has($roleName);
     }
 
     public function getRequestedRolesList(): array
     {
-        return $this->roles->getRequestedRolesList();
+        return $this->roles->getRequestedPermissionsAsList();
     }
 
     public function isAdministrator(): bool

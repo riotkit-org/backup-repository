@@ -97,4 +97,9 @@ class AccessTokenAuditEntry implements \JsonSerializable
     {
         $this->active = false;
     }
+
+    public function getPermissions(): Roles
+    {
+        return $this->permissions;
+    }
 }

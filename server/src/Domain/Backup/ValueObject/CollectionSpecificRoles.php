@@ -13,10 +13,10 @@ class CollectionSpecificRoles extends Roles
      */
     public static function fromAllRolesGranted()
     {
-        return static::fromArray(static::getAvailableRoles());
+        return static::fromArray(static::getAvailablePermissions());
     }
 
-    protected static function getAvailableRoles(): array
+    protected static function getAvailablePermissions(): array
     {
         return \App\Domain\Roles::PER_BACKUP_COLLECTION_LIST;
     }
