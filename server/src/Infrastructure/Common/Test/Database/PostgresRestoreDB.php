@@ -3,8 +3,8 @@
 namespace App\Infrastructure\Common\Test\Database;
 
 use Doctrine\DBAL\Connection;
-use Doctrine\DBAL\Driver\PDOConnection;
-use Doctrine\DBAL\Driver\PDOPgSql\Driver;
+use Doctrine\DBAL\Driver\Connection as DriverConnection;
+use Doctrine\DBAL\Driver\PDO\PgSQL\Driver;
 
 /**
  * Backup & Restore of the database - used in tests
@@ -31,8 +31,8 @@ class PostgresRestoreDB implements RestoreDBInterface
         $backupDbName = $this->createBackupDatabaseName();
 
         $this->commit($this->connection);
-        $this->connection->exec('DROP DATABASE IF EXISTS "' . $backupDbName . '";');
-        $this->connection->exec('CREATE DATABASE "' . $backupDbName . '" TEMPLATE "' . $currentDbName . '";');
+        $this->connection->executeStatement('DROP DATABASE IF EXISTS "' . $backupDbName . '";');
+        $this->connection->executeStatement('CREATE DATABASE "' . $backupDbName . '" TEMPLATE "' . $currentDbName . '";');
 
         return true;
     }
@@ -58,7 +58,7 @@ class PostgresRestoreDB implements RestoreDBInterface
         $backupDbName = $this->createBackupDatabaseName();
         $cursor = $this->connection->executeQuery("SELECT 1 FROM pg_database WHERE datname='" . $backupDbName . "'");
 
-        return (int) $cursor->fetch(\Doctrine\DBAL\FetchMode::COLUMN) === 1;
+        return (int) $cursor->fetchNumeric() === 1;
     }
 
     private function dropAndCreate(string $toRecreate, string $template, array $doctrineParams): void
@@ -75,7 +75,7 @@ class PostgresRestoreDB implements RestoreDBInterface
     }
 
     /**
-     * @param PDOConnection|Connection $connection
+     * @param DriverConnection|Connection $connection
      */
     private function commit($connection): void
     {
