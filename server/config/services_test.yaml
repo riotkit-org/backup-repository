@@ -3,7 +3,7 @@ services:
         public: true
         autowire: true
 
-    App\Command\Authentication\GenerateAdminAccountCommand:
+    App\Command\Authentication\CreateAdminAccountCommand:
         public: true
         autowire: true
         autoconfigure: true
