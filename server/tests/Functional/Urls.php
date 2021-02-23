@@ -4,7 +4,8 @@ namespace Tests;
 
 class Urls
 {
-    public const URL_JWT_AUTH_LOGIN = '/api/stable/login_check';
+    public const URL_JWT_AUTH_LOGIN        = '/api/stable/login_check';
+    public const URL_JWT_AUTH_TOKEN_CREATE = '/api/stable/auth/token';
 
     public const URL_USER_CREATE    = '/api/stable/auth/user';
     public const URL_USER_LOOKUP    = '/api/stable/auth/user/{{ userId }}';

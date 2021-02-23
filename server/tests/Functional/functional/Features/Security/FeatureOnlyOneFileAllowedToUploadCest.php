@@ -23,11 +23,14 @@ class FeatureOnlyOneFileAllowedToUploadCest
             'filename'          => 'cob_database-2.tar.gz'
         ]);
 
-        $user = $I->createStandardUser(['roles' => ['upload.all', 'upload.only_once_successful', 'collections.upload_to_allowed_collections']]);
+        $user = $I->createStandardUser(['roles' => ['upload.all', 'collections.upload_to_allowed_collections']]);
         $I->grantUserAccessToCollection($collection, $user->id);
 
+        // create an access token with additional restriction "upload.only_once_successful"
+        $accessToken = $I->createAccessToken(['upload.all', 'collections.upload_to_allowed_collections', 'upload.only_once_successful']);
+
         // switch to limited user
-        $I->amUser($user->email, $user->password);
+        $I->iHaveToken($accessToken->jwtSecret);
         $I->stopFollowingRedirects();
 
         // upload first time

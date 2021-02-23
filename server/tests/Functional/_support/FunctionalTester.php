@@ -183,6 +183,19 @@ class FunctionalTester extends \Codeception\Actor
         return $this->createUser($data, $assert);
     }
 
+    public function createAccessToken(array $permissions): AccessToken
+    {
+        $this->sendPOST(
+            Urls::URL_JWT_AUTH_TOKEN_CREATE,
+            [
+                'requestedPermissions' => $permissions,
+                'ttl'                  => 3600
+            ]
+        );
+
+        return new AccessToken($this->grabDataFromResponseByJsonPath('.token')[0] ?? '');
+    }
+
     public function revokeAccess(string $userId): void
     {
         $this->sendDELETE(
@@ -421,6 +434,11 @@ class FunctionalTester extends \Codeception\Actor
             'collections.list_versions_for_allowed_collections'
         ]);
     }
+
+    public function iHaveTimeToDebug(): void
+    {
+        readline('Press [enter] after you finish debugging');
+    }
 }
 
 
@@ -435,5 +453,15 @@ class User
         $this->id       = $id;
         $this->email    = $email;
         $this->password = $password;
+    }
+}
+
+class AccessToken
+{
+    public string $jwtSecret;
+
+    public function __construct(string $jwtSecret)
+    {
+        $this->jwtSecret = $jwtSecret;
     }
 }
