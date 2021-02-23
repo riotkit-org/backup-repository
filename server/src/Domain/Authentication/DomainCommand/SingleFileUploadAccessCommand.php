@@ -44,7 +44,7 @@ class SingleFileUploadAccessCommand implements CommandHandler
 
         // the event is executing right after successful upload
         // and revoking the token after a upload is done
-        if ($accessToken->getUser()->hasRole(Roles::PERMISSION_UPLOAD_ONLY_ONCE_SUCCESSFUL)) {
+        if ($accessToken->getPermissions()->has(Roles::PERMISSION_UPLOAD_ONLY_ONCE_SUCCESSFUL)) {
             $accessToken->revokeSelf();
             $this->repository->persist($accessToken);
             $this->repository->flush();

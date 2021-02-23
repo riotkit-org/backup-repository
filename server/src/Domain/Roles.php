@@ -34,7 +34,7 @@ final class Roles
     /** [Storage] Enforce user tags. In result every uploaded file will have tags specified in user profile regardless if they were sent in request */
     public const PERMISSION_UPLOAD_ENFORCE_USER_TAGS    = 'upload.enforce_tags_selected_in_user_account';
 
-    /** [Storage] Allow this user account to upload only one file, then deactivate the account */
+    /** [Storage] Allow current access token (JWT) to upload only one backup version, then the token will be deactivated */
     public const PERMISSION_UPLOAD_ONLY_ONCE_SUCCESSFUL       = 'upload.only_once_successful';
 
     //
@@ -216,7 +216,7 @@ final class Roles
         return self::RESTRICTIONS_LIST;
     }
 
-    public static function getRolesList(): array
+    public static function getPermissionsList(): array
     {
         return \array_merge(self::GRANTS_LIST, self::RESTRICTIONS_LIST);
     }
