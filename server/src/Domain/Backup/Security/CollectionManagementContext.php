@@ -7,7 +7,7 @@ use App\Domain\Backup\Entity\BackupCollection;
 use App\Domain\Backup\Form\Collection\CreationForm;
 use App\Domain\Backup\Form\Collection\DeleteForm;
 use App\Domain\Backup\Form\Collection\EditForm;
-use App\Domain\Backup\ValueObject\CollectionSpecificRoles;
+use App\Domain\Backup\ValueObject\CollectionSpecificPermissions;
 
 class CollectionManagementContext
 {
@@ -165,13 +165,13 @@ class CollectionManagementContext
         return $collection->isTokenIdAllowed($this->userId);
     }
 
-    public function canAssignThoseRolesToUsersInCollection(CollectionSpecificRoles $roles): bool
+    public function canAssignThoseRolesToUsersInCollection(CollectionSpecificPermissions $roles): bool
     {
         if ($this->isSystemAdmin) {
             return true;
         }
 
-        $allowed = $this->user->getRoles();
+        $allowed = $this->user->getPermissions();
 
         foreach ($roles->getAsList() as $role) {
             if (!in_array($role, $allowed, true)) {

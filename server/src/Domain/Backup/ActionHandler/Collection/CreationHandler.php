@@ -11,7 +11,7 @@ use App\Domain\Backup\Manager\CollectionManager;
 use App\Domain\Backup\Mapper\CollectionMapper;
 use App\Domain\Backup\Response\Collection\CrudResponse;
 use App\Domain\Backup\Security\CollectionManagementContext;
-use App\Domain\Backup\ValueObject\CollectionSpecificRoles;
+use App\Domain\Backup\ValueObject\CollectionSpecificPermissions;
 use App\Domain\Common\Service\Security\RolesInformationProvider;
 
 class CreationHandler
@@ -48,7 +48,7 @@ class CreationHandler
             $this->manager->appendUser(
                 $securityContext->getUser(),
                 $collection,
-                CollectionSpecificRoles::fromAllRolesGranted()
+                CollectionSpecificPermissions::fromAllRolesGranted()
             );
         }
 

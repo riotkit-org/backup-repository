@@ -8,7 +8,7 @@ use App\Domain\Backup\Manager\CollectionManager;
 use App\Domain\Backup\Response\Security\CollectionAccessRightsResponse;
 use App\Domain\Backup\Security\CollectionManagementContext;
 use App\Domain\Backup\Form\UserAccessAttachForm;
-use App\Domain\Backup\ValueObject\CollectionSpecificRoles;
+use App\Domain\Backup\ValueObject\CollectionSpecificPermissions;
 use App\Domain\Common\Exception\DomainInputValidationConstraintViolatedError;
 
 class GrantUserToCollection
@@ -34,7 +34,7 @@ class GrantUserToCollection
             return null;
         }
 
-        $roles = CollectionSpecificRoles::fromArray($form->roles);
+        $roles = CollectionSpecificPermissions::fromArray($form->roles);
 
         $this->assertHasRights($securityContext, $form->collection, $roles);
         $collection = $this->manager->appendUser($form->user, $form->collection, $roles);
@@ -50,12 +50,12 @@ class GrantUserToCollection
     /**
      * @param CollectionManagementContext $securityContext
      * @param BackupCollection            $collection
-     * @param CollectionSpecificRoles     $roles
+     * @param CollectionSpecificPermissions     $roles
      *
      * @throws AuthenticationException
      */
     private function assertHasRights(CollectionManagementContext $securityContext, BackupCollection $collection,
-                                     CollectionSpecificRoles $roles): void
+                                     CollectionSpecificPermissions $roles): void
     {
         if (!$securityContext->canAddTokensToCollection($collection)) {
             throw AuthenticationException::fromCollectionAccessManagementDenied();

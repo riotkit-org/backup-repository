@@ -11,7 +11,7 @@ App\Domain\Backup\Entity\UserAccess:
 
     embedded:
         roles:
-            class: \App\Domain\Backup\ValueObject\CollectionSpecificRoles
+            class: \App\Domain\Backup\ValueObject\CollectionSpecificPermissions
             columnPrefix: false
 
     manyToOne:

@@ -8,7 +8,7 @@ use App\Domain\Authentication\ValueObject\Email;
 use App\Domain\Authentication\ValueObject\ExpirationDate;
 use App\Domain\Authentication\ValueObject\Organization;
 use App\Domain\Authentication\ValueObject\Password;
-use App\Domain\Authentication\ValueObject\Roles;
+use App\Domain\Authentication\ValueObject\Permissions;
 use App\Domain\Common\Exception\DomainAssertionFailure;
 use App\Domain\Common\SharedEntity\EntityValidationTrait;
 use DateTimeImmutable;
@@ -76,7 +76,7 @@ class User extends \App\Domain\Common\SharedEntity\User implements \JsonSerializ
 
         static::withValidationErrorAggregation([
             static function () use ($new, $roles) {
-                $new->setRoles(Roles::fromArray($roles));
+                $new->setPermissions(Permissions::fromArray($roles));
             },
             static function () use ($new, $expirationTime, $defaultExpirationTime) {
                 $new->setExpirationDate(ExpirationDate::fromString($expirationTime, $defaultExpirationTime));
@@ -229,7 +229,7 @@ class User extends \App\Domain\Common\SharedEntity\User implements \JsonSerializ
             'expired'          => !$this->isNotExpired(),
             'expires'          => $this->getExpirationDate()->format('Y-m-d H:i:s'),
             'data'             => $this->data,
-            'roles'            => $this->getRoles(),
+            'roles'            => $this->getPermissions(),
             'organization'     => $this->organization->getValue(),
             'about'            => $this->about->getValue(),
             'is_administrator' => $this->isAdministrator()

@@ -5,7 +5,7 @@ namespace App\Domain\Common\ValueObject;
 use App\Domain\Common\Exception\CommonValueException;
 use App\Domain\Roles as RolesConst;
 
-class Roles implements \JsonSerializable
+class Permissions implements \JsonSerializable
 {
     /**
      * @var string[]
@@ -53,11 +53,11 @@ class Roles implements \JsonSerializable
     }
 
     /**
-     * @param Roles $permissions
+     * @param Permissions $permissions
      *
      * @return static
      */
-    public function mergeWith(Roles $permissions)
+    public function mergeWith(Permissions $permissions)
     {
         $new = clone $this;
         $new->value = array_unique(array_merge($this->value, $permissions->value));

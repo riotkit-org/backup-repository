@@ -10,7 +10,7 @@ namespace App\Domain;
  *       - RESTRICTION
  *
  *   They are distinguished because, we want to GRANT all rights to administrator for example, excluding RESTRICTION
- *   roles.
+ *   permissions.
  *
  * @codeCoverageIgnore
  */

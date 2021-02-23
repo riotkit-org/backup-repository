@@ -97,7 +97,7 @@ class UserDoctrineRepository extends CommonTokenRepository implements UserReposi
             $qb->andWhere('user.id LIKE :pattern');
         }
 
-        $qb->orWhere('CAST(user.roles.value as STRING) LIKE :pattern');
+        $qb->orWhere('CAST(user.permissions.value as STRING) LIKE :pattern');
         $qb->orWhere('CAST(user.about.value as STRING) LIKE :pattern');
         $qb->orWhere('CAST(user.organization.value as STRING) LIKE :pattern');
         $qb->orWhere('CAST(user.email.value as STRING) LIKE :pattern');

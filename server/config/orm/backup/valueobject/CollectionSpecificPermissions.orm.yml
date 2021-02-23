@@ -1,4 +1,4 @@
-App\Domain\Backup\ValueObject\CollectionSpecificRoles:
+App\Domain\Backup\ValueObject\CollectionSpecificPermissions:
     type: embeddable
     fields:
         value:

@@ -36,7 +36,7 @@ App\Domain\Authentication\Entity\AccessTokenAuditEntry:
 
     embedded:
         permissions:
-            class: App\Domain\Authentication\ValueObject\Roles
+            class: App\Domain\Authentication\ValueObject\Permissions
             columnPrefix: false
 
     manyToOne:

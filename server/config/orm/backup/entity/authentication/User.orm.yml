@@ -18,9 +18,9 @@ App\Domain\Backup\Entity\Authentication\User:
             type: json
 
     embedded:
-        roles:
+        permissions:
             # @todo: Move VO also to Backup domain
-            class: App\Domain\Authentication\ValueObject\Roles
+            class: App\Domain\Authentication\ValueObject\Permissions
             columnPrefix: false
 
         email:

@@ -2,9 +2,9 @@
 
 namespace App\Domain\Backup\ValueObject;
 
-use App\Domain\Common\ValueObject\Roles;
+use App\Domain\Common\ValueObject\Permissions;
 
-class CollectionSpecificRoles extends Roles
+class CollectionSpecificPermissions extends Permissions
 {
     /**
      * @return static

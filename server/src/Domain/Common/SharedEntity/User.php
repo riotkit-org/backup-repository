@@ -2,7 +2,7 @@
 
 namespace App\Domain\Common\SharedEntity;
 
-use App\Domain\Common\ValueObject\Roles;
+use App\Domain\Common\ValueObject\Permissions;
 use App\Domain\Roles as RolesConst;
 
 class User
@@ -14,7 +14,7 @@ class User
 
     // Entity properties
     protected ?string $id    = null;
-    protected Roles $roles;
+    protected Permissions $permissions;
 
     public const ANONYMOUS_TOKEN_ID = '00000000-0000-0000-0000-000000000000';
 
@@ -32,7 +32,7 @@ class User
 
     public function __construct()
     {
-        $this->roles = Roles::fromArray([\App\Domain\Roles::ROLE_USER]);
+        $this->permissions = Permissions::fromArray([\App\Domain\Roles::ROLE_USER]);
     }
 
     /**
@@ -62,20 +62,30 @@ class User
     }
 
     /**
-     * @param Roles $roles
+     * @param Permissions $permissions
      *
      * @return static
      */
-    public function setRoles(Roles $roles)
+    public function setPermissions(Permissions $permissions)
     {
-        $this->roles = $roles;
+        $this->permissions = $permissions;
 
         return $this;
     }
 
+    public function getPermissions(): array
+    {
+        return $this->permissions->getAsList();
+    }
+
+    /**
+     * Interface method required by Symfony
+     *
+     * @return array
+     */
     public function getRoles(): array
     {
-        return $this->roles->getAsList();
+        return $this->getPermissions();
     }
 
     /**
@@ -90,25 +100,25 @@ class User
     public function withRoles(array $roles)
     {
         $clone = clone $this;
-        $clone->setRoles(Roles::fromArray($roles));
+        $clone->setPermissions(Permissions::fromArray($roles));
         $clone->cannotBePersisted = true;
 
         return $clone;
     }
 
-    public function getRolesAsValueObject(): Roles
+    public function getRolesAsValueObject(): Permissions
     {
-        return $this->roles;
+        return $this->permissions;
     }
 
     public function hasRole(string $roleName): bool
     {
-        return $this->roles->has($roleName);
+        return $this->permissions->has($roleName);
     }
 
     public function getRequestedRolesList(): array
     {
-        return $this->roles->getRequestedPermissionsAsList();
+        return $this->permissions->getRequestedPermissionsAsList();
     }
 
     public function isAdministrator(): bool
@@ -123,7 +133,7 @@ class User
     {
         $token = new static();
         $token->id    = self::ANONYMOUS_TOKEN_ID;
-        $token->roles = Roles::createEmpty();
+        $token->permissions = Permissions::createEmpty();
 
         return $token;
     }

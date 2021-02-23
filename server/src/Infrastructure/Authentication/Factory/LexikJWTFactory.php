@@ -19,7 +19,7 @@ class LexikJWTFactory implements JWTFactory
     {
         return $this->encoder->encode([
             'email' => $user->getEmail()->getValue(),
-            'roles' => $permissions ? $permissions : $user->getRoles(),
+            'roles' => $permissions ? $permissions : $user->getPermissions(),
             'exp'   => time() + $ttl
         ]);
     }

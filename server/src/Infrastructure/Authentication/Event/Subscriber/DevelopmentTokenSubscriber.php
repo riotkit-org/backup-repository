@@ -70,7 +70,7 @@ class DevelopmentTokenSubscriber implements EventSubscriberInterface
     {
         $token = new User();
         $token->setId(Roles::TEST_TOKEN);
-        $token->setRoles(\App\Domain\Authentication\ValueObject\Roles::fromArray([Roles::PERMISSION_ADMINISTRATOR]));
+        $token->setPermissions(\App\Domain\Authentication\ValueObject\Permissions::fromArray([Roles::PERMISSION_ADMINISTRATOR]));
 
         $this->tokenStorage->setToken(
             new TokenTransport(Roles::TEST_TOKEN, $token)

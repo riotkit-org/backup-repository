@@ -4,7 +4,7 @@ namespace App\Infrastructure\Common\Repository;
 
 use App\Domain\Authentication\Entity\User;
 use App\Domain\Common\Repository\UserRepository;
-use App\Domain\Common\ValueObject\Roles as RolesVO;
+use App\Domain\Common\ValueObject\Permissions as RolesVO;
 use App\Domain\Roles as RolesDomain;
 
 /**
@@ -24,7 +24,7 @@ abstract class UserDoctrineRepository extends BaseRepository implements UserRepo
              */
             $token = new $className();
             $token->setId($id);
-            $token->setRoles(RolesVO::fromArray([RolesDomain::PERMISSION_ADMINISTRATOR]));
+            $token->setPermissions(RolesVO::fromArray([RolesDomain::PERMISSION_ADMINISTRATOR]));
 
             return $token;
         }

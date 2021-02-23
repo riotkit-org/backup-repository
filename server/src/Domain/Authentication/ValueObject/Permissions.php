@@ -2,6 +2,6 @@
 
 namespace App\Domain\Authentication\ValueObject;
 
-class Roles extends \App\Domain\Common\ValueObject\Roles
+class Permissions extends \App\Domain\Common\ValueObject\Permissions
 {
 }

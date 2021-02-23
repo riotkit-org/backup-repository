@@ -1,4 +1,4 @@
-App\Domain\Authentication\ValueObject\Roles:
+App\Domain\Authentication\ValueObject\Permissions:
     type: embeddable
     fields:
         value:

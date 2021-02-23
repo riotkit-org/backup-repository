@@ -2,7 +2,7 @@
 
 namespace App\Domain\Backup\Entity;
 
-use App\Domain\Backup\ValueObject\CollectionSpecificRoles;
+use App\Domain\Backup\ValueObject\CollectionSpecificPermissions;
 
 /**
  * This entity is a connection bridge between Collection <-> User
@@ -14,7 +14,7 @@ class UserAccess implements \JsonSerializable
     private string $collectionId;
     private string $userId;
     private Authentication\User $user;
-    private CollectionSpecificRoles $roles;
+    private CollectionSpecificPermissions $roles;
 
     public static function createFrom(BackupCollection $collection, Authentication\User $user)
     {
@@ -30,12 +30,12 @@ class UserAccess implements \JsonSerializable
         return $ua;
     }
 
-    public function setRoles(CollectionSpecificRoles $roles)
+    public function setRoles(CollectionSpecificPermissions $roles)
     {
         $this->roles = $roles;
     }
 
-    public function getRoles(): CollectionSpecificRoles
+    public function getRoles(): CollectionSpecificPermissions
     {
         return $this->roles;
     }

@@ -42,8 +42,8 @@ App\Domain\Authentication\Entity\User:
             class: App\Domain\Authentication\ValueObject\Organization
             columnPrefix: false
 
-        roles:
-            class: App\Domain\Authentication\ValueObject\Roles
+        permissions:
+            class: App\Domain\Authentication\ValueObject\Permissions
             columnPrefix: false
 
         about:

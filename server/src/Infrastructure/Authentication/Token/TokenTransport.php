@@ -23,13 +23,13 @@ class TokenTransport extends AbstractToken
 
     public function __construct(string $secret, User $user)
     {
-        parent::__construct($user->getRoles());
+        parent::__construct($user->getPermissions());
 
         $this->secret = $secret;
         $this->user   = $user;
 
         $this->setAuthenticated(true);
-        $this->setUser(new SymfonyUser('anonymous', $secret, $user->getRoles()));
+        $this->setUser(new SymfonyUser('anonymous', $secret, $user->getPermissions()));
     }
 
     /**

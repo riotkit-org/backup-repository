@@ -2,7 +2,7 @@
 
 namespace App\Domain\Backup\Factory;
 
-use App\Domain\Authentication\ValueObject\Roles as UserRoles;
+use App\Domain\Authentication\ValueObject\Permissions as UserRoles;
 use App\Domain\Backup\Entity\Authentication\User;
 use App\Domain\Backup\Entity\BackupCollection;
 use App\Domain\Backup\Repository\UserAccessRepository;

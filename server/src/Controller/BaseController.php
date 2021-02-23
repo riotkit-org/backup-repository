@@ -82,7 +82,7 @@ abstract class BaseController implements ContainerAwareInterface
             return $this->get(IncomingUserFactory::class)->createFromString(
                 $sessionToken->getUser()->getId(),
                 $className,
-                $sessionToken->getUser()->getRoles()
+                $sessionToken->getUser()->getPermissions()
             );
         }
 

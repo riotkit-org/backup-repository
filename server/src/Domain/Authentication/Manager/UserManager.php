@@ -11,7 +11,7 @@ use App\Domain\Authentication\ValueObject\About;
 use App\Domain\Authentication\ValueObject\ExpirationDate;
 use App\Domain\Authentication\ValueObject\Organization;
 use App\Domain\Authentication\ValueObject\Password;
-use App\Domain\Authentication\ValueObject\Roles;
+use App\Domain\Authentication\ValueObject\Permissions;
 use App\Domain\Common\Exception\DomainAssertionFailure;
 
 class UserManager
@@ -79,7 +79,7 @@ class UserManager
     public function editUser(User $user, array $roles, ?string $expirationTime,
                              ?string $organizationName, ?string $about, array $restrictions): void
     {
-        $user->setRoles(Roles::fromArray($roles));
+        $user->setPermissions(Permissions::fromArray($roles));
         $user->setExpirationDate(ExpirationDate::fromString($expirationTime, $this->defaultExpirationTime));
         $user->setOrganization(Organization::fromString($organizationName));
         $user->setAbout(About::fromString($about));

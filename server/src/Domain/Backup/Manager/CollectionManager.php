@@ -10,7 +10,7 @@ use App\Domain\Backup\Repository\CollectionRepository;
 use App\Domain\Backup\Repository\UserAccessRepository;
 use App\Domain\Backup\Repository\UserRepository;
 use App\Domain\Backup\Validation\CollectionValidator;
-use App\Domain\Backup\ValueObject\CollectionSpecificRoles;
+use App\Domain\Backup\ValueObject\CollectionSpecificPermissions;
 
 /**
  * Manages the collections
@@ -100,7 +100,7 @@ class CollectionManager
         $this->repository->flushAll();
     }
 
-    public function appendUser(User $user, BackupCollection $collection, CollectionSpecificRoles $roles): BackupCollection
+    public function appendUser(User $user, BackupCollection $collection, CollectionSpecificPermissions $roles): BackupCollection
     {
         $userAccess = $this->userAccessRepository->findForCollectionAndUser($collection, $user);
 
@@ -129,7 +129,7 @@ class CollectionManager
         return $collection;
     }
 
-    public function replaceUserRoles(User $user, BackupCollection $collection, CollectionSpecificRoles $roles)
+    public function replaceUserRoles(User $user, BackupCollection $collection, CollectionSpecificPermissions $roles)
     {
         $access = $this->userAccessRepository->findForCollectionAndUser($collection, $user);
         $access->setRoles($roles);

@@ -3,7 +3,7 @@
 namespace App\Domain\Authentication\Entity;
 
 use App\Domain\Authentication\Service\Security\HashEncoder;
-use App\Domain\Authentication\ValueObject\Roles;
+use App\Domain\Authentication\ValueObject\Permissions;
 
 /**
  * Access Token Audit Entry represents each token creation event
@@ -27,7 +27,7 @@ class AccessTokenAuditEntry implements \JsonSerializable
 
     private string $tokenShortcut;
 
-    private Roles $permissions;
+    private Permissions $permissions;
 
     private string $description;
 
@@ -41,7 +41,7 @@ class AccessTokenAuditEntry implements \JsonSerializable
         $auditEntry->user          = $user;
         $auditEntry->tokenHash     = HashEncoder::encode($token);
         $auditEntry->tokenShortcut = substr($token, 0, 16) . '...' . substr($token, -16);
-        $auditEntry->permissions   = Roles::fromArray($permissions);
+        $auditEntry->permissions   = Permissions::fromArray($permissions);
         $auditEntry->active        = true;
         $auditEntry->description   = $description;
 
@@ -98,7 +98,7 @@ class AccessTokenAuditEntry implements \JsonSerializable
         $this->active = false;
     }
 
-    public function getPermissions(): Roles
+    public function getPermissions(): Permissions
     {
         return $this->permissions;
     }

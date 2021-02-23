@@ -14,7 +14,7 @@ class User extends TokenFromCommon implements \JsonSerializable
         return [
             'id'           => $this->getId(),
             'email'        => $this->email->getValue(),
-            'roles'        => $this->getRoles(),
+            'roles'        => $this->getPermissions(),
         ];
     }
 

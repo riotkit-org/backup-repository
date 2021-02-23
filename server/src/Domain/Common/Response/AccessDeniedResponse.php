@@ -20,7 +20,7 @@ abstract class AccessDeniedResponse implements Response
     {
         $response = new static();
         $response->token   = $token;
-        $response->message = $message ?: 'Access denied. Check if your access token contains suggested roles.';
+        $response->message = $message ?: 'Access denied. Check if your access token contains suggested permissions.';
 
         return $response;
     }
