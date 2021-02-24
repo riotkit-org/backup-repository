@@ -161,6 +161,8 @@ class TechnicalContext extends MinkContext
                 return !$element || !$element->isVisible();
             }
         );
+
+        usleep((int) (0.1 * 1000000));
     }
 
     protected function fillFieldByCSS(string $selector, string $value): void
@@ -191,7 +193,7 @@ class TechnicalContext extends MinkContext
             $this->iWait();
 
         } catch (ElementNotFoundException $exception) {
-            $input = $this->findByCSS('[alt="' . $link . '"], [data-field="' . $link . '"]');
+            $input = $this->findByCSS('[alt="' . $link . '"], [data-field="' . $link . '"], a:contains("' . $link . '")');
 
             if ($input) {
                 $input->click();
@@ -272,7 +274,7 @@ class TechnicalContext extends MinkContext
             parent::fillField($field, $value);
 
         } catch (ElementNotFoundException $exception) {
-            $element = $this->findByCSS('input[data-field="' . $field . '"], input[placeholder="' . $field . '"]');
+            $element = $this->findByCSS($this->createInputSelector($field));
 
             if ($element) {
                 $element->setValue($value);
@@ -281,6 +283,30 @@ class TechnicalContext extends MinkContext
 
             throw $exception;
         }
+    }
+
+    public function assertFieldContains($field, $value)
+    {
+        $node = $this->findByCSS($this->createInputSelector($field));
+        Assertions::assertStringContainsString($value, $node->getValue());
+    }
+
+    private function createInputSelector(string $field): string
+    {
+        $selector = '';
+
+        foreach (['input', 'textarea', 'select', 'checkbox'] as $name) {
+            if ($selector) {
+                $selector .= ', ';
+            }
+
+            $selector .= $name . '[data-field="' . $field . '"], ' .
+                $name . '[placeholder="' . $field . '"], ' .
+                $name . '[alt="' . $field . '"], ' .
+                $name . '[name="' . $field . '"]';
+        }
+
+        return $selector;
     }
 
     /**

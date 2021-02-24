@@ -62,7 +62,7 @@ Feature: Create users, edit basic fields in existing user profiles, searching th
     # Adding roles to user account and logging in as that account
     # ===========================================================
 
-    Scenario: As an administrator I create an account without roles, then I edit account and make it an "administrator"
+    Scenario: As an administrator I create an account without permissions, then I edit account and make it an "administrator"
         # I. Create
         Given I visit users search page
         When I press "Add user" button
@@ -76,7 +76,7 @@ Feature: Create users, edit basic fields in existing user profiles, searching th
         # II. Edit
         Given I visit users search page
         When I follow "anarchist-black-cross@example.org"
-        And I follow "Toggle role names/description"
+        And I follow "Toggle permissions names/descriptions"
         And I check "security.administrator"
         And I press "Update Profile" button
         Then I should see message "User account saved"
@@ -114,7 +114,7 @@ Feature: Create users, edit basic fields in existing user profiles, searching th
         And I am authenticated as administrator
         And I visit users search page
         And I follow "anarchist-black-cross@example.org"
-        And I follow "Toggle role names/description"
+        And I follow "Toggle permissions names/descriptions"
         And I check "security.search_for_users"
         And I check "security.authentication_lookup"
         And I press "Update Profile" button

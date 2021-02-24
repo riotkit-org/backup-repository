@@ -114,7 +114,7 @@ export class AuthorizedAccess {
         return new AuthorizedAccess(
             accessData['userId'],
             accessData['userEmail'],
-            accessData['roles']
+            accessData['permissions']
         )
     }
 }

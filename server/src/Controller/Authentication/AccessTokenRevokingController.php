@@ -9,6 +9,7 @@ use App\Domain\Authentication\Exception\AuthenticationException;
 use App\Domain\Authentication\Factory\Context\SecurityContextFactory;
 use App\Domain\Authentication\Form\AccessTokenRevokingForm;
 use App\Domain\Authentication\Service\Security\HashEncoder;
+use App\Domain\Authentication\ValueObject\JWT;
 use App\Domain\Common\Exception\CommonValueException;
 use App\Domain\Common\Exception\ResourceNotFoundException;
 use App\Infrastructure\Common\Exception\JsonRequestException;
@@ -45,7 +46,7 @@ class AccessTokenRevokingController extends BaseController
         $currentUser = $this->getLoggedUser(User::class);
 
         $form = new AccessTokenRevokingForm();
-        $form->currentSessionTokenHash = HashEncoder::encode($this->getCurrentSessionToken($request));
+        $form->currentSessionTokenHash = $this->getCurrentSessionToken($request, JWT::class)->toHashString();
         $form->tokenHash = $tokenHash;
 
         return new JsonFormattedResponse(

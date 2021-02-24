@@ -17,7 +17,7 @@ Feature: Backup Repository due to its granular permissions can be used as a Back
         And I check "collections.list_versions_for_allowed_collections"
         And I check "collections.fetch_single_version_file_in_allowed_collections"
         And I check "collections.can_use_listing_endpoint"
-        And I check "security.list_roles"
+        And I check "security.list_permissions"
         And I check "security.can_see_own_access_tokens"
         And I check "upload.all"
         Then I submit creation of user account
@@ -38,6 +38,7 @@ Feature: Backup Repository due to its granular permissions can be used as a Back
         And I check "collections.list_versions_for_allowed_collections"
         And I check "collections.fetch_single_version_file_in_allowed_collections"
         And I check "collections.can_use_listing_endpoint"
+        And I check "collections.can_list_users_in_allowed_collections"
         Then I finalize adding new permissions to collection
         And I logout
 
@@ -48,7 +49,7 @@ Feature: Backup Repository due to its granular permissions can be used as a Back
         And I follow "website.tar.gz"
         And I fill in "Description" with "Edited from E2E test! :-)"
         And I press "Save changes"
-        And I reload the page
+        Then the "Description" field should contain "Edited from E2E test! :-)"
 
 
     Scenario: As a organization user I can generate a token that will give access to my account

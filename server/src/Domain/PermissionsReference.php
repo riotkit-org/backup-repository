@@ -136,7 +136,7 @@ final class PermissionsReference
     /** [Collection scope] Delete collection */
     public const PERMISSION_CAN_DELETE_ALLOWED_COLLECTIONS = 'collections.delete_allowed_collections';
 
-    /** [Collection scope] List users */
+    /** [Collection scope] List who has access to collection */
     public const PERMISSION_CAN_LIST_TOKENS_IN_COLLECTION = 'collections.can_list_users_in_allowed_collections';
 
     /** [Collection scope] Upload a new version */

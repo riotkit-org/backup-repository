@@ -25,10 +25,10 @@ export default class AuthBackend extends BackupRepositoryBackend {
      *
      * @param limits Comma separated limits list eg. auth,collection
      *
-     * @api /api/stable/auth/roles
+     * @api /api/stable/auth/permissions
      */
     async findPermissions(limits: string = ''): Promise<PermissionsResponse> {
-        return super.get('/auth/roles?limits=' + limits).then(function (response) {
+        return super.get('/auth/permissions?limits=' + limits).then(function (response) {
             return new PermissionsResponse(
                 RolesList.createFromRawDict(response.data.permissions),
                 RolesList.createFromRawDict(response.data.allPermissions)

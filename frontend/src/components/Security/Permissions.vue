@@ -10,7 +10,7 @@
             <slot name="toolbar-toggle">
                 <i class="bi-wrench clickable-label toolbar" @click="(value) => this.isVisible = !this.isVisible" v-tooltip.top-center="'Show/hide roles list assigned to this user access'"></i>
             </slot>
-            <i class="bi-layers-half clickable-label toolbar" alt="Toggle role names/description" @click="onShowAdvancedClicked" v-tooltip.top-center="'Toggle role names/description'"></i>
+            <i class="bi-layers-half clickable-label toolbar" alt="Toggle permissions names/descriptions" @click="onShowAdvancedClicked" v-tooltip.top-center="'Toggle permissions names/descriptions'"></i>
             <slot name="toolbar-existing" v-if="!isNew">
                 <i class="bi-trash clickable-label toolbar" alt="Revoke access" v-tooltip.top-center="'Revoke access'" @click="onAccessRevoking"></i>
             </slot>

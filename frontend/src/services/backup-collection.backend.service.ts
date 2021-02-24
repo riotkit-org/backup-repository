@@ -120,13 +120,13 @@ export default class BackupCollectionBackendService extends BackupRepositoryBack
      *
      * @param collection
      * @param userId
-     * @param roles
+     * @param permissions
      * @param create
      */
-    async createOrUpdateUserAccessForCollection(collection: BackupCollection, userId: string, roles: List<string|any>, create: boolean = false): Promise<boolean> {
+    async createOrUpdateUserAccessForCollection(collection: BackupCollection, userId: string, permissions: List<string|any>, create: boolean = false): Promise<boolean> {
         let payload = {
             'user': userId,
-            'roles': roles
+            'permissions': permissions
         }
 
         let method = create ? "POST" : "PUT"

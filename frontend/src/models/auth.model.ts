@@ -1,7 +1,7 @@
 /**
  * Represents a single role/permission
  *
- * @api /api/stable/auth/roles
+ * @api /api/stable/auth/permissions
  */
 
 // @ts-ignore
@@ -66,7 +66,7 @@ export class User {
         user.expired      = userData['expired']
         user.expires      = userData['expires']
         user.active       = userData['active']
-        user.roles        = userData['roles']
+        user.roles        = userData['permissions']
         user.about        = userData['about']
         user.organization = userData['organization']
         user.isAdmin      = userData['is_administrator']
@@ -91,7 +91,7 @@ export class User {
             // fields in edit and in creation
             'expires': this.expires,
             'active': this.active,
-            'roles': this.roles,
+            'permissions': this.roles,
             'about': this.about,
             'organization': this.organization,
             'data': this.data.toUserUpdatePayloadDict()
