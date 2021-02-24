@@ -10,7 +10,7 @@ App\Domain\Backup\Entity\UserAccess:
             type: string
 
     embedded:
-        roles:
+        permissions:
             class: \App\Domain\Backup\ValueObject\CollectionSpecificPermissions
             columnPrefix: false
 

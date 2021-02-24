@@ -33,7 +33,7 @@ final class Errors
     public const ERR_MSG_USER_PASSWORD_WHITESPACES     = 'Password cannot begin or end with a blank character';
 
     public const ERR_USER_ROLE_INVALID                 = 40010;
-    public const ERR_MSG_USER_ROLE_INVALID             = 'Invalid role selected: {{ role }}. Available: {{ available }}';
+    public const ERR_MSG_USER_ROLE_INVALID             = 'Invalid permission selected: {{ role }}. Available: {{ available }}';
 
     public const ERR_USER_NOT_FOUND_BY_EMAIL     = 40011;
     public const ERR_MSG_USER_NOT_FOUND_BY_EMAIL = 'No user found matching given e-mail address';
@@ -224,7 +224,7 @@ final class Errors
     public const ERR_MSG_PERMISSION_NO_BACKUP_DOWNLOAD_ALLOWED = 'Current access does not allow you to download any backup from this collection';
 
     public const ERR_PERMISSION_NO_BACKUP_LISTING_ALLOWED     = 40311;
-    public const ERR_MSG_PERMISSION_NO_BACKUP_LISTING_ALLOWED = 'Current roles does not grant you a possibility to list files in this backup collection';
+    public const ERR_MSG_PERMISSION_NO_BACKUP_LISTING_ALLOWED = 'Current permissions does not grant you a possibility to list files in this backup collection';
 
     public const ERR_PERMISSION_NO_ACCESS_TO_TECHNICAL_ENDPOINTS     = 40312;
     public const ERR_MSG_PERMISSION_NO_ACCESS_TO_TECHNICAL_ENDPOINTS = 'You don\'t have enough permissions to use technical endpoints';
@@ -236,10 +236,10 @@ final class Errors
     public const ERR_MSG_PERMISSION_NO_ACCESS_TO_SEARCH_USERS = 'No permission to search for users';
 
     public const ERR_PERMISSION_CANNOT_ASSIGN_MORE_ROLES_THAN_HAVE     = 40315;
-    public const ERR_MSG_PERMISSION_CANNOT_ASSIGN_MORE_ROLES_THAN_HAVE = 'Cannot give roles to other user that current context user does not have';
+    public const ERR_MSG_PERMISSION_CANNOT_ASSIGN_MORE_ROLES_THAN_HAVE = 'Cannot give permissions to other user that current context user does not have';
 
     public const ERR_FORBIDDEN_TO_ASSIGN_TOKEN_WITH_MORE_ROLES_THAN_USER_HAVE     = 40316;
-    public const ERR_MSG_FORBIDDEN_TO_ASSIGN_TOKEN_WITH_MORE_ROLES_THAN_USER_HAVE = 'Cannot create an API token with roles that user actually does not have. You can only limit your roles';
+    public const ERR_MSG_FORBIDDEN_TO_ASSIGN_TOKEN_WITH_MORE_ROLES_THAN_USER_HAVE = 'Cannot create an API token with permissions that user actually does not have. You can only limit your permissions';
 
     public const ERR_CANNOT_LIST_ACCESS_TOKENS_OF_USER     = 40317;
     public const ERR_MSG_CANNOT_LIST_ACCESS_TOKENS_OF_USER = 'Cannot list access tokens for selected user. Current access does not allow such operation';

@@ -58,7 +58,7 @@ class BackupCollectionCustomIdsCest
     {
         $I->amAdmin();
         $user = $I->createStandardUser([
-            'roles' => [
+            'permissions' => [
                 'collections.create_new'
             ]
         ]);
@@ -75,13 +75,13 @@ class BackupCollectionCustomIdsCest
         $I->canSeeResponseCodeIs(403);
     }
 
-    public function testCanAssignCustomIdWhenUserWasGrantedWithProperRole(FunctionalTester $I): void
+    public function testCanAssignCustomIdWhenUserWasGrantedWithProperPermissions(FunctionalTester $I): void
     {
         $expectedId = Uuid::uuid4()->toString();
 
         $I->amAdmin();
         $user = $I->createStandardUser([
-            'roles' => [
+            'permissions' => [
                 'collections.create_new', 'collections.create_new.with_custom_id'
             ]
         ]);

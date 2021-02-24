@@ -50,9 +50,9 @@ abstract class ManageCollectionAccessControlController extends BaseController
         $decoded = json_decode($request->getContent(), true);
 
         $formData = [
-            'collection' => $id,
-            'user'       => isset($decoded['user']) ? $decoded['user'] : $uid,
-            'roles'      => $decoded['roles'] ?? []
+            'collection'  => $id,
+            'user'        => isset($decoded['user']) ? $decoded['user'] : $uid,
+            'permissions' => $decoded['permissions'] ?? []
         ];
 
         /**

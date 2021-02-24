@@ -111,8 +111,8 @@ class CollectionManager
             );
         }
 
-        // replace roles in existing UserAccess or set roles in new UserAccess
-        $userAccess->setRoles($roles);
+        // replaces permissions in existing UserAccess or sets permissions in new UserAccess
+        $userAccess->setPermissions($roles);
         $this->userAccessRepository->persist($userAccess);
 
         return $collection;
@@ -132,7 +132,7 @@ class CollectionManager
     public function replaceUserRoles(User $user, BackupCollection $collection, CollectionSpecificPermissions $roles)
     {
         $access = $this->userAccessRepository->findForCollectionAndUser($collection, $user);
-        $access->setRoles($roles);
+        $access->setPermissions($roles);
 
         $this->userAccessRepository->persist($access);
     }

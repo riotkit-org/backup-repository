@@ -16,7 +16,7 @@ class BackupCollectionUploadRotationStrategyCest
     {
         $I->amAdmin();
         $this->user = $I->createStandardUser([
-            'roles' => [
+            'permissions' => [
                 "collections.create_new",
                 "collections.manage_users_in_allowed_collections",
                 "collections.upload_to_allowed_collections",

@@ -19,7 +19,7 @@ class TokenSearchCest
 
         for ($num = 1; $num <= self::USERS_COUNT; $num++) {
             $I->createStandardUser([
-                'roles' => [
+                'permissions' => [
                     'upload.all', 'upload.enforce_tags_selected_in_user_account'
                 ],
                 'data' => [
@@ -72,13 +72,13 @@ class TokenSearchCest
         }
     }
 
-    public function shouldHaveNoAccessIfNoRoleGranted(FunctionalTester $I): void
+    public function shouldHaveNoAccessIfNoPermissionGranted(FunctionalTester $I): void
     {
         $I->amAdmin();
 
-        // switch token to non-privileged that does not contain a role required for search endpoint
+        // switch token to non-privileged that does not contain a permission required for search endpoint
         $user = $I->createStandardUser([
-            'roles' => [
+            'permissions' => [
                 'collections.create_new'
             ]
         ]);
@@ -91,7 +91,7 @@ class TokenSearchCest
     {
         $I->amAdmin();
         $user = $I->createStandardUser([
-            'roles' => [
+            'permissions' => [
                 'security.search_for_users',
                 'security.authentication_lookup'
             ]

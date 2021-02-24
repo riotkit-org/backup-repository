@@ -26,7 +26,7 @@ class GrantUserToCollection
      *
      * @return ?CollectionAccessRightsResponse
      *
-     * @throws AuthenticationException
+     * @throws AuthenticationException|\App\Domain\Common\Exception\CommonValueException
      */
     public function handle(UserAccessAttachForm $form, CollectionManagementContext $securityContext): ?CollectionAccessRightsResponse
     {
@@ -34,10 +34,10 @@ class GrantUserToCollection
             return null;
         }
 
-        $roles = CollectionSpecificPermissions::fromArray($form->roles);
+        $permissions = CollectionSpecificPermissions::fromArray($form->permissions);
 
-        $this->assertHasRights($securityContext, $form->collection, $roles);
-        $collection = $this->manager->appendUser($form->user, $form->collection, $roles);
+        $this->assertHasRights($securityContext, $form->collection, $permissions);
+        $collection = $this->manager->appendUser($form->user, $form->collection, $permissions);
 
         return CollectionAccessRightsResponse::createFromResults($form->user, $collection);
     }
@@ -48,20 +48,20 @@ class GrantUserToCollection
     }
 
     /**
-     * @param CollectionManagementContext $securityContext
-     * @param BackupCollection            $collection
-     * @param CollectionSpecificPermissions     $roles
+     * @param CollectionManagementContext   $securityContext
+     * @param BackupCollection              $collection
+     * @param CollectionSpecificPermissions $permissions
      *
      * @throws AuthenticationException
      */
     private function assertHasRights(CollectionManagementContext $securityContext, BackupCollection $collection,
-                                     CollectionSpecificPermissions $roles): void
+                                     CollectionSpecificPermissions $permissions): void
     {
         if (!$securityContext->canAddTokensToCollection($collection)) {
             throw AuthenticationException::fromCollectionAccessManagementDenied();
         }
 
-        if (!$securityContext->canAssignThoseRolesToUsersInCollection($roles)) {
+        if (!$securityContext->canAssignThoseRolesToUsersInCollection($permissions)) {
             throw AuthenticationException::fromCollectionAccessManagementCannotAssignMoreRoles();
         }
     }

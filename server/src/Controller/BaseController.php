@@ -30,6 +30,8 @@ abstract class BaseController implements ContainerAwareInterface
     }
 
     /**
+     * @todo: Add JSON Schema support?
+     *
      * @param Request|array $request
      * @param string        $DTOClassName
      * @param callable|null $transformer

@@ -20,8 +20,8 @@ class BackupCollectionAccessControlCest
     public function testUserCantGrantAnybodyToCollectionWhenNoRightsToGrantAreOnTheOperationalUser(FunctionalTester $I): void
     {
         $I->amAdmin();
-        $secondUser = $I->createStandardUser(['roles' => ['upload.all']]);
-        $thirdUser = $I->createStandardUser(['roles' => ['upload.all']]);
+        $secondUser = $I->createStandardUser(['permissions' => ['upload.all']]);
+        $thirdUser = $I->createStandardUser(['permissions' => ['upload.all']]);
 
         $I->amCollectionManager();
         $collectionId = $this->createExampleCollection($I);
@@ -47,8 +47,8 @@ class BackupCollectionAccessControlCest
     public function testUserCannotGrantMoreThanHave(FunctionalTester $I): void
     {
         $I->amAdmin();
-        $secondUser = $I->createStandardUser(['roles' => ['upload.all']]);
-        $thirdUser = $I->createStandardUser(['roles' => ['upload.all']]);
+        $secondUser = $I->createStandardUser(['permissions' => ['upload.all']]);
+        $thirdUser = $I->createStandardUser(['permissions' => ['upload.all']]);
 
         $I->amCollectionManager();
         $collectionId = $this->createExampleCollection($I);
@@ -58,33 +58,33 @@ class BackupCollectionAccessControlCest
             'collections.manage_users_in_allowed_collections'
         ]);
 
-        // verify: We cannot assign a role that we do not have as $secondUser
+        // verify: We cannot assign permissions that we do not have as $secondUser
         $I->amUser($secondUser->email, $secondUser->password); // re-log as second user
         $I->grantUserAccessToCollection($collectionId, $thirdUser->id, ['collections.list_versions_for_allowed_collections']);
         $I->canSeeResponseCannotGrantTooMuchAccessThanWeHave();
     }
 
     /**
-     * Verify that user can have modified roles that were previously granted
+     * Verify that user can have modified permissions that were previously granted
      *
      * @param FunctionalTester $I
      */
-    public function testGrantedRolesCanBeModified(FunctionalTester $I): void
+    public function testGrantedPermissionsCanBeModified(FunctionalTester $I): void
     {
         $I->amAdmin();
-        $secondUser = $I->createStandardUser(['roles' => ['upload.all']]);
+        $secondUser = $I->createStandardUser(['permissions' => ['upload.all']]);
 
         $I->amCollectionManager();
         $collectionId = $this->createExampleCollection($I);
 
-        // assign two roles
+        // assign two permissions
         $I->grantUserAccessToCollection($collectionId, $secondUser->id, [
             'collections.upload_to_allowed_collections',
             'collections.manage_users_in_allowed_collections'
         ]);
         $I->canSeeResponseOfGrantedAccessIsSuccessful();
 
-        // then assign three roles
+        // then assign three permissions
         // @todo: IMPLEMENT PUT METHOD!
         $I->grantUserAccessToCollection($collectionId, $secondUser->id, [
             'collections.upload_to_allowed_collections',
@@ -94,7 +94,7 @@ class BackupCollectionAccessControlCest
         $I->canSeeResponseOfGrantedAccessIsSuccessful();
 
         //
-        // verify that user can use added role 'collections.list_versions_for_allowed_collections'
+        // verify that user can use added permission 'collections.list_versions_for_allowed_collections'
         //
         $I->amUser($secondUser->email, $secondUser->password);
         $I->browseCollectionVersions($collectionId);
@@ -105,7 +105,7 @@ class BackupCollectionAccessControlCest
     {
         $I->amAdmin();
         $secondUser = $I->createStandardUser([
-            'roles' => ['upload.all'],
+            'permissions' => ['upload.all'],
             'data' => [
                 'tags' => ['user_uploads.u123', 'user_uploads'],
                 'maxAllowedFileSize' => 2049
@@ -142,14 +142,14 @@ class BackupCollectionAccessControlCest
     }
 
     /**
-     * Feature: I can assign specific roles for given user
+     * Feature: I can assign specific permissions for given user
      *
      * @param FunctionalTester $I
      */
-    public function testGrantingUserPermissionsPerCollectionAllowsToSelectRolesPerCollection(FunctionalTester $I): void
+    public function testGrantingUserPermissionsPerCollectionAllowsToSelectPermissionsPerCollection(FunctionalTester $I): void
     {
         $I->amAdmin();
-        $secondUser = $I->createStandardUser(['roles' => ['upload.all']]);
+        $secondUser = $I->createStandardUser(['permissions' => ['upload.all']]);
 
         $I->amCollectionManager();
 
@@ -157,7 +157,7 @@ class BackupCollectionAccessControlCest
         $secondCollectionWhereAreNoPermissions = $this->createExampleCollection($I);
 
         /*
-         * Grant user access to collections - difference is in assigned roles
+         * Grant user access to collections - difference is in assigned permissions
          */
 
         // in first collection we will have rights to upload and list versions
@@ -173,7 +173,7 @@ class BackupCollectionAccessControlCest
          * Tests - checking if permissions are there
          */
 
-        // at first: become our user that was assigned to collections with different roles
+        // at first: become our user that was assigned to collections with different permissions
         $I->amUser($secondUser->email, $secondUser->password);
 
         // test 1: attempt to upload, when globally there are no permissions, but specific per-collection were assigned to upload and list versions
@@ -189,14 +189,14 @@ class BackupCollectionAccessControlCest
     }
 
     /**
-     * Verify that we cannot set roles that are not related to collection usage, when granting a user access to a collection
+     * Verify that we cannot set permissions that are not related to collection usage, when granting a user access to a collection
      *
      * @param FunctionalTester $I
      */
-    public function testNonCollectionRolesShouldNotBePossibleToSelect(FunctionalTester $I): void
+    public function testNonCollectionPermissionsShouldNotBePossibleToSelect(FunctionalTester $I): void
     {
         $I->amAdmin();
-        $secondUser = $I->createStandardUser(['roles' => ['upload.all']]);
+        $secondUser = $I->createStandardUser(['permissions' => ['upload.all']]);
 
         $I->amCollectionManager();
         $collectionId = $this->createExampleCollection($I);
@@ -206,7 +206,7 @@ class BackupCollectionAccessControlCest
         ]);
 
         $I->canSeeResponseCodeIsClientError();
-        $I->canSeeErrorResponse('Invalid role selected', 40010, 'validation.error');
+        $I->canSeeErrorResponse('Invalid permission selected', 40010, 'validation.error');
     }
 
     private function createExampleCollection(FunctionalTester $I): string

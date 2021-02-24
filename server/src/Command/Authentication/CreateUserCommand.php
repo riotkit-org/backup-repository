@@ -32,7 +32,7 @@ class CreateUserCommand extends Command
     {
         $this->setName(static::NAME)
             ->setDescription('Creates a user')
-            ->addOption('roles', null, InputOption::VALUE_REQUIRED)
+            ->addOption('permissions', null, InputOption::VALUE_REQUIRED)
             ->addOption('tags', null, InputOption::VALUE_REQUIRED)
             ->addOption('max-file-size', null, InputOption::VALUE_REQUIRED)
             ->addOption('id', 'i', InputOption::VALUE_OPTIONAL)
@@ -59,7 +59,7 @@ class CreateUserCommand extends Command
         $form->data->tags               = $this->getMultipleValueOption($input, 'tags');
         $form->data->maxAllowedFileSize = (int) $input->getOption('max-file-size');
         $form->expires                  = $input->getOption('expires');
-        $form->roles                    = $this->getMultipleValueOption($input, 'roles');
+        $form->permissions              = $this->getMultipleValueOption($input, 'permissions');
         $form->id                       = $input->getOption('id');
         $form->email                    = $input->getOption('email');
         $form->password                 = $input->getOption('password');
@@ -70,7 +70,7 @@ class CreateUserCommand extends Command
             $this->debug(' [Tag] -> ' . $tag, $output);
         }
 
-        foreach ($form->roles as $role) {
+        foreach ($form->permissions as $role) {
             $this->debug(' [Role] -> ' . $role, $output);
         }
 

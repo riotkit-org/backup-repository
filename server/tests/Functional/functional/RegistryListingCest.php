@@ -30,7 +30,7 @@ class RegistryListingCest
     public function testListingAllFiles(FunctionalTester $I): void
     {
         $this->populateWithSomeData($I);
-        $I->haveRoles(['admin.view.files_from_all_tags', 'admin.view.can_use_listing_endpoint_at_all']);
+        $I->havePermissions(['admin.view.files_from_all_tags', 'admin.view.can_use_listing_endpoint_at_all']);
 
         $I->listFiles(['page' => 1, 'limit' => 20]);
         $I->canSeeResponseContains('zsp.net.pl_database.tar-v1.gz');
@@ -39,7 +39,7 @@ class RegistryListingCest
     public function testFindByName(FunctionalTester $I): void
     {
         $this->populateWithSomeData($I);
-        $I->haveRoles(['admin.view.files_from_all_tags', 'admin.view.can_use_listing_endpoint_at_all']);
+        $I->havePermissions(['admin.view.files_from_all_tags', 'admin.view.can_use_listing_endpoint_at_all']);
 
         // case 1: will find, because "hello.txt" was uploaded
         $I->listFiles(['page' => 1, 'limit' => 20, 'searchQuery' => 'zsp.net.pl']);

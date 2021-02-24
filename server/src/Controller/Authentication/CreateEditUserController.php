@@ -26,7 +26,7 @@ class CreateEditUserController extends BaseController
     }
 
     /**
-     * Create a new user, assign roles, set optional expiration, upload policy
+     * Create a new user, assign permissions, set optional expiration, upload policy
      *
      * @param Request $request
      * @param string $userId

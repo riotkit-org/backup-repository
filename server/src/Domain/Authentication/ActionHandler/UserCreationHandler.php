@@ -36,7 +36,7 @@ class UserCreationHandler
 
         try {
             $token = $this->tokenManager->createUser(
-                $form->roles,
+                $form->permissions,
                 $form->expires,
                 $form->data->toArray(),
                 $form->email,

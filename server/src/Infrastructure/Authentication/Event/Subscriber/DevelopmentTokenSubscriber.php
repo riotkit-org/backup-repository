@@ -4,7 +4,7 @@ namespace App\Infrastructure\Authentication\Event\Subscriber;
 
 use App\Domain\Authentication\Entity\User;
 use App\Domain\Authentication\Factory\IncomingUserFactory;
-use App\Domain\Roles;
+use App\Domain\PermissionsReference;
 use App\Infrastructure\Authentication\Token\TokenTransport;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -51,7 +51,7 @@ class DevelopmentTokenSubscriber implements EventSubscriberInterface
         $token       = null;
 
         // Development token
-        if ($this->isDev && (Roles::isTestToken($tokenString) || $this->isProfilerRoute($event->getRequest()))) {
+        if ($this->isDev && (PermissionsReference::isTestToken($tokenString) || $this->isProfilerRoute($event->getRequest()))) {
             $this->handleTestToken();
             return;
         }
@@ -69,11 +69,11 @@ class DevelopmentTokenSubscriber implements EventSubscriberInterface
     private function handleTestToken(): void
     {
         $token = new User();
-        $token->setId(Roles::TEST_TOKEN);
-        $token->setPermissions(\App\Domain\Authentication\ValueObject\Permissions::fromArray([Roles::PERMISSION_ADMINISTRATOR]));
+        $token->setId(PermissionsReference::TEST_TOKEN);
+        $token->setPermissions(\App\Domain\Authentication\ValueObject\Permissions::fromArray([PermissionsReference::PERMISSION_ADMINISTRATOR]));
 
         $this->tokenStorage->setToken(
-            new TokenTransport(Roles::TEST_TOKEN, $token)
+            new TokenTransport(PermissionsReference::TEST_TOKEN, $token)
         );
     }
 

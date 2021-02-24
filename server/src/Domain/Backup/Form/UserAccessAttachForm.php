@@ -7,5 +7,5 @@ class UserAccessAttachForm extends CollectionAddDeleteUserForm
     /**
      * @var string[]
      */
-    public array $roles = [];
+    public array $permissions = [];
 }

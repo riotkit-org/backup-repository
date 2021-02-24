@@ -4,16 +4,16 @@ namespace App\Domain\Authentication\ActionHandler;
 
 use App\Domain\Authentication\Entity\User;
 use App\Domain\Authentication\Exception\AuthenticationException;
-use App\Domain\Authentication\Response\RoleSearchResponse;
+use App\Domain\Authentication\Response\PermissionsSearchResponse;
 use App\Domain\Authentication\Security\Context\AuthenticationManagementContext;
-use App\Domain\Authentication\Service\RolesFilter;
-use App\Domain\Authentication\Service\Security\RolesInformationProvider;
+use App\Domain\Authentication\Service\PermissionsFilter;
+use App\Domain\Authentication\Service\Security\PermissionsInformationProvider;
 
 class RolesListingHandler
 {
-    private RolesInformationProvider $provider;
+    private PermissionsInformationProvider $provider;
 
-    public function __construct(RolesInformationProvider $provider)
+    public function __construct(PermissionsInformationProvider $provider)
     {
         $this->provider = $provider;
     }
@@ -23,11 +23,11 @@ class RolesListingHandler
      * @param User  $user
      * @param array $limits
      *
-     * @return RoleSearchResponse
+     * @return PermissionsSearchResponse
      *
      * @throws AuthenticationException
      */
-    public function handle(AuthenticationManagementContext $context, User $user, array $limits): RoleSearchResponse
+    public function handle(AuthenticationManagementContext $context, User $user, array $limits): PermissionsSearchResponse
     {
         if (!$context->canListRoles()) {
             throw AuthenticationException::fromPermissionDeniedToListPermissions();
@@ -35,8 +35,8 @@ class RolesListingHandler
 
         $allPermissions = $this->provider->findAllRolesWithTheirDescription();
 
-        return RoleSearchResponse::createResultsResponse(
-            RolesFilter::filterBy($allPermissions, $limits, $user),
+        return PermissionsSearchResponse::createResultsResponse(
+            PermissionsFilter::filterBy($allPermissions, $limits, $user),
             $allPermissions
         );
     }

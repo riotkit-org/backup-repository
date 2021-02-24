@@ -7,14 +7,14 @@ use App\Domain\Backup\ValueObject\CollectionSpecificPermissions;
 /**
  * This entity is a connection bridge between Collection <-> User
  * Normally it is fully managed transparently by ORM, but in this case we manage it semi-manually to inject
- * roles per connection.
+ * permissions per connection.
  */
 class UserAccess implements \JsonSerializable
 {
     private string $collectionId;
     private string $userId;
     private Authentication\User $user;
-    private CollectionSpecificPermissions $roles;
+    private CollectionSpecificPermissions $permissions;
 
     public static function createFrom(BackupCollection $collection, Authentication\User $user)
     {
@@ -30,14 +30,14 @@ class UserAccess implements \JsonSerializable
         return $ua;
     }
 
-    public function setRoles(CollectionSpecificPermissions $roles)
+    public function setPermissions(CollectionSpecificPermissions $permissions)
     {
-        $this->roles = $roles;
+        $this->permissions = $permissions;
     }
 
-    public function getRoles(): CollectionSpecificPermissions
+    public function getPermissions(): CollectionSpecificPermissions
     {
-        return $this->roles;
+        return $this->permissions;
     }
 
     public function jsonSerialize(): array
@@ -45,7 +45,7 @@ class UserAccess implements \JsonSerializable
         return [
             'userId'       => $this->userId,
             'userEmail'    => $this->user->getEmail()->getValue(),
-            'roles'        => $this->roles->getAsList(),
+            'permissions'  => $this->permissions->getAsList(),
             'collectionId' => $this->collectionId
         ];
     }

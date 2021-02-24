@@ -48,13 +48,13 @@ class AccessTokenGenerationHandler
 
     /**
      * @param AuthenticationManagementContext $context
-     * @param array $requestedRoles
+     * @param array $requestedPermissions
      *
      * @throws AuthenticationException
      */
-    private function assertHasRights(AuthenticationManagementContext $context, array $requestedRoles): void
+    private function assertHasRights(AuthenticationManagementContext $context, array $requestedPermissions): void
     {
-        if (!$context->canGenerateJWTWithSelectedPermissions($requestedRoles)) {
+        if (!$context->canGenerateJWTWithSelectedPermissions($requestedPermissions)) {
             throw AuthenticationException::fromForbiddenToGenerateTokenWithMoreRolesThanUserHave();
         }
     }

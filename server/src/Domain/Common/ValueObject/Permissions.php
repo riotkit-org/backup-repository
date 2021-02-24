@@ -3,7 +3,7 @@
 namespace App\Domain\Common\ValueObject;
 
 use App\Domain\Common\Exception\CommonValueException;
-use App\Domain\Roles as RolesConst;
+use App\Domain\PermissionsReference;
 
 class Permissions implements \JsonSerializable
 {
@@ -13,7 +13,7 @@ class Permissions implements \JsonSerializable
     protected array $value = [];
 
     private bool  $alreadyGrantedAdminAccess = false;
-    private array $requestedRoles            = [];
+    private array $requestedPermissions      = [];
 
     /**
      * @param array $permissionsToSet
@@ -86,12 +86,12 @@ class Permissions implements \JsonSerializable
     private function isAdmin(): bool
     {
         // NOTICE: cannot use hasRole() because of possible infinite recursion
-        return in_array(RolesConst::PERMISSION_ADMINISTRATOR, $this->value);
+        return in_array(PermissionsReference::PERMISSION_ADMINISTRATOR, $this->value);
     }
 
     private function getAdministratorPrivileges(): array
     {
-        return RolesConst::GRANTS_LIST;
+        return PermissionsReference::GRANTS_LIST;
     }
 
     /**
@@ -101,27 +101,27 @@ class Permissions implements \JsonSerializable
      */
     public function getRequestedPermissionsAsList(): array
     {
-        return $this->requestedRoles;
+        return $this->requestedPermissions;
     }
 
     protected static function getAvailablePermissions(): array
     {
-        return RolesConst::getPermissionsList();
+        return PermissionsReference::getPermissionsList();
     }
 
     private function recordPermissionRequest(string $name): void
     {
-        if (!\in_array($name, RolesConst::getPermissionsList(), true)) {
+        if (!\in_array($name, PermissionsReference::getPermissionsList(), true)) {
             return;
         }
 
-        $this->requestedRoles[] = $name;
+        $this->requestedPermissions[] = $name;
     }
 
     private function prepareAdministrationPermission(): void
     {
-        if (!$this->alreadyGrantedAdminAccess && in_array(RolesConst::PERMISSION_ADMINISTRATOR, $this->value, true)) {
-            $this->value = array_merge($this->value, RolesConst::GRANTS_LIST);
+        if (!$this->alreadyGrantedAdminAccess && in_array(PermissionsReference::PERMISSION_ADMINISTRATOR, $this->value, true)) {
+            $this->value = array_merge($this->value, PermissionsReference::GRANTS_LIST);
             $this->alreadyGrantedAdminAccess = true;
         }
     }

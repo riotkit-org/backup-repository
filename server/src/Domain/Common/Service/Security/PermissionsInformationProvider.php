@@ -2,16 +2,16 @@
 
 namespace App\Domain\Common\Service\Security;
 
-use App\Domain\Roles;
+use App\Domain\PermissionsReference;
 
-class RolesInformationProvider
+class PermissionsInformationProvider
 {
     /**
      * @return array
      */
     public function findAllRolesWithTheirDescription(): array
     {
-        $ref = new \ReflectionClass(Roles::class);
+        $ref = new \ReflectionClass(PermissionsReference::class);
         $roles = [];
 
         foreach ($ref->getConstants() as $constant => $value) {
@@ -27,7 +27,7 @@ class RolesInformationProvider
 
     private function findRoleDescription(string $role): ?string
     {
-        $ref = new \ReflectionClassConstant(Roles::class, $role);
+        $ref = new \ReflectionClassConstant(PermissionsReference::class, $role);
 
         if (!$ref) {
             return null;

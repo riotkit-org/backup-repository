@@ -12,7 +12,7 @@ use App\Domain\Backup\Mapper\CollectionMapper;
 use App\Domain\Backup\Response\Collection\CrudResponse;
 use App\Domain\Backup\Security\CollectionManagementContext;
 use App\Domain\Backup\ValueObject\CollectionSpecificPermissions;
-use App\Domain\Common\Service\Security\RolesInformationProvider;
+use App\Domain\Common\Service\Security\PermissionsInformationProvider;
 
 class CreationHandler
 {

@@ -18,6 +18,6 @@ class CollectionSpecificPermissions extends Permissions
 
     protected static function getAvailablePermissions(): array
     {
-        return \App\Domain\Roles::PER_BACKUP_COLLECTION_LIST;
+        return \App\Domain\PermissionsReference::PER_BACKUP_COLLECTION_LIST;
     }
 }

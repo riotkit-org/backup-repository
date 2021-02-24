@@ -15,7 +15,7 @@ class AuthForm
     /**
      * @var string[]
      */
-    public $roles;
+    public $permissions;
 
     /**
      * @var RestrictionsForm

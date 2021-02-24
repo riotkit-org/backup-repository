@@ -5,7 +5,7 @@ namespace App\Infrastructure\Common\Repository;
 use App\Domain\Authentication\Entity\User;
 use App\Domain\Common\Repository\UserRepository;
 use App\Domain\Common\ValueObject\Permissions as RolesVO;
-use App\Domain\Roles as RolesDomain;
+use App\Domain\PermissionsReference as RolesDomain;
 
 /**
  * @codeCoverageIgnore

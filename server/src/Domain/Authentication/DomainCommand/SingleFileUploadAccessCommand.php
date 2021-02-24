@@ -7,7 +7,7 @@ use App\Domain\Authentication\Repository\AccessTokenAuditRepository;
 use App\Domain\Bus;
 use App\Domain\Common\Service\Bus\CommandHandler;
 use App\Domain\Common\ValueObject\JWT;
-use App\Domain\Roles;
+use App\Domain\PermissionsReference;
 
 /**
  * @codeCoverageIgnore
@@ -44,7 +44,7 @@ class SingleFileUploadAccessCommand implements CommandHandler
 
         // the event is executing right after successful upload
         // and revoking the token after a upload is done
-        if ($accessToken->getPermissions()->has(Roles::PERMISSION_UPLOAD_ONLY_ONCE_SUCCESSFUL)) {
+        if ($accessToken->getPermissions()->has(PermissionsReference::PERMISSION_UPLOAD_ONLY_ONCE_SUCCESSFUL)) {
             $accessToken->revokeSelf();
             $this->repository->persist($accessToken);
             $this->repository->flush();

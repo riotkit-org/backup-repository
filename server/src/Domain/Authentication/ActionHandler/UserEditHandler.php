@@ -18,7 +18,7 @@ use Exception;
 /**
  * User Account editing
  * ====================
- *   Allows to edit roles, text fields and change password.
+ *   Allows to edit permissions, text fields and change password.
  */
 class UserEditHandler
 {
@@ -77,13 +77,13 @@ class UserEditHandler
         ]);
 
         $this->assertHasRights(
-            $context, $user, $form->roles, $currentPassword,
+            $context, $user, $form->permissions, $currentPassword,
             $newPassword, $repeatPassword, $isChangingPassword
         );
 
         $this->tokenManager->editUser(
             $user,
-            $form->roles,
+            $form->permissions,
             $form->expires,
             $form->organization,
             $form->about,

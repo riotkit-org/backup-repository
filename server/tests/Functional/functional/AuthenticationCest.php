@@ -20,7 +20,7 @@ class AuthenticationCest
             'email'        => 'example@riseup.net',
             'organization' => 'Wolna Biblioteka',
             'about'        => 'A libertarian library',
-            'roles' => [
+            'permissions' => [
                 'upload.all', 'upload.enforce_tags_selected_in_user_account'
             ],
             'data' => [
@@ -67,7 +67,7 @@ class AuthenticationCest
         ]);
     }
 
-    public function verifyUserCanBeFoundInSearchByOneOfItsRoles(FunctionalTester $I): void
+    public function verifyUserCanBeFoundInSearchByOneOfItsPermissions(FunctionalTester $I): void
     {
         $I->amAdmin();
         $I->searchForUsers('upload.enforce_tags_selected_in_user_account', 1, 50);
@@ -84,7 +84,7 @@ class AuthenticationCest
             'organization' => 'Wolna Biblioteka',
             'about'        => 'A libertarian library',
 
-            'roles' => [
+            'permissions' => [
                 'upload.all'
             ],
             'data' => [
@@ -107,7 +107,7 @@ class AuthenticationCest
             'user' => [
                 'id' => $I->getPreviouslyStoredIdOf('LIMITED_USER_ACCESS_ID'),
                 'active' => true,
-                'roles'  => ['upload.all'],
+                'permissions'  => ['upload.all'],
                 'data'   => [
                     'tags'               => ['user_uploads.u123', 'user_uploads'],
                     'maxAllowedFileSize' => 14579
@@ -116,7 +116,7 @@ class AuthenticationCest
         ]);
     }
 
-    public function testValidationContainsInvalidRoleName(FunctionalTester $I): void
+    public function testValidationContainsInvalidPermissionName(FunctionalTester $I): void
     {
         $I->amAdmin();
         $I->createUser([
@@ -125,18 +125,18 @@ class AuthenticationCest
             'organization' => 'Wolna Biblioteka',
             'about'        => 'A libertarian library',
 
-            'roles' => ['upload.all', 'is-this-working?'],
+            'permissions' => ['upload.all', 'is-this-working?'],
             'data' => [
                 'tags' => ['user_uploads.u123', 'user_uploads'],
                 'maxAllowedFileSize' => 100
             ]
         ], false);
         $I->canSeeResponseCodeIs(400);
-        $I->canSeeResponseContains('Invalid role selected');
+        $I->canSeeResponseContains('Invalid permission selected');
         $I->canSeeResponseContains('validation.error');
     }
 
-    public function testCannotCreateUsersWhenRoleDoesNotAllowCreatingOnes(FunctionalTester $I): void
+    public function testCannotCreateUsersWhenPermissionsDoesNotAllowCreatingOnes(FunctionalTester $I): void
     {
         $I->amUser(
             $I->getPreviouslyStoredIdOf('LIMITED_USER_EMAIL'),
@@ -149,7 +149,7 @@ class AuthenticationCest
             'organization' => 'Wolna Biblioteka',
             'about'        => 'A libertarian library',
 
-            'roles' => ['upload.all'],
+            'permissions' => ['upload.all'],
             'data' => [
                 'tags' => ['user_uploads.u123', 'user_uploads'],
                 'maxAllowedFileSize' => 100
@@ -170,20 +170,20 @@ class AuthenticationCest
         $I->canSeeResponseCodeIs(403);
     }
 
-    public function testCanListRolesDocumentationWhenAdmin(FunctionalTester $I): void
+    public function testCanListPermissionsDocumentationWhenAdmin(FunctionalTester $I): void
     {
         $I->amAdmin();
-        $I->sendGET(Urls::ROLES_LISTING);
+        $I->sendGET(Urls::PERMISSIONS_LISTING);
         $I->canSeeResponseCodeIs(200);
     }
 
-    public function testCanListRolesDocumentationWhenNonAdmin(FunctionalTester $I): void
+    public function testCanListPermissionsDocumentationWhenNonAdmin(FunctionalTester $I): void
     {
         $I->amUser(
             $I->getPreviouslyStoredIdOf('LIMITED_USER_EMAIL'),
             $I->getPreviouslyStoredIdOf('LIMITED_USER_PASSWORD')
         );
-        $I->sendGET(Urls::ROLES_LISTING);
+        $I->sendGET(Urls::PERMISSIONS_LISTING);
         $I->canSeeResponseCodeIs(403);
     }
 
@@ -229,7 +229,7 @@ class AuthenticationCest
             'organization' => 'Wolna Biblioteka',
             'about'        => 'A libertarian library',
 
-            'roles' => ['upload.all'],
+            'permissions' => ['upload.all'],
             'data'  => [],
             'id'    => '1c2c84f2-d488-4ea0-9c88-d25aab139ac4'
         ], false);
@@ -252,7 +252,7 @@ class AuthenticationCest
             'organization' => 'Wolna Biblioteka',
             'about'        => 'A libertarian library',
 
-            'roles' => [
+            'permissions' => [
                 'upload.all'
             ],
             'data' => [],
@@ -265,7 +265,7 @@ class AuthenticationCest
             'organization' => 'Wolna Biblioteka',
             'about'        => 'A libertarian library',
 
-            'roles' => [
+            'permissions' => [
                 'upload.all'
             ],
             'data' => [],
@@ -291,7 +291,7 @@ class AuthenticationCest
             'email'        => 'example-5@riseup.net',
             'organization' => 'Wolna Biblioteka',
             'about'        => 'A libertarian library',
-            'roles' => ['upload.all'],
+            'permissions' => ['upload.all'],
             'data' => [],
         ], false);
 
@@ -301,7 +301,7 @@ class AuthenticationCest
             'organization' => 'Wolna Biblioteka',
             'about'        => 'A libertarian library',
 
-            'roles' => ['upload.all'],
+            'permissions' => ['upload.all'],
             'data' => [],
         ], false);
 
@@ -324,7 +324,7 @@ class AuthenticationCest
             // email: missing
             'organization' => 'Wolna Biblioteka',
             'about'        => 'A libertarian library',
-            'roles' => ['upload.all'],
+            'permissions' => ['upload.all'],
             'data' => [],
         ], false);
 
@@ -353,7 +353,7 @@ class AuthenticationCest
             'organization' => 'Wolna Biblioteka',
             'about'        => 'A libertarian library',
 
-            'roles' => [
+            'permissions' => [
                 'upload.all'
             ],
             'data' => [],
@@ -367,7 +367,7 @@ class AuthenticationCest
 
     /**
      * Feature: Possibility to set "id" of a user manually
-     * Case: Cannot set "id" field, when does not have a proper role
+     * Case: Cannot set "id" field, when does not have a proper permission
      *
      * @param FunctionalTester $I
      */
@@ -381,7 +381,7 @@ class AuthenticationCest
             'organization' => 'Wolna Biblioteka',
             'about'        => 'A libertarian library',
 
-            'roles' => [
+            'permissions' => [
                 'security.create_unlimited_accounts',
             ],
             'data' => []
@@ -401,7 +401,7 @@ class AuthenticationCest
             'organization' => 'Wolna Biblioteka',
             'about'        => 'A libertarian library',
 
-            'roles' => ['upload.all'],
+            'permissions' => ['upload.all'],
             'data' => [],
             'id'   => 'international-workers-association'
         ], false);
@@ -418,17 +418,17 @@ class AuthenticationCest
             'organization' => 'Wolna Biblioteka',
             'about'        => 'A libertarian library',
 
-            'roles' => ['upload.all'],
+            'permissions' => ['upload.all'],
             'data' => []
             // case: no "id" there
         ], false);
         $I->canSeeResponseCodeIs(201);
     }
 
-    public function listAllAvailableRoles(FunctionalTester $I): void
+    public function listAllAvailablePermissions(FunctionalTester $I): void
     {
         $I->amAdmin();
-        $I->sendGET('/api/stable/auth/roles');
+        $I->sendGET('/api/stable/auth/permissions');
 
         $I->canSeeResponseContainsJson([
             'permissions' => [

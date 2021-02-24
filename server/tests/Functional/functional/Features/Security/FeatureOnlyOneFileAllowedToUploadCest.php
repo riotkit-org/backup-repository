@@ -3,7 +3,7 @@
 namespace Tests\Functional\Features\Security;
 
 /**
- * FEATURE: GIVEN the access token is assigned a restriction role, THEN only one file can be uploaded using this token
+ * FEATURE: GIVEN the access token is assigned a restriction permission, THEN only one file can be uploaded using this token
  *
  * @group Domain/Backup
  * @group Security
@@ -23,7 +23,7 @@ class FeatureOnlyOneFileAllowedToUploadCest
             'filename'          => 'cob_database-2.tar.gz'
         ]);
 
-        $user = $I->createStandardUser(['roles' => ['upload.all', 'collections.upload_to_allowed_collections']]);
+        $user = $I->createStandardUser(['permissions' => ['upload.all', 'collections.upload_to_allowed_collections']]);
         $I->grantUserAccessToCollection($collection, $user->id);
 
         // create an access token with additional restriction "upload.only_once_successful"

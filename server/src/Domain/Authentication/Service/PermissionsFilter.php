@@ -3,9 +3,9 @@
 namespace App\Domain\Authentication\Service;
 
 use App\Domain\Authentication\Entity\User;
-use App\Domain\Roles;
+use App\Domain\PermissionsReference;
 
-class RolesFilter
+class PermissionsFilter
 {
     public const FILTER_COLLECTION = 'collection';
     public const FILTER_AUTH       = 'auth';
@@ -32,46 +32,46 @@ class RolesFilter
     /**
      * Leaves only permissions that are allowed to be assigned per Backup Collection
      *
-     * @param array $roles
+     * @param array $permissions
      * @param User $user
      *
      * @return array
      */
-    protected static function filterByAllowedPerCollectionOnly(array $roles, User $user): array
+    protected static function filterByAllowedPerCollectionOnly(array $permissions, User $user): array
     {
         return array_filter(
-            $roles,
+            $permissions,
             function (string $role) {
-                return in_array($role, Roles::PER_BACKUP_COLLECTION_LIST);
+                return in_array($role, PermissionsReference::PER_BACKUP_COLLECTION_LIST);
             },
-            static::isFlatListWithoutDescriptions($roles) ? 0 : ARRAY_FILTER_USE_KEY
+            static::isFlatListWithoutDescriptions($permissions) ? 0 : ARRAY_FILTER_USE_KEY
         );
     }
 
     /**
-     * Filter by user token roles, so the user can see it's permissions
+     * Filter by user token permissions, so the user can see it's permissions
      *
-     * @param array $roles
+     * @param array $permissions
      * @param User  $user
      *
      * @return array
      */
-    protected static function filterByAuth(array $roles, User $user): array
+    protected static function filterByAuth(array $permissions, User $user): array
     {
         $isAdministrator = $user->isAdministrator();
 
         return array_filter(
-            $roles,
+            $permissions,
             function (string $role) use ($user, $isAdministrator) {
 
                 // administrator is also allowed to grant restrictions
-                if ($isAdministrator && in_array($role, Roles::getRestrictionsList())) {
+                if ($isAdministrator && in_array($role, PermissionsReference::getRestrictionsList())) {
                     return true;
                 }
 
                 return $user->hasRole($role);
             },
-            static::isFlatListWithoutDescriptions($roles) ? 0 : ARRAY_FILTER_USE_KEY
+            static::isFlatListWithoutDescriptions($permissions) ? 0 : ARRAY_FILTER_USE_KEY
         );
     }
 

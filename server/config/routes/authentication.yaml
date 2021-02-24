@@ -23,9 +23,9 @@ authentication.delete:
     controller: 'App\Controller\Authentication\RevokeUserAccountController::handle'
     methods: ['DELETE']
 
-authentication.roles_listing:
-    path: /api/stable/auth/roles
-    controller: 'App\Controller\Authentication\RolesListingController::handle'
+authentication.permissions_listing:
+    path: /api/stable/auth/permissions
+    controller: 'App\Controller\Authentication\PermissionsListingController::handle'
     methods: ['GET']
 
 #

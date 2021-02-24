@@ -3,7 +3,7 @@
 namespace App\Domain\Common\SharedEntity;
 
 use App\Domain\Common\ValueObject\Permissions;
-use App\Domain\Roles as RolesConst;
+use App\Domain\PermissionsReference;
 
 class User
 {
@@ -32,7 +32,7 @@ class User
 
     public function __construct()
     {
-        $this->permissions = Permissions::fromArray([\App\Domain\Roles::ROLE_USER]);
+        $this->permissions = Permissions::fromArray([\App\Domain\PermissionsReference::ROLE_USER]);
     }
 
     /**
@@ -89,18 +89,18 @@ class User
     }
 
     /**
-     * In case when eg. a token has fewer roles than user (JWT was generated with limited scope)
+     * In case when eg. an access token has fewer permissions than user (JWT was generated with limited scope)
      *
-     * @param array $roles
+     * @param array $permissions
      *
      * @return static
      *
      * @throws \App\Domain\Common\Exception\CommonValueException
      */
-    public function withRoles(array $roles)
+    public function withPermissions(array $permissions)
     {
         $clone = clone $this;
-        $clone->setPermissions(Permissions::fromArray($roles));
+        $clone->setPermissions(Permissions::fromArray($permissions));
         $clone->cannotBePersisted = true;
 
         return $clone;
@@ -123,7 +123,7 @@ class User
 
     public function isAdministrator(): bool
     {
-        return $this->hasRole(RolesConst::PERMISSION_ADMINISTRATOR);
+        return $this->hasRole(PermissionsReference::PERMISSION_ADMINISTRATOR);
     }
 
     /**

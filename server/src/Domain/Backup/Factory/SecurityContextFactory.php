@@ -8,7 +8,7 @@ use App\Domain\Backup\Entity\BackupCollection;
 use App\Domain\Backup\Repository\UserAccessRepository;
 use App\Domain\Backup\Security\CollectionManagementContext;
 use App\Domain\Backup\Security\VersioningContext;
-use App\Domain\Roles;
+use App\Domain\PermissionsReference;
 
 class SecurityContextFactory
 {
@@ -24,17 +24,17 @@ class SecurityContextFactory
         $roles = $this->getRolesIncludingContextOfACollection($collection, $user);
 
         return new CollectionManagementContext(
-            $roles->has(Roles::PERMISSION_COLLECTION_ADD),
-            $roles->has(Roles::PERMISSION_COLLECTION_CUSTOM_ID),
-            $roles->has(Roles::PERMISSION_COLLECTION_ADD_WITH_INFINITE_LIMITS),
-            $roles->has(Roles::PERMISSION_MODIFY_ALLOWED_COLLECTIONS),
-            $roles->has(Roles::PERMISSION_COLLECTION_MODIFY_ANY_COLLECTION),
-            $roles->has(Roles::PERMISSION_COLLECTION_VIEW_ANY_COLLECTION),
-            $roles->has(Roles::PERMISSION_CAN_USE_LISTING_COLLECTION_ENDPOINT),
-            $roles->has(Roles::PERMISSION_CAN_MANAGE_USERS_IN_ALLOWED_COLLECTIONS),
-            $roles->has(Roles::PERMISSION_CAN_DELETE_ALLOWED_COLLECTIONS),
-            $roles->has(Roles::PERMISSION_CAN_LIST_TOKENS_IN_COLLECTION),
-            $roles->has(Roles::PERMISSION_ADMINISTRATOR),
+            $roles->has(PermissionsReference::PERMISSION_COLLECTION_ADD),
+            $roles->has(PermissionsReference::PERMISSION_COLLECTION_CUSTOM_ID),
+            $roles->has(PermissionsReference::PERMISSION_COLLECTION_ADD_WITH_INFINITE_LIMITS),
+            $roles->has(PermissionsReference::PERMISSION_MODIFY_ALLOWED_COLLECTIONS),
+            $roles->has(PermissionsReference::PERMISSION_COLLECTION_MODIFY_ANY_COLLECTION),
+            $roles->has(PermissionsReference::PERMISSION_COLLECTION_VIEW_ANY_COLLECTION),
+            $roles->has(PermissionsReference::PERMISSION_CAN_USE_LISTING_COLLECTION_ENDPOINT),
+            $roles->has(PermissionsReference::PERMISSION_CAN_MANAGE_USERS_IN_ALLOWED_COLLECTIONS),
+            $roles->has(PermissionsReference::PERMISSION_CAN_DELETE_ALLOWED_COLLECTIONS),
+            $roles->has(PermissionsReference::PERMISSION_CAN_LIST_TOKENS_IN_COLLECTION),
+            $roles->has(PermissionsReference::PERMISSION_ADMINISTRATOR),
             $user->getId(),
             $user
         );
@@ -45,12 +45,12 @@ class SecurityContextFactory
         $roles = $this->getRolesIncludingContextOfACollection($collection, $user);
 
         return new VersioningContext(
-            $roles->has(Roles::PERMISSION_COLLECTION_MODIFY_ANY_COLLECTION),
-            $roles->has(Roles::PERMISSION_CAN_UPLOAD_TO_ALLOWED_COLLECTIONS),
-            $roles->has(Roles::PERMISSION_LIST_VERSIONS_FOR_ALLOWED_COLLECTIONS),
-            $roles->has(Roles::PERMISSION_DELETE_VERSIONS_IN_ALLOWED_COLLECTIONS),
-            $roles->has(Roles::PERMISSION_FETCH_SINGLE_VERSION_FILE_IN_ALLOWED_COLLECTIONS),
-            $roles->has(Roles::PERMISSION_ADMINISTRATOR),
+            $roles->has(PermissionsReference::PERMISSION_COLLECTION_MODIFY_ANY_COLLECTION),
+            $roles->has(PermissionsReference::PERMISSION_CAN_UPLOAD_TO_ALLOWED_COLLECTIONS),
+            $roles->has(PermissionsReference::PERMISSION_LIST_VERSIONS_FOR_ALLOWED_COLLECTIONS),
+            $roles->has(PermissionsReference::PERMISSION_DELETE_VERSIONS_IN_ALLOWED_COLLECTIONS),
+            $roles->has(PermissionsReference::PERMISSION_FETCH_SINGLE_VERSION_FILE_IN_ALLOWED_COLLECTIONS),
+            $roles->has(PermissionsReference::PERMISSION_ADMINISTRATOR),
             $user->getId()
         );
     }
@@ -72,7 +72,7 @@ class SecurityContextFactory
         $roles  = UserRoles::createEmpty()->mergeWith($user->getRolesAsValueObject());
 
         if ($access) {
-            $roles = $roles->mergeWith($access->getRoles());
+            $roles = $roles->mergeWith($access->getPermissions());
         }
 
         return $roles;

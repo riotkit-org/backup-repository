@@ -4,9 +4,9 @@ namespace App\Domain\Authentication\Security\Context;
 
 use App\Domain\Authentication\Entity\AccessTokenAuditEntry;
 use App\Domain\Authentication\Entity\User;
-use App\Domain\Authentication\Service\RolesFilter;
+use App\Domain\Authentication\Service\PermissionsFilter;
 use App\Domain\Authentication\ValueObject\Password;
-use App\Domain\Roles;
+use App\Domain\PermissionsReference;
 
 /**
  * Security policies as part of security context
@@ -114,7 +114,7 @@ class AuthenticationManagementContext
         }
 
         // a non-administrator cannot revoke access for the administrator
-        if (!$this->isAdministrator && $user->hasRole(Roles::PERMISSION_ADMINISTRATOR)) {
+        if (!$this->isAdministrator && $user->hasRole(PermissionsReference::PERMISSION_ADMINISTRATOR)) {
             return false;
         }
 
@@ -139,12 +139,12 @@ class AuthenticationManagementContext
             return true;
         }
 
-        // remove all roles that user does not have
-        $filteredByPermissions = RolesFilter::filterBy($permissions, [RolesFilter::FILTER_AUTH], $this->user);
+        // remove all permissions that user does not have
+        $filteredByPermissions = PermissionsFilter::filterBy($permissions, [PermissionsFilter::FILTER_AUTH], $this->user);
         sort($permissions);
         sort($filteredByPermissions);
 
-        // at least one role was removed by the RolesFilter, which means that the CURRENT SESSION USER does not own such role
+        // at least one role was removed by the PermissionsFilter, which means that the CURRENT SESSION USER does not own such role
         // so the SESSION USER cannot assign that role to other user
         if ($permissions !== $filteredByPermissions) {
             return false;
@@ -243,12 +243,12 @@ class AuthenticationManagementContext
             return true;
         }
 
-        // remove all roles that user does not have
-        $filteredByPermissions = RolesFilter::filterBy($roles, [RolesFilter::FILTER_AUTH], $this->user);
+        // remove all permissions that user does not have
+        $filteredByPermissions = PermissionsFilter::filterBy($roles, [PermissionsFilter::FILTER_AUTH], $this->user);
         sort($roles);
         sort($filteredByPermissions);
 
-        // check that RolesFilter didn't reject any role
+        // check that PermissionsFilter didn't reject any role
         return $filteredByPermissions === $roles;
     }
 

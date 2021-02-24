@@ -30,7 +30,7 @@ class UserManager
     }
 
     /**
-     * @param array  $roles
+     * @param array  $permissions
      * @param ?string $expirationTime
      * @param array  $details
      * @param ?string $email
@@ -44,7 +44,7 @@ class UserManager
      * @throws InvalidUserIdException
      * @throws DomainAssertionFailure
      */
-    public function createUser(array $roles, ?string $expirationTime, array $details, ?string $email,
+    public function createUser(array $permissions, ?string $expirationTime, array $details, ?string $email,
                                ?string $password, ?string $organizationName, ?string $about,
                                ?string $customId = null): User
     {
@@ -55,7 +55,7 @@ class UserManager
         }
 
         $user = User::createFrom(
-            $roles,
+            $permissions,
             $expirationTime,
             $details,
             $email,

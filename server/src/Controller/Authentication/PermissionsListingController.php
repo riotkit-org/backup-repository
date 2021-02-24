@@ -10,7 +10,7 @@ use App\Infrastructure\Common\Http\JsonFormattedResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
-class RolesListingController extends BaseController
+class PermissionsListingController extends BaseController
 {
     private RolesListingHandler $handler;
     private SecurityContextFactory $authFactory;
@@ -22,7 +22,7 @@ class RolesListingController extends BaseController
     }
 
     /**
-     * List available roles
+     * List available permissions
      *
      * @param Request $request
      *

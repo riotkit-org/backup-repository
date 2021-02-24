@@ -44,6 +44,7 @@ class AccessTokenAuditRecorder
     public function record(string $jwtToken, string $description = ''): void
     {
         $payload = $this->factory->createArrayFromToken($jwtToken);
+
         $email       = $payload['email'];
         $permissions = $payload['roles'];
         $expiration  = $payload['exp'];

@@ -11,7 +11,7 @@ class BackupCollectionCRUDCest
 {
     public function testCreateEditDelete(FunctionalTester $I): void
     {
-        $I->haveRoles([
+        $I->havePermissions([
             'collections.create_new',
             'collections.manage_users_in_allowed_collections',
             'collections.delete_allowed_collections',
@@ -71,7 +71,7 @@ class BackupCollectionCRUDCest
 
     public function testFetchCollectionMetaData(FunctionalTester $I): void
     {
-        $I->haveRoles(['collections.create_new'],
+        $I->havePermissions(['collections.create_new'],
             [
                 'data' => [
                     'tags'               => ['user_uploads.u123', 'user_uploads'],

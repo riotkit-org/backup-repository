@@ -2,17 +2,17 @@
 
 namespace Tests\Domain\Common\Service\Security;
 
-use App\Domain\Common\Service\Security\RolesInformationProvider;
+use App\Domain\Common\Service\Security\PermissionsInformationProvider;
 use PHPUnit\Framework\TestCase;
 
 /**
- * @see RolesInformationProvider
+ * @see PermissionsInformationProvider
  */
 class RolesInformationProviderTest extends TestCase
 {
     public function testFindAllRolesWithTheirDescription(): void
     {
-        $provider = new RolesInformationProvider();
+        $provider = new PermissionsInformationProvider();
         $result = $provider->findAllRolesWithTheirDescription();
 
         foreach ($result as $roleName => $roleDescription) {

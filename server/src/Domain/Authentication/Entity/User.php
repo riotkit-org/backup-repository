@@ -54,7 +54,7 @@ class User extends \App\Domain\Common\SharedEntity\User implements \JsonSerializ
     }
 
     /**
-     * @param array $roles
+     * @param array $permissions
      * @param ?string $expirationTime
      * @param array $details
      * @param ?string $email
@@ -68,15 +68,15 @@ class User extends \App\Domain\Common\SharedEntity\User implements \JsonSerializ
      *
      * @throws DomainAssertionFailure
      */
-    public static function createFrom(array $roles, ?string $expirationTime, array $details,
+    public static function createFrom(array $permissions, ?string $expirationTime, array $details,
                                       ?string $email, ?string $password, ?string $organizationName, ?string $about,
                                       PasswordHashingConfiguration $configuration, string $defaultExpirationTime)
     {
         $new = new static();
 
         static::withValidationErrorAggregation([
-            static function () use ($new, $roles) {
-                $new->setPermissions(Permissions::fromArray($roles));
+            static function () use ($new, $permissions) {
+                $new->setPermissions(Permissions::fromArray($permissions));
             },
             static function () use ($new, $expirationTime, $defaultExpirationTime) {
                 $new->setExpirationDate(ExpirationDate::fromString($expirationTime, $defaultExpirationTime));
@@ -175,7 +175,7 @@ class User extends \App\Domain\Common\SharedEntity\User implements \JsonSerializ
 
     public function isValid(string $userAgent, string $ipAddress): bool
     {
-        if (\App\Domain\Roles::isTestToken($this->getId())) {
+        if (\App\Domain\PermissionsReference::isTestToken($this->getId())) {
             return true;
         }
 
@@ -229,7 +229,7 @@ class User extends \App\Domain\Common\SharedEntity\User implements \JsonSerializ
             'expired'          => !$this->isNotExpired(),
             'expires'          => $this->getExpirationDate()->format('Y-m-d H:i:s'),
             'data'             => $this->data,
-            'roles'            => $this->getPermissions(),
+            'permissions'      => $this->getPermissions(),
             'organization'     => $this->organization->getValue(),
             'about'            => $this->about->getValue(),
             'is_administrator' => $this->isAdministrator()

@@ -3,7 +3,7 @@
 namespace App\Domain\Technical\ActionHandler;
 
 use App\Domain\Authentication\Entity\User;
-use App\Domain\Roles;
+use App\Domain\PermissionsReference;
 use App\Domain\Technical\Exception\AuthenticationException;
 use App\Infrastructure\Technical\Service\MetricsProvider;
 
@@ -45,6 +45,6 @@ class DashboardHandler
 
     private function canViewSystemWideMetrics(User $user): bool
     {
-        return $user->hasRole(Roles::PERMISSION_VIEW_METRICS);
+        return $user->hasRole(PermissionsReference::PERMISSION_VIEW_METRICS);
     }
 }

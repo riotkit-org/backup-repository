@@ -2,7 +2,7 @@
 
 namespace App\Command\Authentication;
 
-use App\Domain\Roles;
+use App\Domain\PermissionsReference;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
@@ -39,12 +39,12 @@ class CreateAdminAccountCommand extends Command
         $command = $this->getApplication()->find(CreateUserCommand::NAME);
 
         $opts = [
-            'command'    => CreateUserCommand::NAME,
-            '--roles'    => Roles::PERMISSION_ADMINISTRATOR,
-            '--expires'  => $input->getOption('expires') ?? '+10 years',
-            '--id'       => $input->getOption('id') ?? '',
-            '--email'    => $input->getOption('email'),
-            '--password' => $input->getOption('password')
+            'command'       => CreateUserCommand::NAME,
+            '--permissions' => PermissionsReference::PERMISSION_ADMINISTRATOR,
+            '--expires'     => $input->getOption('expires') ?? '+10 years',
+            '--id'          => $input->getOption('id') ?? '',
+            '--email'       => $input->getOption('email'),
+            '--password'    => $input->getOption('password')
         ];
 
         if ($input->getOption('ignore-error-if-already-exists')) {

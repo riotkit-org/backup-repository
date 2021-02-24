@@ -18,9 +18,9 @@ class LexikJWTFactory implements JWTFactory
     public function createForUser(User $user, array $permissions = null, int $ttl = 86400 * 365 * 2): string
     {
         return $this->encoder->encode([
-            'email' => $user->getEmail()->getValue(),
-            'roles' => $permissions ? $permissions : $user->getPermissions(),
-            'exp'   => time() + $ttl
+            'email'       => $user->getEmail()->getValue(),
+            'roles'       => $permissions ? $permissions : $user->getPermissions(),
+            'exp'         => time() + $ttl
         ]);
     }
 

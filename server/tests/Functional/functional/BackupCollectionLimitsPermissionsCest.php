@@ -11,7 +11,7 @@ class BackupCollectionLimitsPermissionsCest
 {
     public function testNotAllowedToCreateInfiniteCollections(FunctionalTester $I): void
     {
-        $I->haveRoles(['collections.create_new'], [
+        $I->havePermissions(['collections.create_new'], [
             'data' => [
                 'tags'               => ['user_uploads.u123', 'user_uploads'],
                 'maxAllowedFileSize' => 14579
@@ -29,7 +29,7 @@ class BackupCollectionLimitsPermissionsCest
 
     public function testUserCanCreateANormalCollection(FunctionalTester $I): void
     {
-        $I->haveRoles(['collections.create_new'], [
+        $I->havePermissions(['collections.create_new'], [
             'data' => [
                 'tags'               => ['user_uploads.u123', 'user_uploads'],
                 'maxAllowedFileSize' => 14579
@@ -56,7 +56,7 @@ class BackupCollectionLimitsPermissionsCest
 
     public function testUserCanBeGrantedToCreateAInfiniteCollection(FunctionalTester $I): void
     {
-        $I->haveRoles(['collections.create_new', 'collections.allow_infinite_limits'], [
+        $I->havePermissions(['collections.create_new', 'collections.allow_infinite_limits'], [
             'data' => [
                 'tags'               => ['user_uploads.u123', 'user_uploads'],
                 'maxAllowedFileSize' => 14579

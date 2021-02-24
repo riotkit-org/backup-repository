@@ -3,9 +3,9 @@
 namespace App\Domain;
 
 /**
- * List of roles which could be required for a temporary token
+ * List of permissions which could be required for a temporary token
  *
- *   There are 2 types of roles:
+ *   There are 2 types of permissions:
  *       - GRANT
  *       - RESTRICTION
  *
@@ -14,7 +14,7 @@ namespace App\Domain;
  *
  * @codeCoverageIgnore
  */
-final class Roles
+final class PermissionsReference
 {
     public const TEST_TOKEN             = 'test-token-full-permissions';
     public const INTERNAL_CONSOLE_TOKEN = 'internal-console-token';
@@ -52,8 +52,8 @@ final class Roles
     /** [Users] User can overwrite files */
     public const PERMISSION_ALLOW_OVERWRITE_FILES        = 'security.overwrite';
 
-    /** [Users] User can create user accounts with ANY roles */
-    public const PERMISSION_CREATE_UNLIMITED_USER_ACCOUNTS         = 'security.create_unlimited_accounts';
+    /** [Users] User can create user accounts with ANY permissions */
+    public const PERMISSION_CREATE_UNLIMITED_USER_ACCOUNTS = 'security.create_unlimited_accounts';
 
     /** [Users] Allow to specify user id when creating a user profile */
     public const PERMISSION_CREATE_PREDICTABLE_USER_IDS = 'security.create_predictable_user_ids';
@@ -62,7 +62,7 @@ final class Roles
     public const PERMISSION_DELETE_USERS                = 'security.delete_users';
 
     /** [Users/Admin] List application permissions with possibility to limit the list by scope of current access token or user account */
-    public const PERMISSION_CAN_LIST_ROLES                   = 'security.list_roles';
+    public const PERMISSION_CAN_LIST_PERMISSIONS        = 'security.list_permissions';
 
     /** [Admin] User can use technical endpoints to manage the application - healthcheck, unlimited read-only metrics dashboard */
     public const PERMISSION_USE_TECHNICAL_ENDPOINTS      = 'security.use_technical_endpoints';
@@ -166,7 +166,7 @@ final class Roles
         self::PERMISSION_CAN_SEE_EXTRA_ADMIN_METADATA,
         self::PERMISSION_VIEW_METRICS,
         self::PERMISSION_DELETE_USERS,
-        self::PERMISSION_CAN_LIST_ROLES,
+        self::PERMISSION_CAN_LIST_PERMISSIONS,
         self::PERMISSION_ADMINISTRATOR,
 
         // tokens
@@ -229,7 +229,7 @@ final class Roles
      */
     public static function isTestToken(?string $tokenId): bool
     {
-        return $tokenId === static::TEST_TOKEN;
+        return $tokenId === self::TEST_TOKEN;
     }
 
     /**
@@ -241,6 +241,6 @@ final class Roles
      */
     public static function isInternalApplicationToken(?string $tokenId): bool
     {
-        return $tokenId === static::INTERNAL_CONSOLE_TOKEN;
+        return $tokenId === self::INTERNAL_CONSOLE_TOKEN;
     }
 }

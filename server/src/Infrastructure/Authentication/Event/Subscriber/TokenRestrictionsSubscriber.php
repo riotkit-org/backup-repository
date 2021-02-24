@@ -62,14 +62,19 @@ class TokenRestrictionsSubscriber implements EventSubscriberInterface
             return;
         }
 
-        // limit the roles on the user object
+        // limit the permissions on the user object
         if ($this->tokenStorage->getToken() instanceof JWTUserToken) {
             $roles = $this->encoder->decode($jwt)['roles'] ?? [];
+
+            /**
+             * @var \App\Domain\Common\SharedEntity\User $user
+             */
+            $user = $this->tokenStorage->getToken()->getUser();
 
             $this->tokenStorage->setToken(
                 new JWTUserToken(
                     $roles,
-                    $this->tokenStorage->getToken()->getUser()->withRoles($roles),
+                    $user->withPermissions($roles),
                     $jwt
                 )
             );

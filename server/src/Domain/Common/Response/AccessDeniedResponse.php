@@ -28,9 +28,9 @@ abstract class AccessDeniedResponse implements Response
     public function jsonSerialize(): array
     {
         return [
-            'status'                      => 403,
-            'message'                     => $this->message,
-            'potentially_required_roles'  => $this->token ? $this->token->getRequestedRolesList() : []
+            'status'                           => 403,
+            'message'                          => $this->message,
+            'potentially_required_permissions' => $this->token ? $this->token->getRequestedRolesList() : []
         ];
     }
 

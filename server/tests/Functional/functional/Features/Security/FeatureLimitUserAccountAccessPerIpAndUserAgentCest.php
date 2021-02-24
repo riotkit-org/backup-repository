@@ -9,11 +9,11 @@ namespace Tests\Functional\Features\Security;
  * @group Domain/Authentication
  * @group Security
  */
-class FeatureLimitTokenAccessPerIpAndUserAgentCest
+class FeatureLimitUserAccountAccessPerIpAndUserAgentCest
 {
     private function createUser(\FunctionalTester $I, array $ua = [], array $ips = []): \User
     {
-        return $I->haveRoles(['security.authentication_lookup'], [
+        return $I->havePermissions(['security.authentication_lookup'], [
             'data' => [
                 'allowedUserAgents'  => $ua,
                 'allowedIpAddresses' => $ips

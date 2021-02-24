@@ -4,7 +4,7 @@ namespace App\Domain\Authentication\Response;
 
 use App\Domain\Common\Response\NormalSearchResponse;
 
-class RoleSearchResponse extends NormalSearchResponse
+class PermissionsSearchResponse extends NormalSearchResponse
 {
     protected int $page      = 1;
     protected int $pageLimit = 1000;
@@ -12,9 +12,9 @@ class RoleSearchResponse extends NormalSearchResponse
 
     private array $allPermissions;
 
-    public static function createResultsResponse(array $scopedPermissions, array $allPermissions): RoleSearchResponse
+    public static function createResultsResponse(array $scopedPermissions, array $allPermissions): PermissionsSearchResponse
     {
-        $response = new RoleSearchResponse();
+        $response = new PermissionsSearchResponse();
         $response->status         = true;
         $response->data           = $scopedPermissions;
         $response->allPermissions = $allPermissions;

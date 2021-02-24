@@ -19,7 +19,7 @@ class IncomingUserFactory
     /**
      * @param string      $userId
      * @param string|null $className
-     * @param array|null  $overwriteRoles In case when eg. a token has fewer roles than user (JWT was generated with limited scope)
+     * @param array|null  $overwritePermissions In case when eg. a token has fewer roles than user (JWT was generated with limited scope)
      *
      * @return User
      *
@@ -27,7 +27,7 @@ class IncomingUserFactory
      * @throws CommonValueException
      */
     public function createFromString(string $userId, ?string $className = User::class,
-                                     ?array $overwriteRoles = null): \App\Domain\Common\SharedEntity\User
+                                     ?array $overwritePermissions = null): \App\Domain\Common\SharedEntity\User
     {
         /**
          * @var \App\Domain\Common\SharedEntity\User $persistedUser
@@ -38,8 +38,8 @@ class IncomingUserFactory
             throw AuthenticationException::fromUsersCreationProhibition();
         }
 
-        if ($overwriteRoles) {
-            $persistedUser = $persistedUser->withRoles($overwriteRoles);
+        if ($overwritePermissions) {
+            $persistedUser = $persistedUser->withPermissions($overwritePermissions);
         }
 
         return $persistedUser;

@@ -87,13 +87,13 @@ class FunctionalTester extends \Codeception\Actor
         \PHPUnit\Framework\Assert::assertTrue($condition, $message);
     }
 
-    public function haveRoles(array $roles, array $params = [], bool $assert = true): User
+    public function havePermissions(array $permissions, array $params = [], bool $assert = true): User
     {
         $this->amAdmin();
 
         $user = $this->createStandardUser(
             array_merge(
-                ['roles' => $roles],
+                ['permissions' => $permissions],
                 $params
             ),
             $assert
@@ -141,7 +141,7 @@ class FunctionalTester extends \Codeception\Actor
         $this->postJson(Urls::URL_USER_CREATE,
             \array_merge(
                 [
-                    'roles' => [],
+                    'permissions' => [],
                     'data' => []
                 ],
                 $data
@@ -152,9 +152,9 @@ class FunctionalTester extends \Codeception\Actor
             $this->canSeeResponseCodeIs(201);
         }
 
-        if (!$this->grabDataFromResponseByJsonPath('.user.id') ?? '') {
-            dump('Notice: User not created', $this->grabResponse());
-        }
+//        if (!$this->grabDataFromResponseByJsonPath('.user.id') ?? '') {
+//            dump('Notice: User not created', $this->grabResponse());
+//        }
 
         return new User(
             $this->grabDataFromResponseByJsonPath('.user.id')[0] ?? '',
@@ -318,12 +318,12 @@ class FunctionalTester extends \Codeception\Actor
         $this->assertEquals($expectedAmount, \count($elements));
     }
 
-    public function grantUserAccessToCollection(string $collectionId, string $tokenId, array $roles = null): void
+    public function grantUserAccessToCollection(string $collectionId, string $tokenId, array $permissions = null): void
     {
         $payload = ['user' => $tokenId];
 
-        if ($roles !== null) {
-            $payload['roles'] = $roles;
+        if ($permissions !== null) {
+            $payload['permissions'] = $permissions;
         }
 
         $this->postJson(
@@ -381,7 +381,7 @@ class FunctionalTester extends \Codeception\Actor
     public function canSeeResponseCannotGrantTooMuchAccessThanWeHave(): void
     {
         $this->canSeeErrorResponse(
-            'Cannot give roles to other user that current context user does not have',
+            'Cannot give permissions to other user that current context user does not have',
             40315,
             'request.auth-error'
         );
@@ -426,7 +426,7 @@ class FunctionalTester extends \Codeception\Actor
     public function amCollectionManager(): void
     {
         $this->amAdmin();
-        $this->haveRoles([
+        $this->havePermissions([
             'upload.all',
             'collections.create_new',
             'collections.manage_users_in_allowed_collections',
