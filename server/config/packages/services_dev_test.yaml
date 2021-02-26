@@ -1,3 +1,0 @@
-services:
-    App\Domain\Storage\Provider\HttpDownloadProvider:
-        alias: App\Infrastructure\Storage\Manager\TestHttpDownloadProvider
