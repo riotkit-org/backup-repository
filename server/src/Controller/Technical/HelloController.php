@@ -7,11 +7,9 @@ use App\Domain\Common\Service\Versioning;
 use App\Infrastructure\Common\Http\JsonFormattedResponse;
 use Doctrine\DBAL\Connection;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 
-/**
- * Lists all public routes
- */
 class HelloController extends BaseController
 {
     private Versioning $versioning;
@@ -23,20 +21,22 @@ class HelloController extends BaseController
         $this->dbal       = $dbal;
     }
 
-    public function sayHelloAction(): JsonResponse
-    {
-        return new JsonResponse(
-            'todo: Run Vue.js / React / any other frontend there',
-            JsonResponse::HTTP_OK
-        );
-    }
-
     /**
-     * Front page
+     * @return Response
      *
-     * @return JsonResponse
      * @throws \Exception
      */
+    public function sayHelloAction(): Response
+    {
+        $frontendPath = __DIR__ . '/../../../public/frontend.html';
+
+        if (!is_file($frontendPath)) {
+            throw new \Exception('Please build frontend first, then move files to public/ directory, rename index.html to frontend.html');
+        }
+
+        return new Response(file_get_contents($frontendPath), Response::HTTP_OK);
+    }
+
     public function showVersionAction(): JsonResponse
     {
         if ($this->getLoggedUser()->isAnonymous()) {
