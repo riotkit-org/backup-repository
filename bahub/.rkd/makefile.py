@@ -12,5 +12,9 @@ TASKS = [
 
     Task(':run:docker', [':sh', '-c', ''' set -x
         docker run --rm --name bahub -e CONFIG=bahub.conf.yaml quay.io/riotkit/bahub:latest
+    ''']),
+
+    Task(':env:adapters', [':sh', '-c', '''
+        cd test/env/bahub_adapter_integrations && docker-compose -p bahub_adapter_integrations up -d
     '''])
 ]

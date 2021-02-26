@@ -1,0 +1,40 @@
+version: org.riotkit.rkd/yaml/v1
+imports: []
+
+tasks:
+    :ci:build-test-environment:
+        description: "Builds applications from current commit"
+        steps:
+            - rkd :server:release:docker-image
+
+    :ci:prepare-test-environment:
+        steps:
+            - rkd :bahub:env:adapters
+            - rkd :server:env:dependencies:up
+            - rkd :server:env:server-docker:up
+            - rkd :e2e:install
+            - rkd :e2e:browser:spawn-container
+
+    :bahub:env:adapters:
+        descritpion: Run test services for usage with Bahub
+        steps: "cd bahub && rkd :env:adapters"
+
+    :server:env:dependencies:up:
+        description: Run services required by server
+        steps: "cd server && rkd :env:dependencies:up"
+
+    :server:env:server-docker:up:
+        description: Run server as production-like docker container
+        steps: "cd server && rkd :env:server-docker:up"
+
+    :server:release:docker-image:
+        description: "Build production-like docker image for server"
+        steps: "cd server && rkd :release:docker-image latest"
+
+    :e2e:install:
+        description: Install dependencies for E2E tests
+        steps: "cd e2e && rkd :install"
+
+    :e2e:browser:spawn-container:
+        description: Spawns a docker-container with a browser
+        steps: "cd e2e && rkd :browser:spawn-container"

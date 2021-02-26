@@ -6,18 +6,18 @@ environment:
     BROWSER_DOCKER_IMAGE: "selenium/standalone-chrome:4.0.0-beta-1-prerelease-20210209"
 
 tasks:
-    :e2e:test:
+    :test:
         description: Run End-To-End tests with Behat
         steps: ./vendor/bin/behat
 
-    :e2e:install:
+    :install:
         description: Install
         steps: composer install
 
     #
     # Runs a native browser (without a docker container)
     #
-    :e2e:browser:spawn-without-docker:
+    :browser:spawn-without-docker:
         description: Run Chromium browser
         steps:
             - rm -rf .rkd/browser-profile
@@ -28,7 +28,7 @@ tasks:
     # We use Selenium's official container, because it is always up-to-date and well maintained
     # but we do not use Selenium itself - just only the Chrome that is installed inside
     #
-    :e2e:browser:spawn-container:
+    :browser:spawn-container:
         description: Spawns a Google Chrome container
         steps: |
             docker rm -f br_e2e_browser

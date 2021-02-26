@@ -69,6 +69,7 @@ services:
         arguments:
             $isDev: '%kernel.debug%'
             $envName: '%kernel.environment%'
+            $logger: '@monolog.logger'
 
     App\Infrastructure\Common\Event\Subscriber\CorsSubscriber:
         autowire: true
