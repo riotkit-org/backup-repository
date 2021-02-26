@@ -29,7 +29,7 @@ module.exports = {
       .loader('ts-loader')
   },
   pwa: {
-    name: 'Vue Light Bootstrap Dashboard',
+    name: 'Backup Repository',
     themeColor: '#344675',
     msTileColor: '#344675',
     appleMobileWebAppCapable: 'yes',

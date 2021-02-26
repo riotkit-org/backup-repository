@@ -17,7 +17,11 @@ export default class BackupRepositoryBackend {
     }
 
     getBaseURL() {
-        return 'http://localhost:8000/api/stable'
+        if (typeof window.location == "undefined") {
+            return 'http://localhost:8000/api/stable'
+        }
+
+        return window.location.origin + '/api/stable'
     }
 
     /**
