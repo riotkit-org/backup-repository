@@ -1,0 +1,13 @@
+version: "3.4"
+
+services:
+    server:
+        image: quay.io/riotkit/backup-repository:latest
+        environment:
+            DATABASE_URL: "postgres://chomsky:chomsky@db:5432/chomsky"
+            FS_ADAPTER: "awss3v3"
+            FS_AWSS3V3_OPTIONS_ENDPOINT: "http://storage:9000"
+            FS_AWSS3V3_KEY: "RIOTKIT161ACABEXAMPL"
+            FS_AWSS3V3_SECRET: "wJalrFUckFEMI/THEdENG/STaTeandCAPITALKEY"
+        ports:
+            - 8000:80

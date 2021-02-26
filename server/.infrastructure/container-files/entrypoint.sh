@@ -35,8 +35,10 @@ install_application() {
     echo " >> Updating the database..."
     ./bin/console doctrine:migrations:migrate -n
 
+    echo " >> Generating GPG keypair"
+    ./bin/console lexik:jwt:generate-keypair --skip-if-exists
+
     echo " >> Executing composer install..."
-    find ./
 
     if [[ "${CLEAR_CACHE}" == "true" ]]; then
         composer install --no-dev
@@ -51,4 +53,7 @@ setup_admin_user
 execute_post_install_commands
 install_application
 
-exec multirun -v "nginx" "php-fpm -F -O"
+appLogPath="/home/backuprepository/var/log/${APP_ENV}.log"
+touch "${appLogPath}"
+
+exec multirun -v "nginx" "php-fpm -F -O" "tail -f ${appLogPath}"

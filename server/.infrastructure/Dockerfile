@@ -3,10 +3,14 @@
 #
 FROM alpine:3.13 as frontend_builder
 
+ENV NODE_ENV=production
+
+RUN ls
 ADD ./frontend /build
 RUN apk --update add npm nghttp2
 WORKDIR /build
-RUN npm install && npm run build
+RUN npm install --also=dev \
+    && npm run build
 
 
 #
@@ -14,7 +18,7 @@ RUN npm install && npm run build
 #
 FROM quay.io/riotkit/php-app:7.4-x86_64
 
-RUN apk --update add multirun libcap
+RUN apk --update add multirun libcap libpq
 
 ENV DATABASE_URL=postgres://postgres:postgres@postgres:5432/postgres \
     FS_ADAPTER=local \
@@ -34,8 +38,7 @@ ENV DATABASE_URL=postgres://postgres:postgres@postgres:5432/postgres \
     TOKEN_EXPIRATION_TIME="+30 minutes" \
     TEMP_DIRECTORY=/tmp \
     ENC_SALT=default-change-me \
-    APP_DOMAIN= \
-    API_TESTS=false \
+    APP_ENV=prod \
     HTTP_TIMEOUT=30 \
     BACKUP_ONE_VERSION_MAX_SIZE=4GB \
     BACKUP_COLLECTION_MAX_SIZE=15GB \
@@ -52,7 +55,8 @@ ENV DATABASE_URL=postgres://postgres:postgres@postgres:5432/postgres \
     CLEAR_CACHE="true"
 
 COPY server/ /home/backuprepository
-COPY --from=frontend_builder /build/dist/* /home/backuprepository/public/
+COPY --from=frontend_builder /build/dist/ /home/backuprepository/public/
+COPY frontend/public/img /home/backuprepository/public/img/
 RUN mv /home/backuprepository/public/index.html /home/backuprepository/public/frontend.html
 
 ADD server/.infrastructure/container-files/nginx/nginx.conf /etc/nginx/nginx.conf
@@ -69,8 +73,9 @@ RUN set -x \
     && rm -rf var/log/* \
     && rm -rf var/uploads/* \
     && rm -f var/*.db \
+    && mkdir -p var/log var/cache /var/log/nginx \
     && cp .env.dist .env \
-    && chown www-data:www-data /home/backuprepository/ -R \
+    && chown www-data:www-data /home/backuprepository/ /var/log/nginx -R \
     && php --version \
     && su www-data -s /bin/bash -c "php --version" \
     && su www-data -s /bin/bash -c "composer install --no-scripts --no-dev" \
@@ -88,3 +93,5 @@ ENTRYPOINT ["/entrypoint.sh"]
 
 # Record into the CI logs
 RUN nginx -v && php --version
+
+USER www-data
