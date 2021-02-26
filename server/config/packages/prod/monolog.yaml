@@ -1,27 +1,7 @@
 monolog:
     handlers:
         main:
-            type: fingers_crossed
-            level: error
-            handler: nested
-            channels: ["!event", "!php"]
-            excluded_404s:
-                # regex: exclude all 404 errors from the logs
-                - ^/
-        nested:
             type: stream
             path: "%kernel.logs_dir%/%kernel.environment%.log"
             level: error
-            channels: ["!event", "!php", "!request.INFO"]
-        console:
-            type: console
-            process_psr_3_messages: false
-            channels: ["!event", "!doctrine"]
-        deprecation:
-            type: stream
-            path: "%kernel.logs_dir%/%kernel.environment%.deprecations.log"
-        deprecation_filter:
-            type: filter
-            handler: deprecation
-            max_level: info
-            channels: ["php"]
+            channels: ["!event", "!request.INFO"]
