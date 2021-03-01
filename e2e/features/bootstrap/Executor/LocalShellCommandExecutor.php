@@ -18,6 +18,9 @@ class LocalShellCommandExecutor implements CommandExecutorInterface
 
     public function execBahubCommand(string $command, array $env = []): array
     {
+        $env['SERVER_URL'] = 'http://localhost:8000/';
+        $env['BUILD_DIR'] = __DIR__ . '/../../../build';
+
         $envsAsString = '';
 
         foreach ($env as $name => $value) {

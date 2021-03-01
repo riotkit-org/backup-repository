@@ -26,6 +26,9 @@ class DockerShellCommandExecutor implements CommandExecutorInterface
 
     public function execBahubCommand(string $command, array $env = []): array
     {
+        $env['SERVER_URL'] = 'http://s3pb_server_1/';
+        $env['BUILD_DIR'] = '/tmp';
+
         $envsAsString = '';
 
         foreach ($env as $name => $value) {
@@ -33,7 +36,7 @@ class DockerShellCommandExecutor implements CommandExecutorInterface
         }
 
         exec(
-            'docker exec ' . $envsAsString . ' -i "' . $this->getBahubContainerName() . '" "bahub ' . $command . '"',
+            'docker exec ' . $envsAsString . ' -i "' . $this->getBahubContainerName() . '" /bin/bash -c "bahub ' . $command . '"',
             $output,
             $this->lastBahubCommandExitCode
         );
@@ -41,7 +44,7 @@ class DockerShellCommandExecutor implements CommandExecutorInterface
         $this->lastBahubCommandResponse = implode("\n", $output);
 
         if ($this->lastBahubCommandExitCode !== 0) {
-            var_dump($this->lastBahubCommandResponse, $this->lastShellCommandExitCode);
+            var_dump($this->lastBahubCommandResponse, $this->lastBahubCommandExitCode);
         }
 
         return ['out' => $this->lastBahubCommandResponse, 'exit_code' => $this->lastBahubCommandExitCode];

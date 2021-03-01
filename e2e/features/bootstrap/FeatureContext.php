@@ -207,8 +207,7 @@ class FeatureContext extends TechnicalContext
         $this->execBahubCommand(':crypto:generate-keys ' . $backupDefinition . ' -rl debug', [
             // values are example - the keys generation and listing does not use them
             'API_TOKEN'          => '1111-2222-3333',
-            'TEST_COLLECTION_ID' => '1111-2222-3333',
-            'BUILD_DIR'          => BUILD_DIR
+            'TEST_COLLECTION_ID' => '1111-2222-3333'
         ]);
     }
 
@@ -223,7 +222,6 @@ class FeatureContext extends TechnicalContext
             // values are example - the keys generation and listing does not use them
             'API_TOKEN'          => '1111-2222-3333',
             'TEST_COLLECTION_ID' => '1111-2222-3333',
-            'BUILD_DIR'          => BUILD_DIR
         ]);
 
         Assertions::assertStringContainsStringIgnoringCase($descriptionPart, $result['out']);
@@ -333,7 +331,6 @@ class FeatureContext extends TechnicalContext
         $result = $this->execBahubCommand(':backup:make ' . $backupDefinition . ' -rl debug', [
             'API_TOKEN'          => $this->lastAssignedAuthorizationToken,
             'TEST_COLLECTION_ID' => $this->lastCreatedCollectionId,
-            'BUILD_DIR'          => BUILD_DIR
         ]);
 
         Assertions::assertEquals(0, $result['exit_code']);
@@ -351,8 +348,7 @@ class FeatureContext extends TechnicalContext
     {
         $result = $this->execBahubCommand(':backup:restore ' . $backupDefinition . ' --version="' . $version . '" -rl debug', [
             'API_TOKEN'          => $this->lastAssignedAuthorizationToken,
-            'TEST_COLLECTION_ID' => $this->lastCreatedCollectionId,
-            'BUILD_DIR'          => BUILD_DIR
+            'TEST_COLLECTION_ID' => $this->lastCreatedCollectionId
         ]);
 
         Assertions::assertEquals(0, $result['exit_code']);

@@ -10,7 +10,7 @@
 
 accesses:
     secured:
-        url: "http://localhost:8000"
+        url: "${SERVER_URL}"
         token: "${API_TOKEN}"
 
 encryption:
