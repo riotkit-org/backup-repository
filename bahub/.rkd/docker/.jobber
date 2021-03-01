@@ -4,7 +4,7 @@ prefs:
     logPath: /home/bahub/logs/jobber.log
     runLog:
         type: file
-        path: /home/bahub/logs/
+        path: /home/bahub/logs/jobber.log
         maxFileLen: 25m
         maxHistories: 2
 

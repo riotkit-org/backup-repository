@@ -1,0 +1,7 @@
+version: "3.6"
+
+services:
+    bahub:
+        image: quay.io/riotkit/bahub:latest
+        volumes:
+            - ../../bahub.conf.yaml:/home/bahub/bahub.conf.yaml

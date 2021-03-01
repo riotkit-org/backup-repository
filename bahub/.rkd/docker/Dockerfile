@@ -49,7 +49,8 @@ RUN set -x; apk add --virtual .build-deps gcc musl-dev python3-dev curl-dev libf
 # Now we will operate only on /home/bahub directory as non-privileged user
 ADD bahub/bahub.conf.yaml /home/bahub/bahub.conf.yaml
 ADD bahub/.rkd/docker/.jobber /home/bahub/.jobber
-RUN chown bahub:bahub -R /home/bahub
+RUN mkdir -p /home/bahub/logs /var/jobber/1000 && touch /home/bahub/logs/jobber.log
+RUN chown bahub:bahub -R /home/bahub /var/jobber/1000
 USER bahub
 WORKDIR /home/bahub
 
