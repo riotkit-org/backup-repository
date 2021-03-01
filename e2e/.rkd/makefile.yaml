@@ -33,6 +33,7 @@ tasks:
         steps: |
             docker rm -f br_e2e_browser
             docker create --rm --name br_e2e_browser -p 127.0.0.1:9222:9223 -p 127.0.0.1:5900:5900 ${BROWSER_DOCKER_IMAGE}
+            docker network connect s3pb_default br_e2e_browser
             chmod +x $(pwd)/.rkd/dockerized-browser/start-selenium-standalone.sh
             docker cp $(pwd)/.rkd/dockerized-browser/start-selenium-standalone.sh br_e2e_browser:/opt/bin/start-selenium-standalone.sh
             docker start br_e2e_browser

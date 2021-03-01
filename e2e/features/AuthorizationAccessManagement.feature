@@ -7,7 +7,7 @@ Feature: I can manage my own access list
     Scenario: I can revoke current session, so then I expect that I will be logged out
         Given I visit authorization page
         And I follow "Revoke"
-        Then I should see message "No active token found"
+        Then I should see message "Access denied"
 
 
     Scenario: As a user with all permissions I can generate a new API token for longer period than 1 hour,

@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 
+namespace E2E\features\bootstrap;
+
 use Behat\Mink\Exception\ElementNotFoundException;
 use PHPUnit\Framework\Assert as Assertions;
-
-require_once __DIR__ . '/TechnicalContext.php';
 
 /**
  * Defines application features from the specific context.
@@ -236,7 +236,7 @@ class FeatureContext extends TechnicalContext
      */
     public function iShouldSeeErrorOutputFromBahubContaining(string $text): void
     {
-        Assertions::assertStringContainsStringIgnoringCase($text, $this->lastBahubCommandResponse);
+        Assertions::assertStringContainsStringIgnoringCase($text, $this->commandExecutor->getLastBahubCommandResponse());
     }
 
     /**
@@ -407,7 +407,7 @@ class FeatureContext extends TechnicalContext
      */
     public function iExpectBahubCommandFinishedWithSuccess(): void
     {
-        Assertions::assertEquals(0, $this->lastBahubCommandExitCode);
+        Assertions::assertEquals(0, $this->commandExecutor->getLastBahubCommandExitCode());
     }
 
     /**
@@ -417,7 +417,7 @@ class FeatureContext extends TechnicalContext
      */
     public function iExpectBahubCommandOutputContains(string $text): void
     {
-        Assertions::assertStringContainsStringIgnoringCase($text, $this->lastBahubCommandResponse);
+        Assertions::assertStringContainsStringIgnoringCase($text, $this->commandExecutor->getLastBahubCommandResponse());
     }
 
     /**

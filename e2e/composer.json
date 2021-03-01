@@ -8,5 +8,8 @@
         "phpunit/phpunit": "^9.5",
         "ext-readline": "*",
         "guzzlehttp/guzzle": "^7.2"
+    },
+    "autoload": {
+        "psr-4": {"E2E\\": "./"}
     }
 }

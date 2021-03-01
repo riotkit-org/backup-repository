@@ -1,12 +1,17 @@
 <?php declare(strict_types=1);
 
+namespace E2E\features\bootstrap;
+
 use Behat\Behat\Hook\Scope\AfterScenarioScope;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
+use Behat\Behat\Hook\Scope\BeforeStepScope;
 use Behat\Mink\Element\NodeElement;
 use Behat\Mink\Exception\DriverException;
 use Behat\Mink\Exception\ElementNotFoundException;
 use Behat\Mink\Exception\UnsupportedDriverActionException;
 use Behat\MinkExtension\Context\MinkContext;
+use E2E\features\bootstrap\Executor\CommandExecutorFactory;
+use E2E\features\bootstrap\Executor\CommandExecutorInterface;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use PHPUnit\Framework\Assert as Assertions;
@@ -18,11 +23,12 @@ define('BUILD_DIR', __DIR__ . '/../../build');
 
 class TechnicalContext extends MinkContext
 {
-    protected string $lastShellCommandResponse = '';
-    protected int $lastShellCommandExitCode = 1;
+    protected CommandExecutorInterface $commandExecutor;
 
-    protected string $lastBahubCommandResponse = '';
-    protected int $lastBahubCommandExitCode = 1;
+    public function __construct()
+    {
+        $this->commandExecutor = CommandExecutorFactory::createExecutor();
+    }
 
     /**
      * Before each scenario clear the browser session - logout user
@@ -36,11 +42,25 @@ class TechnicalContext extends MinkContext
         try {
             $script = 'sessionStorage.clear(); localStorage.clear();';
             $this->getSession()->executeScript($script);
-        } catch (Throwable $e) {
+        } catch (\Throwable $e) {
         }
 
         if (!$event->getTestResult()->isPassed() && getenv('WAIT_BEFORE_FAILURE') === 'true') {
             $this->iWaitForUserInput();
+        }
+    }
+
+    /**
+     * @BeforeStep
+     *
+     * @param BeforeStepScope $event
+     */
+    public function maximizeWindow(BeforeStepScope $event): void
+    {
+        try {
+            $this->getSession()->maximizeWindow();
+        } catch (\Throwable $e) {
+
         }
     }
 
@@ -89,40 +109,12 @@ class TechnicalContext extends MinkContext
 
     protected function execServerCommand(string $command): array
     {
-        exec('cd ' . SERVER_PATH . ' && ./bin/console ' . $command, $output, $returnCode);
-
-        $this->lastShellCommandResponse = implode("\n", $output);
-        $this->lastShellCommandExitCode = $returnCode;
-
-        return ['out' => $output, 'exit_code' => $returnCode];
+        return $this->commandExecutor->execServerCommand($command);
     }
 
     public function execBahubCommand(string $command, array $env = []): array
     {
-        $envsAsString = '';
-
-        foreach ($env as $name => $value) {
-            $envsAsString .= ' && export ' . $name . '=' . escapeshellarg($value) . ' ';
-        }
-
-        $fullCommand = 'cd ' . BAHUB_PATH . ' ' .
-            '&& source .venv/bin/activate ' .
-            $envsAsString .
-            '&& export CONFIG=' . BAHUB_PATH . '/bahub.conf.yaml ' .
-            '&& xterm -e /bin/bash -c "python3 -m bahub ' . str_replace('"', '\"', $command) . ' 2>&1 | tee -a ' . BUILD_DIR . '/shell.out; ' .
-            'RET=\${PIPESTATUS[0]}; echo "@BAHUB_RET=\${RET}" >> ' . BUILD_DIR . '/shell.out; sleep 2; exit \${RET};"';
-
-        exec($fullCommand, $output);
-
-        $this->lastBahubCommandResponse = file_get_contents(BUILD_DIR . '/shell.out');
-        preg_match('/@BAHUB_RET=([0-9]+)/', $this->lastBahubCommandResponse, $exitCodeParsingMatches);
-        $this->lastBahubCommandExitCode = (integer) $exitCodeParsingMatches[0][1];
-
-        if ($this->lastBahubCommandExitCode !== 0) {
-            var_dump($this->lastBahubCommandResponse, $this->lastShellCommandExitCode);
-        }
-
-        return ['out' => $this->lastBahubCommandResponse, 'exit_code' => $this->lastBahubCommandExitCode];
+        return $this->commandExecutor->execBahubCommand($command, $env);
     }
 
     /**
@@ -132,7 +124,7 @@ class TechnicalContext extends MinkContext
      */
     public function iAssertShellCommandOutputContains(string $partial): void
     {
-        Assertions::assertStringContainsString($partial, $this->lastShellCommandResponse);
+        Assertions::assertStringContainsString($partial, $this->commandExecutor->getLastShellCommandResponse());
     }
 
     /**
@@ -142,7 +134,7 @@ class TechnicalContext extends MinkContext
      */
     public function iAssertShellCommandExitedWith(int $exitCode): void
     {
-        Assertions::assertEquals($exitCode, $this->lastShellCommandExitCode);
+        Assertions::assertEquals($exitCode, $this->commandExecutor->getLastShellCommandExitCode());
     }
 
     //
@@ -334,7 +326,7 @@ class TechnicalContext extends MinkContext
      *
      * @param string $message
      *
-     * @throws LogicException
+     * @throws \LogicException
      */
     public function iShouldNotSeeNotificationWithMessage(string $message): void
     {
