@@ -60,7 +60,7 @@ Please report issues with suffixes in topic [Server] [Frontend] [Bahub].
 Tests
 -----
 
-### E2E - integration tests
+## E2E - integration tests
 
 Smoke testing of workflows that includes multiple applications, multiple interfaces together.
 The tests are using Chromium browser to test frontend, are launching backup client via shell, Symfony shell commands on the server side.
@@ -69,6 +69,8 @@ Tests are written in **Gherkin/Cucumber** language with addition of PHP on top o
 
 **Note:** .feature files in E2E tests are English written scenarios that should be clear to the end user, so are also an instruction/specification of given feature - can be used as a documentation
 
+**E2E tests on CI are performed on production mode, using a production-like container**
+
 ```bash
 cd e2e
 ./vendor/bin/behat
@@ -76,22 +78,28 @@ cd e2e
 
 **Notice: Requires server to be up and running on `localhost:8000` in `APP_ENV=test` mode (uses technical endpoints and test token)**
 
-### Server unit tests
+## Server unit tests
 
 Unit tests written in PhpUnit.
+
+**Unit tests on CI are performed on CI on host**
 
 ```bash
 cd server
 ./bin/phpunit
 ```
 
-### Server API tests
+## Server API tests
 
 Functional API tests written in Codeception. Requires a server to be up and running under `localhost:8000` in `APP_ENV=test` mode.
 
-### Bahub unit/functional tests
+**API tests on CI are performed on production mode, using a production-like container**
+
+## Bahub unit/functional tests
 
 Unit and functional tests written in `unittest` + `rkd.api.testing` frameworks.
+
+**Unit and functional tests on CI are performed on CI on host**
 
 ```bash
 cd bahub

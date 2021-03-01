@@ -12,6 +12,10 @@ tasks:
             docker rm -f s3pb_db_1 || true
             docker-compose -p s3pb -f .infrastructure/docker/docker-compose.yml up -d --force-recreate
 
+    :install:
+        description: Installs local dependencies
+        steps: composer install --no-scripts --no-dev
+
     :ci:environment:
         description: Setup environment for continuous integration
         steps:
@@ -33,7 +37,10 @@ tasks:
 
     :env:server-docker:up:
         description: Runs a production-like docker container
-        steps: "docker-compose -p s3pb -f .infrastructure/docker/docker-compose.server.yml up -d --force-recreate"
+        arguments:
+            "--env":
+                default: "prod"
+        steps: "set -x; APP_ENV=$ARG_ENV docker-compose -p s3pb -f .infrastructure/docker/docker-compose.server.yml up -d --force-recreate"
 
     :create:admin-account:
         description: "Create a test admin user account, e-mail: example@riseup.net, password: example_1234"
@@ -114,8 +121,12 @@ tasks:
             - cd .. && docker build . -f server/.infrastructure/Dockerfile -t quay.io/riotkit/backup-repository:latest
             - |
               if [[ $ARG_REF =~ ^v[0-9\.]$ ]]; then
+                  echo "REF IS $ARG_REF"
                   docker tag quay.io/riotkit/backup-repository:latest quay.io/riotkit/backup-repository:${ARG_REF}
-                  %RKD% @ --image quay.io/riotkit/backup-repository:${ARG_REF} --propagate :docker:tag :docker:push
+
+                  if [[ $ARG_PUSH ]]; then
+                      %RKD% @ --image quay.io/riotkit/backup-repository:${ARG_REF} --propagate :docker:tag :docker:push
+                  fi
                   docker tag quay.io/riotkit/backup-repository:${ARG_REF} quay.io/riotkit/backup-repository:latest-release
 
                   if [[ $ARG_PUSH ]]; then
@@ -123,6 +134,6 @@ tasks:
                   fi
               fi
 
-              if [[ $ARG_PUSH ]]; then
+              if [[ $ARG_PUSH == "True" ]]; then
                   docker push quay.io/riotkit/backup-repository:latest
               fi
