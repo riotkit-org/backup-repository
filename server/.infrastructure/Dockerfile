@@ -52,7 +52,8 @@ ENV DATABASE_URL=postgres://postgres:postgres@postgres:5432/postgres \
     CACHE_REDIS_URL="redis://localhost" \
     CACHE_MEMCACHED_PROVIDER="memcached://localhost" \
     SECURITY_ADMIN_TOKEN="" \
-    CLEAR_CACHE="true"
+    CLEAR_CACHE="true" \
+    JWT_PASSPHRASE=""
 
 COPY server/ /home/backuprepository
 COPY --from=frontend_builder /build/dist/ /home/backuprepository/public/
@@ -73,9 +74,10 @@ RUN set -x \
     && rm -rf var/log/* \
     && rm -rf var/uploads/* \
     && rm -f var/*.db \
+    && rm config/jwt/*.pem || true \
     && mkdir -p var/log var/cache /var/log/nginx \
     && cp .env.dist .env \
-    && chown www-data:www-data /home/backuprepository/ /var/log/nginx -R \
+    && chown www-data:www-data /home/backuprepository/ /var/log/nginx config/jwt -R \
     && php --version \
     && su www-data -s /bin/bash -c "php --version" \
     && su www-data -s /bin/bash -c "composer install --no-scripts --no-dev" \

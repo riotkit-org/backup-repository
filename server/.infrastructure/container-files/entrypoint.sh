@@ -1,17 +1,15 @@
-#!/bin/bash -e
+#!/bin/bash
+
+set -e
 
 make_cache() {
     echo " >> Rendering cache.yaml"
     j2 config/packages/cache.yaml.j2 > config/packages/cache.yaml
 }
 
-correct_permissions() {
-    echo " >> Correcting permissions"
+create_dirs() {
+    echo " >> Creating directories"
     mkdir -p vendor var
-    touch var/data.db
-
-    chown www-data:www-data public vendor
-    chown www-data:www-data -R var
 }
 
 setup_admin_user() {
@@ -32,26 +30,62 @@ execute_post_install_commands() {
 }
 
 install_application() {
+    echo " >> Executing composer install (APP_ENV=${APP_ENV})..."
+
+    # --no-scripts: Do not clear cache if not needed (containers can be running in a cluster of multiple instances, why to clear cache of all instances?)
+    # --no-progress: It is non-interactive session, we do not need progress
+    COMPOSER_ARGS=" --no-scripts --no-progress "
+
+    if [[ $APP_ENV == "prod" ]]; then
+        # on production mode we do not need WebProfilerBundle and others. But on test/dev mode we need to install them
+        # because application would not work at all
+        COMPOSER_ARGS="${COMPOSER_ARGS} --no-dev "
+    fi
+
+    echo " >> ${COMPOSER_ARGS}"
+    eval "composer install ${COMPOSER_ARGS}"
+
     echo " >> Updating the database..."
     ./bin/console doctrine:migrations:migrate -n
 
-    echo " >> Generating GPG keypair"
-    ./bin/console lexik:jwt:generate-keypair --skip-if-exists
-
-    echo " >> Executing composer install..."
-
     if [[ "${CLEAR_CACHE}" == "true" ]]; then
-        composer install --no-dev
-    else
-        composer install --no-scripts --no-dev
+        ./bin/console cache:clear --env=${APP_ENV}
+    fi
+}
+
+setup_jwt() {
+    echo " >> Checking GPG keypair"
+
+    if [[ "$APP_ENV" == "prod" ]]; then
+        if ! df | grep "jwt" > /dev/null; then
+            echo " >> On production the keys should be mounted as a volume, sorry, cannot continue"
+            echo " >> Consequence of not keeping the keys can be catastrophic - after container restart all JWTs would be revoked"
+            exit 1
+        fi
+    fi
+
+    if [[ ! "${JWT_PASSPHRASE}" ]]; then
+        echo " >> ERROR: JWT_PASSPHRASE must be supplied!"
+        exit 1
+    fi
+
+    if [[ ! -f config/jwt/private.pem ]]; then
+        echo " >> Generating GPG keypair (as it is not present)"
+        export JWT_PASSPHRASE
+
+        # first time we need to use openssl to generate keys, because the console is useless without keys
+        # (there is a validation if the keys are present)
+        openssl genpkey -out $(pwd)/config/jwt/private.pem -aes256 -pass "pass:$JWT_PASSPHRASE" -algorithm rsa -pkeyopt rsa_keygen_bits:4096
+        openssl pkey -in $(pwd)/config/jwt/private.pem -out config/jwt/public.pem -pubout -passin pass:$JWT_PASSPHRASE
     fi
 }
 
 make_cache
-correct_permissions
+create_dirs
+setup_jwt
+install_application
 setup_admin_user
 execute_post_install_commands
-install_application
 
 appLogPath="/home/backuprepository/var/log/${APP_ENV}.log"
 touch "${appLogPath}"

@@ -9,5 +9,8 @@ services:
             FS_AWSS3V3_OPTIONS_ENDPOINT: "http://storage:9000"
             FS_AWSS3V3_KEY: "RIOTKIT161ACABEXAMPL"
             FS_AWSS3V3_SECRET: "wJalrFUckFEMI/THEdENG/STaTeandCAPITALKEY"
+            APP_ENV: "${APP_ENV}"
+
+            JWT_PASSPHRASE: "b0ltCuTTeR.GOES_CLICK-CLACK"
         ports:
             - 8000:80
