@@ -7,17 +7,31 @@ tasks:
         steps:
             - rkd :server:release:docker-image
 
-    :ci:prepare-test-environment:
+    :prepare:integration-environment:
+        description: Prepares a full environment with docker containers. Ready for API & E2E testing
         steps:
             - rkd :bahub:env:adapters
             - rkd :server:env:dependencies:up
-            - rkd :server:env:server-docker:up
+            - rkd :server:env:server-docker:up --env=test
             - rkd :e2e:install
             - rkd :e2e:browser:spawn-container
+            - rkd :bahub:env:bahub-docker:up
+            # todo: Wait for E2E browser to get up
+
+    :prepare:local-environment:
+        description: Prepares a local unit testing environment
+        steps:
+            - rkd :bahub:env:adapters
+            - rkd :bahub:install
+            - rkd :server:install
 
     :bahub:env:adapters:
         descritpion: Run test services for usage with Bahub
         steps: "cd bahub && rkd :env:adapters"
+
+    :bahub:env:bahub-docker:up:
+        description: Run a production-like Bahub container
+        steps: "cd bahub && rkd :env:bahub-docker:up"
 
     :server:env:dependencies:up:
         description: Run services required by server
@@ -25,7 +39,10 @@ tasks:
 
     :server:env:server-docker:up:
         description: Run server as production-like docker container
-        steps: "cd server && rkd :env:server-docker:up"
+        arguments:
+            "--env":
+                default: "prod"
+        steps: "cd server && rkd :env:server-docker:up --env=${ARG_ENV}"
 
     :server:release:docker-image:
         description: "Build production-like docker image for server"

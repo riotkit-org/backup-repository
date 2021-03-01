@@ -51,10 +51,6 @@ jobs:
                   restore-keys: ${{ runner.os }}-composer-
 
             # —— Tests —————————————————————————————————————————————————————————
-            - name: "Run API tests"
-              run: "rkd :test:api"
-              working-directory: "server"
-
             - name: "Run Unit tests"
               run: "rkd :test:unit"
               working-directory: "server"
