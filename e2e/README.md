@@ -42,10 +42,10 @@ Running on CI
 
 ```bash
 # setup - one time
-rkd :e2e:browser:spawn-container :e2e:install
+rkd :browser:spawn-container :e2e:install
 
 # running tests
-rkd :e2e:test
+rkd :test:in-docker
 ```
 
 Groups of suites

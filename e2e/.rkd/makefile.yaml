@@ -10,6 +10,11 @@ tasks:
         description: Run End-To-End tests with Behat
         steps: ./vendor/bin/behat
 
+    :test:in-docker:
+        description: Run End-To-End tests with Behat
+        steps:
+            - TEST_ENV_TYPE=docker ./vendor/bin/behat -c ./behat.docker.yml
+
     :install:
         description: Install
         steps: composer install
