@@ -17,8 +17,4 @@ TASKS = [
     Task(':env:adapters', [':sh', '-c', '''
         cd test/env/bahub_adapter_integrations && docker-compose -p bahub_adapter_integrations up -d
     ''']),
-
-    Task(':env:bahub-docker:up', [':sh', '-c', '''
-        docker-compose -p s3pb -f .rkd/ci/docker-compose.yml up -d
-    '''])
 ]

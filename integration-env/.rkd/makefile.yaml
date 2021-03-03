@@ -1,0 +1,48 @@
+version: org.riotkit.rkd/yaml/v1
+
+environment:
+    BROWSER_DOCKER_IMAGE: "selenium/standalone-chrome:4.0.0-beta-1-prerelease-20210209"
+    APP_ENV: "test"
+
+tasks:
+    :build:
+        description: Build all required containers
+        steps:
+            - cd ../server && rkd :release:docker-image latest
+            - cd ../bahub && rkd :release:docker-image
+
+    :run:
+        description: Start containerized environment
+        steps:
+            - rkd :docker:network
+            - rkd :docker:e2e-browser
+            - rkd :docker:compose
+            # @todo: - rkd :wait-for:s3
+            - rkd :docker:create-test-bucket
+
+    :docker:network:
+        steps:
+            - docker network create s3pb_default || true
+
+    :docker:compose:
+        steps: docker-compose -p s3pb -f ./docker-compose.bahub.yml -f ./docker-compose.server.yml up -d
+
+    :docker:create-test-bucket:
+        steps:
+            - docker-compose -p s3pb -f ./docker-compose.s3-provision.yml up
+            - docker rm -f s3pb_s3_provision_1
+
+    #
+    # Spawns a browser inside a docker container
+    # We use Selenium's official container, because it is always up-to-date and well maintained
+    # but we do not use Selenium itself - just only the Chrome that is installed inside
+    #
+    :docker:e2e-browser:
+        description: Spawns a Google Chrome container
+        steps: |
+            docker rm -f br_e2e_browser
+            docker create --rm --name br_e2e_browser -p 127.0.0.1:9222:9223 -p 127.0.0.1:5900:5900 ${BROWSER_DOCKER_IMAGE}
+            docker network connect s3pb_default br_e2e_browser
+            chmod +x $(pwd)/.rkd/dockerized-browser/start-selenium-standalone.sh
+            docker cp $(pwd)/.rkd/dockerized-browser/start-selenium-standalone.sh br_e2e_browser:/opt/bin/start-selenium-standalone.sh
+            docker start br_e2e_browser

@@ -1,5 +1,16 @@
 version: "3.6"
+
 services:
+    bahub:
+        image: quay.io/riotkit/bahub:latest
+        volumes:
+            - ./bahub.conf.yaml:/home/bahub/bahub.conf.yaml
+
+
+    # ====================================
+    # Services used in integration testing
+    # ====================================
+
     db_mysql:
         image: "mariadb:10.4"
         environment:
@@ -8,7 +19,7 @@ services:
             - "3306:3306"
 
     db_postgres:
-        image: "postgres:13.1"
+        image: "postgres:13.1-alpine"
         environment:
             POSTGRES_PASSWORD: "communism-cannot-be-enforced"
             POSTGRES_USER: "bakunin"

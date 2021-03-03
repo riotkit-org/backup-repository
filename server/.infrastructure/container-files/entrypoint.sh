@@ -15,6 +15,7 @@ create_dirs() {
 setup_admin_user() {
     echo " >> Preparing admin user if configured via SECURITY_ADMIN_TOKEN environment variable"
 
+    # @todo: Refactor to admin account
     if [[ "${SECURITY_ADMIN_TOKEN}" ]]; then
         echo " >> Setting up default admin token provided with SECURITY_ADMIN_TOKEN environment variable"
         ./bin/console auth:generate-admin-token --ignore-error-if-token-exists --id=${SECURITY_ADMIN_TOKEN} --expires='+10 years'
@@ -46,6 +47,7 @@ install_application() {
     eval "composer install ${COMPOSER_ARGS}"
 
     echo " >> Updating the database..."
+    ./bin/console health:wait-for:database --timeout ${WAIT_FOR_DB_TIMEOUT}
     ./bin/console doctrine:migrations:migrate -n
 
     if [[ "${CLEAR_CACHE}" == "true" ]]; then

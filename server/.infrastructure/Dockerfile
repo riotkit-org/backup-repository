@@ -40,6 +40,7 @@ ENV DATABASE_URL=postgres://postgres:postgres@postgres:5432/postgres \
     ENC_SALT=default-change-me \
     APP_ENV=prod \
     HTTP_TIMEOUT=30 \
+    WAIT_FOR_DB_TIMEOUT=30 \
     BACKUP_ONE_VERSION_MAX_SIZE=4GB \
     BACKUP_COLLECTION_MAX_SIZE=15GB \
     READ_ONLY=false \

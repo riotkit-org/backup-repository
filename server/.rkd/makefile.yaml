@@ -6,48 +6,20 @@ env_file:
     - ../.env
 
 tasks:
-    :env:dependencies:up:
-        description: Runs a dockerized environment
-        steps: |
-            docker rm -f s3pb_db_1 || true
-            docker-compose -p s3pb -f .infrastructure/docker/docker-compose.yml up -d --force-recreate
-
     :install:
         description: Installs local dependencies
         steps: composer install --no-scripts --no-dev
 
-    :ci:environment:
-        description: Setup environment for continuous integration
-        steps:
-            - cp -pr .infrastructure/ci-files/* ./
-            - cp -pr .infrastructure/ci-files/.env ./
-            - "%RKD% :dev"
-
-    :dev-env:
-        description: Prepare development environment
-        steps: |
-            %RKD% :env:dependencies:up
-            sleep 10
-            composer install
-            ./bin/console doctrine:migrations:migrate -n
-
     :dev:server:
         description: Run development server
         steps: symfony serve -d
-
-    :env:server-docker:up:
-        description: Runs a production-like docker container
-        arguments:
-            "--env":
-                default: "prod"
-        steps: "set -x; APP_ENV=$ARG_ENV docker-compose -p s3pb -f .infrastructure/docker/docker-compose.server.yml up -d --force-recreate"
 
     :create:admin-account:
         description: "Create a test admin user account, e-mail: example@riseup.net, password: example_1234"
         steps: ./bin/console auth:create-admin-account --email=example@riseup.net --password=example_1234
 
     :create:keys:
-        description: Create JWT encryption keys
+        description: "Create JWT encryption keys (WARNING: Overwriting keys will result in revoking all existing generated JWT)"
         steps:
             - mkdir -p config/jwt
             - openssl genpkey -out config/jwt/private.pem -aes256 -pass pass:$JWT_PASSPHRASE -algorithm rsa -pkeyopt rsa_keygen_bits:4096
