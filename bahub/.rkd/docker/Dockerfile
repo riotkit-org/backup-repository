@@ -46,12 +46,15 @@ RUN set -x; apk add --virtual .build-deps gcc musl-dev python3-dev curl-dev libf
     && apk del .build-deps \
     && rm -rf /bahub
 
-# Now we will operate only on /home/bahub directory as non-privileged user
+# Now we will operate only on /home/bahub directory
 ADD bahub/bahub.conf.yaml /home/bahub/bahub.conf.yaml
 ADD bahub/.rkd/docker/.jobber /home/bahub/.jobber
 RUN mkdir -p /home/bahub/logs /var/jobber/1000 && touch /home/bahub/logs/jobber.log
 RUN chown bahub:bahub -R /home/bahub /var/jobber/1000
 WORKDIR /home/bahub
+
+# We need root permissions to preserve file permissions, especially on restore
+USER root
 
 ENTRYPOINT ["/usr/libexec/jobberrunner"]
 CMD ["--unixsocket", "/var/jobber/1000/cmd.sock", "/home/bahub/.jobber"]
