@@ -156,7 +156,7 @@ final class Errors
     public const ERR_MSG_INVALID_PATH_FORMAT                       = 'Invalid path format: {{ actual }}';
 
     public const ERR_INVALID_URL                                   = 42014;
-    public const ERR_MSG_INVALID_URL                               = 'Invalid URL address: {{ normalized }}';
+    public const ERR_MSG_INVALID_URL                               = 'Invalid URL address: {{ normalized }} (without normalization: {{ original }})';
 
     public const ERR_INVALID_REQUEST_BODY_ENCODING                 = 42015;
     public const ERR_MSG_INVALID_REQUEST_BODY_ENCODING             = 'Invalid input encoding time';

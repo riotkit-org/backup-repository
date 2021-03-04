@@ -10,10 +10,8 @@ parameters:
     locale: 'en'
     env(READ_ONLY): false
     env(HEALTH_CHECK_CODE): ''
-    env(HTTP_TIMEOUT): "30"
     env(TEMP_DIRECTORY): /tmp
     env(LONG_EXECUTION_TIME): "300"
-    env(TOKEN_EXPIRATION_TIME): "+30 minutes"
     env(BASE_URL): ''
     env(PASSWD_ALGORITHM): 'sha256'
     env(PASSWD_ITERATIONS): '90000'

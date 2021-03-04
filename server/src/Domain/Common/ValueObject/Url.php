@@ -21,16 +21,17 @@ class Url extends BaseValueObject implements \JsonSerializable
     public function __construct(string $value, BaseUrl $baseUrl = null)
     {
         $this->value = $value;
+        $original = $value;
 
         if ($baseUrl) {
-            $this->value = $baseUrl->getValue() . '/' . $this->value;
+            $this->value = $original = $baseUrl->getValue() . '/' . $this->value;
         }
 
         $this->value = $this->normalize($this->value, true);
         $normalized = $this->normalize($this->value, false);
 
         if ($this->value && !filter_var($normalized, FILTER_VALIDATE_URL)) {
-            throw CommonValueException::fromInvalidUrl($normalized);
+            throw CommonValueException::fromInvalidUrl($normalized, $original);
         }
     }
 
@@ -40,6 +41,8 @@ class Url extends BaseValueObject implements \JsonSerializable
      * @param Url $url
      *
      * @return static
+     *
+     * @throws CommonValueException
      */
     public static function fromBasicVersion($url)
     {

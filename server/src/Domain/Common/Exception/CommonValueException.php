@@ -35,10 +35,10 @@ class CommonValueException extends ApplicationException
         );
     }
 
-    public static function fromInvalidUrl(string $normalized)
+    public static function fromInvalidUrl(string $normalized, string $original)
     {
         return new static(
-            str_replace('{{ normalized }}', $normalized, Errors::ERR_MSG_INVALID_URL),
+            str_replace(['{{ normalized }}', '{{ original }}'], [$normalized, $original], Errors::ERR_MSG_INVALID_URL),
             Errors::ERR_INVALID_URL
         );
     }
