@@ -26,7 +26,7 @@ RUN apk update && apk add --no-cache bash
 SHELL ["/bin/bash", "-c"]
 
 # install docker client, and shell utilities as dependencies required by built-in Bahub adapters
-RUN apk add --no-cache libcurl docker git postgresql-client mysql-client tar sudo gnupg
+RUN apk add --no-cache libcurl docker git postgresql-client mysql-client tar sudo gnupg curl
 
 # install jobber (a cron-like alternative)
 RUN cd / && wget https://github.com/dshearer/jobber/releases/download/v$JOBBER_VERSION/jobber-$JOBBER_VERSION$JOBBER_BUILD_SUFFIX.apk \
@@ -51,7 +51,6 @@ ADD bahub/bahub.conf.yaml /home/bahub/bahub.conf.yaml
 ADD bahub/.rkd/docker/.jobber /home/bahub/.jobber
 RUN mkdir -p /home/bahub/logs /var/jobber/1000 && touch /home/bahub/logs/jobber.log
 RUN chown bahub:bahub -R /home/bahub /var/jobber/1000
-USER bahub
 WORKDIR /home/bahub
 
 ENTRYPOINT ["/usr/libexec/jobberrunner"]

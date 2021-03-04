@@ -7,7 +7,7 @@ IMPORTS = PythonBuildTasksImports()
 
 TASKS = [
     Task(':release:docker-image', [':sh', '-c', ''' set -x
-        cd ../ && docker build . -f bahub/.rkd/docker/Dockerfile -t quay.io/riotkit/bahub:latest
+        cd ../ && sudo docker build . -f bahub/.rkd/docker/Dockerfile -t quay.io/riotkit/bahub:latest
     ''']),
 
     Task(':run:docker', [':sh', '-c', ''' set -x
