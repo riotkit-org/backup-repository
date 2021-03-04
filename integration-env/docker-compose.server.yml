@@ -15,7 +15,7 @@ services:
             POSTGRES_DATABASE: chomsky
         volumes:
             # NOTICE: PostgreSQL needs to have a bind-mounted data on production, a persistent storage
-            #- ./postgres/data:/var/lib/postgresql/data
+            - ./data/postgres:/var/lib/postgresql/data
             - ./postgres/entrypoint.d:/docker-entrypoint-initdb.d/
         ports:
             - 5432:5432
@@ -25,6 +25,10 @@ services:
     # ========================
     server:
         image: quay.io/riotkit/backup-repository:latest
+        depends_on:
+            - db
+        links:
+            - db
         environment:
             DATABASE_URL: "postgres://chomsky:chomsky@db:5432/chomsky"
             FS_ADAPTER: "awss3v3"  # "awss3v3" or "local"
@@ -32,7 +36,9 @@ services:
             FS_AWSS3V3_KEY: "RIOTKIT161ACABEXAMPL"
             FS_AWSS3V3_SECRET: "wJalrFUckXEMI/THEdEZG/STaTeandCAPITALKEY"
             FS_AWSS3V3_BUCKET: "malatesta"
-            APP_ENV: "${APP_ENV}"
+
+            APP_ENV: "test"
+            BASE_URL: "http://server"
 
             JWT_PASSPHRASE: "b0ltCuTTeR.GOES_CLICK-CLACK"
 
@@ -40,7 +46,7 @@ services:
         #volumes:
         #    - jwt:/home/backuprepository/config/jwt
         ports:
-            - 8000:80
+            - 8080:80
 
     # ==============================================================
     # (Optional) S3-like storage "Min.io". Preferred type of storage
