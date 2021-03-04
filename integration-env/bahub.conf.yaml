@@ -53,7 +53,7 @@ backups:
             transport: local
         spec:
             paths:
-                - ./
+                - /etc/apk
 
     postgres_fs_cold_files_backup:
         meta:

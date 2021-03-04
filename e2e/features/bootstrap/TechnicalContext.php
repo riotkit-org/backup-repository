@@ -18,7 +18,7 @@ use PHPUnit\Framework\Assert as Assertions;
 
 define('SERVER_PATH', __DIR__ . '/../../../server');
 define('BAHUB_PATH', __DIR__ . '/../../../bahub');
-define('BACKEND_URL', 'http://localhost:8000');
+define('BACKEND_URL', getenv('TEST_ENV_TYPE') === 'docker' ? 'http://localhost:8080' : 'http://localhost:8000');
 define('BUILD_DIR', __DIR__ . '/../../build');
 
 class TechnicalContext extends MinkContext
