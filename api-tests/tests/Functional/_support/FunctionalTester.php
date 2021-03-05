@@ -33,7 +33,13 @@ class FunctionalTester extends \Codeception\Actor
 
     private function execServerConsoleCommand(string $command): void
     {
-        exec('cd ' . SERVER_PATH . ' && ./bin/console ' . $command, $output, $exitCode);
+        $preCommand = '';
+
+        if ($_SERVER['TEST_ENV_TYPE'] ?? '' === 'docker') {
+            $preCommand = 'docker exec -t s3pb_server_1 ';
+        }
+
+        exec('cd ' . SERVER_PATH . ' && ' . $preCommand . ' ./bin/console ' . $command, $output, $exitCode);
 
         Assertions::assertEquals(0, $exitCode, 'Exit code of "' . $command . '" should be 0');
     }
@@ -177,7 +183,13 @@ class FunctionalTester extends \Codeception\Actor
             'password'     => 'food-not-bombs-1980',
             'email'        => Uuid::uuid4()->getHex() . '@riseup.net',
             'organization' => 'Food Not Bombs',
-            'about'        => 'A loose-knit group of independent collectives, sharing free vegan and vegetarian food with others. Food Not Bombs\' ideology is that myriad corporate and government priorities are skewed to allow hunger to persist in the midst of abundance. To demonstrate this (and to reduce costs), a large amount of the food served by the group is surplus food from grocery stores, bakeries and markets that would otherwise go to waste (or, occasionally, has already been thrown away). This group exhibits a form of franchise activism.',
+            'about'        =>
+                'A loose-knit group of independent collectives, sharing free vegan and vegetarian food' .
+                ' with others. Food Not Bombs\' ideology is that myriad corporate and government priorities are ' .
+                'skewed to allow hunger to persist in the midst of abundance. To demonstrate this (and to reduce ' .
+                'costs), a large amount of the food served by the group is surplus food from grocery stores, bakeries' .
+                ' and markets that would otherwise go to waste (or, occasionally, has already been thrown away). ' .
+                'This group exhibits a form of franchise activism.',
         ], $data);
 
         return $this->createUser($data, $assert);

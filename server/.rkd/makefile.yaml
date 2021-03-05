@@ -25,23 +25,6 @@ tasks:
             - openssl genpkey -out config/jwt/private.pem -aes256 -pass pass:$JWT_PASSPHRASE -algorithm rsa -pkeyopt rsa_keygen_bits:4096
             - openssl pkey -in config/jwt/private.pem -out config/jwt/public.pem -pubout -passin pass:$JWT_PASSPHRASE
 
-    :test:api:
-        description: Run API tests
-        arguments:
-            "--filter":
-                help: "Execute only selected test case. Examples: Features/Security/FeatureOnlyOneFileAllowedToUploadCest, BackupCollectionListingCest, RegistryListingCest:testListingAllFiles"
-
-        steps:
-            - mkdir -p var/tests
-            - rm ./tests/Functional/_output/*.html 2>/dev/null || true
-            - |
-                set +e
-                SYMFONY_DEPRECATIONS_HELPER=weak ./vendor/bin/codecept run --html=../../../var/tests/api.html --xml=../../../var/tests/api.junit.xml functional ${ARG_FILTER};
-                exit_code=$?
-
-                cp -pr ./tests/Functional/_output/* var/tests/ 2>/dev/null
-                exit $exit_code
-
     :test:unit:
         description: Run unit tests
         steps: |

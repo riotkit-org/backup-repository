@@ -11,6 +11,7 @@ paths:
     support: tests/Functional/_support
     envs: tests/Functional/_envs
 actor_suffix: Tester
+
 extensions:
     enabled:
         - Codeception\Extension\RunFailed

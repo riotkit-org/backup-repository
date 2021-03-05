@@ -1,7 +1,7 @@
 modules:
     enabled:
         - Helper\ApiTester:
-              url: http://localhost:80
+              url: http://localhost:8080
               depends: PhpBrowser
 
 paths:
@@ -10,6 +10,7 @@ paths:
     data: tests/Functional_data
     support: tests/Functional/_support
     envs: tests/Functional/_envs
+
 actor_suffix: Tester
 extensions:
     enabled:

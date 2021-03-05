@@ -2,26 +2,8 @@
     "aws/aws-sdk-php": {
         "version": "3.87.2"
     },
-    "behat/gherkin": {
-        "version": "v4.6.0"
-    },
     "clue/stream-filter": {
         "version": "v1.4.1"
-    },
-    "codeception/codeception": {
-        "version": "2.3",
-        "recipe": {
-            "repo": "github.com/symfony/recipes-contrib",
-            "branch": "master",
-            "version": "2.3",
-            "ref": "d2a29c0abee586aff913fd45fae1f59b669f4cbe"
-        }
-    },
-    "codeception/phpunit-wrapper": {
-        "version": "8.0.4"
-    },
-    "codeception/stub": {
-        "version": "2.1.0"
     },
     "coraxster/flysystem-aws-s3-v3-minio": {
         "version": "1.0.16"
@@ -95,12 +77,6 @@
     "exsyst/swagger": {
         "version": "v0.4.1"
     },
-    "facebook/webdriver": {
-        "version": "1.6.0"
-    },
-    "flow/jsonpath": {
-        "version": "0.4.0"
-    },
     "gabrielelana/byte-units": {
         "version": "0.5.0"
     },
@@ -115,36 +91,6 @@
     },
     "guzzlehttp/psr7": {
         "version": "1.5.2"
-    },
-    "hamcrest/hamcrest-php": {
-        "version": "v2.0.0"
-    },
-    "hoa/consistency": {
-        "version": "1.17.05.02"
-    },
-    "hoa/console": {
-        "version": "3.17.05.02"
-    },
-    "hoa/event": {
-        "version": "1.17.01.13"
-    },
-    "hoa/exception": {
-        "version": "1.17.01.16"
-    },
-    "hoa/file": {
-        "version": "1.17.07.11"
-    },
-    "hoa/iterator": {
-        "version": "2.17.01.10"
-    },
-    "hoa/protocol": {
-        "version": "1.17.01.14"
-    },
-    "hoa/stream": {
-        "version": "1.17.02.21"
-    },
-    "hoa/ustring": {
-        "version": "4.17.01.16"
     },
     "http-interop/http-factory-guzzle": {
         "version": "1.0.0"
@@ -181,9 +127,6 @@
         "files": [
             "config/packages/lexik_jwt_authentication.yaml"
         ]
-    },
-    "mockery/mockery": {
-        "version": "1.2.2"
     },
     "monolog/monolog": {
         "version": "1.23.0"

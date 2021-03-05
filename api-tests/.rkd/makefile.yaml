@@ -1,0 +1,34 @@
+version: org.riotkit.rkd/yaml/v1
+imports: []
+
+tasks:
+    :test:
+        description: Run API tests with Codeception
+        steps: ./vendor/bin/codecept
+
+    :test:api:
+        description: Run API tests
+        arguments:
+            "--filter":
+                help: "Execute only selected test case. Examples: Features/Security/FeatureOnlyOneFileAllowedToUploadCest, BackupCollectionListingCest, RegistryListingCest:testListingAllFiles"
+            "--docker":
+                action: "store_true"
+                help: "Tests application that is in docker"
+        steps:
+            - mkdir -p build
+            - rm ./tests/Functional/_output/*.html 2>/dev/null || true
+            - |
+                config_path="codeception.yml"
+                if [[ $ARG_DOCKER == "True" ]]; then
+                    export TEST_ENV_TYPE=docker
+                    config_path="codeception.local-docker.yml"
+                fi
+
+                export SYMFONY_DEPRECATIONS_HELPER=weak
+                ./vendor/bin/codecept run --html=build/api.html --xml=build/api.junit.xml --config=${config_path} functional ${ARG_FILTER};
+
+            - cp -pr ./tests/Functional/_output/* var/tests/ 2>/dev/null
+
+    :install:
+        description: Install
+        steps: composer install

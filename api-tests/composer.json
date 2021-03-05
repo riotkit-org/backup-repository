@@ -1,0 +1,16 @@
+{
+    "name": "riotkit/backup-repository-api-tests",
+    "type": "project",
+    "description": "Backup Repository API tests",
+    "license": "Apache-2.0",
+    "require": {
+        "php": ">=7.4",
+        "codeception/codeception": "^3",
+        "flow/jsonpath": "^0.5.0"
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Tests\\": "tests/"
+        }
+    }
+}

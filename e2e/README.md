@@ -14,6 +14,8 @@ Tests are written using Behat 3.x framework. Scenarios are in **Cucumber** langu
 Running
 -------
 
+Daily development scenario, Backup Repository running on development server, Bahub used as module from local files.
+
 ```bash
 rkd :e2e:install
 rkd :e2e:browser:spawn-without-docker
@@ -42,9 +44,11 @@ Running on CI
 
 ```bash
 # setup - one time
-rkd :browser:spawn-container :e2e:install
+cd ../integration-env
+rkd :run
 
 # running tests
+cd ../e2e
 rkd :test:in-docker
 ```
 
