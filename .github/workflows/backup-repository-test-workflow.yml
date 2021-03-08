@@ -29,6 +29,9 @@ jobs:
               env:
                   update: true
 
+            - name: "Run containers required for tests"
+              run: "rkd :bahub:env:adapters"
+
             # —— Tests —————————————————————————————————————————————————————————
             - name: "Server: Unit tests"
               run: "rkd :test:unit"
