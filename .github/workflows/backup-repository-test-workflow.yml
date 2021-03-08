@@ -15,7 +15,7 @@ jobs:
 
             # —— Dependencies —————————————————————————————————————————————————————————
             - name: "Install project dependencies"
-              run: "sudo pip install -r ./requirements-dev.txt -r ./bahub/requirements.txt -r ./bahub/requirements-dev.txt"
+              run: "sudo pip install -r ./requirements-dev.txt -r ./bahub/requirements.txt"
 
             - name: Setup PHP, extensions and composer
               uses: shivammathur/setup-php@v2
