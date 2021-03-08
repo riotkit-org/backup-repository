@@ -29,17 +29,17 @@ transports:
     docker_mysql:
         type: bahub.transports.docker
         spec:
-            container: "bahub_adapter_integrations_db_mysql_1"
+            container: "s3pb_db_mysql_1"
 
     docker_postgres:
         type: bahub.transports.docker
         spec:
-            container: "bahub_adapter_integrations_db_postgres_1"
+            container: "s3pb_db_postgres_1"
 
     docker_postgres_offline:
         type: bahub.transports.temporarydocker
         spec:
-            orig_container: "bahub_adapter_integrations_db_postgres_1"
+            orig_container: "s3pb_db_postgres_1"
             temp_container_image: "postgres:13.1"
             shell: /bin/bash
 

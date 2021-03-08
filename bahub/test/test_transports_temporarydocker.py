@@ -22,7 +22,7 @@ class TestTemporaryDockerTransport(BasicTestingCase):
     def _create_example_transport() -> Transport:
         return Transport(
             spec={
-                'orig_container': 'bahub_adapter_integrations_db_postgres_1',
+                'orig_container': 's3pb_db_postgres_1',
                 'temp_container_image': 'postgres:13.1',
                 'shell': '/bin/bash'
             },

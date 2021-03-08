@@ -25,7 +25,10 @@ tasks:
             - docker network create s3pb_default || true
 
     :docker:compose:
-        steps: docker-compose -p s3pb -f ./docker-compose.bahub.yml -f ./docker-compose.server.yml up -d
+        steps: docker-compose -p s3pb -f ./docker-compose.bahub.yml -f ./docker-compose.server.yml -f ./docker-compose.bahub-dependencies.yml up -d
+
+    :docker:compose:bahub-dependencies:
+        steps: docker-compose -p s3pb -f ./docker-compose.bahub-dependencies.yml up -d
 
     :docker:create-test-bucket:
         steps:

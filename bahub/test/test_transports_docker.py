@@ -49,7 +49,7 @@ class TestDockerTransport(BasicTestingCase):
     def _create_example_transport() -> Transport:
         return Transport(
             spec={
-                'container': 'bahub_adapter_integrations_db_mysql_1',
+                'container': 's3pb_db_mysql_1',
                 'shell': '/bin/sh'
             },
             io=IO()

@@ -27,7 +27,7 @@ tasks:
 
     :bahub:env:adapters:
         descritpion: Run test services for usage with Bahub
-        steps: "cd bahub && rkd :env:adapters"
+        steps: "cd integration-env && rkd :docker:compose:bahub-dependencies"
 
     :bahub:env:bahub-docker:up:
         description: Run a production-like Bahub container
