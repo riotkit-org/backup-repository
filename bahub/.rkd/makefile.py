@@ -17,4 +17,6 @@ TASKS = [
     Task(':env:adapters', [':sh', '-c', '''
         cd test/env/bahub_adapter_integrations && docker-compose -p bahub_adapter_integrations up -d
     ''']),
+
+    Task(':test:unit', [':py:unittest'])
 ]

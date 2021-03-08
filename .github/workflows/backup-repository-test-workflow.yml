@@ -14,9 +14,8 @@ jobs:
               uses: actions/checkout@v1
 
             # —— Dependencies —————————————————————————————————————————————————————————
-            - name: "Install build dependencies"
-              run: "sudo pip install -r ./requirements.txt"
-              working-directory: "server"
+            - name: "Install project dependencies"
+              run: "sudo pip install -r ./requirements-dev.txt -r ./bahub/requirements.txt -r ./bahub/requirements-dev.txt"
 
             - name: Setup PHP, extensions and composer
               uses: shivammathur/setup-php@v2
@@ -27,36 +26,19 @@ jobs:
               env:
                   update: true
 
-            # —— Cache —————————————————————————————————————————————————————————
-            - name: Validate composer.json and composer.lock
-              run: composer validate
-              working-directory: "server"
-
-            - name: Get composer cache directory
-              id: composer-cache
-              run: echo "::set-output name=dir::$(composer config cache-files-dir)"
-              working-directory: "server"
-
-            # —— Development environment ———————————————————————————————————————
-            - name: "Prepare development/testing environment"
-              run: "rkd :ci:environment"
-              working-directory: "server"
-
-            # —— Cache —————————————————————————————————————————————————————————
-            - name: Cache composer dependencies
-              uses: actions/cache@v1
-              with:
-                  path: ${{ steps.composer-cache.outputs.dir }}
-                  key: ${{ runner.os }}-composer-${{ hashFiles('**/composer.lock') }}
-                  restore-keys: ${{ runner.os }}-composer-
-
             # —— Tests —————————————————————————————————————————————————————————
-            - name: "Run Unit tests"
+            - name: "Server: Unit tests"
               run: "rkd :test:unit"
+              if: ${{ always() }}  # @todo: Remove
               working-directory: "server"
+
+            - name: "Bahub client: Unit tests"
+              run: "rkd :test:unit"
+              if: ${{ always() }}  # @todo: Remove
+              working-directory: "bahub"
 
             # —— Reports ———————————————————————————————————————————————————————
-            - name: "Make HTML report from unit tests"
+            - name: "Make HTML report from server unit tests"
               run: "rkd :test:unit:html"
               if: ${{ always() }}
               working-directory: "server"
@@ -75,7 +57,8 @@ jobs:
                   name: logs
                   path: server/var/log
 
-    "build_dockers":
+    "release_dev_dockers":
+        needs: test_each_new_commit
         runs-on: ubuntu-20.04
         steps:
             - name: "Checkout"
@@ -92,14 +75,32 @@ jobs:
               run: "sudo pip install -r ./requirements.txt"
               working-directory: "server"
 
-            - name: "Build and push Server"
-              run: "rkd :release:docker-image ${{ github.ref }}"
+            - name: "Server: Build docker image"
+              run: "rkd :build:docker"
               working-directory: "server"
 
             - name: "Install build dependencies"
               run: "sudo pip install -r ./requirements-dev.txt"
               working-directory: "bahub"
 
-            - name: "Build and push Bahub client"
-              run: "rkd :release:docker-image"
+            - name: "Bahub client: Build docker image"
+              run: "rkd :build:docker"
               working-directory: "bahub"
+
+            - name: "Save server docker image as artifact"
+              run: "docker save quay.io/riotkit/backuprepository:latest-dev > server.docker.tar.gz"
+
+            - name: "Save bahub docker image as artifact"
+              run: "docker save quay.io/riotkit/bahub:latest-dev > bahub.docker.tar.gz"
+
+#    "test_integration_each_new_commit":
+#        needs: release_dev_dockers
+#        runs-on: ubuntu-20.04
+
+#    "release_dockers":
+#        needs: test_integration_each_new_commit
+#        runs-on: ubuntu-20.04
+#
+#    "release_dist":
+#        needs: test_integration_each_new_commit
+#        runs-on: ubuntu-20.04

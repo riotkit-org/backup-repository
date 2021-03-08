@@ -1,4 +1,4 @@
-rkd==2.3.5.dev8
+rkd>=2.3.5.dev8
 requests>=2.25
 pycurl>=7.43
 certifi>=2020.12.5
