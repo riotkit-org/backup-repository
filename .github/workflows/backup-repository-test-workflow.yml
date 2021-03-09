@@ -30,7 +30,7 @@ jobs:
                   update: true
 
             - name: "Prepare server environment"
-              run: "rkd :env:example :create:keys"
+              run: "rkd :env:example && rkd :create:keys"
               working-directory: "server"
 
             - name: "Install server libraries"
