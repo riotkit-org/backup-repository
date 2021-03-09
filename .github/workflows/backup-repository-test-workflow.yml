@@ -150,6 +150,14 @@ jobs:
               run: "rkd :run"
               working-directory: "integration-env"
 
+            - name: "Run API tests"
+              run: "rkd :install :test:api --docker || true"
+              working-directory: "e2e"
+
+            - name: "Run E2E tests"
+              run: "rkd :install :test:in-docker || true"
+              working-directory: "e2e"
+
     "release_dockers":
         needs: test_integration_each_new_commit
         runs-on: ubuntu-20.04
