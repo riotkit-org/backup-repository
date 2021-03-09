@@ -146,6 +146,19 @@ jobs:
             - name: "Install build dependencies"
               run: "sudo pip install -r ./requirements-dev.txt"
 
+            - name: "Retrieve server docker image"
+              uses: actions/download-artifact@v2
+              with:
+                  name: server.docker.tar.gz
+
+            - name: "Retrieve bahub docker image"
+              uses: actions/download-artifact@v2
+              with:
+                  name: bahub.docker.tar.gz
+
+            - name: "Load docker images"
+              run: "docker load server.docker.tar.gz && docker load bahub.docker.tar.gz"
+
             - name: "Setup test environment"
               run: "rkd :run"
               working-directory: "integration-env"
@@ -178,12 +191,15 @@ jobs:
               with:
                   name: bahub.docker.tar.gz
 
+            - name: "Load docker images"
+              run: "docker load server.docker.tar.gz && docker load bahub.docker.tar.gz"
+
             - name: "Release server docker"
-              run: "docker load server.docker.tar.gz && rkd :docker:release ${{ github.ref }}"
+              run: "rkd :docker:release ${{ github.ref }}"
               working-directory: "server"
 
             - name: "Release bahub docker"
-              run: "docker load bahub.docker.tar.gz && rkd :docker:release ${{ github.ref }}"
+              run: "rkd :docker:release ${{ github.ref }}"
               working-directory: "bahub"
 
     "release_dist":
