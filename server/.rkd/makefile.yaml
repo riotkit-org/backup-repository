@@ -80,7 +80,7 @@ tasks:
         steps:
             - cd ../docs && sphinx-build -M html "source" "build"
 
-    :release:docker-image:
+    :release:docker:
         description: Release a previously built docker image
         arguments:
             "ref":
