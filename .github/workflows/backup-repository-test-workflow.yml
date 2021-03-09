@@ -31,6 +31,7 @@ jobs:
 
             - name: "Prepare server environment"
               run: "rkd :env:example :create:keys"
+              working-directory: "server"
 
             - name: "Install server libraries"
               run: "rkd :install --dev"
