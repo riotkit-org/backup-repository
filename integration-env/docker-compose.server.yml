@@ -24,7 +24,7 @@ services:
     # Backup Repository Server
     # ========================
     server:
-        image: quay.io/riotkit/backup-repository:latest
+        image: quay.io/riotkit/backup-repository:latest-dev
         depends_on:
             - db
         links:

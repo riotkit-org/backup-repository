@@ -65,6 +65,11 @@ tasks:
                     --exclude=.rkd \
                     *
 
+    :build:docker:
+        description: Build the docker image
+        steps:
+            - cd .. && docker build . -f server/.infrastructure/Dockerfile -t quay.io/riotkit/backup-repository:latest-dev
+
     :release:swagger-docs:
         description: Create API documentation in SWAGGER json format
         steps:
@@ -76,7 +81,7 @@ tasks:
             - cd ../docs && sphinx-build -M html "source" "build"
 
     :release:docker-image:
-        description: Build and release a docker image
+        description: Release a previously built docker image
         arguments:
             "ref":
                 help: "Tag name"
@@ -84,11 +89,9 @@ tasks:
                 help: "Should the images be pushed to registry?"
                 action: "store_true"
         steps:
-            - cd .. && docker build . -f server/.infrastructure/Dockerfile -t quay.io/riotkit/backup-repository:latest
             - |
               if [[ $ARG_REF =~ ^v[0-9\.]$ ]]; then
-                  echo "REF IS $ARG_REF"
-                  docker tag quay.io/riotkit/backup-repository:latest quay.io/riotkit/backup-repository:${ARG_REF}
+                  docker tag quay.io/riotkit/backup-repository:latest-dev quay.io/riotkit/backup-repository:${ARG_REF}
 
                   if [[ $ARG_PUSH ]]; then
                       %RKD% @ --image quay.io/riotkit/backup-repository:${ARG_REF} --propagate :docker:tag :docker:push
@@ -101,5 +104,5 @@ tasks:
               fi
 
               if [[ $ARG_PUSH == "True" ]]; then
-                  docker push quay.io/riotkit/backup-repository:latest
+                  docker push quay.io/riotkit/backup-repository:latest-dev
               fi
