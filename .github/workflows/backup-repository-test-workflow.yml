@@ -83,7 +83,6 @@ jobs:
 
             - name: "Install build dependencies"
               run: "sudo pip install -r ./requirements-dev.txt"
-              working-directory: "server"
 
             - name: "Server: Build docker image"
               run: "rkd :build:docker"
@@ -99,13 +98,40 @@ jobs:
             - name: "Save bahub docker image as artifact"
               run: "docker save quay.io/riotkit/bahub:latest-dev > bahub.docker.tar.gz"
 
-#    "test_integration_each_new_commit":
-#        needs: release_dev_dockers
-#        runs-on: ubuntu-20.04
+            - name: "Release development dockers"
+              run: "docker push quay.io/riotkit/backuprepository:latest-dev && docker push quay.io/riotkit/bahub:latest-dev"
 
-#    "release_dockers":
-#        needs: test_integration_each_new_commit
-#        runs-on: ubuntu-20.04
+    "test_integration_each_new_commit":
+        needs: release_dev_dockers
+        runs-on: ubuntu-20.04
+        steps:
+            - name: "Checkout"
+              uses: actions/checkout@v1
+
+            - name: "Install build dependencies"
+              run: "sudo pip install -r ./requirements-dev.txt"
+
+            - name: "Setup test environment"
+              run: "rkd :run"
+              working-directory: "integration-env"
+
+    "release_dockers":
+        needs: test_integration_each_new_commit
+        runs-on: ubuntu-20.04
+        steps:
+            - name: "Checkout"
+              uses: actions/checkout@v1
+
+            - name: "Install build dependencies"
+              run: "sudo pip install -r ./requirements-dev.txt"
+
+            - name: "Release server docker"
+              run: "rkd :docker:release"
+              working-directory: "server"
+
+            - name: "Release bahub docker"
+              run: "rkd :docker release"
+              working-directory: "bahub"
 #
 #    "release_dist":
 #        needs: test_integration_each_new_commit
