@@ -9,6 +9,7 @@ tasks:
     :env:example:
         description: Copy example .env file
         steps: |
+            set -xe
             test -f .env || cp .env.dist .env
 
     :install:
