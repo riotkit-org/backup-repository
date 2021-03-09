@@ -69,7 +69,7 @@ jobs:
 
             # —— Distribution ———————————————————————————————————————————————————————
             - name: "Build distribution"
-              run: "rkd :build:dist-zip :build:swagger-docss :build:docs"
+              run: "rkd :build:dist-zip :build:swagger-docs :build:docs"
               working-directory: "server"
 
             - name: "Archive distribution package"
