@@ -29,8 +29,11 @@ jobs:
               env:
                   update: true
 
+            - name: "Prepare server environment"
+              run: "rkd :env:example :create:keys"
+
             - name: "Install server libraries"
-              run: "rkd :env:example :install --dev"
+              run: "rkd :install --dev"
               working-directory: "server"
 
             - name: "Run containers required for tests"
