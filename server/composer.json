@@ -12,7 +12,6 @@
         "ext-json": "*",
         "ext-openssl": "*",
         "ext-pdo": "*",
-        "ext-pgsql": "*",
         "ext-pdo_pgsql": "*",
         "aws/aws-sdk-php": "^3.87",
         "coraxster/flysystem-aws-s3-v3-minio": "^1.0",
