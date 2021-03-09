@@ -30,7 +30,7 @@ jobs:
                   update: true
 
             - name: "Install server libraries"
-              run: "rkd :install --dev"
+              run: "rkd :env:example :install --dev"
               working-directory: "server"
 
             - name: "Run containers required for tests"

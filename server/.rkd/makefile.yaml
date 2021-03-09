@@ -6,6 +6,11 @@ env_file:
     - ../.env
 
 tasks:
+    :env:example:
+        description: Copy example .env file
+        steps: |
+            test -f .env || cp .env.dist .env
+
     :install:
         description: Installs local dependencies
         arguments:
