@@ -82,16 +82,12 @@ jobs:
                   password: ${{ secrets.QUAY_PASSWORD }}
 
             - name: "Install build dependencies"
-              run: "sudo pip install -r ./requirements.txt"
+              run: "sudo pip install -r ./requirements-dev.txt"
               working-directory: "server"
 
             - name: "Server: Build docker image"
               run: "rkd :build:docker"
               working-directory: "server"
-
-            - name: "Install build dependencies"
-              run: "sudo pip install -r ./requirements-dev.txt"
-              working-directory: "bahub"
 
             - name: "Bahub client: Build docker image"
               run: "rkd :build:docker"
