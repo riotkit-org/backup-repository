@@ -76,7 +76,7 @@ RUN set -x \
     && rm -rf var/uploads/* \
     && rm -f var/*.db \
     && rm config/jwt/*.pem || true \
-    && mkdir -p var/log var/cache /var/log/nginx \
+    && mkdir -p var/log var/cache /var/log/nginx config/jwt \
     && cp .env.dist .env \
     && chown www-data:www-data /home/backuprepository/ /var/log/nginx config/jwt -R \
     && php --version \
