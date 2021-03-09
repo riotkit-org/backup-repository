@@ -67,6 +67,32 @@ jobs:
                   name: logs
                   path: server/var/log
 
+            # —— Distribution ———————————————————————————————————————————————————————
+            - name: "Build distribution"
+              run: "rkd :build:dist-zip :build:swagger-docss :build:docs"
+              working-directory: "server"
+
+            - name: "Archive distribution package"
+              uses: actions/upload-artifact@v2
+              if: ${{ always() }}
+              with:
+                  name: complete-distributable-package.tar.gz
+                  path: server/var/dist.tar.gz
+
+            - name: "Archive API documentation"
+              uses: actions/upload-artifact@v2
+              if: ${{ always() }}
+              with:
+                  name: api-documentation.swagger.json
+                  path: server/swagger.json
+
+            - name: "Archive manual documentation"
+              uses: actions/upload-artifact@v2
+              if: ${{ always() }}
+              with:
+                  name: manual-documentation.zip
+                  path: docs/build/html
+
     "release_dev_dockers":
         needs: test_each_new_commit
         runs-on: ubuntu-20.04
@@ -99,7 +125,7 @@ jobs:
               run: "docker save quay.io/riotkit/bahub:latest-dev > bahub.docker.tar.gz"
 
             - name: "Release development dockers"
-              run: "docker push quay.io/riotkit/backuprepository:latest-dev && docker push quay.io/riotkit/bahub:latest-dev"
+              run: "docker push quay.io/riotkit/backup-repository:latest-dev && docker push quay.io/riotkit/bahub:latest-dev"
 
     "test_integration_each_new_commit":
         needs: release_dev_dockers
@@ -132,7 +158,14 @@ jobs:
             - name: "Release bahub docker"
               run: "rkd :docker:release"
               working-directory: "bahub"
-#
-#    "release_dist":
-#        needs: test_integration_each_new_commit
-#        runs-on: ubuntu-20.04
+
+    "release_dist":
+        needs: test_integration_each_new_commit
+        runs-on: ubuntu-20.04
+        steps:
+            - name: "Checkout"
+              uses: actions/checkout@v1
+
+            - name: "Build manual documentation"
+              run: "rkd :release:docs"
+              working-directory: "server"

@@ -46,7 +46,7 @@ tasks:
         description: Create report in HTML format
         steps: vjunit -f var/tests/unit.junit.xml -o var/tests/unit.junit.html
 
-    :release:dist-zip:
+    :build:dist-zip:
         description: Creates a distribution package
         steps:
             - composer install
@@ -70,12 +70,12 @@ tasks:
         steps:
             - cd .. && docker build . -f server/.infrastructure/Dockerfile -t quay.io/riotkit/backup-repository:latest-dev
 
-    :release:swagger-docs:
+    :build:swagger-docs:
         description: Create API documentation in SWAGGER json format
         steps:
             - ./bin/console docs:swagger:json > swagger.json
 
-    :release:docs:
+    :build:docs:
         description: Build release manual documentation
         steps:
             - cd ../docs && sphinx-build -M html "source" "build"
