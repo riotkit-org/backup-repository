@@ -8,7 +8,18 @@ env_file:
 tasks:
     :install:
         description: Installs local dependencies
-        steps: composer install --no-scripts --no-dev
+        arguments:
+            "--dev":
+                help: "Include development dependencies"
+                action: "store_true"
+        steps: |
+            switches=""
+
+            if [[ $ARG_DEV != "True" ]]; then
+                switches=" --no-dev "
+            fi
+
+            eval "composer install --no-scripts ${switches}"
 
     :dev:server:
         description: Run development server

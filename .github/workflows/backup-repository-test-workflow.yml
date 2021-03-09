@@ -13,7 +13,7 @@ jobs:
             - name: "Checkout"
               uses: actions/checkout@v1
 
-            # —— Dependencies —————————————————————————————————————————————————————————
+            # —— Dependencies and environment ————————————————————————————————————
             - name: "Install CI OS dependencies"
               run: "sudo apt-get install libssl-dev libcurl4-openssl-dev python-dev"
 
@@ -28,6 +28,10 @@ jobs:
                   tools: symfony, composer
               env:
                   update: true
+
+            - name: "Install server libraries"
+              run: "rkd :install --dev"
+              working-directory: "server"
 
             - name: "Run containers required for tests"
               run: "rkd :bahub:env:adapters"
