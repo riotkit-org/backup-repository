@@ -18,7 +18,7 @@ jobs:
               run: "sudo apt-get install libssl-dev libcurl4-openssl-dev python-dev"
 
             - name: "Install project dependencies"
-              run: "sudo pip install -r ./requirements-dev.txt -r ./bahub/requirements.txt"
+              run: "sudo pip install -r ./requirements-dev.txt -r ./bahub/requirements.txt -r ./docs/requirements.txt"
 
             - name: Setup PHP, extensions and composer
               uses: shivammathur/setup-php@v2
@@ -73,7 +73,7 @@ jobs:
 
             # —— Distribution ———————————————————————————————————————————————————————
             - name: "Build distribution"
-              run: "rkd :build:dist-zip :build:swagger-docs :build:docs"
+              run: "rkd :build:dist-zip :build:swagger-docs"
               working-directory: "server"
 
             - name: "Archive distribution package"
@@ -89,13 +89,6 @@ jobs:
               with:
                   name: api-documentation.swagger.json
                   path: server/swagger.json
-
-            - name: "Archive manual documentation"
-              uses: actions/upload-artifact@v2
-              if: ${{ always() }}
-              with:
-                  name: manual-documentation.zip
-                  path: docs/build/html
 
     "release_dev_dockers":
         needs: test_each_new_commit
@@ -170,6 +163,16 @@ jobs:
             - name: "Checkout"
               uses: actions/checkout@v1
 
+            - name: "Install project dependencies"
+              run: "sudo pip install -r ./requirements-dev.txt -r ./bahub/requirements.txt -r ./docs/requirements.txt"
+
             - name: "Build manual documentation"
-              run: "rkd :release:docs"
+              run: "rkd :build:docs"
               working-directory: "server"
+
+            - name: "Archive manual documentation"
+              uses: actions/upload-artifact@v2
+              if: ${{ always() }}
+              with:
+                  name: manual-documentation.zip
+                  path: docs/build/html
