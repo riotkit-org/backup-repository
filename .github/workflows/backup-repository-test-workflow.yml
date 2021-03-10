@@ -116,7 +116,7 @@ jobs:
               working-directory: "bahub"
 
             - name: "Save server docker image to file"
-              run: "docker save quay.io/riotkit/backuprepository:latest-dev > server.docker.tar.gz"
+              run: "docker save quay.io/riotkit/backup-repository:latest-dev > server.docker.tar.gz"
 
             - name: "Save bahub docker image to file"
               run: "docker save quay.io/riotkit/bahub:latest-dev > bahub.docker.tar.gz"
