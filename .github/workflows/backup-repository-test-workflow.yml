@@ -7,7 +7,7 @@ on:
             - primary
 
 jobs:
-    "test_each_new_commit":
+    "unit_test":
         runs-on: ubuntu-20.04
         steps:
             - name: "Checkout"
@@ -80,7 +80,7 @@ jobs:
               uses: actions/upload-artifact@v2
               if: ${{ always() }}
               with:
-                  name: complete-distributable-package.tar.gz
+                  name: backup-repository.dist.tar.gz
                   path: server/var/dist.tar.gz
 
             - name: "Archive API documentation"
@@ -116,10 +116,10 @@ jobs:
               working-directory: "bahub"
 
             - name: "Save server docker image to file"
-              run: "docker save quay.io/riotkit/backup-repository:latest-dev > server.docker.tar.gz"
+              run: "docker save quay.io/riotkit/backup-repository:latest-dev > server.docker.tar && gzip server.docker.tar"
 
             - name: "Save bahub docker image to file"
-              run: "docker save quay.io/riotkit/bahub:latest-dev > bahub.docker.tar.gz"
+              run: "docker save quay.io/riotkit/bahub:latest-dev > bahub.docker.tar && gzip bahub.docker.tar"
 
             - name: "Release development dockers"
               run: "docker push quay.io/riotkit/backup-repository:latest-dev && docker push quay.io/riotkit/bahub:latest-dev"
@@ -136,7 +136,7 @@ jobs:
                   name: bahub.docker.tar.gz
                   path: bahub.docker.tar.gz
 
-    "test_integration_each_new_commit":
+    "integration_test":
         needs: release_dev_dockers
         runs-on: ubuntu-20.04
         steps:
@@ -156,8 +156,11 @@ jobs:
               with:
                   name: bahub.docker.tar.gz
 
+            - name: "Unzip images"
+              run: "gunzip server.docker.tar.gz && gunzip bahub.docker.tar.gz"
+
             - name: "Load docker images"
-              run: "docker load -i server.docker.tar.gz && docker load -i bahub.docker.tar.gz"
+              run: "docker load -i server.docker.tar && docker load -i bahub.docker.tar"
 
             - name: "Setup test environment"
               run: "rkd :run"
@@ -172,7 +175,7 @@ jobs:
               working-directory: "api-tests"
 
     "release_dockers":
-        needs: test_integration_each_new_commit
+        needs: integration_test
         runs-on: ubuntu-20.04
         steps:
             - name: "Checkout"
@@ -191,8 +194,11 @@ jobs:
               with:
                   name: bahub.docker.tar.gz
 
+            - name: "Unzip images"
+              run: "gunzip server.docker.tar.gz && gunzip bahub.docker.tar.gz"
+
             - name: "Load docker images"
-              run: "docker load server.docker.tar.gz && docker load bahub.docker.tar.gz"
+              run: "docker load -i server.docker.tar && docker load -i bahub.docker.tar"
 
             - name: "Release server docker"
               run: "rkd :docker:release ${{ github.ref }}"
@@ -203,7 +209,7 @@ jobs:
               working-directory: "bahub"
 
     "release_dist":
-        needs: test_integration_each_new_commit
+        needs: integration_test
         runs-on: ubuntu-20.04
         steps:
             - name: "Checkout"
