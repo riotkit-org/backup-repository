@@ -16,7 +16,7 @@ tasks:
 
     :install:
         description: Install
-        steps: composer install
+        steps: composer install --no-progress
 
     #
     # Runs a native browser (without a docker container)

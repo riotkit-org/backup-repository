@@ -31,4 +31,4 @@ tasks:
 
     :install:
         description: Install
-        steps: composer install
+        steps: composer install --no-progress
