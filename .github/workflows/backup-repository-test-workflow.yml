@@ -91,7 +91,7 @@ jobs:
                   path: server/swagger.json
 
     "release_dev_dockers":
-        needs: test_each_new_commit
+        needs: unit_test
         runs-on: ubuntu-20.04
         steps:
             - name: "Checkout"
