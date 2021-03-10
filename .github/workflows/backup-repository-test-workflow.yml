@@ -146,6 +146,15 @@ jobs:
             - name: "Install build dependencies"
               run: "sudo pip install -r ./requirements-dev.txt"
 
+            - name: Setup PHP, extensions and composer
+              uses: shivammathur/setup-php@v2
+              with:
+                  php-version: "7.4"
+                  extensions: mbstring, ctype, iconv, intl, fileinfo, openssl, filter, iconv, json, mbstring, pdo, pdo_pgsql
+                  tools: symfony, composer
+              env:
+                  update: true
+
             - name: "Retrieve server docker image"
               uses: actions/download-artifact@v2
               with:
@@ -171,7 +180,7 @@ jobs:
               working-directory: "api-tests"
 
             - name: "Run E2E tests"
-              run: "rkd :install :test:in-docker || true"
+              run: "rkd :install :test:in-docker"
               working-directory: "e2e"
 
     "release_dockers":

@@ -19,6 +19,11 @@ tasks:
             - rkd :docker:compose
             # @todo: - rkd :wait-for:s3
             - rkd :docker:create-test-bucket
+            - rkd :logs
+
+    :logs:
+        description: Print logs from the environment
+        steps: docker-compose -p s3pb -f ./docker-compose.bahub.yml -f ./docker-compose.server.yml -f ./docker-compose.bahub-dependencies.yml logs
 
     :docker:network:
         steps:
