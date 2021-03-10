@@ -243,3 +243,16 @@ jobs:
               with:
                   name: manual-documentation.zip
                   path: docs/build/html
+
+    "notify":
+        runs-on: ubuntu-20.04
+        if: ${{ always() }}
+        steps:
+            - name: "Notify on Matrix"
+              uses: act10ns/slack@v1
+              env:
+                  SLACK_WEBHOOK_URL: "${{ secrets.SLACK_URL }}"
+              with:
+                  status: ${{ job.status }}
+                  steps: ${{ toJson(steps) }}
+                  channel: 'notify_github'
