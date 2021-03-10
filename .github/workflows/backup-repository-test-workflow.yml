@@ -176,12 +176,19 @@ jobs:
               working-directory: "integration-env"
 
             - name: "Run API tests"
-              run: "rkd :install :test:api --docker || true"
+              run: "rkd :install :test:api --docker"
+              if: ${{ always() }}
               working-directory: "api-tests"
 
             - name: "Run E2E tests"
+              if: ${{ always() }}
               run: "rkd :install :test:in-docker"
               working-directory: "e2e"
+
+            - name: "Dump logs from environment"
+              if: ${{ always() }}
+              run: "rkd :logs"
+              working-directory: "integration-env"
 
     "release_dockers":
         needs: integration_test
@@ -233,7 +240,6 @@ jobs:
 
             - name: "Archive manual documentation"
               uses: actions/upload-artifact@v2
-              if: ${{ always() }}
               with:
                   name: manual-documentation.zip
                   path: docs/build/html
