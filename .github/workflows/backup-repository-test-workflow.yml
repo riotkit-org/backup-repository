@@ -167,12 +167,12 @@ jobs:
               working-directory: "integration-env"
 
             - name: "Run API tests"
-              run: "ls -la; rkd :tasks; rkd :install :test:api --docker || true"
-              working-directory: "e2e"
+              run: "rkd :install :test:api --docker || true"
+              working-directory: "api-tests"
 
             - name: "Run E2E tests"
               run: "rkd :install :test:in-docker || true"
-              working-directory: "api-tests"
+              working-directory: "e2e"
 
     "release_dockers":
         needs: integration_test
