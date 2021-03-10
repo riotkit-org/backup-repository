@@ -180,6 +180,15 @@ jobs:
               if: ${{ always() }}
               working-directory: "api-tests"
 
+            - name: "Dump logs from environment"
+              if: ${{ always() }}
+              run: "rkd :logs"
+              working-directory: "integration-env"
+
+            - name: "Rebuild test environment"
+              run: "rkd :run"
+              working-directory: "integration-env"
+
             - name: "Run E2E tests"
               if: ${{ always() }}
               run: "rkd :install :test:in-docker"
@@ -226,6 +235,7 @@ jobs:
 
     "release_dist":
         needs: integration_test
+        #if: running from a tag
         runs-on: ubuntu-20.04
         steps:
             - name: "Checkout"
