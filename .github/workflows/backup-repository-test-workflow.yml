@@ -191,6 +191,13 @@ jobs:
               run: "rkd :logs > e2e.log"
               working-directory: "integration-env"
 
+            - name: "Store logs from tests execution"
+              uses: actions/upload-artifact@v2
+              if: ${{ always() }}
+              with:
+                  name: tests-logs
+                  path: "*.log"
+
     "release_dockers":
         needs: integration_test
         runs-on: ubuntu-20.04
