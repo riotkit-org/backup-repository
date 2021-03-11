@@ -196,7 +196,7 @@ jobs:
               if: ${{ always() }}
               with:
                   name: tests-logs
-                  path: "**/*.log"
+                  path: "integration-env/*.log"
 
     "release_dockers":
         needs: integration_test
