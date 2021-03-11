@@ -9,7 +9,7 @@ class DockerShellCommandExecutor implements CommandExecutorInterface
     public function execServerCommand(string $command): array
     {
         exec(
-            'docker exec -t "' . $this->getServerContainerName() . '" ./bin/console ' . $command,
+            'docker exec -t "' . $this->getServerContainerName() . '" ./bin/console ' . $command . ' 2>&1',
             $output,
             $returnCode
         );
@@ -36,7 +36,7 @@ class DockerShellCommandExecutor implements CommandExecutorInterface
         }
 
         exec(
-            'docker exec ' . $envsAsString . ' -i "' . $this->getBahubContainerName() . '" /bin/bash -c "bahub ' . $command . '"',
+            'docker exec ' . $envsAsString . ' -i "' . $this->getBahubContainerName() . '" /bin/bash -c "bahub ' . $command . '" 2>&1',
             $output,
             $this->lastBahubCommandExitCode
         );

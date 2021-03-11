@@ -124,7 +124,7 @@ jobs:
             - name: "Release development dockers"
               run: "docker push quay.io/riotkit/backup-repository:latest-dev && docker push quay.io/riotkit/bahub:latest-dev"
 
-            - name: "Store server image as artifact"
+            - name: "Store docker images as artifacts"
               uses: actions/upload-artifact@v2
               with:
                   name: docker-images

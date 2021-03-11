@@ -8,7 +8,7 @@ class LocalShellCommandExecutor implements CommandExecutorInterface
 
     public function execServerCommand(string $command): array
     {
-        exec('cd ' . SERVER_PATH . ' && ./bin/console ' . $command, $output, $returnCode);
+        exec('cd ' . SERVER_PATH . ' && ./bin/console ' . $command . ' 2>&1', $output, $returnCode);
 
         $this->lastShellCommandResponse = implode("\n", $output);
         $this->lastShellCommandExitCode = $returnCode;
