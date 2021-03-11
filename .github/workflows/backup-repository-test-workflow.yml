@@ -127,14 +127,10 @@ jobs:
             - name: "Store server image as artifact"
               uses: actions/upload-artifact@v2
               with:
-                  name: server.docker.tar.gz
-                  path: server.docker.tar.gz
-
-            - name: "Store bahub image as artifact"
-              uses: actions/upload-artifact@v2
-              with:
-                  name: bahub.docker.tar.gz
-                  path: bahub.docker.tar.gz
+                  name: docker-images
+                  path: |
+                      server.docker.tar.gz
+                      bahub.docker.tar.gz
 
     "integration_test":
         needs: release_dev_dockers
@@ -155,15 +151,10 @@ jobs:
               env:
                   update: true
 
-            - name: "Retrieve server docker image"
+            - name: "Retrieve docker images"
               uses: actions/download-artifact@v2
               with:
-                  name: server.docker.tar.gz
-
-            - name: "Retrieve bahub docker image"
-              uses: actions/download-artifact@v2
-              with:
-                  name: bahub.docker.tar.gz
+                  name: docker-images
 
             - name: "Unzip images"
               run: "gunzip server.docker.tar.gz && gunzip bahub.docker.tar.gz"
@@ -182,11 +173,12 @@ jobs:
 
             - name: "Dump logs from environment"
               if: ${{ always() }}
-              run: "rkd :logs"
+              run: "rkd :logs > api-tests.log"
               working-directory: "integration-env"
 
             - name: "Rebuild test environment"
               run: "rkd :run"
+              if: ${{ always() }}
               working-directory: "integration-env"
 
             - name: "Run E2E tests"
@@ -196,7 +188,7 @@ jobs:
 
             - name: "Dump logs from environment"
               if: ${{ always() }}
-              run: "rkd :logs"
+              run: "rkd :logs > e2e.log"
               working-directory: "integration-env"
 
     "release_dockers":
@@ -209,15 +201,10 @@ jobs:
             - name: "Install build dependencies"
               run: "sudo pip install -r ./requirements-dev.txt"
 
-            - name: "Retrieve server docker image"
+            - name: "Retrieve docker images"
               uses: actions/download-artifact@v2
               with:
-                  name: server.docker.tar.gz
-
-            - name: "Retrieve bahub docker image"
-              uses: actions/download-artifact@v2
-              with:
-                  name: bahub.docker.tar.gz
+                  name: docker-images
 
             - name: "Unzip images"
               run: "gunzip server.docker.tar.gz && gunzip bahub.docker.tar.gz"
