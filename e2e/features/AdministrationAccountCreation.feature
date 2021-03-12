@@ -18,6 +18,7 @@ Feature: I can create an administrator account using server's shell interface,
 
     Scenario: I should be notified that the user already exists, if I do not use switch "--ignore-error-if-already-exists"
         Given I create admin account from shell command with "--email=unity@solidarity.local --password=you-cant-break-it" advanced options
+        And I create admin account from shell command with "--email=unity@solidarity.local --password=you-cant-break-it" advanced options
         Then I expect the server command contains "User already exists (code: 40001)" in output
 
 
