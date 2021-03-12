@@ -9,7 +9,7 @@ class StoredVersion implements \JsonSerializable
     /**
      * @var string UUID-4
      */
-    private $id;
+    private string $id = '';
 
     /**
      * @var BackupCollection
@@ -26,10 +26,7 @@ class StoredVersion implements \JsonSerializable
      */
     private $versionNumber;
 
-    /**
-     * @var \DateTimeImmutable
-     */
-    private $creationDate;
+    private \DateTimeImmutable $creationDate;
 
     public function __construct()
     {
