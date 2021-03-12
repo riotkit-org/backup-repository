@@ -37,7 +37,7 @@ services:
             FS_AWSS3V3_SECRET: "wJalrFUckXEMI/THEdEZG/STaTeandCAPITALKEY"
             FS_AWSS3V3_BUCKET: "malatesta"
 
-            APP_ENV: "test"
+            APP_ENV: "${APP_ENV}"
             BASE_URL: "http://server"
 
             JWT_PASSPHRASE: "b0ltCuTTeR.GOES_CLICK-CLACK"
