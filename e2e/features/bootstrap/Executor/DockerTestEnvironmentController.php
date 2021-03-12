@@ -2,7 +2,7 @@
 
 namespace E2E\features\bootstrap\Executor;
 
-class DockerShellCommandExecutor implements CommandExecutorInterface
+class DockerTestEnvironmentController implements TestingEnvironmentController
 {
     use RememberedCommandsStatus;
 
@@ -48,6 +48,11 @@ class DockerShellCommandExecutor implements CommandExecutorInterface
         }
 
         return ['out' => $this->lastBahubCommandResponse, 'exit_code' => $this->lastBahubCommandExitCode];
+    }
+
+    public function makeScreenshot(): void
+    {
+        exec('cd ../integration-env && rkd :docker:e2e-browser:screenshot');
     }
 
     private function getBahubContainerName(): string

@@ -54,3 +54,8 @@ tasks:
             chmod +x $(pwd)/.rkd/dockerized-browser/start-selenium-standalone.sh
             docker cp $(pwd)/.rkd/dockerized-browser/start-selenium-standalone.sh br_e2e_browser:/opt/bin/start-selenium-standalone.sh
             docker start br_e2e_browser
+
+    :docker:e2e-browser:screenshot:
+        description: Make a screenshot
+        steps: |
+            docker exec br_e2e_browser /bin/sh -c "scrot ~/screenshot.png; cat ~/screenshot.png" > "data/screenshots/$(date +'%T')-$(openssl rand -base64 4).png"

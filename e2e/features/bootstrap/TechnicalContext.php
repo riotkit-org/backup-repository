@@ -3,6 +3,7 @@
 namespace E2E\features\bootstrap;
 
 use Behat\Behat\Hook\Scope\AfterScenarioScope;
+use Behat\Behat\Hook\Scope\AfterStepScope;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use Behat\Behat\Hook\Scope\BeforeStepScope;
 use Behat\Mink\Element\NodeElement;
@@ -10,8 +11,8 @@ use Behat\Mink\Exception\DriverException;
 use Behat\Mink\Exception\ElementNotFoundException;
 use Behat\Mink\Exception\UnsupportedDriverActionException;
 use Behat\MinkExtension\Context\MinkContext;
-use E2E\features\bootstrap\Executor\CommandExecutorFactory;
-use E2E\features\bootstrap\Executor\CommandExecutorInterface;
+use E2E\features\bootstrap\Executor\TestingEnvironmentFactory;
+use E2E\features\bootstrap\Executor\TestingEnvironmentController;
 use GuzzleHttp\Client;
 use GuzzleHttp\Exception\GuzzleException;
 use PHPUnit\Framework\Assert as Assertions;
@@ -23,11 +24,11 @@ define('BUILD_DIR', __DIR__ . '/../../build');
 
 class TechnicalContext extends MinkContext
 {
-    protected CommandExecutorInterface $commandExecutor;
+    protected TestingEnvironmentController $environmentController;
 
     public function __construct()
     {
-        $this->commandExecutor = CommandExecutorFactory::createExecutor();
+        $this->environmentController = TestingEnvironmentFactory::createEnvironmentController();
     }
 
     /**
@@ -90,6 +91,13 @@ class TechnicalContext extends MinkContext
         $http->get(BACKEND_URL . '/db/restore');
     }
 
+    public function afterStepMakeScreenshot(AfterStepScope $event): void
+    {
+        if (!$event->getTestResult()->isPassed()) {
+            $this->environmentController->makeScreenshot();
+        }
+    }
+
     /**
      * @BeforeScenario
      *
@@ -109,12 +117,12 @@ class TechnicalContext extends MinkContext
 
     protected function execServerCommand(string $command): array
     {
-        return $this->commandExecutor->execServerCommand($command);
+        return $this->environmentController->execServerCommand($command);
     }
 
     public function execBahubCommand(string $command, array $env = []): array
     {
-        return $this->commandExecutor->execBahubCommand($command, $env);
+        return $this->environmentController->execBahubCommand($command, $env);
     }
 
     /**
@@ -124,7 +132,7 @@ class TechnicalContext extends MinkContext
      */
     public function iAssertShellCommandOutputContains(string $partial): void
     {
-        Assertions::assertStringContainsString($partial, $this->commandExecutor->getLastShellCommandResponse());
+        Assertions::assertStringContainsString($partial, $this->environmentController->getLastShellCommandResponse());
     }
 
     /**
@@ -134,7 +142,7 @@ class TechnicalContext extends MinkContext
      */
     public function iAssertShellCommandExitedWith(int $exitCode): void
     {
-        Assertions::assertEquals($exitCode, $this->commandExecutor->getLastShellCommandExitCode());
+        Assertions::assertEquals($exitCode, $this->environmentController->getLastShellCommandExitCode());
     }
 
     //

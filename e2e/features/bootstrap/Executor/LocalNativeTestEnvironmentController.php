@@ -2,7 +2,7 @@
 
 namespace E2E\features\bootstrap\Executor;
 
-class LocalShellCommandExecutor implements CommandExecutorInterface
+class LocalNativeTestEnvironmentController implements TestingEnvironmentController
 {
     use RememberedCommandsStatus;
 
@@ -42,5 +42,10 @@ class LocalShellCommandExecutor implements CommandExecutorInterface
         }
 
         return ['out' => $this->lastBahubCommandResponse, 'exit_code' => $this->lastBahubCommandExitCode];
+    }
+
+    public function makeScreenshot(): void
+    {
+        exec('scrot /tmp/');
     }
 }

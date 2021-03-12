@@ -21,7 +21,7 @@ tasks:
                 params=" --name='${ARG_FILTER}' "
             fi
 
-            TEST_ENV_TYPE=docker eval "./vendor/bin/behat -c ./behat.docker.yml -f pretty -o std -f junit -o xml ${params}"
+            TEST_ENV_TYPE=docker eval "./vendor/bin/behat -c ./behat.docker.yml -f pretty -o std -f junit -o build/results-xml ${params}"
 
     :install:
         description: Install

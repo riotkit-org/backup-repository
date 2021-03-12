@@ -46,3 +46,5 @@
 /server/.bash_history
 /e2e/vendor/
 /e2e/.idea/
+
+/integration-env/data/screenshots/*.png

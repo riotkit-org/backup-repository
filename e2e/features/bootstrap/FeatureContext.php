@@ -234,7 +234,7 @@ class FeatureContext extends TechnicalContext
      */
     public function iShouldSeeErrorOutputFromBahubContaining(string $text): void
     {
-        Assertions::assertStringContainsStringIgnoringCase($text, $this->commandExecutor->getLastBahubCommandResponse());
+        Assertions::assertStringContainsStringIgnoringCase($text, $this->environmentController->getLastBahubCommandResponse());
     }
 
     /**
@@ -403,7 +403,7 @@ class FeatureContext extends TechnicalContext
      */
     public function iExpectBahubCommandFinishedWithSuccess(): void
     {
-        Assertions::assertEquals(0, $this->commandExecutor->getLastBahubCommandExitCode());
+        Assertions::assertEquals(0, $this->environmentController->getLastBahubCommandExitCode());
     }
 
     /**
@@ -413,7 +413,7 @@ class FeatureContext extends TechnicalContext
      */
     public function iExpectBahubCommandOutputContains(string $text): void
     {
-        Assertions::assertStringContainsStringIgnoringCase($text, $this->commandExecutor->getLastBahubCommandResponse());
+        Assertions::assertStringContainsStringIgnoringCase($text, $this->environmentController->getLastBahubCommandResponse());
     }
 
     /**
