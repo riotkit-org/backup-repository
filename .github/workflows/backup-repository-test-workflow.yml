@@ -15,7 +15,7 @@ jobs:
 
             # —— Dependencies and environment ————————————————————————————————————
             - name: "Install CI OS dependencies"
-              run: "sudo apt-get install libssl-dev libcurl4-openssl-dev python-dev"
+              run: "sudo apt-get update; sudo apt-get install libssl-dev libcurl4-openssl-dev python-dev"
 
             - name: "Install project dependencies"
               run: "sudo pip install -r ./requirements-dev.txt -r ./bahub/requirements.txt -r ./docs/requirements.txt"
