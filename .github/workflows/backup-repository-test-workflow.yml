@@ -222,11 +222,11 @@ jobs:
               run: "docker load -i server.docker.tar && docker load -i bahub.docker.tar"
 
             - name: "Release server docker"
-              run: "rkd :release:docker ${{ github.ref }}"
+              run: "rkd :release:docker ${{ github.ref }} --push"
               working-directory: "server"
 
             - name: "Release bahub docker"
-              run: "rkd :release:docker ${{ github.ref }}"
+              run: "rkd :release:docker ${{ github.ref }} --push"
               working-directory: "bahub"
 
     "release_dist":
