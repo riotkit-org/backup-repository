@@ -35,11 +35,11 @@ class TechnicalContext extends MinkContext
     /**
      * Before each scenario clear the browser session - logout user
      *
-     * @param AfterScenarioScope $event
-     *
      * @AfterScenario
+     *
+     * @param AfterScenarioScope $event
      */
-    public function resetCurrentPage(AfterScenarioScope $event)
+    public function resetCurrentPage(AfterScenarioScope $event): void
     {
         try {
             $script = 'sessionStorage.clear(); localStorage.clear();';
@@ -50,6 +50,17 @@ class TechnicalContext extends MinkContext
         if (!$event->getTestResult()->isPassed() && getenv('WAIT_BEFORE_FAILURE') === 'true') {
             $this->iWaitForUserInput();
         }
+    }
+
+    /**
+     * @AfterScenario
+     *
+     * @param AfterScenarioScope $event
+     */
+    public function restoreDockerContainers(AfterScenarioScope $event): void
+    {
+        exec('docker start s3pb_db_1 > /dev/null');
+        exec('docker start s3pb_storage_1 > /dev/null');
     }
 
     /**
