@@ -11,6 +11,7 @@ use Behat\Mink\Exception\DriverException;
 use Behat\Mink\Exception\ElementNotFoundException;
 use Behat\Mink\Exception\UnsupportedDriverActionException;
 use Behat\MinkExtension\Context\MinkContext;
+use Behat\Testwork\Tester\Result\TestResult;
 use E2E\features\bootstrap\Executor\TestingEnvironmentFactory;
 use E2E\features\bootstrap\Executor\TestingEnvironmentController;
 use GuzzleHttp\Client;
@@ -91,9 +92,14 @@ class TechnicalContext extends MinkContext
         $http->get(BACKEND_URL . '/db/restore');
     }
 
+    /**
+     * @AfterStep
+     *
+     * @param AfterStepScope $event
+     */
     public function afterStepMakeScreenshot(AfterStepScope $event): void
     {
-        if (!$event->getTestResult()->isPassed()) {
+        if ($event->getTestResult()->getResultCode() === TestResult::FAILED) {
             $this->environmentController->makeScreenshot();
         }
     }

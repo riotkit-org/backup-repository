@@ -12,6 +12,7 @@ tasks:
                 help: "Filter tests by partial name"
             "--docker":
                 help: "Test dockerized applications"
+                action: store_true
         steps: |
             params=""
             config_path="./behat.yml"
