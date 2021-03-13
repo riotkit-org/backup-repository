@@ -8,8 +8,8 @@ Development environment
 
 ```bash
 rkd :install
-rkd :test:api
-rkd :test:api --filter AuthenticationCest
+rkd :test
+rkd :test --filter AuthenticationCest
 ```
 
 Continuous Integration

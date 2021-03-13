@@ -49,7 +49,7 @@ rkd :run
 
 # running tests
 cd ../e2e
-rkd :test:in-docker
+rkd :test --docker
 ```
 
 Groups of suites

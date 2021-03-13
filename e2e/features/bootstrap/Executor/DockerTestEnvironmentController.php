@@ -18,7 +18,10 @@ class DockerTestEnvironmentController implements TestingEnvironmentController
         $this->lastShellCommandExitCode = $returnCode;
 
         if ($this->lastShellCommandExitCode !== 0) {
-            var_dump($this->lastShellCommandResponse, $this->lastShellCommandExitCode);
+            var_dump('Shell command exited with failure - here is output. NOTICE: Failure could be expected - it depends on what is tested!',
+                $this->lastShellCommandResponse,
+                $this->lastShellCommandExitCode
+            );
         }
 
         return ['out' => $output, 'exit_code' => $returnCode];
@@ -44,7 +47,11 @@ class DockerTestEnvironmentController implements TestingEnvironmentController
         $this->lastBahubCommandResponse = implode("\n", $output);
 
         if ($this->lastBahubCommandExitCode !== 0) {
-            var_dump($this->lastBahubCommandResponse, $this->lastBahubCommandExitCode);
+            var_dump(
+                'Bahub exited with failure - here is output. NOTICE: Failure could be expected - it depends on what is tested!',
+                $this->lastBahubCommandResponse,
+                $this->lastBahubCommandExitCode
+            );
         }
 
         return ['out' => $this->lastBahubCommandResponse, 'exit_code' => $this->lastBahubCommandExitCode];
