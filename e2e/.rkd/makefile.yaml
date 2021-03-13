@@ -13,12 +13,14 @@ tasks:
             "--docker":
                 help: "Test dockerized applications"
                 action: store_true
+            "--tags":
+                help: "Behat tags"
         steps: |
-            params=""
+            params="${ARG_TAGS} "
             config_path="./behat.yml"
 
             if [[ $ARG_FILTER ]]; then
-                params=" --name='${ARG_FILTER}' "
+                params=" ${params} --name='${ARG_FILTER}' "
             fi
 
             if [[ $ARG_DOCKER ]]; then

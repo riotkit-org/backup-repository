@@ -15,6 +15,7 @@ Feature: From an administrator perspective I need to know if the application is 
         Then I should see "storage=True"
         And I should see "database=True"
 
+    @docker
     Scenario: A short outage of storage backend should show that storage is unavailable
         Given I call health endpoint giving "all-cats-are-beautiful-acab" as access code
         And I stop docker container "storage"
@@ -27,6 +28,7 @@ Feature: From an administrator perspective I need to know if the application is 
         And I reload the page
         Then I should see "storage=True"
 
+    @docker
     Scenario: A short outage of database should show that the database is unavailable
         Given I call health endpoint giving "all-cats-are-beautiful-acab" as access code
         And I stop docker container "db"

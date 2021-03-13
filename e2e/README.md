@@ -65,5 +65,6 @@ Test suites are grouped by application name and test type.
 - `@security`
 - `@backup`
 - `@realUseCase` - a complete user scenario, not focused to be per-module, but actually how the set of applications are used in real case scenario
+- `@docker` - tests that are manipulating with docker containers ex. stopping, starting
 
 To run `@bahub` tagged tests type `./vendor/bin/behat --tags bahub`
