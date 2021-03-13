@@ -19,6 +19,9 @@ tasks:
 
             if [[ $ARG_FILTER ]]; then
                 params=" --name='${ARG_FILTER}' "
+            fi
+
+            if [[ $ARG_DOCKER ]]; then
                 config_path="./behat.docker.yml"
             fi
 
