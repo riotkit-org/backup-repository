@@ -16,7 +16,9 @@ Feature: From an administrator perspective I need to know if the application is 
         And I should see "database=True"
 
     Scenario: A short outage of storage backend should show that storage is unavailable
-        Given I stop docker container "storage"
+        Given I call health endpoint giving "all-cats-are-beautiful-acab" as access code
+        And I stop docker container "storage"
+
         When I call health endpoint giving "all-cats-are-beautiful-acab" as access code
         Then I should see "storage=False"
         And I should see "database=True"
@@ -26,9 +28,11 @@ Feature: From an administrator perspective I need to know if the application is 
         Then I should see "storage=True"
 
     Scenario: A short outage of database should show that the database is unavailable
-        Given I stop docker container "db"
+        Given I call health endpoint giving "all-cats-are-beautiful-acab" as access code
+        And I stop docker container "db"
+
         When I call health endpoint giving "all-cats-are-beautiful-acab" as access code
-        And I should see "database=False"
+        Then I should see "database=False"
 
         When I start docker container "db"
         And I reload the page
