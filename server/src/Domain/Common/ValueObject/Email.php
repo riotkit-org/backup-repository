@@ -42,11 +42,6 @@ class Email implements \JsonSerializable
         return $this->getValue();
     }
 
-    public function __serialize()
-    {
-        return $this->getValue();
-    }
-
     public function __toString()
     {
         return $this->getValue();

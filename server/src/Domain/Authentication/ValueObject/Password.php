@@ -82,11 +82,6 @@ class Password implements \JsonSerializable
         return $this->value;
     }
 
-    public function __serialize()
-    {
-        return $this->value;
-    }
-
     public function jsonSerialize()
     {
         return $this->value;

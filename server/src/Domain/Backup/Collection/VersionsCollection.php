@@ -128,7 +128,7 @@ class VersionsCollection
     public function getNextVersionNumber(): VersionNumber
     {
         if ($this->getLast()) {
-            return $this->getLast()->getVersionNumber()->incrementVersion();
+            return $this->getLast()->getVersionNumber()->increment();
         }
 
         return new VersionNumber(1);

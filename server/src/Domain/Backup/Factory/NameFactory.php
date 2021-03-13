@@ -22,7 +22,7 @@ class NameFactory
     public function getNextVersionName(BackupCollection $collection): Filename
     {
         $last = $this->repository->findCollectionVersions($collection)->getLast();
-        $nextNumber = $last ? $last->getVersionNumber()->incrementVersion() : new VersionNumber(1);
+        $nextNumber = $last ? $last->getVersionNumber()->increment() : new VersionNumber(1);
 
         return $collection->getFilename()->withSuffix('-v' . $nextNumber->getValue());
     }

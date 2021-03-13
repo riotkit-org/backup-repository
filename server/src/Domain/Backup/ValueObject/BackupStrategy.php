@@ -14,10 +14,7 @@ class BackupStrategy implements \JsonSerializable
         self::STRATEGY_MANUAL
     ];
 
-    /**
-     * @var string
-     */
-    protected $value;
+    protected string $value;
 
     /**
      * @param string $strategy

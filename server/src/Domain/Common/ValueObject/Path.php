@@ -35,6 +35,11 @@ class Path extends BaseValueObject
         return $this->dir . '/' . $filename;
     }
 
+    public function getBasename(): string
+    {
+        return basename($this->filename->getValue());
+    }
+
     public function isFile(): bool
     {
         if (!$this->filename) {

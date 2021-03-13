@@ -17,11 +17,6 @@ class VersionDoctrineRepository extends BaseRepository implements VersionReposit
 {
     private Filesystem $fs;
 
-    /**
-     * @var VersionsCollection[]
-     */
-    private array $collectionVersionsCache = [];
-
     public function __construct(ManagerRegistry $registry, Filesystem $fs, bool $readOnly)
     {
         $this->fs = $fs;
@@ -36,23 +31,15 @@ class VersionDoctrineRepository extends BaseRepository implements VersionReposit
      */
     public function findCollectionVersions(BackupCollection $collection): VersionsCollection
     {
-        $cacheId = \spl_object_hash($collection);
-
-        if (isset($this->collectionVersionsCache[$cacheId])) {
-            return $this->collectionVersionsCache[$cacheId];
-        }
-
         $qb = $this->createQueryBuilder('version');
         $qb->where('version.collection = :collection');
         $qb->setParameter('collection', $collection);
 
-        $versions = new VersionsCollection(
+        return new VersionsCollection(
             $qb->getQuery()->getResult(),
             $collection,
             function ($filename) { return $this->fs->getFileSize($filename);  }
         );
-
-        return $this->collectionVersionsCache[$cacheId] = $versions;
     }
 
     /**
@@ -70,13 +57,13 @@ class VersionDoctrineRepository extends BaseRepository implements VersionReposit
     }
 
     /**
-     * @param StoredVersion $collection
+     * @param StoredVersion $version
      *
      * @throws ORMException
      */
-    public function persist(StoredVersion $collection): void
+    public function persist(StoredVersion $version): void
     {
-        $this->getEntityManager()->persist($collection);
+        $this->getEntityManager()->persist($version);
     }
 
     /**
@@ -87,7 +74,7 @@ class VersionDoctrineRepository extends BaseRepository implements VersionReposit
      */
     public function flush(StoredVersion $version): void
     {
-        $this->getEntityManager()->flush($version);
+        $this->getEntityManager()->flush();
     }
 
     /**

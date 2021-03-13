@@ -2,20 +2,14 @@
 
 namespace App\Domain\Backup\Service;
 
+use App\Domain\Backup\Collection\VersionsCollection;
 use App\Domain\Backup\Entity\BackupCollection;
 use App\Domain\Backup\Repository\VersionRepository;
 
 class CollectionRotator
 {
-    /**
-     * @var VersionRepository
-     */
-    private $versionRepository;
-
-    /**
-     * @var FileUploader
-     */
-    private $uploader;
+    private VersionRepository $versionRepository;
+    private FileUploader $uploader;
 
     public function __construct(VersionRepository $versionRepository, FileUploader $uploader)
     {
@@ -24,19 +18,18 @@ class CollectionRotator
     }
 
     /**
-     * Rotation means DELETING FIRST ELEMENT when THE COLLECTION IS FULL
-     * and we want to add a new element as the last position of it
+     * Rotation means deleting older, less important versions in order to make a space
+     * for a fresh backup
      *
-     * @param BackupCollection $collection
-     * @param int              $countOfElementsWillBeAddingRightNow
+     * @param BackupCollection   $collection
+     * @param VersionsCollection $versions
      */
-    public function rotate(BackupCollection $collection, int $countOfElementsWillBeAddingRightNow = 0): void
+    public function rotate(BackupCollection $collection, VersionsCollection $versions): void
     {
-        if (!$this->shouldRotateNow($collection, $countOfElementsWillBeAddingRightNow)) {
+        if (!$this->shouldRotateNow($collection, $versions)) {
             return;
         }
 
-        $versions = $this->versionRepository->findCollectionVersions($collection);
         $first = $versions->getFirst();
 
         // nothing to rotate in empty collection
@@ -44,21 +37,22 @@ class CollectionRotator
             return;
         }
 
-        $this->uploader->deletePreviouslyUploaded($first->getFile()->getFilename());
+        // at first unpin from collection
         $this->versionRepository->delete($first);
-        $this->versionRepository->flush($first);
+        $this->versionRepository->flushAll();
+
+        // then delete from registry (and from storage)
+        $this->uploader->deletePreviouslyUploaded($first->getFile()->getFilename());
     }
 
-    private function shouldRotateNow(BackupCollection $collection, int $countOfElementsWillBeAddingRightNow): bool
+    private function shouldRotateNow(BackupCollection $collection, VersionsCollection $versions): bool
     {
         if (!$collection->getStrategy()->shouldCollectionRotateAutomatically()) {
             return false;
         }
 
-        $versions = $this->versionRepository->findCollectionVersions($collection);
-
         $max = $collection->getMaxBackupsCount();
-        $actual = $versions->getCount()->addInteger($countOfElementsWillBeAddingRightNow);
+        $actual = $versions->getCount();
 
         return $actual->isHigherThan($max);
     }

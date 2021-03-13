@@ -66,7 +66,7 @@ class PositiveNumber extends BaseValueObject implements \JsonSerializable
     /**
      * @return static
      */
-    public function incrementVersion()
+    public function increment()
     {
         $new = clone $this;
         ++$new->value;

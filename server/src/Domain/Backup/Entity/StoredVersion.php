@@ -7,24 +7,15 @@ use App\Domain\Backup\ValueObject\Version\VersionNumber;
 class StoredVersion implements \JsonSerializable
 {
     /**
-     * @var string UUID-4
+     * @var ?string UUID-4
      */
-    private string $id = '';
+    private ?string $id = '';
 
-    /**
-     * @var BackupCollection
-     */
-    private $collection;
+    private BackupCollection $collection;
 
-    /**
-     * @var StoredFile
-     */
-    private $file;
+    private StoredFile $file;
 
-    /**
-     * @var VersionNumber
-     */
-    private $versionNumber;
+    private VersionNumber $versionNumber;
 
     private \DateTimeImmutable $creationDate;
 
@@ -49,7 +40,7 @@ class StoredVersion implements \JsonSerializable
         return $new;
     }
 
-    public function getId(): string
+    public function getId(): ?string
     {
         return $this->id;
     }

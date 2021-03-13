@@ -57,18 +57,24 @@ class BackupManager
             throw new \LogicException('Cannot submit a backup for a file that does not exist in the storage');
         }
 
-        $this->collectionRotator->rotate($collection, 1);
-
+        // create a new version
         $versionedBackupFile = $this->versionFactory->createVersion(
             $storedFile,
             $collection,
             $this->versionRepository->findCollectionVersions($collection)
         );
 
+        // raise an exception in case, when validation did not pass
         $this->versionValidator->validateBeforeAddingBackup($versionedBackupFile);
         $this->collectionValidator->validateBeforeAddingBackup($collection, $versionedBackupFile);
 
+        // or if everything is ok, then make changes persistent
         $this->versionRepository->persist($versionedBackupFile);
+        $this->versionRepository->flushAll();
+
+        // after successful upload - rotate the collection
+        $currentVersionsState = $versions = $this->versionRepository->findCollectionVersions($collection);
+        $this->collectionRotator->rotate($collection, $currentVersionsState);
 
         return $versionedBackupFile;
     }
@@ -87,7 +93,7 @@ class BackupManager
         $this->versionRepository->delete($version);
 
         return function () use ($version) {
-            $this->versionRepository->flush($version);
+            $this->versionRepository->flushAll();
             $this->fileUploader->deletePreviouslyUploaded($version->getFile()->getFilename());
         };
     }

@@ -97,8 +97,12 @@ class BackupValidator
      */
     private function validateMaxCollectionLengthReached(StoredVersion $version): void
     {
+        if ($version->getCollection()->getStrategy()->shouldCollectionRotateAutomatically()) {
+            return;
+        }
+
         $max = $version->getCollection()->getMaxBackupsCount();
-        $actual = $this->versionRepository->findCollectionVersions($version->getCollection())->getCount()->incrementVersion();
+        $actual = $this->versionRepository->findCollectionVersions($version->getCollection())->getCount()->increment();
 
         if ($actual->isHigherThan($max)) {
             throw BackupLogicException::fromMaxCollectionLengthReached($max, $actual);

@@ -64,8 +64,6 @@ class BackupSubmitHandler
                 return BackupSubmitResponse::createSuccessResponse($backup, $form->collection);
 
             } else {
-                $this->fileUploader->rollback($result);
-
                 throw DomainAssertionFailure::fromErrors([
                     DomainInputValidationConstraintViolatedError::fromString(
                         '?', $result->getStatus(), $result->getErrorCode()
