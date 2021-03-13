@@ -167,7 +167,7 @@ jobs:
               working-directory: "integration-env"
 
             - name: "Run API tests"
-              run: "rkd :install :test:api --docker"
+              run: "rkd :install :test --docker"
               if: ${{ always() }}
               working-directory: "api-tests"
 
@@ -183,7 +183,7 @@ jobs:
 
             - name: "Run E2E tests"
               if: ${{ always() }}
-              run: "rkd :install :test:in-docker"
+              run: "rkd :install :test --docker"
               working-directory: "e2e"
 
             - name: "Dump logs from environment"

@@ -3,10 +3,6 @@ imports: []
 
 tasks:
     :test:
-        description: Run API tests with Codeception
-        steps: ./vendor/bin/codecept
-
-    :test:api:
         description: Run API tests
         arguments:
             "--filter":
@@ -27,6 +23,7 @@ tasks:
                 export SYMFONY_DEPRECATIONS_HELPER=weak
                 ./vendor/bin/codecept run --html=build/api.html --xml=build/api.junit.xml --config=${config_path} functional ${ARG_FILTER};
 
+            - mkdir -p var/tests
             - cp -pr ./tests/Functional/_output/* var/tests/ 2>/dev/null
 
     :install:

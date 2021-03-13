@@ -7,21 +7,21 @@ environment:
 tasks:
     :test:
         description: Run End-To-End tests with Behat
-        steps: ./vendor/bin/behat
-
-    :test:in-docker:
-        description: Run End-To-End tests with Behat
         arguments:
             "--filter":
                 help: "Filter tests by partial name"
+            "--docker":
+                help: "Test dockerized applications"
         steps: |
             params=""
+            config_path="./behat.yml"
 
             if [[ $ARG_FILTER ]]; then
                 params=" --name='${ARG_FILTER}' "
+                config_path="./behat.docker.yml"
             fi
 
-            TEST_ENV_TYPE=docker eval "./vendor/bin/behat -c ./behat.docker.yml -f pretty -o std -f junit -o build/results-xml ${params}"
+            TEST_ENV_TYPE=docker eval "./vendor/bin/behat -c ${config_path} -f pretty -o std -f junit -o build/results-xml ${params}"
 
     :install:
         description: Install

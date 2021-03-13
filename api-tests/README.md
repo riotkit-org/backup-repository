@@ -28,6 +28,6 @@ cd ../api-tests
 rkd :install
 
 # run tests (use --filter to run single suites and single tests)
-rkd :test:api --docker
-rkd :test:api --filter AuthenticationCest --docker
+rkd :test --docker
+rkd :test --filter AuthenticationCest --docker
 ```
