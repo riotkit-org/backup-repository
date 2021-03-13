@@ -328,7 +328,7 @@ class FeatureContext extends TechnicalContext
      */
     public function iSubmitANewBackup(string $a, string $backupDefinition): void
     {
-        $result = $this->execBahubCommand(':backup:make ' . $backupDefinition . ' -rl debug', [
+        $this->execBahubCommand(':backup:make ' . $backupDefinition . ' -rl debug', [
             'API_TOKEN'          => $this->lastAssignedAuthorizationToken,
             'TEST_COLLECTION_ID' => $this->lastCreatedCollectionId,
         ]);

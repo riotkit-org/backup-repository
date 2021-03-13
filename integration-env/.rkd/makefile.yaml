@@ -13,10 +13,20 @@ tasks:
 
     :run:
         description: Start containerized environment
+        arguments:
+            "--dev":
+                help: "Run server in development mode. All changes made in src, config will be automatically available in container"
+                action: "store_true"
         steps:
             - rkd :docker:network
             - rkd :docker:e2e-browser
-            - rkd :docker:compose
+            - |
+              args=""
+              if [[ $ARG_DEV == "True" ]]; then
+                  args="$args --dev"
+              fi
+
+              eval "rkd :docker:compose ${args}"
             # @todo: - rkd :wait-for:s3
             - rkd :docker:create-test-bucket
             - rkd :logs
@@ -30,7 +40,18 @@ tasks:
             - docker network create s3pb_default || true
 
     :docker:compose:
-        steps: docker-compose -p s3pb -f ./docker-compose.bahub.yml -f ./docker-compose.server.yml -f ./docker-compose.bahub-dependencies.yml up -d
+        arguments:
+            "--dev":
+                help: "Run server in development mode. All changes made in src, config, public will be automatically available in container"
+                action: "store_true"
+        steps: |
+            compose_args=""
+
+            if [[ $ARG_DEV == "True" ]]; then
+                compose_args="$compose_args -f ./docker-compose.server.dev.yml"
+            fi
+
+            eval "docker-compose -p s3pb -f ./docker-compose.bahub.yml -f ./docker-compose.server.yml -f ./docker-compose.bahub-dependencies.yml ${compose_args} up -d"
 
     :docker:compose:bahub-dependencies:
         steps: docker-compose -p s3pb -f ./docker-compose.bahub-dependencies.yml up -d

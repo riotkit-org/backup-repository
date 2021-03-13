@@ -1,0 +1,12 @@
+version: "3.6"
+
+services:
+    # ======================
+    # Override: Adds a persistent volume for server, so a "hot reload" could be achieved for development using containers
+    # ======================
+    server:
+        environment:
+            APP_ENV: "dev"
+        volumes:
+            - ../server/src:/home/backuprepository/src
+#            - ../server/config:/home/backuprepository/config
