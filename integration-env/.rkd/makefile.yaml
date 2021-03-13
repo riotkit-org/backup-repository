@@ -79,4 +79,4 @@ tasks:
     :docker:e2e-browser:screenshot:
         description: Make a screenshot
         steps: |
-            docker exec br_e2e_browser /bin/sh -c "scrot ~/screenshot.png; cat ~/screenshot.png" > "data/screenshots/$(date +'%T')-$(openssl rand -base64 4).png"
+            docker exec br_e2e_browser /bin/sh -c "scrot ~/screenshot.png; cat ~/screenshot.png" > "data/screenshots/$(date +'%H-%M-%S')-$(openssl rand -base64 4).png"
