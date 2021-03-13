@@ -33,7 +33,9 @@ tasks:
 
     :logs:
         description: Print logs from the environment
-        steps: docker-compose -p s3pb -f ./docker-compose.bahub.yml -f ./docker-compose.server.yml -f ./docker-compose.bahub-dependencies.yml logs
+        steps:
+            - docker-compose -p s3pb -f ./docker-compose.bahub.yml -f ./docker-compose.server.yml -f ./docker-compose.bahub-dependencies.yml logs
+            - docker logs br_e2e_browser
 
     :docker:network:
         steps:
