@@ -28,7 +28,7 @@ class HealthCheckCommand extends Command
 
     public function execute(InputInterface $input, OutputInterface $output): int
     {
-        $response = $this->handler->handle($this->handler->getSecretCode());
+        $response = $this->handler->handle($this->handler->getSecretCode(), true);
 
         $output->writeln(json_encode($response['response'], JSON_PRETTY_PRINT, 24));
 
