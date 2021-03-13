@@ -447,10 +447,15 @@ class FeatureContext extends TechnicalContext
     {
         $this->iVisitUsersSearchPage();
         $this->pressButton('Add user');
+        $this->iWait();
         $this->fillField('Email', $email);
+        $this->iWait();
         $this->fillField('Organization', $organization);
+        $this->iWait();
         $this->fillField('New password', $password);
+        $this->iWait();
         $this->fillField('Repeat password', $password);
+        $this->iWait();
     }
 
     /**
