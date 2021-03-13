@@ -12,6 +12,10 @@ rkd :build
 
 # run the environment
 rkd :run
+
+# run environment with mounted server directories, so the changes to server code will be visible immediately
+# (this is helpful for development)
+rkd :run --dev
 ```
 
 Production-like
