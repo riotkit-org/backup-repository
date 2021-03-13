@@ -16,8 +16,12 @@ tasks:
             "--tags":
                 help: "Behat tags"
         steps: |
-            params="${ARG_TAGS} "
+            params=""
             config_path="./behat.yml"
+
+            if [[ $ARG_TAGS ]]; then
+                params=" --tags ${ARG_TAGS} "
+            fi
 
             if [[ $ARG_FILTER ]]; then
                 params=" ${params} --name='${ARG_FILTER}' "
