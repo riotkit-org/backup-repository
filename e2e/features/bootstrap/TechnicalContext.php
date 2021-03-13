@@ -151,6 +151,28 @@ class TechnicalContext extends MinkContext
         Assertions::assertEquals($exitCode, $this->environmentController->getLastShellCommandExitCode());
     }
 
+    /**
+     * @When I stop docker container :name
+     *
+     * @param string $name
+     */
+    public function stopDockerContainer(string $name)
+    {
+        exec('docker stop s3pb_' . $name . '_1');
+        sleep(5);
+    }
+
+    /**
+     * @When I start docker container :name
+     *
+     * @param string $name
+     */
+    public function startDockerContainer(string $name)
+    {
+        exec('docker start s3pb_' . $name . '_1');
+        sleep(5);
+    }
+
     //
     // Browser
     //

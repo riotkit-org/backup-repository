@@ -40,6 +40,7 @@ services:
             APP_ENV: "${APP_ENV}"
             BASE_URL: "http://server"
 
+            HEALTH_CHECK_CODE: "all-cats-are-beautiful-acab"
             JWT_PASSPHRASE: "b0ltCuTTeR.GOES_CLICK-CLACK"
 
         # NOTICE: on production you need to keep your keys in a volume

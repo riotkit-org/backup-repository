@@ -20,9 +20,9 @@ class HealthCheckHandler
         $this->secretCode         = $secretCode;
     }
 
-    public function handle(string $code): array
+    public function handle(string $code, bool $isCallingFromShell = false): array
     {
-        if ($code !== $this->secretCode || !$code) {
+        if (($code !== $this->secretCode || !$code) && !$isCallingFromShell) {
             // @todo: Refactor into a domain exception
             throw new AccessDeniedHttpException();
         }

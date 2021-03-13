@@ -57,6 +57,24 @@ class FeatureContext extends TechnicalContext
     }
 
     /**
+     * @When I check server health from the commandline
+     */
+    public function iCheckServerHealthFromCommandline(): void
+    {
+        $this->execServerCommand('health:check');
+    }
+
+    /**
+     * @When I call health endpoint giving :code as access code
+     *
+     * @param string $code
+     */
+    public function iCallHealthCheckEndpoint(string $code): void
+    {
+        $this->visit('/health?code=' . $code);
+    }
+
+    /**
      * @Given I login as :user with :password
      *
      * @param string $user
