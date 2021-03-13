@@ -170,7 +170,7 @@ class StorageManager
         }
 
         if (!$this->fs->fileExist($storedFile->getStoragePath())) {
-            throw StorageException::fromFileNotFoundOnDiskButFoundInRegistry();
+            throw StorageException::fromFileNotFoundOnDiskButFoundInRegistry($storedFile->getStoragePath()->getBasename());
         }
     }
 }

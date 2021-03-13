@@ -31,12 +31,14 @@ class StorageException extends BackupException
     }
 
     /**
+     * @param string $filename
+     *
      * @return static
      */
-    public static function fromFileNotFoundOnDiskButFoundInRegistry()
+    public static function fromFileNotFoundOnDiskButFoundInRegistry(string $filename)
     {
         return new static(
-            Errors::ERR_MSG_STORAGE_CONSISTENCY_FAILURE_NOT_FOUND_ON_DISK,
+            str_replace('{{ filename }}', $filename, Errors::ERR_MSG_STORAGE_CONSISTENCY_FAILURE_NOT_FOUND_ON_DISK),
             Errors::ERR_STORAGE_CONSISTENCY_FAILURE_NOT_FOUND_ON_DISK
         );
     }

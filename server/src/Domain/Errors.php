@@ -120,7 +120,7 @@ final class Errors
     public const ERR_MSG_STORAGE_PERMISSION_ERROR                  = 'Storage permissions error';
 
     public const ERR_STORAGE_CONSISTENCY_FAILURE_NOT_FOUND_ON_DISK     = 42002;
-    public const ERR_MSG_STORAGE_CONSISTENCY_FAILURE_NOT_FOUND_ON_DISK = 'Storage consistency failure - file not found on disk';
+    public const ERR_MSG_STORAGE_CONSISTENCY_FAILURE_NOT_FOUND_ON_DISK = 'Storage consistency failure - file not found on disk: {{ filename }}';
 
     public const ERR_STORAGE_NOT_AVAILABLE                         = 42003;
     public const ERR_MSG_STORAGE_NOT_AVAILABLE                     = 'Storage unavailable. {{ cause }}';
