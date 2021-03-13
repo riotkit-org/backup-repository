@@ -6,7 +6,7 @@ Developing
 
 ```bash
 # run dependencies - database, cache
-rkd :docker:up
+bash -c "cd ../integration-env && rkd :run --no-server"
 
 # generate required keys for JWT authorization
 rkd :create:keys
@@ -20,21 +20,6 @@ symfony serve
 #
 # Testing
 #
-
-# run all API test cases
-./vendor/bin/codecept run
-
-# run API test case from selected directory
-./vendor/bin/codecept run --html=file-repository.html functional Features/Security/FeatureLimitTokenAccessPerIpAndUserAgentCest
-
-# run API test case from root directory
-./vendor/bin/codecept run --html=file-repository.html functional AuthenticationCest
-
-# run API test - single test
-./vendor/bin/codecept run --html=file-repository.html functional AuthenticationCest:generateBasicToken
-
-# run API tests - by group
-./vendor/bin/codecept run --html=file-repository.html -g Domain/Backup
 
 # unit tests (all tests)
 ./vendor/bin/phpunit

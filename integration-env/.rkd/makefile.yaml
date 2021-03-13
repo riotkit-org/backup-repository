@@ -46,14 +46,26 @@ tasks:
             "--dev":
                 help: "Run server in development mode. All changes made in src, config, public will be automatically available in container"
                 action: "store_true"
+            "--no-server":
+                help: "Do not run server"
+                action: "store_true"
         steps: |
             compose_args=""
 
-            if [[ $ARG_DEV == "True" ]]; then
-                compose_args="$compose_args -f ./docker-compose.server.dev.yml"
+            if [[ $ARG_NO_SERVER == "False" ]]; then
+                compose_args="$compose_args -f ./docker-compose.server.yml "
             fi
 
-            eval "docker-compose -p s3pb -f ./docker-compose.bahub.yml -f ./docker-compose.server.yml -f ./docker-compose.bahub-dependencies.yml ${compose_args} up -d"
+            if [[ $ARG_DEV == "True" ]]; then
+                if [[ $ARG_NO_SERVER == "True" ]]; then
+                    echo " >> Logic error. Cannot use --dev and --no-server flags at once"
+                    exit 1
+                fi
+
+                compose_args="$compose_args -f ./docker-compose.server.dev.yml "
+            fi
+
+            eval "docker-compose -p s3pb -f ./docker-compose.bahub.yml -f ./docker-compose.bahub-dependencies.yml ${compose_args} up -d"
 
     :docker:compose:bahub-dependencies:
         steps: docker-compose -p s3pb -f ./docker-compose.bahub-dependencies.yml up -d
