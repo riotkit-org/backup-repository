@@ -97,13 +97,15 @@ tasks:
                 action: "store_true"
         steps:
             - |
-              if [[ $ARG_REF =~ ^v[0-9\.]$ ]]; then
-                  docker tag quay.io/riotkit/backup-repository:latest-dev quay.io/riotkit/backup-repository:${ARG_REF}
+              git_ref=${ARG_REF/refs\/tags\//}
+
+              if [[ $git_ref =~ ^v[0-9\.]$ ]]; then
+                  docker tag quay.io/riotkit/backup-repository:latest-dev quay.io/riotkit/backup-repository:${git_ref}
 
                   if [[ $ARG_PUSH ]]; then
-                      %RKD% @ --image quay.io/riotkit/backup-repository:${ARG_REF} --propagate :docker:tag :docker:push
+                      %RKD% @ --image quay.io/riotkit/backup-repository:${git_ref} --propagate :docker:tag :docker:push
                   fi
-                  docker tag quay.io/riotkit/backup-repository:${ARG_REF} quay.io/riotkit/backup-repository:latest-release
+                  docker tag quay.io/riotkit/backup-repository:${git_ref} quay.io/riotkit/backup-repository:latest-release
 
                   if [[ $ARG_PUSH ]]; then
                       docker push quay.io/riotkit/backup-repository:latest-release

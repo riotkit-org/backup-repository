@@ -6,7 +6,7 @@ from rkd_python import imports as PythonBuildTasksImports
 
 
 def release_docker(ctx: ExecutionContext, task: TaskInterface) -> bool:
-    tag = ctx.get_arg('ref')
+    tag = str(ctx.get_arg('ref')).replace('refs/tags/', '')
     should_push = ctx.get_arg('--push')
 
     if should_push:
