@@ -24,9 +24,9 @@ Feature: Backup Repository due to its granular permissions can be used as a Back
 
         # 2. Create a one collection
         Given I start creating collection "website.tar.gz" described "Website with a map of all Food Not Bombs initiatives all around the world" and "FIFO - delete oldest on adding new" strategy
-        And I fill in "Max backups count" with "2"
-        And I fill in "Max one version size" with "50MB"
-        And I fill in "Max overall collection size" with "110MB"
+        And I fill in "Max backups count" with "5"
+        And I fill in "Max one version size" with "8GB"
+        And I fill in "Max overall collection size" with "42GB"
         Then I press "Create" button
         And I copy id of a just created backup collection
 

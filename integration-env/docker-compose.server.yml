@@ -43,6 +43,10 @@ services:
             HEALTH_CHECK_CODE: "all-cats-are-beautiful-acab"
             JWT_PASSPHRASE: "b0ltCuTTeR.GOES_CLICK-CLACK"
 
+            BACKUP_ONE_VERSION_MAX_SIZE: "25GB"
+            BACKUP_COLLECTION_MAX_SIZE: "150GB"
+            BACKUP_MAX_VERSIONS: "10"
+
         # NOTICE: on production you need to keep your keys in a volume
         #volumes:
         #    - jwt:/home/backuprepository/config/jwt
