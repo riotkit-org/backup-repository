@@ -87,7 +87,8 @@ RUN set -x \
 
 # Health check
 ADD server/.infrastructure/container-files/healthcheck.sh /
-HEALTHCHECK --interval=30s --timeout=3s CMD /healthcheck.sh || exit 1
+RUN chmod +x /healthcheck.sh
+HEALTHCHECK --interval=60s --timeout=3s CMD /healthcheck.sh || exit 1
 
 # Entrypoint
 ADD server/.infrastructure/container-files/entrypoint.sh /entrypoint.sh
