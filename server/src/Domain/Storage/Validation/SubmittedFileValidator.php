@@ -14,15 +14,8 @@ use App\Domain\Storage\ValueObject\Checksum;
 
 class SubmittedFileValidator
 {
-    /**
-     * @var FileInfoFactory
-     */
-    private $fileInfoFactory;
-
-    /**
-     * @var FileRepository
-     */
-    private $repository;
+    private FileInfoFactory $fileInfoFactory;
+    private FileRepository $repository;
 
     public function __construct(FileInfoFactory $fileInfoFactory, FileRepository $repository)
     {
