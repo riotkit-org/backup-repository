@@ -39,7 +39,7 @@ services:
             FS_RO_NAME: AWS
 
             FS_AWS_ADAPTER: "aws"
-            FS_AWS_ENDPOINT: "http://localhost:9000"
+            FS_AWS_ENDPOINT: "http://storage:9000"
             FS_AWS_BUCKET: "malatesta"
             FS_AWS_REGION: eu-central-1
             FS_AWS_VERSION: latest
