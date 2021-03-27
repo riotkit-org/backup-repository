@@ -70,6 +70,9 @@ tasks:
     :docker:compose:bahub-dependencies:
         steps: docker-compose -p s3pb -f ./docker-compose.bahub-dependencies.yml up -d
 
+    :docker:compose:server-recreate:
+        steps: docker-compose -p s3pb -f ./docker-compose.server.yml -f ./docker-compose.server.dev.yml up -d --force-recreate --no-deps server
+
     :docker:create-test-bucket:
         steps:
             - docker-compose -p s3pb -f ./docker-compose.s3-provision.yml up
