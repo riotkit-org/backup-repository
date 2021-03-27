@@ -4,6 +4,7 @@ namespace App;
 
 use App\Infrastructure\Authentication\DependencyInjection\JWTPass;
 use App\Infrastructure\Common\DependencyInjection\DomainBusPass;
+use App\Infrastructure\Common\DependencyInjection\FlysystemPass;
 use App\Infrastructure\Technical\DependencyInjection\VersionExtension;
 use Symfony\Bundle\FrameworkBundle\Kernel\MicroKernelTrait;
 use Symfony\Component\Config\Loader\LoaderInterface;
@@ -49,11 +50,14 @@ class Kernel extends BaseKernel
 
         $confDir = $this->getProjectDir() . '/config';
 
+
+
         $loader->load($confDir.'/{packages}/*' . self::CONFIG_EXTS, 'glob');
         $loader->load($confDir.'/{packages}/' . $this->environment.'/**/*' . self::CONFIG_EXTS, 'glob');
         $loader->load($confDir.'/{services}' . self::CONFIG_EXTS, 'glob');
         $loader->load($confDir.'/{services}_' . $this->environment.self::CONFIG_EXTS, 'glob');
 
+        $container->addCompilerPass(new FlysystemPass());
         $container->addCompilerPass(new DomainBusPass());
         $container->addCompilerPass(new JWTPass());
 

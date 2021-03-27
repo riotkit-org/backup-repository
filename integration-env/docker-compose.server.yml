@@ -29,13 +29,22 @@ services:
             - db
         links:
             - db
+        volumes:
+            - jwt:/home/backuprepository/config/jwt
+#            - ./gcs-service-account.json:/home/backuprepository/gcs-service-account.json:ro  # example for Google Cloud
         environment:
             DATABASE_URL: "postgres://chomsky:chomsky@db:5432/chomsky"
-            FS_ADAPTER: "awss3v3"  # "awss3v3" or "local"
-            FS_AWSS3V3_OPTIONS_ENDPOINT: "http://storage:9000"
-            FS_AWSS3V3_KEY: "RIOTKIT161ACABEXAMPL"
-            FS_AWSS3V3_SECRET: "wJalrFUckXEMI/THEdEZG/STaTeandCAPITALKEY"
-            FS_AWSS3V3_BUCKET: "malatesta"
+
+            FS_RW_NAME: AWS
+            FS_RO_NAME: AWS
+
+            FS_AWS_ADAPTER: "aws"
+            FS_AWS_ENDPOINT: "http://localhost:9000"
+            FS_AWS_BUCKET: "malatesta"
+            FS_AWS_REGION: eu-central-1
+            FS_AWS_VERSION: latest
+            FS_AWS_CREDENTIALS_KEY: "RIOTKIT161ACABEXAMPL"
+            FS_AWS_CREDENTIALS_SECRET: "wJalrFUckXEMI/THEdEZG/STaTeandCAPITALKEY"
 
             APP_ENV: "${APP_ENV}"
             BASE_URL: "http://server"
@@ -46,6 +55,7 @@ services:
             BACKUP_ONE_VERSION_MAX_SIZE: "25GB"
             BACKUP_COLLECTION_MAX_SIZE: "150GB"
             BACKUP_MAX_VERSIONS: "10"
+            PHP_MEMORY_LIMIT: "250M"
 
         # NOTICE: on production you need to keep your keys in a volume
         #volumes:

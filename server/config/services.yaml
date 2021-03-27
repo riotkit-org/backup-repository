@@ -141,16 +141,20 @@ services:
     ro_fs:
         class: App\Infrastructure\Storage\Manager\FlysystemFilesystemManager
         arguments:
-            $fs: '@oneup_flysystem.readonly_filesystem'
+            $fs: '@readwrite_filesystem.storage'
             $stateManager: '@App\Domain\Common\Manager\StateManager'
             $isAppReadOnly: '%env(bool:READ_ONLY)%'
 
     rw_fs:
         class: App\Infrastructure\Storage\Manager\FlysystemFilesystemManager
         arguments:
-            $fs: '@oneup_flysystem.readwrite_filesystem'
+            $fs: '@readonly_filesystem.storage'
             $stateManager: '@App\Domain\Common\Manager\StateManager'
             $isAppReadOnly: '%env(bool:READ_ONLY)%'
+
+    # ========================================================================================
+    # Notice: For S3Client and other cloud provider services please look at FlysystemPass.php
+    # ========================================================================================
 
     App\Domain\Storage\Manager\FilesystemManager:
         alias: App\Domain\Storage\Manager\SeparatedReadWriteFilesystemManager
@@ -166,18 +170,6 @@ services:
 
     App\Infrastructure\Common\Test\Database\RestoreDBInterface:
         alias: App\Infrastructure\Common\Test\Database\StateManager
-
-    s3_client:
-        class: Aws\S3\S3Client
-        arguments:
-            - version: '%env(FS_AWSS3V3_VERSION)%'
-              region: "%env(FS_AWSS3V3_REGION)%" # 'eu-central-1' for example
-              endpoint: "%env(FS_AWSS3V3_OPTIONS_ENDPOINT)%"
-              bucket_endpoint: false
-              use_path_style_endpoint: true
-              credentials:
-                  key: "%env(FS_AWSS3V3_KEY)%"
-                  secret: "%env(FS_AWSS3V3_SECRET)%"
 
     # SwaggerDocsProvider
     App\Infrastructure\Technical\Service\SwaggerDocsProvider:

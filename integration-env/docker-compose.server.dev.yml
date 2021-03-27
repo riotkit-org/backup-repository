@@ -9,4 +9,4 @@ services:
             APP_ENV: "dev"
         volumes:
             - ../server/src:/home/backuprepository/src
-#            - ../server/config:/home/backuprepository/config
+            - ../server/config/packages:/home/backuprepository/config/packages

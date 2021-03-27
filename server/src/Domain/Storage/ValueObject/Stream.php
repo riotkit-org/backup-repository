@@ -10,11 +10,7 @@ class Stream
      * @var resource
      */
     private $handle;
-
-    /**
-     * @var string
-     */
-    private $id;
+    private string $id;
 
     public function __construct($handle)
     {
@@ -31,7 +27,7 @@ class Stream
      */
     public function attachTo()
     {
-        fseek($this->handle, 0);
+        @fseek($this->handle, 0);
         return $this->handle;
     }
 
