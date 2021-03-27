@@ -3,7 +3,6 @@
 namespace App\Domain\Storage\Repository;
 
 use App\Domain\Storage\Entity\StagedFile;
-use App\Domain\Storage\Service\FileDecoder;
 use App\Domain\Storage\ValueObject\Filename;
 use App\Domain\Storage\ValueObject\InputEncoding;
 use App\Domain\Storage\ValueObject\Path;
@@ -13,12 +12,10 @@ class StagingAreaRepository
 {
     private array       $files = [];
     private string      $tempPath;
-    private FileDecoder $fileDecoder;
 
-    public function __construct(string $tempPath, FileDecoder $fileDecoder)
+    public function __construct(string $tempPath)
     {
         $this->tempPath    = $tempPath;
-        $this->fileDecoder = $fileDecoder;
         $this->files       = [];
     }
 
@@ -36,11 +33,7 @@ class StagingAreaRepository
             new Filename(\basename($filePath))
         );
 
-        // if the file is encoded eg. with base64, gzip etc. then decode it at first
-        $this->fileDecoder->decode($path, $encoding);
-
         $stagedFile = new StagedFile($path);
-
         $this->files[] = $stagedFile;
 
         return $stagedFile;
