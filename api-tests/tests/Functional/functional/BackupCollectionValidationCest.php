@@ -74,7 +74,7 @@ class BackupCollectionValidationCest
         ]);
 
         $I->canSeeResponseContainsJson([
-            "error" => "Maximum file size of 4.00GB reached",
+            "error" => "Maximum file size of 25.00GB reached",
             "code"  => 40103,
             "type"  => "validation.error"
         ]);
@@ -95,7 +95,7 @@ class BackupCollectionValidationCest
         ]);
 
         $I->canSeeResponseContainsJson([
-            "error" => "Maximum collection size cannot exceed 15.00GB",
+            "error" => "Maximum collection size cannot exceed 150.00GB",
             "code"  => 40104,
             "type"  => "validation.error"
         ]);
@@ -116,7 +116,7 @@ class BackupCollectionValidationCest
         ]);
 
         $I->canSeeResponseContainsJson([
-            "error" => "Maximum count of 5 files reached",
+            "error" => "Maximum count of 10 files reached",
             "code"  => 40102,
             "type"  => "validation.error"
         ]);
