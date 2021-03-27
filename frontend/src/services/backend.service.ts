@@ -17,6 +17,10 @@ export default class BackupRepositoryBackend {
     }
 
     getBaseURL() {
+        if (process.env.VUE_APP_BACKEND_URL) {
+            return process.env.VUE_APP_BACKEND_URL
+        }
+
         if (typeof window.location == "undefined") {
             return 'http://localhost:8000/api/stable'
         }
