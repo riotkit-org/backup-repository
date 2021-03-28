@@ -10,12 +10,12 @@ parameters:
     locale: 'en'
     env(READ_ONLY): false
     env(HEALTH_CHECK_CODE): ''
-    env(TEMP_DIRECTORY): '%kernel.project_dir%/var/tmp'
     env(LONG_EXECUTION_TIME): "600"
     env(BASE_URL): ''
     env(PASSWD_ALGORITHM): 'sha256'
     env(PASSWD_ITERATIONS): '90000'
     env(JWT_LIFETIME): '2 hours'
+    temp_directory: '%env(resolve:TEMP_DIRECTORY)%'
 
 services:
     # default configuration for services in *this* file
@@ -78,7 +78,7 @@ services:
     App\Domain\Storage\Repository\StagingAreaRepository:
         class: App\Domain\Storage\Repository\StagingAreaRepository
         arguments:
-            $tempPath: '%env(TEMP_DIRECTORY)%'
+            $tempPath: '%temp_directory%'
 
     App\Domain\Backup\Settings\BackupSettings:
         class: App\Domain\Backup\Settings\BackupSettings

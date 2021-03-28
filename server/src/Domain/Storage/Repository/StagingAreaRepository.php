@@ -9,7 +9,7 @@ use App\Domain\Storage\ValueObject\Stream;
 
 class StagingAreaRepository
 {
-    private array       $files = [];
+    private array       $files;
     private string      $tempPath;
 
     public function __construct(string $tempPath)
@@ -24,7 +24,7 @@ class StagingAreaRepository
             mkdir($this->tempPath);
         }
 
-        $filePath = tempnam($this->tempPath, 'wolnosciowiec-file-repository-hash');
+        $filePath = $this->tempPath . '/' . uniqid('backuprepository', true);
 
         // perform a copy to local temporary file
         $tempHandle = fopen($filePath, 'wb');
