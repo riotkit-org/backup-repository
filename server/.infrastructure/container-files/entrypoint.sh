@@ -91,5 +91,6 @@ execute_post_install_commands
 
 appLogPath="/home/backuprepository/var/log/${APP_ENV}.log"
 touch "${appLogPath}"
+mkdir -p /home/backuprepository/var/tmp || true
 
 exec multirun -v "nginx" "php-fpm -F -O" "tail -f ${appLogPath}"
