@@ -34,6 +34,7 @@ services:
 #            - ./gcs-service-account.json:/home/backuprepository/gcs-service-account.json:ro  # example for Google Cloud
         environment:
             DATABASE_URL: "postgres://chomsky:chomsky@db:5432/chomsky"
+            TEMP_DIRECTORY: "%kernel.project_dir%/var/tmp"
 
             FS_RW_NAME: AWS
             FS_RO_NAME: AWS
