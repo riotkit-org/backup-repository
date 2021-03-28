@@ -4,7 +4,6 @@ namespace App\Domain\Storage\Repository;
 
 use App\Domain\Storage\Entity\StagedFile;
 use App\Domain\Storage\ValueObject\Filename;
-use App\Domain\Storage\ValueObject\InputEncoding;
 use App\Domain\Storage\ValueObject\Path;
 use App\Domain\Storage\ValueObject\Stream;
 
@@ -19,8 +18,12 @@ class StagingAreaRepository
         $this->files       = [];
     }
 
-    public function keepStreamAsTemporaryFile(Stream $stream, InputEncoding $encoding): StagedFile
+    public function keepStreamAsTemporaryFile(Stream $stream): StagedFile
     {
+        if (!is_dir($this->tempPath)) {
+            mkdir($this->tempPath);
+        }
+
         $filePath = tempnam($this->tempPath, 'wolnosciowiec-file-repository-hash');
 
         // perform a copy to local temporary file

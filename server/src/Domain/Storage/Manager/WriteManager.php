@@ -16,7 +16,6 @@ use App\Domain\Storage\Repository\StagingAreaRepository;
 use App\Domain\Storage\Security\UploadSecurityContext;
 use App\Domain\Storage\Validation\SubmittedFileValidator;
 use App\Domain\Storage\ValueObject\Filename;
-use App\Domain\Storage\ValueObject\InputEncoding;
 use App\Domain\Storage\ValueObject\Path;
 use App\Domain\Storage\ValueObject\Stream;
 
@@ -49,40 +48,6 @@ class WriteManager
     }
 
     /**
-     * Case: There EXISTS file in STORAGE and in REGISTRY
-     *       BUT we want to OVERWRITE it.
-     *
-     *       The flow is the same as when adding a new file.
-     *       Full validation is performed.
-     *
-     * @see submitFileToBothRepositoryAndStorage
-     *
-     * @param StoredFile $existingFromRepository
-     * @param Stream $stream
-     * @param UploadSecurityContext $securityContext
-     * @param InputEncoding $encoding
-     *
-     * @return StoredFile
-     *
-     * @throws ValidationException
-     */
-    public function overwriteFile(
-        StoredFile $existingFromRepository,
-        Stream $stream,
-        UploadSecurityContext $securityContext,
-        InputEncoding $encoding
-    ): StoredFile {
-
-        return $this->submitFileToBothRepositoryAndStorage(
-            $stream,
-            $existingFromRepository->getStoragePath(),
-            $securityContext,
-            $existingFromRepository,
-            $encoding
-        );
-    }
-
-    /**
      * CASE: The file EXISTS physically in the STORAGE
      *       But DOES NOT have ENTRY IN REGISTRY
      *
@@ -91,7 +56,6 @@ class WriteManager
      *
      * @param Filename $filename
      * @param UploadForm $form
-     * @param InputEncoding $encoding
      * @param Path $path
      * @param UploadSecurityContext $ctx
      *
@@ -103,13 +67,12 @@ class WriteManager
     public function submitFileLostInRepositoryButExistingInStorage(
         Filename              $filename,
         UploadForm            $form,
-        InputEncoding         $encoding,
         Path                  $path,
         UploadSecurityContext $ctx
     ): StoredFile {
 
         return $this->commitToRegistry(
-            $this->staging->keepStreamAsTemporaryFile($this->fs->read($path), $encoding),
+            $this->staging->keepStreamAsTemporaryFile($this->fs->read($path)),
             $this->storedFileFactory->createFromForm($form, $filename, $ctx->getUploaderToken())
         );
     }
@@ -124,7 +87,6 @@ class WriteManager
      * @param Filename $filename
      * @param UploadSecurityContext $securityContext
      * @param UploadForm $form
-     * @param InputEncoding $encoding
      * @param Path $path
      * @param User $token
      *
@@ -137,7 +99,6 @@ class WriteManager
         Filename              $filename,
         UploadSecurityContext $securityContext,
         UploadForm            $form,
-        InputEncoding         $encoding,
         Path                  $path,
         User                 $token
     ): StoredFile {
@@ -145,8 +106,7 @@ class WriteManager
             $stream,
             $path,
             $securityContext,
-            $this->storedFileFactory->createFromForm($form, $filename, $token),
-            $encoding
+            $this->storedFileFactory->createFromForm($form, $filename, $token)
         );
     }
 
@@ -157,7 +117,6 @@ class WriteManager
      * @param Stream                $stream
      * @param StoredFile            $existingFromRepository
      * @param UploadSecurityContext $securityContext
-     * @param InputEncoding         $encoding
      * @param Path                  $path
      *
      * @return StoredFile
@@ -168,11 +127,10 @@ class WriteManager
         Stream                $stream,
         StoredFile            $existingFromRepository,
         UploadSecurityContext $securityContext,
-        InputEncoding         $encoding,
         Path                  $path
     ): StoredFile {
 
-        $staged = $this->staging->keepStreamAsTemporaryFile($stream, $encoding);
+        $staged = $this->staging->keepStreamAsTemporaryFile($stream);
 
         // each file added to filesystem should be validated
         $this->validator->validateAfterUpload($staged, $securityContext);
@@ -185,8 +143,6 @@ class WriteManager
      * @param Path $path
      * @param UploadSecurityContext $securityContext
      * @param StoredFile $storedFile
-     *
-     * @param InputEncoding $encoding
      * @return StoredFile
      *
      * @throws ValidationException
@@ -195,12 +151,11 @@ class WriteManager
         Stream                $stream,
         Path                  $path,
         UploadSecurityContext $securityContext,
-        StoredFile            $storedFile,
-        InputEncoding         $encoding
+        StoredFile            $storedFile
     ): StoredFile {
 
         // 1. Keep file in temporary dir
-        $staged = $this->staging->keepStreamAsTemporaryFile($stream, $encoding);
+        $staged = $this->staging->keepStreamAsTemporaryFile($stream);
 
         // 2. Get all info about the file
         $info = $this->fileInfoFactory->generateForStagedFile($staged);

@@ -10,7 +10,6 @@ use App\Domain\Storage\Form\UploadForm;
 use App\Domain\Storage\Repository\FileRepository;
 use App\Domain\Storage\Security\UploadSecurityContext;
 use App\Domain\Storage\ValueObject\Filename;
-use App\Domain\Storage\ValueObject\InputEncoding;
 use App\Domain\Storage\ValueObject\Path;
 use App\Domain\Storage\ValueObject\Stream;
 
@@ -64,8 +63,6 @@ class StorageManager
         UploadForm $form
     ): StoredFile {
 
-        $encoding = new InputEncoding($form->encoding);
-
         // facts
         $existingFromRepository = $this->repository->findByName($name);
         $path                   = $existingFromRepository ? $existingFromRepository->getStoragePath() : Path::fromCompletePath($name->getValue()); // notice: at this point we do not have checksum of the file available, deduplication is done on next inner layers
@@ -82,13 +79,13 @@ class StorageManager
         //       if there is any replication set up outside of the application (eg. PostgreSQL + some clustering fs)
         if (!$existingFromRepository && $existsOnDisk) {
             // @todo: Make a selectable policies for this case?
-            return $this->writeManager->submitFileLostInRepositoryButExistingInStorage($name, $form, $encoding, $path, $securityContext);
+            return $this->writeManager->submitFileLostInRepositoryButExistingInStorage($name, $form, $path, $securityContext);
         }
 
         // case: FILE IS NEW
         // case: the file already exists but under different name
         if (!$existingFromRepository && !$existsOnDisk) {
-            return $this->writeManager->submitNewFile($stream, $name, $securityContext, $form, $encoding, $path, $securityContext->getUploaderToken());
+            return $this->writeManager->submitNewFile($stream, $name, $securityContext, $form, $path, $securityContext->getUploaderToken());
         }
 
         // case: the file may be lost on the disk or not synchronized yet?
@@ -97,7 +94,6 @@ class StorageManager
                 $stream,
                 $existingFromRepository,
                 $securityContext,
-                $encoding,
                 $path
             );
         }

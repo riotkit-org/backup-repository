@@ -15,14 +15,6 @@ class UploadForm extends ApplicationForm
     public $tags;
 
     /**
-     * eg. base64 (if the data in body is encoded with base64 and needs to be decoded)
-     *
-     * @internal ApplicationForm::typeInSchema string
-     * @var string|null
-     */
-    public $encoding;
-
-    /**
      * Optional stream to use instead of HTTP, when using internally with DomainBus
      *
      * @var resource|null
