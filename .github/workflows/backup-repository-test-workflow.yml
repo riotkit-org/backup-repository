@@ -200,7 +200,7 @@ jobs:
                     integration-env/*.log
                     integration-env/data/screenshots/*.png
 
-            - name: Archive E2E results as annotations
+            - name: Archive E2E tests results as annotations
               uses: dorny/test-reporter@v1
               if: always()
               with:
@@ -208,12 +208,12 @@ jobs:
                   path: e2e/build/results-xml/default.xml
                   reporter: java-junit
 
-            - name: Archive E2E results as annotations
+            - name: Archive API tests results as annotations
               uses: dorny/test-reporter@v1
               if: always()
               with:
                   name: API tests results
-                  path: api-tests/build/api.junit.xml
+                  path: api-tests/build/results-xml
                   reporter: java-junit
 
     "release_dockers":
