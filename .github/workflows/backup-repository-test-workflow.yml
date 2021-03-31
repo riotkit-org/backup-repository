@@ -200,6 +200,22 @@ jobs:
                     integration-env/*.log
                     integration-env/data/screenshots/*.png
 
+            - name: Archive E2E results as annotations
+              uses: dorny/test-reporter@v1
+              if: always()
+              with:
+                  name: E2E tests results
+                  path: e2e/build/results-xml/default.xml
+                  reporter: java-junit
+
+            - name: Archive E2E results as annotations
+              uses: dorny/test-reporter@v1
+              if: always()
+              with:
+                  name: API tests results
+                  path: api-tests/build/api.junit.xml
+                  reporter: java-junit
+
     "release_dockers":
         needs: integration_test
         runs-on: ubuntu-20.04
