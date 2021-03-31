@@ -23,7 +23,7 @@ jobs:
             - name: Setup PHP, extensions and composer
               uses: shivammathur/setup-php@v2
               with:
-                  php-version: "7.4"
+                  php-version: "8.0"
                   extensions: mbstring, ctype, iconv, intl, fileinfo, openssl, filter, iconv, json, mbstring, pdo, pdo_pgsql
                   tools: symfony, composer
               env:
@@ -145,7 +145,7 @@ jobs:
             - name: Setup PHP, extensions and composer
               uses: shivammathur/setup-php@v2
               with:
-                  php-version: "7.4"
+                  php-version: "8.0"
                   extensions: mbstring, ctype, iconv, intl, fileinfo, openssl, filter, iconv, json, mbstring, pdo, pdo_pgsql
                   tools: symfony, composer
               env:
