@@ -1,0 +1,27 @@
+FROM quay.io/riotkit/backup-repository:latest-dev
+
+USER root
+
+RUN apk add --no-cache $PHPIZE_DEPS
+ADD container-files/debug/xdebug.ini /usr/local/etc/php/conf.d/xdebug.ini
+
+RUN mkdir /tmp/profiler
+
+SHELL ["/bin/bash", "-c"]
+
+RUN wget https://github.com/xdebug/xdebug/archive/refs/tags/3.0.3.tar.gz -O /tmp/xdebug-3.0.3.tar.gz \
+    && cd /tmp && tar xvf /tmp/xdebug-3.0.3.tar.gz \
+    && cd xdebug-3.0.3 \
+    && phpize \
+    && ./configure --enable-xdebug \
+    && make \
+    && make install
+
+RUN docker-php-ext-enable xdebug
+
+# disable health check
+RUN echo "#!/bin/bash" > /healthcheck.sh \
+    && echo "exit 0" >> /healthcheck.sh \
+    && chmod +x /healthcheck.sh
+
+USER www-data

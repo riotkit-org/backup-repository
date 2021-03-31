@@ -5,7 +5,7 @@ namespace App\Infrastructure\Backup\Repository;
 use App\Domain\Backup\Entity\Authentication\User;
 use App\Domain\Backup\Repository\UserRepository;
 use App\Infrastructure\Common\Repository\BaseRepository;
-use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\Persistence\ManagerRegistry;
 
 class UserDoctrineRepository extends BaseRepository implements UserRepository
 {

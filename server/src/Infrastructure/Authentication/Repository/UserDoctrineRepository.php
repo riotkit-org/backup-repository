@@ -6,7 +6,7 @@ use App\Domain\Authentication\Entity\User;
 use App\Domain\Authentication\Exception\UserAlreadyExistsException;
 use App\Domain\Authentication\Repository\UserRepository;
 use App\Infrastructure\Common\Repository\UserDoctrineRepository as CommonTokenRepository;
-use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\Tools\Pagination\Paginator;
 

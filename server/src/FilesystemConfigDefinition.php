@@ -46,7 +46,7 @@ class FilesystemConfigDefinition
     {
         return [
             'local' => [
-                'directory'   => ['%kernel.root_dir%/uploads', 'string'],
+                'directory'   => ['%kernel.root_dir%/../var/uploads', 'string'],
                 'permissions' => [
                     [
                         'file' => [
@@ -83,6 +83,15 @@ class FilesystemConfigDefinition
                 'region'   => ['eu-central-1', 'string', false],
                 'version'  => ['latest', 'string', false],
                 'endpoint' => [null, 'string', false],
+//                'options' => [
+//                    [
+//                        '@http' => [
+//                            [
+//                                'stream' => [true, 'bool']
+//                            ]
+//                        ]
+//                    ]
+//                ]
             ],
 
             'gcloud' => [

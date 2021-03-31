@@ -7,7 +7,7 @@ use App\Domain\Backup\Entity\BackupCollection;
 use App\Domain\Backup\Entity\UserAccess;
 use App\Domain\Backup\Repository\UserAccessRepository;
 use App\Infrastructure\Common\Repository\BaseRepository;
-use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\Persistence\ManagerRegistry;
 
 class UserAccessDoctrineRepository extends BaseRepository implements UserAccessRepository
 {

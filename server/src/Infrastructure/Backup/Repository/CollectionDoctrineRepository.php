@@ -8,7 +8,7 @@ use App\Domain\Backup\Exception\DatabaseException;
 use App\Domain\Backup\Parameters\Repository\ListingParameters;
 use App\Domain\Backup\Repository\CollectionRepository;
 use App\Infrastructure\Common\Repository\BaseRepository;
-use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\DBAL\Driver\Exception;
 use Doctrine\DBAL\Exception\UniqueConstraintViolationException;
 use Doctrine\ORM\QueryBuilder;

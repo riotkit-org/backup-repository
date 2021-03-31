@@ -16,7 +16,7 @@ RUN npm install --also=dev \
 #
 # Build backend
 #
-FROM quay.io/riotkit/php-app:7.4-x86_64
+FROM quay.io/riotkit/php-app:8.0-x86_64
 
 RUN apk --update add multirun libcap libpq
 

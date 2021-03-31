@@ -129,7 +129,7 @@ services:
 
     App\Infrastructure\Backup\Repository\VersionDoctrineRepository:
         arguments:
-            $registry: '@Doctrine\Common\Persistence\ManagerRegistry'
+            $registry: '@Doctrine\Persistence\ManagerRegistry'
             $fs: '@App\Domain\Backup\Service\Filesystem'
             $readOnly: '%env(bool:READ_ONLY)%'
 

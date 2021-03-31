@@ -9,7 +9,7 @@ use App\Domain\Storage\Parameters\Repository\FindByParameters;
 use App\Domain\Storage\Repository\FileRepository;
 use App\Domain\Storage\ValueObject\Checksum;
 use App\Domain\Storage\ValueObject\Filename;
-use Doctrine\Common\Persistence\ManagerRegistry;
+use Doctrine\Persistence\ManagerRegistry;
 use Doctrine\ORM\NoResultException;
 use Doctrine\ORM\QueryBuilder;
 

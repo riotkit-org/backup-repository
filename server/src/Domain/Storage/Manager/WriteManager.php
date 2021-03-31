@@ -18,6 +18,7 @@ use App\Domain\Storage\Validation\SubmittedFileValidator;
 use App\Domain\Storage\ValueObject\Filename;
 use App\Domain\Storage\ValueObject\Path;
 use App\Domain\Storage\ValueObject\Stream;
+use Psr\Log\LoggerInterface;
 
 /**
  * Responsible for handling file submission, then delegating task to repository and filesystem
@@ -30,6 +31,7 @@ class WriteManager
     private SubmittedFileValidator $validator;
     private StoredFileFactory      $storedFileFactory;
     private StagingAreaRepository  $staging;
+    private LoggerInterface        $logger;
 
     public function __construct(
         FilesystemManager      $fs,
@@ -37,7 +39,8 @@ class WriteManager
         FileInfoFactory        $fileInfoFactory,
         SubmittedFileValidator $validator,
         StoredFileFactory      $storedFileFactory,
-        StagingAreaRepository  $staging
+        StagingAreaRepository  $staging,
+        LoggerInterface        $logger
     ) {
         $this->fs                = $fs;
         $this->repository        = $repository;
@@ -45,6 +48,7 @@ class WriteManager
         $this->validator         = $validator;
         $this->storedFileFactory = $storedFileFactory;
         $this->staging           = $staging;
+        $this->logger            = $logger;
     }
 
     /**
@@ -175,7 +179,11 @@ class WriteManager
         $this->validator->validateAfterUpload($staged, $securityContext);
 
         // 4. Write in case of a valid NEW file
-        return $this->writeToBothRegistryAndStorage($staged, $storedFile, $path);
+        $write = $this->writeToBothRegistryAndStorage($staged, $storedFile, $path);
+
+        $this->logger->debug('Memory peak usage: ' . memory_get_peak_usage() . ' / ' . memory_get_peak_usage(true));
+
+        return $write;
     }
 
     /**
