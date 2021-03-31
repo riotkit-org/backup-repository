@@ -10,6 +10,7 @@ make_cache() {
 create_dirs() {
     echo " >> Creating directories"
     mkdir -p vendor var
+    mkdir -p /home/backuprepository/var/tmp || true
 }
 
 setup_admin_user() {
@@ -91,6 +92,5 @@ execute_post_install_commands
 
 appLogPath="/home/backuprepository/var/log/${APP_ENV}.log"
 touch "${appLogPath}"
-mkdir -p /home/backuprepository/var/tmp || true
 
 exec multirun -v "nginx" "php-fpm -F -O" "tail -f ${appLogPath}"
