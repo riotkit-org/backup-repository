@@ -92,6 +92,12 @@
     "guzzlehttp/psr7": {
         "version": "1.5.2"
     },
+    "guzzlehttp/ringphp": {
+        "version": "1.1.1"
+    },
+    "guzzlehttp/streams": {
+        "version": "3.0.0"
+    },
     "http-interop/http-factory-guzzle": {
         "version": "1.0.0"
     },
@@ -291,6 +297,9 @@
     },
     "ramsey/uuid": {
         "version": "3.8.0"
+    },
+    "react/promise": {
+        "version": "v2.8.0"
     },
     "sebastian/cli-parser": {
         "version": "1.0.1"
