@@ -83,15 +83,15 @@ class FilesystemConfigDefinition
                 'region'   => ['eu-central-1', 'string', false],
                 'version'  => ['latest', 'string', false],
                 'endpoint' => [null, 'string', false],
-//                'options' => [
-//                    [
-//                        '@http' => [
-//                            [
-//                                'stream' => [true, 'bool']
-//                            ]
-//                        ]
-//                    ]
-//                ]
+                'options' => [
+                    [
+                        '@http' => [
+                            [
+                                'version' => ['1.0', 'string']
+                            ]
+                        ]
+                    ]
+                ]
             ],
 
             'gcloud' => [
