@@ -32,6 +32,7 @@ services:
         volumes:
             - jwt:/home/backuprepository/config/jwt
 #            - ./gcs-service-account.json:/home/backuprepository/gcs-service-account.json:ro  # example for Google Cloud
+        mem_limit: 400m
         environment:
             DATABASE_URL: "postgres://chomsky:chomsky@db:5432/chomsky"
             TEMP_DIRECTORY: "%kernel.project_dir%/var/tmp"

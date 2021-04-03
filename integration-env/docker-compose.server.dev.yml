@@ -5,8 +5,11 @@ services:
     # Override: Adds a persistent volume for server, so a "hot reload" could be achieved for development using containers
     # ======================
     server:
+        image: quay.io/riotkit/backup-repository:latest-dev
         environment:
             APP_ENV: "dev"
         volumes:
+            - /tmp/profiler:/tmp/profiler
             - ../server/src:/home/backuprepository/src
             - ../server/config/packages:/home/backuprepository/config/packages
+            - ../server/vendor:/home/backuprepository/vendor
