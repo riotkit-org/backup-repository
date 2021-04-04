@@ -23,12 +23,18 @@ class FormTypeCaster
             }
 
             $name = $property->getName();
+            $normalizedTypes = array_map(
+                function (string $typeName) {
+                    return trim($typeName, '? ');
+                },
+                explode('|', (string) $property->getType())
+            );
 
             //
             // Casts input values into TYPED values DECLARED IN CLASS
             //
 
-            if ($property->getType()->isBuiltin() && (string) $property->getType() === 'int') {
+            if (in_array('int', $normalizedTypes, true)) {
                 // cast numeric value into to integer
                 if (isset($data[$name]) && is_string($data[$name]) && preg_match("/^\d+$/", $data[$name])) {
                     $data[$name] = (integer) $data[$name];
