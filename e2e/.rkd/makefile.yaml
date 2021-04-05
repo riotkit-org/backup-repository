@@ -3,6 +3,7 @@ imports: []
 
 environment:
     BROWSER_BIN: "chromium"
+    PHP_BIN: "php"
 
 tasks:
     :test:
@@ -15,6 +16,8 @@ tasks:
                 action: store_true
             "--tags":
                 help: "Behat tags"
+            "--params":
+                help: "Extra Behat arguments"
         steps: |
             params=""
             config_path="./behat.yml"
@@ -31,7 +34,7 @@ tasks:
                 config_path="./behat.docker.yml"
             fi
 
-            TEST_ENV_TYPE=docker eval "./vendor/bin/behat -c ${config_path} -f pretty -o std -f junit -o build/results-xml ${params}"
+            TEST_ENV_TYPE=docker eval "${PHP_BIN} ./vendor/bin/behat -c ${config_path} -f pretty -o std -f junit -o build/results-xml ${params} ${ARG_PARAMS}"
 
     :install:
         description: Install
