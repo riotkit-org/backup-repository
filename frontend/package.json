@@ -9,6 +9,8 @@
     "dev": "vue-cli-service serve"
   },
   "dependencies": {
+    "@fontsource/montserrat": "^4.2.2",
+    "@fortawesome/fontawesome-svg-core": "^1.2.35",
     "@johmun/vue-tags-input": "^2.1.0",
     "axios": "^0.21.1",
     "bootstrap": "^4.6.0",
