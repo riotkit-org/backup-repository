@@ -22,7 +22,7 @@ class CommonValueException extends ApplicationException
     public static function fromNumberCannotBeNegative($number)
     {
         return new static(
-            str_replace('{{ actual }}', $number, Errors::ERR_MSG_NUMBER_CANNOT_BE_NEGATIVE),
+            str_replace('{{ actual }}', (string) $number, Errors::ERR_MSG_NUMBER_CANNOT_BE_NEGATIVE),
             Errors::ERR_NUMBER_CANNOT_BE_NEGATIVE
         );
     }

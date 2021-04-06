@@ -18,14 +18,12 @@ use App\Domain\Common\Exception\CommonValueException;
 use App\Domain\Common\Exception\DomainAssertionFailure;
 use App\Domain\Common\Exception\DomainInputValidationConstraintViolatedError;
 use App\Domain\Errors;
+use Psr\Log\LoggerInterface;
 
 class CollectionMapper
 {
-    private UserRepository $tokenRepository;
-
-    public function __construct(UserRepository $tokenRepository)
+    public function __construct(private UserRepository $tokenRepository, private LoggerInterface $logger)
     {
-        $this->tokenRepository = $tokenRepository;
     }
 
     /**
@@ -62,6 +60,8 @@ class CollectionMapper
             // generic typing errors
             } catch (\TypeError $exception) {
                 preg_match('/the type ([a-z]+),/', $exception->getMessage(), $matches);
+
+                $this->logger->debug('Validation exception of generic type', ['exc' => $exception]);
 
                 $mappingErrors[] = DomainInputValidationConstraintViolatedError::fromString(
                     $formField,

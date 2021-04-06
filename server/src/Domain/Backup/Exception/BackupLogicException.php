@@ -40,7 +40,7 @@ class BackupLogicException extends BackupException
     public static function fromMaxBackupsCountReached(CollectionLength $maximum)
     {
         return new static(
-            str_replace('{{ max }}', $maximum->getValue(), Errors::ERR_MSG_COLLECTION_MAX_FILES_REACHED),
+            str_replace('{{ max }}', (string) $maximum->getValue(), Errors::ERR_MSG_COLLECTION_MAX_FILES_REACHED),
             Errors::ERR_COLLECTION_MAX_FILES_REACHED
         );
     }
