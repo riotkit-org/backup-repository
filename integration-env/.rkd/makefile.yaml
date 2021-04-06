@@ -27,9 +27,9 @@ tasks:
               fi
 
               eval "rkd :docker:compose ${args}"
-            - rkd :wait:for:application
             # @todo: - rkd :wait-for:s3
             - rkd :docker:create-test-bucket
+            - rkd :wait:for:application
             - rkd :logs
 
     :logs:
