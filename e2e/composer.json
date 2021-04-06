@@ -1,5 +1,8 @@
 {
+    "name": "riotkit-org/backup-repository-e2e",
+    "description": "Backup Repository End-To-End tests",
     "require": {
+        "php": ">=8.0",
         "behat/behat": "^3.8.1",
         "behat/gherkin": "^4.8",
         "dmore/chrome-mink-driver": "^2.8-beta",
