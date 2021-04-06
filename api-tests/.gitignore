@@ -3,3 +3,4 @@ tests/Functional/_output/*
 !tests/Functional/_output/.gitkeep
 ./build/*
 !./build/.gitkeep
+var/tests/build/*
