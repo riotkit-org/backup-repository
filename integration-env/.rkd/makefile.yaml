@@ -106,4 +106,4 @@ tasks:
         description: Wait for application to be ready
         steps: |
             echo " >> Waiting for application to be ready"
-            timeout 300 bash -c 'set -x; while [[ $(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:8080/health?code=all-cats-are-beautiful-acab) != \"200\" ]]; do sleep 1; done'
+            timeout 30 bash -c 'set -x; while [[ $(curl -s -o /dev/null -w \"%{http_code}\" http://localhost:8080/health?code=all-cats-are-beautiful-acab) != \"200\" ]]; do sleep 1; done'
