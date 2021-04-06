@@ -2,11 +2,11 @@
 
 namespace Helper;
 
-use Codeception\Module;
 use Codeception\TestInterface;
 use GuzzleHttp\Client;
+use Codeception\Module\REST;
 
-class ApiTester extends Module\REST
+class ApiTester extends REST
 {
     use StoreTrait;
     use TemplatingTrait;

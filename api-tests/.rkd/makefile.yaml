@@ -1,6 +1,9 @@
 version: org.riotkit.rkd/yaml/v1
 imports: []
 
+environment:
+    PHP_BIN: "php"
+
 tasks:
     :test:
         description: Run API tests
@@ -12,7 +15,7 @@ tasks:
                 help: "Tests application that is in docker"
         steps:
             - mkdir -p build
-            - rm ./tests/Functional/_output/*.html 2>/dev/null || true
+            - rm ./tests/Functional/_output/*.html build/*.json 2>/dev/null || true
             - |
                 config_path="codeception.yml"
                 if [[ $ARG_DOCKER == "True" ]]; then
@@ -21,10 +24,9 @@ tasks:
                 fi
 
                 export SYMFONY_DEPRECATIONS_HELPER=weak
-                ./vendor/bin/codecept run --html=build/api.html --xml=build/api.junit.xml --config=${config_path} functional ${ARG_FILTER};
+                ${PHP_BIN} ./vendor/bin/codecept run --html=build/api.html --xml=build/api.junit.xml --config=${config_path} functional ${ARG_FILTER};
 
-            - mkdir -p var/tests
-            - cp -pr ./tests/Functional/_output/* var/tests/ 2>/dev/null
+            - cp -pr ./tests/Functional/_output/* build/
 
     :install:
         description: Install
