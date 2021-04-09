@@ -96,4 +96,4 @@ touch "/var/log/nginx/error.log"
 touch "/var/log/nginx/access.log"
 
 # execute original docker-php-app's (base image) entrypoint
-exec /entrypoint.sh multirun -v "nginx" "php-fpm -F -O" "tail -f ${appLogPath}" "tail -f /var/log/nginx/error.log" "tail -f /var/log/nginx/access.log"
+exec /usr/bin/entrypoint.sh multirun -v "nginx" "php-fpm -F -O" "tail -f ${appLogPath}" "tail -f /var/log/nginx/error.log" "tail -f /var/log/nginx/access.log"
