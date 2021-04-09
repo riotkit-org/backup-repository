@@ -23,5 +23,3 @@ RUN docker-php-ext-enable xdebug
 RUN echo "#!/bin/bash" > /healthcheck.sh \
     && echo "exit 0" >> /healthcheck.sh \
     && chmod +x /healthcheck.sh
-
-USER www-data
