@@ -92,5 +92,7 @@ execute_post_install_commands
 
 appLogPath="/home/backuprepository/var/log/${APP_ENV}.log"
 touch "${appLogPath}"
+touch "/var/log/nginx/error.log"
+touch "/var/log/nginx/access.log"
 
-exec multirun -v "nginx" "php-fpm -F -O" "tail -f ${appLogPath}"
+exec multirun -v "nginx" "php-fpm -F -O" "tail -f ${appLogPath}" "tail -f /var/log/nginx/error.log" "tail -f /var/log/nginx/access.log"
