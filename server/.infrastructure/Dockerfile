@@ -98,5 +98,3 @@ ENTRYPOINT ["/entrypoint.sh"]
 
 # Record into the CI logs
 RUN nginx -v && php --version
-
-USER www-data
