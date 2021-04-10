@@ -27,7 +27,7 @@ class Stream
      */
     public function attachTo()
     {
-        @fseek($this->handle, 0);
+        @rewind($this->handle);
         return $this->handle;
     }
 
