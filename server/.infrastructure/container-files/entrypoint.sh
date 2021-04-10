@@ -11,6 +11,7 @@ create_dirs() {
     echo " >> Creating directories"
     mkdir -p vendor var
     mkdir -p /home/backuprepository/var/tmp || true
+    chown www-data:www-data /home/backuprepository/var/tmp
 }
 
 setup_admin_user() {
