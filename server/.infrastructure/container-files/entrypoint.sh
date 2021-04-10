@@ -84,7 +84,7 @@ setup_jwt() {
     fi
 
     echo " >> Changing permissions on config/jwt/*"
-    chown www-data:www-data config/jwt
+    chown www-data:www-data -R config/jwt
     chmod 600 config/jwt/*
 }
 
