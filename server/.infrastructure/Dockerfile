@@ -18,7 +18,7 @@ RUN npm install --also=dev \
 #
 FROM quay.io/riotkit/php-app:8.0-x86_64
 
-RUN apk --update add multirun libcap libpq
+RUN apk --update add multirun libcap libpq sudo
 
 ENV DATABASE_URL=postgres://postgres:postgres@postgres:5432/postgres \
     FS_ADAPTER=local \
@@ -61,7 +61,7 @@ COPY --from=frontend_builder /build/dist/ /home/backuprepository/public/
 COPY frontend/public/img /home/backuprepository/public/img/
 RUN mv /home/backuprepository/public/index.html /home/backuprepository/public/frontend.html
 
-ADD server/.infrastructure/container-files/nginx/nginx.conf /etc/nginx/nginx.conf
+ADD server/.infrastructure/container-files/nginx/nginx.conf.j2 /.etc.template/nginx/nginx.conf.j2
 ADD server/.infrastructure/container-files/php/upload.ini /usr/local/etc/php/conf.d/upload.ini
 
 # hack: Fix for the PHP not in PATH on www-data account
