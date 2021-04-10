@@ -210,12 +210,11 @@ jobs:
                   reporter: java-junit
 
             - name: Archive API tests results as annotations
-              uses: dorny/test-reporter@v1
+              uses: EnricoMi/publish-unit-test-result-action@v1
               if: always()
               with:
-                  name: API tests results
-                  path: api-tests/build/api.junit.xml
-                  reporter: java-junit
+                  check_name: API tests results
+                  files: api-tests/build/api.junit.xml
 
     "release_dockers":
         needs: integration_test
