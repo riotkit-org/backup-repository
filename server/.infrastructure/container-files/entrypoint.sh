@@ -82,6 +82,10 @@ setup_jwt() {
         openssl genpkey -out $(pwd)/config/jwt/private.pem -aes256 -pass "pass:$JWT_PASSPHRASE" -algorithm rsa -pkeyopt rsa_keygen_bits:4096
         openssl pkey -in $(pwd)/config/jwt/private.pem -out config/jwt/public.pem -pubout -passin pass:$JWT_PASSPHRASE
     fi
+
+    echo " >> Changing permissions on config/jwt/*"
+    chown www-data:www-data config/jwt
+    chmod 600 config/jwt/*
 }
 
 make_cache
