@@ -33,7 +33,7 @@ Features
 
 **Requirements for the backup client "Bahub":**
 - Python 3.7+
-- For a list of required pip packages check: [requirements.txt](bahub-client/requirements.txt)
+- For a list of required pip packages check: [requirements.txt](bahub/requirements.txt)
 - PostgreSQL client tools (for PostgreSQL databases backup support)
 - MariaDB/MySQL client tools (for MySQL/MariaDB databases backup support)
 
@@ -45,13 +45,13 @@ Features
 - sphinx-glpi-theme
 - sphinx
 
-Developers
+Developing
 ----------
 
 Technically this repository consists of 3 applications + functional tests placed in following directories:
 - ./server - server written in PHP
 - ./frontend - web administration panel written in Vue.js
-- ./bahub-client - backup sending/downloading client written in Python
+- ./bahub - backup sending/downloading client written in Python
 - ./e2e - End-To-End integration tests that are testing server + frontend + client
 
 Check README.md of each of those projects to check technical details.
