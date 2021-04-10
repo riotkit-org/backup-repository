@@ -31,6 +31,7 @@ services:
             - db
         volumes:
             - jwt:/home/backuprepository/config/jwt
+            - ../server/var/log:/home/backuprepository/var/log
 #            - ./gcs-service-account.json:/home/backuprepository/gcs-service-account.json:ro  # example for Google Cloud
         mem_limit: 400m
         environment:

@@ -32,6 +32,11 @@ tasks:
             - rkd :wait:for:application
             - rkd :logs
 
+    :remove:
+        description: Remove containerized environment, containers and data
+        steps:
+            - docker-compose -p s3pb -f ./docker-compose.bahub.yml -f ./docker-compose.bahub-dependencies.yml -f ./docker-compose.server.yml rm -f -s -v
+
     :logs:
         description: Print logs from the environment
         steps:

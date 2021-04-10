@@ -199,6 +199,7 @@ jobs:
                   path: |
                     integration-env/*.log
                     integration-env/data/screenshots/*.png
+                    server/var/log/*.log
 
             - name: Archive E2E tests results as annotations
               uses: dorny/test-reporter@v1
