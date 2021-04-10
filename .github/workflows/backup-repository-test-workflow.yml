@@ -214,7 +214,7 @@ jobs:
               if: always()
               with:
                   name: API tests results
-                  path: api-tests/build/results-xml
+                  path: api-tests/build/api.junit.xml
                   reporter: java-junit
 
     "release_dockers":
