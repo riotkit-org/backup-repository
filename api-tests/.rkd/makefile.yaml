@@ -5,6 +5,10 @@ environment:
     PHP_BIN: "php"
 
 tasks:
+    :clear:
+        description: Clear build directories
+        steps: rm -rf build/* tests/Functional/_output/*
+
     :test:
         description: Run API tests
         arguments:
@@ -24,9 +28,9 @@ tasks:
                 fi
 
                 export SYMFONY_DEPRECATIONS_HELPER=weak
-                ${PHP_BIN} ./vendor/bin/codecept run --html=build/api.html --xml=build/api.junit.xml --config=${config_path} functional ${ARG_FILTER};
+                ${PHP_BIN} ./vendor/bin/codecept run --html=$(pwd)/build/api.html --xml=$(pwd)/build/api.junit.xml --config=${config_path} functional ${ARG_FILTER};
 
-            - cp -pr ./tests/Functional/_output/* build/
+            - cp -pr ./tests/Functional/_output/*.json build/ || true
 
     :install:
         description: Install
