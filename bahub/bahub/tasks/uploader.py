@@ -59,6 +59,6 @@ class UploaderTask(BaseTask):
 
     def read_source(self, path: str) -> StreamableBuffer:
         if not path:
-            return StreamableBuffer.from_file('/dev/stdin')
+            return StreamableBuffer.from_file('/dev/stdin', io=self._io)
 
-        return StreamableBuffer.from_file(path)
+        return StreamableBuffer.from_file(path, io=self._io)

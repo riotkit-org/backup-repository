@@ -1,6 +1,7 @@
 from time import sleep
 from typing import BinaryIO, Union, Optional, IO, Callable
 from urllib3 import HTTPResponse
+from rkd.api.inputoutput import IO as RKDIO
 from .exception import BufferingError
 
 BUFFER_CALLABLE_DEF = Callable[[Optional[int]], bytes]
@@ -19,7 +20,12 @@ class StreamableBuffer(object):
     _pre_validation_taken_place: bool
     _pre_validation_sleep: int
 
-    def __init__(self, read_callback: BUFFER_CALLABLE_DEF,
+    _io: RKDIO
+
+    # stats
+    _stat_total_read: int
+
+    def __init__(self, io: RKDIO, read_callback: BUFFER_CALLABLE_DEF,
                  close_callback: callable,
                  eof_callback: callable,
                  is_success_callback: callable,
@@ -30,6 +36,7 @@ class StreamableBuffer(object):
                  parent: Optional['StreamableBuffer'] = None,
                  pre_validation_sleep: int = 5):
 
+        self._io = io
         self._read_callback = read_callback
         self._close = close_callback
         self._is_eof = eof_callback
@@ -42,6 +49,7 @@ class StreamableBuffer(object):
         self._pre_validation_sleep = pre_validation_sleep
 
         self._pre_validation_taken_place = False
+        self._stat_total_read = 0
 
     def get_buffer(self) -> Union[BinaryIO, Optional[IO[bytes]]]:
         return self._buffer
@@ -61,6 +69,8 @@ class StreamableBuffer(object):
         buf = None
 
         if self._pre_validation_taken_place is False:
+            self._io.debug('Validating stream against premature termination')
+
             self._pre_validation_taken_place = True
 
             buf = self._read_callback(size)
@@ -70,6 +80,10 @@ class StreamableBuffer(object):
         if self.has_exited_with_failure():
             raise BufferingError.from_early_buffer_exit(self._description)
 
+        self._stat_total_read += size
+        self._io.debug('Read {size} (total={total}b, {total_mb}mb)'.format(size=size, total=self._stat_total_read,
+                                                                           total_mb=self._stat_total_read/1024/1024))
+
         return self._read_callback(size) if buf is None else buf
 
     def read_all(self) -> bytes:
@@ -77,6 +91,8 @@ class StreamableBuffer(object):
         return self._read_callback()
 
     def close(self):
+        self._io.debug('Closing stream')
+
         return self._close()
 
     def eof(self) -> bool:
@@ -103,10 +119,11 @@ class StreamableBuffer(object):
         return self._has_exited_with_failure()
 
     @staticmethod
-    def from_file(path: str) -> 'StreamableBuffer':
+    def from_file(path: str, io: IO) -> 'StreamableBuffer':
         handle = open(path, 'rb')
 
         return StreamableBuffer(
+            io=io,
             read_callback=handle.read,
             close_callback=lambda: handle.close(),
             eof_callback=lambda: handle.closed,

@@ -60,6 +60,7 @@ class Transport(TransportInterface):
             sleep(1)
 
         return StreamableBuffer(
+            io=self._io,
             read_callback=proc.stdout.read,
             close_callback=close_stream,
             eof_callback=lambda: proc.poll() is not None,

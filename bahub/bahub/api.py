@@ -10,6 +10,8 @@ from subprocess import Popen, PIPE
 from io import BytesIO
 from json import JSONDecodeError, loads as json_loads
 from rkd.api.inputoutput import IO
+
+from bahub.env import is_curl_debug_mode
 from bahub.exception import InvalidResponseException, HttpException
 from bahub.inputoutput import StreamableBuffer
 from bahub.model import ServerAccess, VersionAttributes
@@ -39,12 +41,18 @@ class BackupRepository(object):
         curl.setopt(curl.UPLOAD, 1)
         curl.setopt(curl.READFUNCTION, source.read)
         curl.setopt(curl.WRITEFUNCTION, response_body_stream.write)
-        curl.setopt(curl.VERBOSE, False)
+        curl.setopt(curl.VERBOSE, is_curl_debug_mode())
         curl.setopt(curl.HTTPHEADER, ["Authorization: Bearer " + access.get_token()])
+
+        # explicit timeouts
+        curl.setopt(curl.CONNECTTIMEOUT, 300)
+        curl.setopt(curl.TIMEOUT, 3600*24)
 
         try:
             curl.perform()
         except pycurl.error as e:
+            self.io.error('Curl error cause: {}'.format(e.__cause__))
+
             raise HttpException(
                 'HTTP request error: ' + str(e) + '. Probably the application ' +
                 'backup process exited or timed out unexpectedly. Read above messages for details')
@@ -89,6 +97,7 @@ class BackupRepository(object):
         proc = Popen(process, stdout=PIPE)
 
         return StreamableBuffer(
+            io=self.io,
             read_callback=proc.stdout.read,
             close_callback=lambda: proc.stdout.close(),
             eof_callback=lambda: proc.poll() is not None,

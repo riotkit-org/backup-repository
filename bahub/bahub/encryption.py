@@ -60,6 +60,7 @@ class EncryptionService(object):
                      )
 
         return StreamableBuffer(
+            io=self._io,
             read_callback=proc.stdout.read,
             close_callback=proc.terminate,
             eof_callback=lambda: proc.poll() is not None,

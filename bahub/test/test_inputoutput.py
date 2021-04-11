@@ -1,5 +1,7 @@
 import os
 from io import BytesIO
+
+from rkd.api.inputoutput import IO
 from rkd.api.testing import BasicTestingCase
 from bahub.exception import BufferingError
 from bahub.inputoutput import StreamableBuffer
@@ -9,6 +11,7 @@ class TestStreamableBuffer(BasicTestingCase):
     def test_read_performs_pre_validation(self):
         buf = BytesIO(b'I\'ve never read Marx\'s Capital, but I\'ve got the marks of capital all over my body.')
         buf_obj = StreamableBuffer(
+            io=IO(),
             read_callback=buf.read,
             close_callback=buf.close,
             is_success_callback=lambda: True,
@@ -64,6 +67,7 @@ class TestStreamableBuffer(BasicTestingCase):
         )
 
         parent_stream_obj = StreamableBuffer(
+            io=IO(),
             read_callback=parent_stream.read,
             close_callback=parent_stream.close,
             is_success_callback=lambda: True,
@@ -77,6 +81,7 @@ class TestStreamableBuffer(BasicTestingCase):
         # Current stream
         buf = BytesIO(b'I\'ve never read Marx\'s Capital, but I\'ve got the marks of capital all over my body.')
         buf_obj = StreamableBuffer(
+            io=IO(),
             read_callback=buf.read,
             close_callback=buf.close,
             is_success_callback=lambda: True,
@@ -96,7 +101,7 @@ class TestStreamableBuffer(BasicTestingCase):
         Check that factory method properly opens file for reading
         """
 
-        buf = StreamableBuffer.from_file(os.path.abspath(__file__))
+        buf = StreamableBuffer.from_file(os.path.abspath(__file__), IO())
         text = buf.read()
         buf.close()
 
@@ -112,6 +117,7 @@ class TestStreamableBuffer(BasicTestingCase):
 
         buf = BytesIO(b'I\'ve never read Marx\'s Capital, but I\'ve got the marks of capital all over my body.')
         return StreamableBuffer(
+            io=IO(),
             read_callback=buf.read,
             close_callback=buf.close,
             is_success_callback=lambda: True,

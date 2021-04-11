@@ -67,7 +67,7 @@ class TestEncryptionService(BasicTestingCase):
                 os.write(w, plaintext)
                 os.close(w)
 
-                plain_buffer_streamable = StreamableBuffer.from_file(tempdir + '/plaintext')
+                plain_buffer_streamable = StreamableBuffer.from_file(tempdir + '/plaintext', io=io)
 
                 encrypted_buffer = service.create_encryption_stream(encryption, stdin=plain_buffer_streamable)
                 encrypted_text = encrypted_buffer.read(1024 * 1024 * 64)
@@ -85,7 +85,7 @@ class TestEncryptionService(BasicTestingCase):
 
                     decryption_buffer = service.create_decryption_stream(
                         encryption,
-                        stdin=StreamableBuffer.from_file(tempdir + '/encrypted.gpg')
+                        stdin=StreamableBuffer.from_file(tempdir + '/encrypted.gpg', io=io)
                     )
 
                     # 3.1. Compare original text with decrypted text
