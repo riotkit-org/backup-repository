@@ -181,7 +181,7 @@ final class Errors
 
     // PHP/FastCGI does not support that type of transfers
     public const ERR_CHUNKED_TRANSFER_NOT_SUPPORTED = 42022;
-    public const ERR_MSG_CHUNKED_TRANSFER_NOT_SUPPORTED = '"Transfer-Encoding: Chunked" type uploads are not supported';
+    public const ERR_MSG_CHUNKED_TRANSFER_NOT_SUPPORTED = '"Transfer-Encoding: Chunked" type uploads are not supported. Use a reverse proxy like NGINX with request buffering';
 
 
     //
