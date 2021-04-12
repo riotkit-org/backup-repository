@@ -10,19 +10,15 @@ use App\Domain\Backup\Form\BackupSubmitForm;
 use App\Domain\Backup\ValueObject\JWT;
 use App\Infrastructure\Common\Http\JsonFormattedResponse;
 use Exception;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class SubmitVersionController extends BaseController
 {
-    private BackupSubmitHandler $handler;
-    private SecurityContextFactory $authFactory;
-
-    public function __construct(BackupSubmitHandler $handler, SecurityContextFactory $authFactory)
-    {
-        $this->handler = $handler;
-        $this->authFactory = $authFactory;
-    }
+    public function __construct(private BackupSubmitHandler $handler,
+                                private SecurityContextFactory $authFactory,
+                                private LoggerInterface $logger) { }
 
     /**
      * Send a new version to the collection
@@ -71,6 +67,9 @@ class SubmitVersionController extends BaseController
             $user,
             $accessToken
         );
+
+        $this->logger->debug('Upload finished, creating JsonFormattedResponse');
+        $this->logger->debug('Client has aborted connection? = ' . (int) connection_aborted());
 
         return new JsonFormattedResponse($response, $response->getHttpCode());
     }

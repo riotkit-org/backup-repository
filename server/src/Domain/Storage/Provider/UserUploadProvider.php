@@ -4,6 +4,7 @@ namespace App\Domain\Storage\Provider;
 
 use App\Domain\Storage\Exception\FileRetrievalError;
 use App\Domain\Storage\ValueObject\Stream;
+use Psr\Log\LoggerInterface;
 
 class UserUploadProvider
 {
@@ -12,7 +13,7 @@ class UserUploadProvider
      */
     private array $requestHeaders;
 
-    public function __construct()
+    public function __construct(private LoggerInterface $logger)
     {
         $this->requestHeaders = $_SERVER;
     }
@@ -27,6 +28,8 @@ class UserUploadProvider
     public function getStreamFromHttp(): Stream
     {
         if ($this->hasPostedViaPHPUploadMechanism()) {
+            $this->logger->debug('Handling Multipart upload via PHP mechanism');
+
             $filesIndexes = \array_keys($_FILES);
             $file = $_FILES[$filesIndexes[0]];
 
@@ -38,12 +41,21 @@ class UserUploadProvider
         }
 
         if ($this->hasPostedRaw()) {
+            $this->logger->debug('Handling RAW POST data');
+
             return new Stream(fopen('php://input', 'rb'));
+        }
+
+        if ($this->isChunkedTransfer()) {
+            throw FileRetrievalError::fromChunkedTransferNotSupported();
         }
 
         if ($this->isMultipart() && !$this->hasPostedViaPHPUploadMechanism()) {
             throw FileRetrievalError::fromPostMaxSizeReachedCause();
         }
+
+        $this->logger->warning('The request not contained any source of file (Raw POST or Multipart)');
+        $this->logger->debug(json_encode($this->requestHeaders));
 
         throw FileRetrievalError::fromEmptyRequestCause();
     }
@@ -79,5 +91,11 @@ class UserUploadProvider
         $headerValue = ($this->requestHeaders['CONTENT_TYPE'] ?? '');
 
         return \strtolower(\trim($headerValue)) === 'application/x-www-form-urlencoded';
+    }
+
+    private function isChunkedTransfer(): bool
+    {
+        return $this->requestHeaders['HTTP_TRANSFER_ENCODING'] ?? '' === 'chunked' &&
+            (int) ($this->requestHeaders['CONTENT_LENGTH'] ?? 0) === 0;
     }
 }

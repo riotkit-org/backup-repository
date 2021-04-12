@@ -22,6 +22,14 @@ class FileRetrievalError extends StorageException
         );
     }
 
+    public static function fromChunkedTransferNotSupported()
+    {
+        return new static(
+            Errors::ERR_MSG_CHUNKED_TRANSFER_NOT_SUPPORTED,
+            Errors::ERR_CHUNKED_TRANSFER_NOT_SUPPORTED
+        );
+    }
+
     public static function fromEmptyRequestCause()
     {
         return new static(

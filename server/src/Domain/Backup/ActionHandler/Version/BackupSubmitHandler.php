@@ -15,17 +15,13 @@ use App\Domain\Backup\ValueObject\JWT;
 use App\Domain\Common\Exception\DomainAssertionFailure;
 use App\Domain\Common\Exception\DomainInputValidationConstraintViolatedError;
 use App\Domain\Errors;
+use Psr\Log\LoggerInterface;
 
 class BackupSubmitHandler
 {
-    private BackupManager $backupManager;
-    private FileUploader $fileUploader;
-
-    public function __construct(FileUploader $fileUploader, BackupManager $collectionManager)
-    {
-        $this->backupManager = $collectionManager;
-        $this->fileUploader = $fileUploader;
-    }
+    public function __construct(private FileUploader $fileUploader,
+                                private BackupManager $backupManager,
+                                private LoggerInterface $logger) { }
 
     /**
      * @param BackupSubmitForm $form
@@ -55,11 +51,16 @@ class BackupSubmitHandler
         //
 
         try {
+            $this->logger->info('Performing a file upload');
             $result = $this->fileUploader->upload($form->collection, $user, $accessToken);
 
             if ($result->isSuccess()) {
+                $this->logger->info('File upload was successful');
+
                 $backup = $this->backupManager->submitNewVersion($form->collection, $result->getFileId());
                 $this->backupManager->flushAll();
+
+                $this->logger->info('Upload finished');
 
                 return BackupSubmitResponse::createSuccessResponse($backup, $form->collection);
 
@@ -72,6 +73,8 @@ class BackupSubmitHandler
             }
 
         } catch (DomainAssertionFailure $assertionException) {
+            $this->logger->info('DomainAssertionFailure raised while uploading: ' . $assertionException->getMessage());
+
             // corner case: cannot delete a file that was reported as duplication because we would delete an origin file
             if ($assertionException->getCode() !== Errors::ERR_UPLOADED_FILE_NOT_UNIQUE) {
                 $this->fileUploader->rollback($result);
@@ -80,6 +83,8 @@ class BackupSubmitHandler
             throw $assertionException;
 
         } catch (\Throwable $exception) {
+            $this->logger->info('Exception catched while uploading: ' . $exception->getMessage());
+
             $this->fileUploader->rollback($result);
 
             throw $exception;

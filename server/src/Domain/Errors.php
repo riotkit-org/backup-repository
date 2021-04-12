@@ -179,6 +179,10 @@ final class Errors
     public const ERR_COLLECTION_STRATEGY_INVALID        = 42021;
     public const ERR_MSG_COLLECTION_STRATEGY_INVALID    = 'Invalid collection strategy picked "{{ actual }}". Choices: {{ choices }}';
 
+    // PHP/FastCGI does not support that type of transfers
+    public const ERR_CHUNKED_TRANSFER_NOT_SUPPORTED = 42022;
+    public const ERR_MSG_CHUNKED_TRANSFER_NOT_SUPPORTED = '"Transfer-Encoding: Chunked" type uploads are not supported';
+
 
     //
     // Permission errors
