@@ -41,8 +41,13 @@ class BackupRepository(object):
         curl.setopt(curl.UPLOAD, 1)
         curl.setopt(curl.READFUNCTION, source.read)
         curl.setopt(curl.WRITEFUNCTION, response_body_stream.write)
-        curl.setopt(curl.VERBOSE, is_curl_debug_mode())
         curl.setopt(curl.HTTPHEADER, ["Authorization: Bearer " + access.get_token()])
+
+        # debug
+        if is_curl_debug_mode():
+            curl.setopt(curl.VERBOSE, True)
+            curl.setopt(pycurl.SSL_VERIFYPEER, 0)
+            curl.setopt(pycurl.SSL_VERIFYHOST, 0)
 
         # explicit timeouts
         curl.setopt(curl.CONNECTTIMEOUT, 300)
@@ -50,6 +55,7 @@ class BackupRepository(object):
 
         try:
             curl.perform()
+
         except pycurl.error as e:
             self.io.error('Curl error cause: {}'.format(e.__cause__))
 
