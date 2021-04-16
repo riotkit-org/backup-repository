@@ -36,7 +36,14 @@
             </div>
 
             <div class="row" v-if="user.data">
-                <div class="col-md-4">
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <label class="filter-col">Account expiration date (optional):</label>
+                        <date-picker :is-range-type="false" :value="user.expires" @value-changed="(value) => user.expires = value"/>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
                     <div class="form-group">
                         <label>Tags (optional)</label>
                         <vue-tags-input
@@ -48,7 +55,7 @@
                     </div>
                 </div>
 
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <div class="form-group">
                         <label>Allowed IP addresses (optional - allow list)</label>
                         <vue-tags-input
@@ -60,7 +67,7 @@
                     </div>
                 </div>
 
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <div class="form-group">
                         <label>Allowed User Agents (optional - allow list)</label>
                         <vue-tags-input
@@ -149,12 +156,14 @@
 <script>
 import VueTagsInput from '@johmun/vue-tags-input';
 import Card from 'src/components/Cards/Card.vue'
+import DatePicker from 'src/components/Filters/DatePicker.vue'
 import Permissions from 'src/components/Security/Permissions.vue'
 import {User} from 'src/models/auth.model.ts'
 
 export default {
     components: {
         VueTagsInput,
+        DatePicker,
         Card,
         Permissions
     },

@@ -9,7 +9,7 @@ class ExpirationDate
     public const DATE_MODIFIER_AUTO  = ['auto', 'automatic', '', null];
     public const DATE_MODIFIER_NEVER = ['never'];
 
-    private \DateTimeImmutable $value;
+    private ?\DateTimeImmutable $value = null;
 
     /**
      * @param string|null $modifier
@@ -22,6 +22,10 @@ class ExpirationDate
     public static function fromString(?string $modifier, string $default)
     {
         $new = new static();
+
+        if (!$modifier && !$default) {
+            return $new;
+        }
 
         if (\in_array($modifier, static::DATE_MODIFIER_AUTO, true) || $modifier === null) {
             $new->value = (new \DateTimeImmutable())->modify($default);
@@ -47,7 +51,7 @@ class ExpirationDate
         return $new;
     }
 
-    public function getValue(): \DateTimeImmutable
+    public function getValue(): ?\DateTimeImmutable
     {
         return $this->value;
     }

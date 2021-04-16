@@ -4,6 +4,7 @@ namespace App\Domain\Authentication\Manager;
 
 use App\Domain\Authentication\Configuration\PasswordHashingConfiguration;
 use App\Domain\Authentication\Entity\User;
+use App\Domain\Authentication\Exception\ExpirationDateInvalidError;
 use App\Domain\Authentication\Exception\InvalidUserIdException;
 use App\Domain\Authentication\Repository\UserRepository;
 use App\Domain\Authentication\Service\UuidValidator;
@@ -12,21 +13,18 @@ use App\Domain\Authentication\ValueObject\ExpirationDate;
 use App\Domain\Authentication\ValueObject\Organization;
 use App\Domain\Authentication\ValueObject\Password;
 use App\Domain\Authentication\ValueObject\Permissions;
+use App\Domain\Common\Exception\CommonValueException;
 use App\Domain\Common\Exception\DomainAssertionFailure;
+use App\Domain\Common\Exception\DomainInputValidationConstraintViolatedError;
 
 class UserManager
 {
-    private UserRepository $repository;
-    private UuidValidator $uuidValidator;
-    private PasswordHashingConfiguration $hashingConfiguration;
     private string $defaultExpirationTime;
 
-    public function __construct(UserRepository $repository, UuidValidator $uuidValidator, PasswordHashingConfiguration $hashingConfiguration)
+    public function __construct(private UserRepository $repository, private UuidValidator $uuidValidator,
+                                private PasswordHashingConfiguration $hashingConfiguration)
     {
-        $this->repository    = $repository;
-        $this->uuidValidator = $uuidValidator;
-        $this->hashingConfiguration = $hashingConfiguration;
-        $this->defaultExpirationTime = '+2 hours'; // @todo parametrize
+        $this->defaultExpirationTime = '';
     }
 
     /**
@@ -76,11 +74,28 @@ class UserManager
         return $user;
     }
 
+    /**
+     * @param User $user
+     * @param array $roles
+     * @param string|null $expirationTime
+     * @param string|null $organizationName
+     * @param string|null $about
+     * @param array $restrictions
+     *
+     * @throws ExpirationDateInvalidError
+     * @throws CommonValueException
+     * @throws DomainInputValidationConstraintViolatedError
+     */
     public function editUser(User $user, array $roles, ?string $expirationTime,
                              ?string $organizationName, ?string $about, array $restrictions): void
     {
+        $user->setExpirationDate(null);
+
+        if ($expirationTime || $this->defaultExpirationTime) {
+            $user->setExpirationDate(ExpirationDate::fromString($expirationTime, $this->defaultExpirationTime));
+        }
+
         $user->setPermissions(Permissions::fromArray($roles));
-        $user->setExpirationDate(ExpirationDate::fromString($expirationTime, $this->defaultExpirationTime));
         $user->setOrganization(Organization::fromString($organizationName));
         $user->setAbout(About::fromString($about));
         $user->setData($restrictions);

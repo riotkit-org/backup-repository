@@ -38,13 +38,13 @@ class ClearExpiredUserAccountsHandler
 
         foreach ($this->repository->getExpiredUserAccounts() as $user) {
             $notifier(
-                '[' . $user->getExpirationDate()->format('Y-m-d H:i:s') . '] ' .
+                '[' . ($user->getExpirationDate() ? $user->getExpirationDate()->format('Y-m-d H:i:s') : '?') . '] ' .
                 '<comment>Removing user account ' . $user->getId() . '</comment>'
             );
 
             $log[] = [
                 'id'   => $user->getId(),
-                'date' => $user->getExpirationDate()->format('Y-m-d H:i:s')
+                'date' => ($user->getExpirationDate() ? $user->getExpirationDate()->format('Y-m-d H:i:s') : '?')
             ];
 
             $this->manager->revokeAccessForUser($user);

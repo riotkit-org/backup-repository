@@ -103,6 +103,10 @@ class User extends \App\Domain\Common\SharedEntity\User implements \JsonSerializ
 
     public function isNotExpired(DateTimeImmutable $currentDate = null): bool
     {
+        if (!$this->getExpirationDate()) {
+            return true;
+        }
+
         if (!$currentDate instanceof DateTimeImmutable) {
             $currentDate = new DateTimeImmutable();
         }
@@ -115,8 +119,12 @@ class User extends \App\Domain\Common\SharedEntity\User implements \JsonSerializ
         return $this->creationDate;
     }
 
-    public function getExpirationDate(): DateTimeImmutable
+    public function getExpirationDate(): ?DateTimeImmutable
     {
+        if (!$this->expirationDate) {
+            return null;
+        }
+
         return $this->expirationDate->getValue();
     }
 
@@ -126,7 +134,7 @@ class User extends \App\Domain\Common\SharedEntity\User implements \JsonSerializ
         return $this;
     }
 
-    public function setExpirationDate(ExpirationDate $expirationDate): User
+    public function setExpirationDate(?ExpirationDate $expirationDate): User
     {
         $this->expirationDate = $expirationDate;
         return $this;
@@ -227,7 +235,7 @@ class User extends \App\Domain\Common\SharedEntity\User implements \JsonSerializ
             'email'            => $this->email->getValue(),
             'active'           => $this->active,
             'expired'          => !$this->isNotExpired(),
-            'expires'          => $this->getExpirationDate()->format('Y-m-d H:i:s'),
+            'expires'          => ($this->getExpirationDate() ? $this->getExpirationDate()->format('Y-m-d H:i:s') : ''),
             'data'             => $this->data,
             'permissions'      => $this->getPermissions(),
             'organization'     => $this->organization->getValue(),

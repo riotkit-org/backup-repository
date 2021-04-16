@@ -31,7 +31,7 @@
                                             </div>
                                             <div class="form-group">
                                                 <label class="filter-col">Creation date:</label>
-                                                <date-picker :range="filters.range" @range-changed="dateRangeUpdated"/>
+                                                <date-picker :value="filters.range" @value-changed="dateRangeUpdated"/>
                                             </div>
                                         </form>
                                     </div>
