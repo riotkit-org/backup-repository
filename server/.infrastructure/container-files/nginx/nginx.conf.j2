@@ -82,7 +82,7 @@ http {
 
             # Allow requests to take long, big backups takes long to generate and send
             fastcgi_read_timeout 7200s;
-            fastcgi_write_timeout 7200s;
+            fastcgi_send_timeout 900s;
 
             fastcgi_pass localhost:9000;
         }
