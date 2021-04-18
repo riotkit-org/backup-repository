@@ -180,7 +180,7 @@ final class Errors
     public const ERR_MSG_COLLECTION_STRATEGY_INVALID    = 'Invalid collection strategy picked "{{ actual }}". Choices: {{ choices }}';
 
     // PHP/FastCGI does not support that type of transfers
-    public const ERR_CHUNKED_TRANSFER_NOT_SUPPORTED = 42022;
+    public const ERR_CHUNKED_TRANSFER_NOT_SUPPORTED     = 42022;
     public const ERR_MSG_CHUNKED_TRANSFER_NOT_SUPPORTED = '"Transfer-Encoding: Chunked" type uploads are not supported. Use a reverse proxy like NGINX with request buffering';
 
 
@@ -259,6 +259,9 @@ final class Errors
 
     public const ERR_PERMISSION_CANNOT_LIST_PERMISSIONS     = 40321;
     public const ERR_MSG_PERMISSION_CANNOT_LIST_PERMISSIONS = 'Current access does not allow listing permissions';
+
+    public const ERR_USER_ACCOUNT_DEACTIVATED               = 40322;
+    public const ERR_MSG_USER_ACCOUNT_DEACTIVATED           = 'User account is no longer active';
 
     //
     // Request errors

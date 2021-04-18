@@ -94,4 +94,12 @@ class AuthenticationException extends ExceptionFromCommon
             Errors::ERR_PERMISSION_NO_ACCESS_TO_SEARCH_USERS,
         );
     }
+
+    public static function fromAccountDeactivated()
+    {
+        return new static(
+            Errors::ERR_MSG_USER_ACCOUNT_DEACTIVATED,
+            Errors::ERR_USER_ACCOUNT_DEACTIVATED
+        );
+    }
 }

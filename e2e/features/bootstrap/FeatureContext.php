@@ -3,6 +3,7 @@
 namespace E2E\features\bootstrap;
 
 use Behat\Mink\Exception\ElementNotFoundException;
+use DateInterval;
 use PHPUnit\Framework\Assert as Assertions;
 
 /**
@@ -455,6 +456,27 @@ class FeatureContext extends TechnicalContext
         $this->fillField('New password', $password);
         $this->iWait();
         $this->fillField('Repeat password', $password);
+        $this->iWait();
+    }
+
+    /**
+     * @When I pick date :date from :label
+     */
+    public function iPickDateFromDatepicker(string $date, string $label): void
+    {
+        $templates = [
+            '{yesterday}' => (new \DateTime())->add(DateInterval::createFromDateString('yesterday'))->format('Y/m/d'),
+            '{tommorow}'  => (new \DateTime())->add(DateInterval::createFromDateString('+1 day'))->format('Y/m/d'),
+        ];
+
+        foreach ($templates as $templateKey => $templateValue) {
+            $date = str_replace($templateKey, $templateValue, $date);
+        }
+
+        $element = $this->findByCSS($this->createInputSelector($label));
+        $element->click();
+
+        $this->fillField($label, $date);
         $this->iWait();
     }
 

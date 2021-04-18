@@ -3,9 +3,12 @@
 namespace App\Infrastructure\Authentication\Event\Subscriber;
 
 use App\Domain\Authentication\Entity\User;
+use App\Domain\Authentication\Exception\AuthenticationException;
 use App\Domain\Authentication\Repository\AccessTokenAuditRepository;
+use App\Domain\Common\Exception\CommonValueException;
 use App\Infrastructure\Authentication\Token\TokenTransport;
 use Lexik\Bundle\JWTAuthenticationBundle\Encoder\JWTEncoderInterface;
+use Lexik\Bundle\JWTAuthenticationBundle\Exception\JWTDecodeFailureException;
 use Lexik\Bundle\JWTAuthenticationBundle\Security\Authentication\Token\JWTUserToken;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -16,9 +19,9 @@ class TokenRestrictionsSubscriber implements EventSubscriberInterface
 {
     public const EVENT_PRIORITY = -30;
 
-    private TokenStorageInterface $tokenStorage;
+    private TokenStorageInterface      $tokenStorage;
     private AccessTokenAuditRepository $accessTokenAuditRepository;
-    private JWTEncoderInterface $encoder;
+    private JWTEncoderInterface        $encoder;
 
     public function __construct(TokenStorageInterface $tokenStorage, AccessTokenAuditRepository $accessTokenAuditRepository,
                                 JWTEncoderInterface $encoder)
@@ -28,7 +31,7 @@ class TokenRestrictionsSubscriber implements EventSubscriberInterface
         $this->encoder = $encoder;
     }
 
-    public static function getSubscribedEvents()
+    public static function getSubscribedEvents(): array
     {
         return [
             'security.interactive_login' => [
@@ -37,7 +40,14 @@ class TokenRestrictionsSubscriber implements EventSubscriberInterface
         ];
     }
 
-    public function handleRequestRestrictions(InteractiveLoginEvent $event)
+    /**
+     * @param InteractiveLoginEvent $event
+     * @throws AuthenticationException
+     *
+     * @throws CommonValueException
+     * @throws JWTDecodeFailureException
+     */
+    public function handleRequestRestrictions(InteractiveLoginEvent $event): void
     {
         $request   = $event->getRequest();
         $userAgent = $request->headers->get('User-Agent');
@@ -47,11 +57,18 @@ class TokenRestrictionsSubscriber implements EventSubscriberInterface
 
         // @todo: Support for DNS resolving
         // User account can be expired, deactivated or the UserAgent/IP-Address can be not matching
-        if (($user instanceof User && !$user->isValid($userAgent, $ip))) {
-            $this->tokenStorage->setToken(
-                new TokenTransport('anonymous', new User())
-            );
-            return;
+        if (($user instanceof User)) {
+            if (!$user->isNotExpired()) {
+                throw AuthenticationException::fromAccountDeactivated();
+            }
+
+
+            if (!$user->isValid($userAgent, $ip)) {
+                $this->tokenStorage->setToken(
+                    new TokenTransport('anonymous', new User())
+                );
+                return;
+            }
         }
 
         // JWT token can be manually revoked, or just expired

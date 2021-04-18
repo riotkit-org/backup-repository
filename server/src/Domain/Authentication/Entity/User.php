@@ -11,6 +11,7 @@ use App\Domain\Authentication\ValueObject\Password;
 use App\Domain\Authentication\ValueObject\Permissions;
 use App\Domain\Common\Exception\DomainAssertionFailure;
 use App\Domain\Common\SharedEntity\EntityValidationTrait;
+use App\Domain\PermissionsReference;
 use DateTimeImmutable;
 use Symfony\Component\Security\Core\User\UserInterface;
 
@@ -183,7 +184,7 @@ class User extends \App\Domain\Common\SharedEntity\User implements \JsonSerializ
 
     public function isValid(string $userAgent, string $ipAddress): bool
     {
-        if (\App\Domain\PermissionsReference::isTestToken($this->getId())) {
+        if (PermissionsReference::isTestToken($this->getId())) {
             return true;
         }
 

@@ -125,3 +125,32 @@ Feature: Create users, edit basic fields in existing user profiles, searching th
         And I login as "anarchist-black-cross@example.org" with "anarchist-test123456789_"
         When I visit users search page
         Then I should not see message "No permission to search for users"
+
+
+    Scenario: As an administration I create account that has short expiration time. When the account expires
+              then the user can no longer log in
+
+        Given I visit users search page
+        When I press "Add user" button
+        And I fill in "Email" with "expired-user@example.org"
+        And I fill in "Organization" with "Moscow Death Brigade"
+        And I fill in "New password" with "anarchist-test123456789_"
+        And I fill in "Repeat password" with "anarchist-test123456789_"
+        And I pick date "{yesterday}" from "Optionally set expiration date"
+        And I press "Add new user" button
+        Then I should see message "User account saved"
+
+        Given I logout
+        And I login as "expired-user@example.org" with "anarchist-test123456789_"
+        Then I should see message "User account is no longer active"
+
+        Given I am authenticated as administrator
+        And I visit users search page
+        When I follow "expired-user@example.org"
+        And I pick date "{tommorow}" from "Optionally set expiration date"
+        And I press "Update Profile" button
+        Then I should see message "User account saved"
+
+        Given I logout
+        And I login as "expired-user@example.org" with "anarchist-test123456789_"
+        Then I should not see message "User account is no longer active"

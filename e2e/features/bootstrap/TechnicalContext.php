@@ -330,7 +330,7 @@ class TechnicalContext extends MinkContext
         Assertions::assertStringContainsString($value, $node->getValue());
     }
 
-    private function createInputSelector(string $field): string
+    protected function createInputSelector(string $field): string
     {
         $selector = '';
 
