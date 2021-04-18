@@ -54,7 +54,12 @@ ENV DATABASE_URL=postgres://postgres:postgres@postgres:5432/postgres \
     CACHE_MEMCACHED_PROVIDER="memcached://localhost" \
     SECURITY_ADMIN_TOKEN="" \
     CLEAR_CACHE="true" \
-    JWT_PASSPHRASE=""
+    JWT_PASSPHRASE="" \
+    NGINX_CLIENT_HEADER_TIMEOUT="30s" \
+    NGINX_CLIENT_BODY_TIMEOUT="60s" \
+    NGINX_KEEPALIVE_TIMEOUT="120s" \
+    NGINX_FASTCGI_READ_TIMEOUT="7200s" \
+    NGINX_FASTCGI_SEND_TIMEOUT="7200s"
 
 COPY server/ /home/backuprepository
 COPY --from=frontend_builder /build/dist/ /home/backuprepository/public/

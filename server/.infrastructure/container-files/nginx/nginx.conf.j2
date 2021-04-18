@@ -40,6 +40,13 @@ http {
         root /home/backuprepository/public;
         index index.html index.php;
 
+        client_header_timeout {{ NGINX_CLIENT_HEADER_TIMEOUT | default('30s') }};
+        client_body_timeout {{ NGINX_CLIENT_BODY_TIMEOUT | default('60s') }};
+        keepalive_timeout {{ NGINX_KEEPALIVE_TIMEOUT | default('120s') }};
+
+        # Allow requests to take long, big backups takes long to generate and send
+        fastcgi_read_timeout {{ NGINX_FASTCGI_READ_TIMEOUT | default('7200s') }};
+        fastcgi_send_timeout {{ NGINX_FASTCGI_SEND_TIMEOUT | default('7200s') }};
 
         location / {
             try_files $uri /index.php$is_args$args;
@@ -79,11 +86,6 @@ http {
             set $path_info $fastcgi_path_info;
             fastcgi_param PATH_INFO $path_info;
             fastcgi_index index.php;
-
-            # Allow requests to take long, big backups takes long to generate and send
-            fastcgi_read_timeout 7200s;
-            fastcgi_send_timeout 900s;
-
             fastcgi_pass localhost:9000;
         }
 
