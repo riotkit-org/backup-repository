@@ -33,6 +33,7 @@
                     <input
                         :value="inputValue"
                         v-on="inputEvents"
+                        :placeholder="placeholder"
                         class="border px-2 py-1 w-32 rounded focus:outline-none focus:border-indigo-300"
                     />
                     <svg
@@ -64,6 +65,9 @@ export default {
         },
         isRangeType: {
             default: true
+        },
+        placeholder: {
+            default: ''
         }
     },
     components: {

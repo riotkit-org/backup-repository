@@ -39,7 +39,7 @@
                 <div class="col-md-3">
                     <div class="form-group">
                         <label class="filter-col">Account expiration date (optional):</label>
-                        <date-picker :is-range-type="false" :value="user.expires" @value-changed="(value) => user.expires = value"/>
+                        <date-picker placeholder="Optionally set expiration date" :is-range-type="false" :value="user.expires" @value-changed="(value) => user.expires = value"/>
                     </div>
                 </div>
 

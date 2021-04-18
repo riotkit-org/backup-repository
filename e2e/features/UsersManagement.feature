@@ -130,6 +130,7 @@ Feature: Create users, edit basic fields in existing user profiles, searching th
     Scenario: As an administration I create account that has short expiration time. When the account expires
               then the user can no longer log in
 
+        # I. Create a test user, that already has expired account
         Given I visit users search page
         When I press "Add user" button
         And I fill in "Email" with "expired-user@example.org"
@@ -140,10 +141,12 @@ Feature: Create users, edit basic fields in existing user profiles, searching th
         And I press "Add new user" button
         Then I should see message "User account saved"
 
+        # II. Try to login as this user
         Given I logout
         And I login as "expired-user@example.org" with "anarchist-test123456789_"
         Then I should see message "User account is no longer active"
 
+        # III. Make the user account active
         Given I am authenticated as administrator
         And I visit users search page
         When I follow "expired-user@example.org"
@@ -151,6 +154,7 @@ Feature: Create users, edit basic fields in existing user profiles, searching th
         And I press "Update Profile" button
         Then I should see message "User account saved"
 
+        # IV. Test that user account is active
         Given I logout
         And I login as "expired-user@example.org" with "anarchist-test123456789_"
         Then I should not see message "User account is no longer active"

@@ -6,7 +6,7 @@
   "author": "Riotkit <riotkit.org>",
   "scripts": {
     "build": "./node_modules/.bin/vue-cli-service build --mode production",
-    "dev": "vue-cli-service serve"
+    "dev": "vue-cli-service serve --port 8080"
   },
   "dependencies": {
     "@fontsource/montserrat": "^4.2.2",
