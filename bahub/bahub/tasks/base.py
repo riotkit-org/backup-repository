@@ -33,6 +33,7 @@ class BaseTask(TaskInterface, ABC):
                 parser=YamlFileLoader([]),
                 io=self._io
             )
+
         except YAMLFileValidationError as e:
             self.io().error('Configuration file looks invalid, details: ' + str(e))
             return False
