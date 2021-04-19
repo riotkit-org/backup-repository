@@ -12,10 +12,10 @@ class JWTPass implements CompilerPassInterface
 {
     public function process(ContainerBuilder $container)
     {
-        $passphrase    = $_SERVER['JWT_PASSPHRASE'] ?? '';
-        $secretKeyPath = $_SERVER['JWT_SECRET_KEY'] ?? '';
-        $publicKeyPath = $_SERVER['JWT_PUBLIC_KEY'] ?? '';
-        $lifetime      = $_SERVER['JWT_LIFETIME'] ?? '';
+        $passphrase    = $_SERVER['JWT_PASSPHRASE'] ?? $_ENV['JWT_PASSPHRASE'] ?? '';
+        $secretKeyPath = $_SERVER['JWT_SECRET_KEY'] ?? $_ENV['JWT_SECRET_KEY'] ?? '';
+        $publicKeyPath = $_SERVER['JWT_PUBLIC_KEY'] ?? $_ENV['JWT_PUBLIC_KEY'] ?? '';
+        $lifetime      = $_SERVER['JWT_LIFETIME'] ?? $_ENV['JWT_LIFETIME'] ?? '';
 
         foreach ([&$passphrase, &$secretKeyPath, &$publicKeyPath, &$lifetime] as &$var) {
             if (preg_match_all('/%([a-z\._0-9]+)%/', $var, $matches)) {

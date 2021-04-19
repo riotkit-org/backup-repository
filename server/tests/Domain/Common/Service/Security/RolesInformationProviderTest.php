@@ -18,7 +18,7 @@ class RolesInformationProviderTest extends TestCase
         foreach ($result as $roleName => $roleDescription) {
             $this->assertIsString('string', $roleName);
             $this->assertIsString('string', $roleDescription);
-            $this->assertRegExp('/([a-z\.0-9_]+)/', $roleName);
+            $this->assertMatchesRegularExpression('/([a-z\.0-9_]+)/', $roleName);
         }
 
         $this->assertNotEmpty($result);

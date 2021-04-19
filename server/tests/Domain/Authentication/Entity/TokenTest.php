@@ -3,6 +3,8 @@
 namespace Tests\Domain\Authentication\Entity;
 
 use App\Domain\Authentication\Entity\User;
+use App\Domain\Authentication\Exception\ExpirationDateInvalidError;
+use App\Domain\Authentication\ValueObject\ExpirationDate;
 use PHPUnit\Framework\TestCase;
 
 class TokenTest extends TestCase
@@ -83,19 +85,19 @@ class TokenTest extends TestCase
     /**
      * @dataProvider provideTokenWithUAAndIPExpectations
      *
-     * @param array     $data
-     * @param string    $inputUA
-     * @param string    $inputIP
-     * @param \DateTime $expirationDate
-     * @param bool      $expectation
+     * @param array              $data
+     * @param string             $inputUA
+     * @param string             $inputIP
+     * @param \DateTimeImmutable $expirationDate
+     * @param bool               $expectation
      *
-     * @throws \Exception
+     * @throws ExpirationDateInvalidError
      */
     public function testIsValid(array $data, string $inputUA, string $inputIP, \DateTimeImmutable $expirationDate, bool $expectation): void
     {
         $token = new User();
         $token->setData($data);
-        $token->setExpirationDate($expirationDate);
+        $token->setExpirationDate(ExpirationDate::fromString($expirationDate->format('Y-m-d H:i:s'), ''));
 
         $this->assertSame($expectation, $token->isValid($inputUA, $inputIP));
     }

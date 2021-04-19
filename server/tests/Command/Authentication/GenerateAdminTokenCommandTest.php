@@ -34,20 +34,13 @@ class GenerateAdminTokenCommandTest extends FunctionalTestCase
         return $commandTester;
     }
 
-    public function testCreatedAdminTokenIsValidUuid(): void
-    {
-        $tester = $this->execute([]);
-
-        $this->assertRegExp(
-            '/^[0-9A-F]{8}-[0-9A-F]{4}-4[0-9A-F]{3}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i',
-            $tester->getDisplay()
-        );
-        $this->assertSame(0, $tester->getStatusCode());
-    }
-
     public function testCanCreateTokenWithCustomId(): void
     {
-        $tester = $this->execute(['--id' => '1c2c84f2-d488-4ea0-9c88-d25aab139ac4']);
+        $tester = $this->execute([
+            '--id' => '1c2c84f2-d488-4ea0-9c88-d25aab139ac4',
+            '--email'    => 'anarchist-black-cross@example.org',
+            '--password' => 'workers-united-cannot-be-defeated'
+        ]);
 
         $this->assertSame(
             '1c2c84f2-d488-4ea0-9c88-d25aab139ac4',
@@ -58,9 +51,13 @@ class GenerateAdminTokenCommandTest extends FunctionalTestCase
 
     public function testCantCreateTokenThatIsNotAValidUuid(): void
     {
-        $tester = $this->execute(['--id' => 'industrial-workers-of-the-world']);
+        $tester = $this->execute([
+            '--id' => 'industrial-workers-of-the-world',
+            '--email'    => 'anarchist-black-cross@example.org',
+            '--password' => 'workers-united-cannot-be-defeated'
+        ]);
 
-        $this->assertStringContainsString('id_expects_to_be_uuidv4_format', $tester->getDisplay());
+        $this->assertStringContainsString('User ID format invalid, should be a uuidv4 format', $tester->getDisplay());
         $this->assertSame(1, $tester->getStatusCode());
     }
 
@@ -68,14 +65,16 @@ class GenerateAdminTokenCommandTest extends FunctionalTestCase
     {
         $this->execute(
             [
-                '--id' => '1c2c84f2-d488-4ea0-9c88-d25aab139ac4'
+                '--email'    => 'anarchist-black-cross@example.org',
+                '--password' => 'workers-united-cannot-be-defeated',
             ]
         );
 
         $tester = $this->execute(
             [
-                '--id' => '1c2c84f2-d488-4ea0-9c88-d25aab139ac4',
-                '--ignore-error-if-token-exists' => true
+                '--email'    => 'anarchist-black-cross@example.org',
+                '--password' => 'workers-united-cannot-be-defeated',
+                '--ignore-error-if-already-exists' => true
             ]
         );
 
@@ -86,14 +85,15 @@ class GenerateAdminTokenCommandTest extends FunctionalTestCase
     {
         $this->execute(
             [
-                '--id' => '1c2c84f2-d488-4ea0-9c88-d25aab139ac4'
+                '--email'    => 'anarchist-black-cross@example.org',
+                '--password' => 'workers-united-cannot-be-defeated',
             ]
         );
 
         $tester = $this->execute(
             [
-                '--id' => '1c2c84f2-d488-4ea0-9c88-d25aab139ac4'
-                // --ignore-error-if-token-exists is not used there
+                '--email'    => 'anarchist-black-cross@example.org',
+                '--password' => 'workers-united-cannot-be-defeated',
             ]
         );
 

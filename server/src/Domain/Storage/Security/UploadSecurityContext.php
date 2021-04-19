@@ -10,30 +10,21 @@ class UploadSecurityContext
 {
     private bool   $isAllowedToUpload;
     private array  $allowedTags;
-    private bool   $allowedToOverwrite;
     private int    $maxAllowedFileSize;
     private bool   $enforceTokenTags;
-    private bool   $isAdministrator;
-    private bool   $canUploadOnlyOnce;
     private User  $uploaderToken;
 
     public function __construct(
         array $allowedTags,
         bool $isAllowedToUploadAnything,
-        bool $allowedToOverwrite,
         int $maxAllowedFileSize,
         bool $enforceTokenTags,
-        bool $isAdministrator,
-        bool $canUploadOnlyOnce,
         User $uploaderToken
     ) {
         $this->allowedTags = $allowedTags;
         $this->isAllowedToUpload = $isAllowedToUploadAnything;
-        $this->allowedToOverwrite = $allowedToOverwrite;
         $this->maxAllowedFileSize = $maxAllowedFileSize;
         $this->enforceTokenTags   = $enforceTokenTags;
-        $this->isAdministrator    = $isAdministrator;
-        $this->canUploadOnlyOnce  = $canUploadOnlyOnce;
         $this->uploaderToken      = $uploaderToken;
     }
 
@@ -78,11 +69,6 @@ class UploadSecurityContext
     public function getMaximumFileSize(): int
     {
         return $this->maxAllowedFileSize;
-    }
-
-    public function isRestrictedToUploadOnlyOnce(): bool
-    {
-        return $this->canUploadOnlyOnce;
     }
 
     public function getUploaderToken(): User

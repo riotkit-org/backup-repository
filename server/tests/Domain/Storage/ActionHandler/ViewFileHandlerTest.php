@@ -33,8 +33,8 @@ class ViewFileHandlerTest extends TestCase
         ]);
 
         // replace methods at external services (to test only our scope)
-        $securityContext = mock(ReadSecurityContext::class);
-        $securityContext->shouldReceive('isAbleToViewFile')->andReturn(false);
+        $securityContext = $this->createMock(ReadSecurityContext::class);
+        $securityContext->method('isAbleToViewFile')->willReturn(false);
 
         // test it, expectation is that an exception will be thrown
         // because ReadSecurityContext::isAbleToViewFile() returns false
@@ -54,8 +54,8 @@ class ViewFileHandlerTest extends TestCase
         //
         // mock dependencies
         //
-        $securityContext = mock(ReadSecurityContext::class);
-        $securityContext->shouldReceive('isAbleToViewFile')->andReturn(true);
+        $securityContext = $this->createMock(ReadSecurityContext::class);
+        $securityContext->expects($this->once())->method('isAbleToViewFile')->willReturn(true);
 
         $fromStorage = $this->createMock(StoredFile::class);
         $fromStorage->method('getFilename')->willReturn(new Filename('bakunin.ogv'));

@@ -16,11 +16,8 @@ class SecurityContextFactory
         return new UploadSecurityContext(
             $user->getTags(),
             $user->hasRole(PermissionsReference::PERMISSION_UPLOAD),
-            $user->hasRole(PermissionsReference::PERMISSION_ALLOW_OVERWRITE_FILES),
             $user->getMaxAllowedFileSize(),
             $user->hasRole(PermissionsReference::PERMISSION_UPLOAD_ENFORCE_USER_TAGS),
-            $user->hasRole(PermissionsReference::PERMISSION_ADMINISTRATOR),
-            $user->hasRole(PermissionsReference::PERMISSION_UPLOAD_ONLY_ONCE_SUCCESSFUL),
             $user
         );
     }

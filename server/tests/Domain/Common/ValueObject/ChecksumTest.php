@@ -2,6 +2,7 @@
 
 namespace Tests\Domain\Common\ValueObject;
 
+use App\Domain\Common\Exception\CommonValueException;
 use App\Domain\Common\ValueObject\Checksum;
 use PHPUnit\Framework\TestCase;
 
@@ -12,14 +13,14 @@ class ChecksumTest extends TestCase
 {
     public function testChecksum_invalidType(): void
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(CommonValueException::class);
 
         new Checksum('12345', 'moneysum');
     }
 
     public function testChecksum_invalid_length(): void
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(CommonValueException::class);
 
         $onlyPartOfHash = substr(hash('sha256', 'something'), 0, 10);
 
@@ -31,7 +32,7 @@ class ChecksumTest extends TestCase
 
     public function testChecksum(): void
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(CommonValueException::class);
 
         $hash = hash('sha256', 'International Workers Association');
 

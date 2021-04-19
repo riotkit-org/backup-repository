@@ -12,30 +12,6 @@ use PHPUnit\Framework\TestCase;
 class UrlTest extends TestCase
 {
     /**
-     * @see Url::isLocalFileUrl()
-     */
-    public function testIsLocalFileUrl(): void
-    {
-        $url = new Url('/api/riot/make', new BaseUrl('https://riotkit.org'));
-        $localFileUrl = new Url('file:///tmp', null);
-
-        $this->assertTrue($localFileUrl->isLocalFileUrl());
-        $this->assertFalse($url->isLocalFileUrl());
-    }
-
-    /**
-     * @see Url::withQueryParam()
-     */
-    public function testWithQueryParam(): void
-    {
-        $url = new Url('/api/riot/make', new BaseUrl('https://riotkit.org'));
-        $urlWithParam = $url->withQueryParam('place', 'town-square');
-
-        $this->assertNotSame($url, $urlWithParam);
-        $this->assertSame('https://riotkit.org/api/riot/make?place=town-square', $urlWithParam->getValue());
-    }
-
-    /**
      * @see Url::withVar()
      */
     public function testWithVar(): void
