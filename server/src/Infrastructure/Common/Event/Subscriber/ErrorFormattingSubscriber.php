@@ -77,6 +77,7 @@ class ErrorFormattingSubscriber implements EventSubscriberInterface
             );
 
             $this->logger->error($exc);
+            $this->logger->error(json_encode($exc->creationOrigin));
             return;
         }
 
