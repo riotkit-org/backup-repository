@@ -4,6 +4,7 @@ namespace Tests\Infrastructure\Common\Event\Subscriber;
 
 use App\Domain\Backup\Exception\BackupLogicException;
 use App\Domain\Common\Exception\ApplicationException;
+use App\Domain\Common\Exception\CommonStorageException;
 use App\Domain\Common\Exception\DomainAssertionFailure;
 use App\Domain\Common\Exception\DomainInputValidationConstraintViolatedError;
 use App\Domain\Common\ValueObject\DiskSpace;
@@ -26,6 +27,9 @@ class ErrorFormattingSubscriberTest extends BaseTestCase
 {
     use ArraySubsetAsserts;
 
+    /**
+     * @throws CommonStorageException
+     */
     public function provideVariousFailuresExamples(): array
     {
         return [
