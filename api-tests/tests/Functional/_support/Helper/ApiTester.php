@@ -58,6 +58,6 @@ class ApiTester extends REST
     private function sendGETUsingGuzzle(string $path)
     {
         $client = new Client();
-        $client->get('http://localhost:8080' . $path, ['headers' => ['Token' => 'test-token-full-permissions']]);
+        $client->get($this->config['url'] . $path, ['headers' => ['Token' => 'test-token-full-permissions']]);
     }
 }

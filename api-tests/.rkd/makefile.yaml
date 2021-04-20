@@ -28,6 +28,7 @@ tasks:
                 fi
 
                 export SYMFONY_DEPRECATIONS_HELPER=weak
+                set -x;
                 ${PHP_BIN} ./vendor/bin/codecept run --html=$(pwd)/build/api.html --xml=$(pwd)/build/api.junit.xml --config=${config_path} functional ${ARG_FILTER};
 
             - cp -pr ./tests/Functional/_output/*.json build/ || true
