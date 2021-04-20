@@ -35,6 +35,7 @@ tasks:
                 export TEST_ENV_TYPE=docker
             fi
 
+            set -x;
             eval "${PHP_BIN} ./vendor/bin/behat -c ${config_path} -f pretty -o std -f junit -o build/results-xml ${params} ${ARG_PARAMS}"
 
     :install:

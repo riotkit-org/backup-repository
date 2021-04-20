@@ -103,8 +103,8 @@ class AuthenticationException extends ApplicationException
     public static function fromForbiddenToGenerateTokenWithMoreRolesThanUserHave()
     {
         return new static(
-            Errors::ERR_MSG_FORBIDDEN_TO_ASSIGN_TOKEN_WITH_MORE_ROLES_THAN_USER_HAVE,
-            Errors::ERR_FORBIDDEN_TO_ASSIGN_TOKEN_WITH_MORE_ROLES_THAN_USER_HAVE
+            Errors::ERR_MSG_FORBIDDEN_TO_ASSIGN_TOKEN,
+            Errors::ERR_FORBIDDEN_TO_ASSIGN_TOKEN
         );
     }
 

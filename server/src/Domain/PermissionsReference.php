@@ -82,6 +82,9 @@ final class PermissionsReference
     /** [API/JWT] Deactivate API access tokens (JWT) and logged-in sessions of other users */
     public const PERMISSION_CAN_REVOKE_TOKENS_OF_OTHER_USERS = 'security.revoke_other_users_access_tokens';
 
+    /** [API/JWT] User can create API access tokens (JWT) for own account, limited by existing permissions (still the JWT will be generated on user login with limited time). This permission can help in case, when JWT is generated and given to someone - then that person should not be able to extend the token lifetime */
+    public const PERMISSION_CAN_GENERATE_NEW_CUSTOM_TOKEN_FOR_SELF = 'security.can_generate_custom_jwt';
+
     //
     //
     // browsing
@@ -100,7 +103,7 @@ final class PermissionsReference
     /** [Storage Administration] Can see extra, technical metadata such as storage path in the listing */
     public const PERMISSION_CAN_SEE_EXTRA_ADMIN_METADATA = 'admin.view.can_see_admin_metadata_in_listing';
 
-    /** [Metrics / System] Can view system metrics such as how many users, collections were created, how many disk was allocated */
+    /** [Metrics/System] Can view system metrics such as how many users, collections were created, how many disk was allocated */
     public const PERMISSION_VIEW_METRICS = 'view.metrics';
 
     //

@@ -242,8 +242,8 @@ final class Errors
     public const ERR_PERMISSION_CANNOT_ASSIGN_MORE_ROLES_THAN_HAVE     = 40315;
     public const ERR_MSG_PERMISSION_CANNOT_ASSIGN_MORE_ROLES_THAN_HAVE = 'Cannot give permissions to other user that current context user does not have';
 
-    public const ERR_FORBIDDEN_TO_ASSIGN_TOKEN_WITH_MORE_ROLES_THAN_USER_HAVE     = 40316;
-    public const ERR_MSG_FORBIDDEN_TO_ASSIGN_TOKEN_WITH_MORE_ROLES_THAN_USER_HAVE = 'Cannot create an API token with permissions that user actually does not have. You can only limit your permissions';
+    public const ERR_FORBIDDEN_TO_ASSIGN_TOKEN     = 40316;
+    public const ERR_MSG_FORBIDDEN_TO_ASSIGN_TOKEN = 'Cannot create an API token. Possible reasons: 1) selected permissions that user actually does not have. You can only limit your permissions 2) Your current JWT does not allow generating new JWTs';
 
     public const ERR_CANNOT_LIST_ACCESS_TOKENS_OF_USER     = 40317;
     public const ERR_MSG_CANNOT_LIST_ACCESS_TOKENS_OF_USER = 'Cannot list access tokens for selected user. Current access does not allow such operation';

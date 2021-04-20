@@ -23,6 +23,7 @@ class SecurityContextFactory
             $access->hasRole(PermissionsReference::PERMISSION_CAN_REVOKE_OWN_ACCESS_TOKEN),
             $access->hasRole(PermissionsReference::PERMISSION_CAN_REVOKE_TOKENS_OF_OTHER_USERS),
             $access->hasRole(PermissionsReference::PERMISSION_CAN_LIST_PERMISSIONS),
+            $access->hasRole(PermissionsReference::PERMISSION_CAN_GENERATE_NEW_CUSTOM_TOKEN_FOR_SELF),
             $access
         );
     }
@@ -35,7 +36,7 @@ class SecurityContextFactory
             true, true,
             true, true, true,
             true, true, true,
-            null
+            true, null
         );
     }
 }

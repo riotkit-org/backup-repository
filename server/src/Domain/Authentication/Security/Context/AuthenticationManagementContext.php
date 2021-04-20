@@ -18,49 +18,22 @@ use App\Domain\PermissionsReference;
  */
 class AuthenticationManagementContext
 {
-    private bool $canLookup;
-    private bool $canCreateUnlimitedUserAccount;
-    private bool $canUseTechnicalEndpoints;
-    private bool $isAdministrator;
-    private bool $canRevokeUserAccounts;
-    private bool $canCreateTokensWithPredictableIds;
-    private bool $canSearchForUsers;
-    private bool $canListSelfAccessTokens;
-    private bool $canListAllUsersAccessTokens;
-    private bool $canRevokeOwnAccessTokens;
-    private bool $canRevokeAccessTokensOfOtherUsers;
-    private bool $canListRoles;
-    private ?User $user;
-
     public function __construct(
-        bool $canLookup,
-        bool $canCreateUnlimitedUserAccount,
-        bool $canUseTechnicalEndpoints,
-        bool $isAdministrator,
-        bool $canRevokeUserAccounts,
-        bool $canCreateTokensWithPredictableIds,
-        bool $canSearchForUsers,
-        bool $canListSelfAccessTokens,
-        bool $canListAllUsersAccessTokens,
-        bool $canRevokeOwnAccessTokens,
-        bool $canRevokeAccessTokensOfOtherUsers,
-        bool $canListRoles,
-        ?User $user
-    ) {
-        $this->canLookup                         = $canLookup;
-        $this->canCreateUnlimitedUserAccount     = $canCreateUnlimitedUserAccount;
-        $this->canUseTechnicalEndpoints          = $canUseTechnicalEndpoints;
-        $this->isAdministrator                   = $isAdministrator;
-        $this->canRevokeUserAccounts             = $canRevokeUserAccounts;
-        $this->canCreateTokensWithPredictableIds = $canCreateTokensWithPredictableIds;
-        $this->canSearchForUsers                 = $canSearchForUsers;
-        $this->canListSelfAccessTokens           = $canListSelfAccessTokens;
-        $this->canListAllUsersAccessTokens       = $canListAllUsersAccessTokens;
-        $this->canRevokeOwnAccessTokens          = $canRevokeOwnAccessTokens;
-        $this->canRevokeAccessTokensOfOtherUsers = $canRevokeAccessTokensOfOtherUsers;
-        $this->canListRoles                      = $canListRoles;
-        $this->user                              = $user;
-    }
+        private $canLookup,
+        private $canCreateUnlimitedUserAccount,
+        private $canUseTechnicalEndpoints,
+        private $isAdministrator,
+        private $canRevokeUserAccounts,
+        private $canCreateTokensWithPredictableIds,
+        private $canSearchForUsers,
+        private $canListSelfAccessTokens,
+        private $canListAllUsersAccessTokens,
+        private $canRevokeOwnAccessTokens,
+        private $canRevokeAccessTokensOfOtherUsers,
+        private bool $canListRoles,
+        private bool $canGenerateJWTForOwnAccount,
+        private ?User $user
+    ) { }
 
     public function canLookupAnyUserAccount(): bool
     {
@@ -241,6 +214,10 @@ class AuthenticationManagementContext
     {
         if ($this->isAdministrator) {
             return true;
+        }
+
+        if (!$this->canGenerateJWTForOwnAccount) {
+            return false;
         }
 
         // remove all permissions that user does not have
