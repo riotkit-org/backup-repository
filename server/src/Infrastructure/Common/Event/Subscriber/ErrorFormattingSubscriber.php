@@ -27,13 +27,11 @@ class ErrorFormattingSubscriber implements EventSubscriberInterface
 {
     private bool $isDebugEnvironment;
     private bool $isTestEnvironment;
-    private LoggerInterface $logger;
 
-    public function __construct(bool $isDev, string $envName, LoggerInterface $logger)
+    public function __construct(bool $isDev, string $envName, private LoggerInterface $logger)
     {
         $this->isDebugEnvironment = $isDev;
         $this->isTestEnvironment  = $envName === 'test';
-        $this->logger             = $logger;
     }
 
     public static function getSubscribedEvents(): array
@@ -78,12 +76,13 @@ class ErrorFormattingSubscriber implements EventSubscriberInterface
 
             $this->logger->error($exc);
             $this->logger->error(json_encode($exc->creationOrigin));
+
             return;
         }
 
         //
         // Infrastructure / routing / http / internal errors
-        // (Are formatted only on PROD environment. On dev/test are shown as raised exception for debugging)
+        // (Are formatted only on PROD and test environment. On dev are shown as raised exception for debugging)
         //
         if (!$this->isDebugEnvironment || $this->isTestEnvironment) {
             if ($exc instanceof NotFoundHttpException || $exc instanceof ResourceNotFoundException) {
@@ -110,10 +109,10 @@ class ErrorFormattingSubscriber implements EventSubscriberInterface
 
     private function postProcessResponse(JsonFormattedResponse $response, \Exception $exception): JsonFormattedResponse
     {
-        $canBeDisplayedPublic = $exception instanceof ApplicationException && $exception->canBeDisplayedPublic();
+        $canBeDisplayedPublic = $exception instanceof ApplicationException && $exception->canBeDisplayedPublic() || !$exception instanceof ApplicationException;
 
         if (!$canBeDisplayedPublic && !$this->isDebugEnvironment) {
-            return new JsonFormattedResponse(HttpError::fromInternalServerError()->jsonSerialize());
+            return new JsonFormattedResponse(HttpError::fromInternalServerError()->jsonSerialize(), 500);
         }
 
         if ($this->isDebugEnvironment) {

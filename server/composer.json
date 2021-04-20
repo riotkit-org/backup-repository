@@ -49,11 +49,12 @@
         "symfony/yaml": "*"
     },
     "require-dev": {
+        "dms/phpunit-arraysubset-asserts": "^0.2.1",
         "phpunit/phpunit": ">=8.2.4",
+        "symfony/debug-pack": "^1.0",
         "symfony/phpunit-bridge": "^4.4",
         "symfony/test-pack": "^1.0",
-        "symfony/web-server-bundle": "*",
-        "symfony/debug-pack": "^1.0"
+        "symfony/web-server-bundle": "*"
     },
     "config": {
         "preferred-install": {

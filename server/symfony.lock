@@ -5,6 +5,9 @@
     "clue/stream-filter": {
         "version": "v1.4.1"
     },
+    "dms/phpunit-arraysubset-asserts": {
+        "version": "v0.2.1"
+    },
     "doctrine/annotations": {
         "version": "1.0",
         "recipe": {

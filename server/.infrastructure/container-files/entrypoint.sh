@@ -9,9 +9,8 @@ make_cache() {
 
 create_dirs() {
     echo " >> Creating directories"
-    mkdir -p vendor var
-    mkdir -p /home/backuprepository/var/tmp || true
-    chown www-data:www-data /home/backuprepository/var/tmp
+    mkdir -p vendor var var/cache var/tmp var/log var/storage var/uploads
+    chown www-data:www-data -R var/tmp var/cache var/storage var/log var/uploads
 }
 
 setup_admin_user() {
