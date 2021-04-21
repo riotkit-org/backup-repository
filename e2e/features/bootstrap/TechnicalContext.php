@@ -167,7 +167,7 @@ class TechnicalContext extends MinkContext
      *
      * @param string $name
      */
-    public function stopDockerContainer(string $name)
+    public function stopDockerContainer(string $name): void
     {
         exec('docker stop s3pb_' . $name . '_1');
         sleep(5);
@@ -178,7 +178,7 @@ class TechnicalContext extends MinkContext
      *
      * @param string $name
      */
-    public function startDockerContainer(string $name)
+    public function startDockerContainer(string $name): void
     {
         exec('docker start s3pb_' . $name . '_1');
         sleep(5);

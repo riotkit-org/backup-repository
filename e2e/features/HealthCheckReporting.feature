@@ -20,7 +20,7 @@ Feature: From an administrator perspective I need to know if the application is 
         Given I call health endpoint giving "all-cats-are-beautiful-acab" as access code
         And I stop docker container "storage"
 
-        When I call health endpoint giving "all-cats-are-beautiful-acab" as access code
+        When I reload the page
         Then I should see "storage=False"
         And I should see "database=True"
 

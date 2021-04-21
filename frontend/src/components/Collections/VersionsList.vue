@@ -29,7 +29,7 @@ export default {
     data() {
         return {
             versions: {
-                columns: ['Version', 'Id', 'Date'],
+                columns: ['Version', 'Id', 'Date', 'Size'],
                 data: []
             }
         }
@@ -55,6 +55,7 @@ export default {
                         version: 'v' + version.version,
                         id: version.id,
                         date: version.creationDate.date,
+                        size: version.getFilesize(),
                         _url: '',
                         _active: true
                     })

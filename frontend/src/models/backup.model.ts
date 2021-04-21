@@ -70,10 +70,12 @@ export class BackupCollection {
 export class BackupFile {
     id: number
     filename: string
+    filesize: string
 
-    constructor(id: number, filename: string) {
+    constructor(id: number, filename: string, filesize: string) {
         this.id = id
         this.filename = filename
+        this.filesize = filesize
     }
 }
 
@@ -93,9 +95,17 @@ export class BackupVersion {
             data['details']['creationDate']['timezone_type'],
             data['details']['creationDate']['timezone']
         )
-        version.file = new BackupFile(data['details']['file']['id'], data['details']['file']['filename'])
+        version.file = new BackupFile(
+            data['details']['file']['id'],
+            data['details']['file']['filename'],
+            data['details']['file']['filesize']
+        )
 
         return version
+    }
+
+    getFilesize(): string {
+        return this.file.filesize
     }
 }
 

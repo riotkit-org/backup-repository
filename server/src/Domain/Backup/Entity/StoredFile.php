@@ -4,6 +4,7 @@ namespace App\Domain\Backup\Entity;
 
 use App\Domain\Backup\ValueObject\Filename;
 use App\Domain\Common\SharedEntity\StoredFile as StoredFileFromCommon;
+use App\Domain\Common\ValueObject\DiskSpace;
 
 /**
  * @method Filename getFilename()
@@ -17,12 +18,13 @@ class StoredFile extends StoredFileFromCommon implements \JsonSerializable
         return Filename::class;
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return [
-            'id'       => $this->getId(),
-            'filename' => $this->getFilename(),
-            'filesize' => $this->filesize
+            'id'                      => $this->getId(),
+            'filename'                => $this->getFilename(),
+            'filesize_bytes'          => $this->filesize,
+            'filesize'                => DiskSpace::fromBytes($this->filesize)->toHumanReadable()
         ];
     }
 }
