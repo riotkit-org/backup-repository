@@ -30,16 +30,13 @@ class ListingResponse extends NormalResponse implements \JsonSerializable
 
     public function jsonSerialize(): array
     {
-        $data = parent::jsonSerialize();
-        $data = array_merge($data, [
+        return array_merge(parent::jsonSerialize(), [
             'elements'   => $this->elements,
             'pagination' => [
-                'page'         => $this->currentPage,
-                'maxPages'     => $this->maxPages,
-                'perPageLimit' => $this->perPage
+                'page'           => $this->currentPage,
+                'max_pages'      => $this->maxPages,
+                'per_page_limit' => $this->perPage
             ]
         ]);
-
-        return $data;
     }
 }

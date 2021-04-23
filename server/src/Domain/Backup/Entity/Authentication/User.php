@@ -9,7 +9,7 @@ class User extends TokenFromCommon implements \JsonSerializable
 {
     protected Email $email;
 
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return [
             'id'           => $this->getId(),

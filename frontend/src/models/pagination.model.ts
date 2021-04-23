@@ -24,8 +24,8 @@ export default class Pagination {
 
         return new Pagination(
             pagination['page'],
-            pagination['maxPages'],
-            pagination['perPageLimit']
+            pagination['max_pages'],
+            pagination['per_page_limit']
         )
     }
 }

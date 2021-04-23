@@ -51,7 +51,7 @@ export default class AuthBackend extends BackupRepositoryBackend {
 
             return new UserListingResponse(
                 response.data.data.map(function (userData) { return User.fromDict(userData) }),
-                new Pagination(page, response.data.context.pagination.maxPages, limit)
+                new Pagination(page, response.data.context.pagination.max_pages, limit)
             )
         })
     }
