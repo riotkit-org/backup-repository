@@ -31,7 +31,7 @@ export default class AuthBackend extends BackupRepositoryBackend {
         return super.get('/auth/permissions?limits=' + limits).then(function (response) {
             return new PermissionsResponse(
                 RolesList.createFromRawDict(response.data.permissions),
-                RolesList.createFromRawDict(response.data.allPermissions)
+                RolesList.createFromRawDict(response.data.all_permissions)
             )
         })
     }

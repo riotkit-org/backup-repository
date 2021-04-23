@@ -85,12 +85,12 @@ class StoredVersion implements \JsonSerializable
             || $this->getFile()->isSameAs($version->getFile());
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return [
             'id'            => $this->getId(),
             'version'       => $this->getVersionNumber()->getValue(),
-            'creationDate'  => $this->creationDate,
+            'creation_date'  => $this->creationDate,
             'file'          => $this->getFile()
         ];
     }

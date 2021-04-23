@@ -206,7 +206,7 @@ class BackupCollection implements \JsonSerializable
         return $self;
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return [
             'id'                          => $this->id,

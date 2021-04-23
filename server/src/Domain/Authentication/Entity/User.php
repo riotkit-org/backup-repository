@@ -229,7 +229,7 @@ class User extends \App\Domain\Common\SharedEntity\User implements \JsonSerializ
         return \in_array($userAgent, $this->getAllowedUserAgents(), true);
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): array
     {
         return [
             'id'               => $this->getId(),

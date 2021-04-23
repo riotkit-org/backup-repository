@@ -91,9 +91,9 @@ export class BackupVersion {
         version.version = data['details']['version']
 
         version.creationDate = new PhpDate(
-            data['details']['creationDate']['date'],
-            data['details']['creationDate']['timezone_type'],
-            data['details']['creationDate']['timezone']
+            data['details']['creation_date']['date'],
+            data['details']['creation_date']['timezone_type'],
+            data['details']['creation_date']['timezone']
         )
         version.file = new BackupFile(
             data['details']['file']['id'],

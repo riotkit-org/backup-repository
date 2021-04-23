@@ -25,10 +25,10 @@ class PermissionsSearchResponse extends NormalSearchResponse
     public function jsonSerialize(): array
     {
         return [
-            'message'        => $this->message,
-            'status'         => $this->status,
-            'permissions'    => $this->data,
-            'allPermissions' => $this->allPermissions
+            'message'         => $this->message,
+            'status'          => $this->status,
+            'permissions'     => $this->data,
+            'all_permissions' => $this->allPermissions
         ];
     }
 }
