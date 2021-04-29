@@ -11,7 +11,7 @@ namespace Tests\Functional\Features\Security;
  */
 class FeatureLimitUserAccountAccessPerIpAndUserAgentCest
 {
-    private function createUser(\FunctionalTester $I, array $ua = [], array $ips = []): \User
+    private function createUserAndBecomeThatUser(\FunctionalTester $I, array $ua = [], array $ips = []): \User
     {
         return $I->havePermissions(['security.authentication_lookup'], [
             'data' => [
@@ -23,27 +23,30 @@ class FeatureLimitUserAccountAccessPerIpAndUserAgentCest
 
     public function testUserAgentIsCheckedWhenNotPresentInRequest(\FunctionalTester $I): void
     {
-        $user = $this->createUser($I, ['Test UA :)']);
+        $I->haveUserAgent('Test UA :)');
+        $user = $this->createUserAndBecomeThatUser($I, ['Test UA :)']);
         $I->seeResponseCodeIsSuccessful();
 
-        $I->deleteHeader('User-Agent');
+        $I->haveUserAgent(null);
         $I->lookupUser($user->id);
         $I->canSeeResponseCodeIsClientError();
     }
 
     public function testInvalidUserAgentSentInRequest(\FunctionalTester $I): void
     {
-        $user = $this->createUser($I, ['Test UA :)']);
+        $I->haveUserAgent('Test UA :)');
+        $user = $this->createUserAndBecomeThatUser($I, ['Test UA :)']);
         $I->seeResponseCodeIsSuccessful();
 
-        $I->haveHttpHeader('User-Agent', 'Not a valid UA');
+        $I->haveUserAgent('Not a valid UA');
         $I->lookupUser($user->id);
         $I->canSeeResponseCodeIsClientError();
     }
 
     public function testWillAllowToPerformARequestWhenUserAgentMatches(\FunctionalTester $I): void
     {
-        $user = $this->createUser($I, ['Test UA :)']);
+        $I->haveUserAgent('Test UA :)');
+        $user = $this->createUserAndBecomeThatUser($I, ['Test UA :)']);
         $I->seeResponseCodeIsSuccessful();
 
         $I->haveHttpHeader('User-Agent', 'Test UA :)');
@@ -53,7 +56,7 @@ class FeatureLimitUserAccountAccessPerIpAndUserAgentCest
 
     public function testWillWorkWithoutLimitingUserAgentOrIPAddress(\FunctionalTester $I): void
     {
-        $user = $this->createUser($I);
+        $user = $this->createUserAndBecomeThatUser($I);
         $I->seeResponseCodeIsSuccessful();
 
         $I->deleteHeader('User-Agent');

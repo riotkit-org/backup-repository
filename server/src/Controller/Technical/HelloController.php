@@ -45,7 +45,7 @@ class HelloController extends BaseController
 
         return new JsonFormattedResponse([
             'version' => $this->versioning->getVersion(),
-            'dbType'  => $this->dbal->getDriver()->getDatabasePlatform()->getName()
+            'db_type' => $this->dbal->getDriver()->getDatabasePlatform()->getName()
         ]);
     }
 }

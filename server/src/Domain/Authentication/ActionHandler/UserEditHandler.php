@@ -87,7 +87,7 @@ class UserEditHandler
             $form->expires,
             $form->organization,
             $form->about,
-            $form->data->toArray()
+            $form->data->toPersistableForm()
         );
 
         if ($isChangingPassword) {

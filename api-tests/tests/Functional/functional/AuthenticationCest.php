@@ -109,8 +109,8 @@ class AuthenticationCest
                 'active' => true,
                 'permissions'  => ['upload.all'],
                 'data'   => [
-                    'tags'               => ['user_uploads.u123', 'user_uploads'],
-                    'maxAllowedFileSize' => 14579
+                    'tags'                 => ['user_uploads.u123', 'user_uploads'],
+                    'max_allowed_filesize' => 14579
                 ]
             ]
         ]);

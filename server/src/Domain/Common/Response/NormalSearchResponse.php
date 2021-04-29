@@ -27,8 +27,8 @@ abstract class NormalSearchResponse extends NormalResponse implements Response
         $base['context'] = [
             'pagination' => [
                 'page'            => $this->page,
-                'perPageLimit'    => $this->pageLimit,
-                'maxPages'        => $this->maxPages
+                'per_page_limit'    => $this->pageLimit,
+                'max_pages'        => $this->maxPages
             ]
         ];
 

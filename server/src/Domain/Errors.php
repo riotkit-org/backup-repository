@@ -263,6 +263,12 @@ final class Errors
     public const ERR_USER_ACCOUNT_DEACTIVATED               = 40322;
     public const ERR_MSG_USER_ACCOUNT_DEACTIVATED           = 'User account is no longer active';
 
+    public const ERR_USER_ACCOUNT_DENIED_SECURITY_REASON     = 40323;
+    public const ERR_MSG_USER_ACCOUNT_DENIED_SECURITY_REASON = 'Request using this account was denied by security settings configured for this account (Hint: IP address, User-Agent, Expiration Date, or other factor)';
+
+    public const ERR_JWT_MANUALLY_REVOKED                    = 40324;
+    public const ERR_MSG_JWT_MANUALLY_REVOKED                = 'JSON Web Token (JWT) you are using to authenticate was manually revoked, and is no longer valid';
+
     //
     // Request errors
     //

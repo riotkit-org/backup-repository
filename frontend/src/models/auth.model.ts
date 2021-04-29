@@ -23,9 +23,9 @@ export class UserDetails {
     static fromDict(data: Dictionary<any>) {
         let details = new UserDetails()
         details.tags = data['tags']
-        details.maxAllowedFileSize = data['maxAllowedFileSize']
-        details.allowedIpAddresses = data['allowedIpAddresses']
-        details.allowedUserAgents  = data['allowedUserAgents']
+        details.maxAllowedFileSize = data['max_allowed_filesize']
+        details.allowedIpAddresses = data['allowed_ip_addresses']
+        details.allowedUserAgents  = data['allowed_user_agents']
 
         return details
     }

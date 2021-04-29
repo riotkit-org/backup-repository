@@ -413,10 +413,10 @@ paths:
                                             page:
                                                 type: integer
                                                 example: 1
-                                            perPageLimit:
+                                            per_page_limit:
                                                 type: integer
                                                 example: 20
-                                            maxPages:
+                                            max_pages:
                                                 type: integer
                                                 example: 161
 
@@ -725,7 +725,7 @@ paths:
                                             type: string
                                     type: object
                                 type: array
-                            allPermissions:
+                            all_permissions:
                                 items:
                                     properties:
                                         role_name:
@@ -1346,7 +1346,7 @@ paths:
                                 description: 'Full application version, including release type (if any). Examples: 4.0.0 for stable release, 4.0.0-dev for development version, 3.0.0-RC1 for release candidate, 3.0.0-alpha for alpha release.'
                                 example: 4.0.0
                                 type: string
-                            dbType:
+                            db_type:
                                 description: Doctrine ORM database platform name
                                 example: postgresql
                                 type: string
@@ -1522,17 +1522,17 @@ definitions:
                 items:
                     type: string
                 type: array
-            maxAllowedFileSize:
+            max_allowed_filesize:
                 example: 1073741824
                 type: integer
-            allowedIpAddresses:
+            allowed_ip_addresses:
                 example:
                     - 192.168.1.161
                 items:
                     type: string
                 type: array
                 description: "List of IP addresses that are ONLY allowed to use this User Account. Be careful :-)"
-            allowedUserAgents:
+            allowed_user_agents:
                 example:
                     - Mozilla XYZ
                     - curl/15.55 (RiotKit)
@@ -1547,10 +1547,10 @@ definitions:
             page:
                 type: integer
                 description: "Current page"
-            maxPages:
+            max_pages:
                 type: integer
                 description: "Total maximum pages"
-            perPageLimit:
+            per_page_limit:
                 type: integer
                 description: "How many maximum entries are on each page"
         type: object
@@ -1560,16 +1560,16 @@ definitions:
             id:
                 example: d5aab8d7-64f3-42ce-bae4-59d7108294c3
                 type: string
-            maxBackupsCount:
+            max_backups_count:
                 example: '3'
                 type: int
-            maxOneBackupVersionSize:
+            max_one_backup_version_size:
                 example: '3221225472'
                 type: int
-            maxCollectionSize:
+            max_collection_size:
                 example: '9663676416'
                 type: int
-            createdAt:
+            created_at:
                 example: '2022-05-01 08:00:00'
                 type: int
             strategy:
@@ -1597,17 +1597,17 @@ definitions:
     UserAccessInACollection:
         type: object
         properties:
-            userId:
+            user_id:
                 example: ca6a2635-d2cb-4682-ba81-3879dd0e8a77
                 type: string
-            userEmail:
+            user_email:
                 example: some--body@riseup.net
                 type: string
             permissions:
                 type: array
                 items:
                     type: string
-            collectionId:
+            collection_id:
                 type: string
                 example: d5aab8d7-64f3-42ce-bae4-59d7108294c3
 
@@ -1620,7 +1620,7 @@ definitions:
             version:
                 type: integer
                 example: 1
-            creationDate:
+            creation_date:
                 "$ref": "#/definitions/DateTime"
             file:
                 "$ref": "#/definitions/BackupFile"
@@ -1650,22 +1650,19 @@ definitions:
 
     StoredFile:
         properties:
-            publicUrl:
-                example: https://storage.iwa-ait.org/repository/file/iwa_brochure_updated_2018_0.pdf
-                type: string
             filename:
                 example: iwa_brochure_updated_2018_0.pdf
                 type: string
-            contentHash:
+            content_hash:
                 example: 4701cc79c126b52986130430a3c0225a9de730feabcb76f55f493532f0f05aa4
                 type: string
-            dateAdded:
+            date_added:
                 example: '2020-05-01 08:00:00'
                 type: string
             timezone:
                 example: Europe/Warsaw
                 type: string
-            mimeType:
+            mime_type:
                 example: application/pdf
                 items:
                     type: string

@@ -54,7 +54,7 @@ class DiskSpace extends PositiveNumberOrZero implements \JsonSerializable
         return $new;
     }
 
-    public function jsonSerialize()
+    public function jsonSerialize(): int
     {
         return $this->getValue();
     }

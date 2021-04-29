@@ -122,8 +122,8 @@ export class AuthorizedAccess {
 
     static fromDict(accessData: Dictionary<string|any>) {
         return new AuthorizedAccess(
-            accessData['userId'],
-            accessData['userEmail'],
+            accessData['user_id'],
+            accessData['user_email'],
             accessData['permissions']
         )
     }

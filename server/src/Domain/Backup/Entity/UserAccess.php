@@ -43,10 +43,10 @@ class UserAccess implements \JsonSerializable
     public function jsonSerialize(): array
     {
         return [
-            'userId'       => $this->userId,
-            'userEmail'    => $this->user->getEmail()->getValue(),
-            'permissions'  => $this->permissions->getAsList(),
-            'collectionId' => $this->collectionId
+            'user_id'       => $this->userId,
+            'user_email'    => $this->user->getEmail()->getValue(),
+            'permissions'   => $this->permissions->getAsList(),
+            'collection_id' => $this->collectionId
         ];
     }
 }

@@ -123,13 +123,12 @@ class StoredFile extends StoredFileFromCommon implements \JsonSerializable
     public function jsonSerialize(): array
     {
         return [
-            'publicUrl'   => '',
-            'filename'    => $this->getFilename(),
-            'contentHash' => $this->getContentHash(),
-            'dateAdded'   => $this->getDateAdded(),
-            'timezone'    => $this->getTimezone(),
-            'tags'        => $this->getTags(),
-            'filesize'    => $this->getFilesize()
+            'filename'     => $this->getFilename(),
+            'content_hash' => $this->getContentHash(),
+            'date_added'   => $this->getDateAdded(),
+            'timezone'     => $this->getTimezone(),
+            'tags'         => $this->getTags(),
+            'filesize'     => $this->getFilesize()
         ];
     }
 

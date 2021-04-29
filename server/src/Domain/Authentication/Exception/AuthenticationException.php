@@ -7,10 +7,7 @@ use App\Domain\Errors;
 
 class AuthenticationException extends ExceptionFromCommon
 {
-    /**
-     * @return static
-     */
-    public static function fromUsersCreationProhibition()
+    public static function fromUsersCreationProhibition(): static
     {
         return new static(
             Errors::ERR_MSG_PERMISSION_CANNOT_CREATE_USERS,
@@ -18,10 +15,7 @@ class AuthenticationException extends ExceptionFromCommon
         );
     }
 
-    /**
-     * @return static
-     */
-    public static function fromUsersEditProhibition()
+    public static function fromUsersEditProhibition(): static
     {
         return new static(
             Errors::ERR_MSG_PERMISSION_CANNOT_EDIT_USERS,
@@ -29,10 +23,7 @@ class AuthenticationException extends ExceptionFromCommon
         );
     }
 
-    /**
-     * @return static
-     */
-    public static function fromCannotChangePassword()
+    public static function fromCannotChangePassword(): static
     {
         return new static(
             Errors::ERR_MSG_CANNOT_CHANGE_PASSWORD,
@@ -40,10 +31,7 @@ class AuthenticationException extends ExceptionFromCommon
         );
     }
 
-    /**
-     * @return static
-     */
-    public static function fromPredictableIdSelectionProhibition()
+    public static function fromPredictableIdSelectionProhibition(): static
     {
         return new static(
             Errors::ERR_MSG_REQUEST_PREDICTABLE_ID_FORBIDDEN,
@@ -51,10 +39,7 @@ class AuthenticationException extends ExceptionFromCommon
         );
     }
 
-    /**
-     * @return static
-     */
-    public static function fromCredentialsNotFoundIssue()
+    public static function fromCredentialsNotFoundIssue(): static
     {
         return new static(
             Errors::ERR_MSG_REQUEST_NO_VALID_USER_FOUND,
@@ -62,10 +47,7 @@ class AuthenticationException extends ExceptionFromCommon
         );
     }
 
-    /**
-     * @return static
-     */
-    public static function fromCannotRevokeUserAccessToken()
+    public static function fromCannotRevokeUserAccessToken(): static
     {
         return new static(
             Errors::ERR_MSG_CANNOT_REVOKE_ACCESS_TOKEN,
@@ -73,10 +55,7 @@ class AuthenticationException extends ExceptionFromCommon
         );
     }
 
-    /**
-     * @return static
-     */
-    public static function fromNoPermissionToLookupUser()
+    public static function fromNoPermissionToLookupUser(): static
     {
         return new static(
             Errors::ERR_MSG_PERMISSION_NO_ACCESS_TO_LOOKUP_USER,
@@ -84,10 +63,7 @@ class AuthenticationException extends ExceptionFromCommon
         );
     }
 
-    /**
-     * @return static
-     */
-    public static function fromNoPermissionToSearchForUsers()
+    public static function fromNoPermissionToSearchForUsers(): static
     {
         return new static(
             Errors::ERR_MSG_PERMISSION_NO_ACCESS_TO_SEARCH_USERS,
@@ -95,11 +71,27 @@ class AuthenticationException extends ExceptionFromCommon
         );
     }
 
-    public static function fromAccountDeactivated()
+    public static function fromAccountDeactivated(): static
     {
         return new static(
             Errors::ERR_MSG_USER_ACCOUNT_DEACTIVATED,
             Errors::ERR_USER_ACCOUNT_DEACTIVATED
+        );
+    }
+
+    public static function fromAccountAccessDeniedBySecurityReason(): static
+    {
+        return new static(
+            Errors::ERR_MSG_USER_ACCOUNT_DENIED_SECURITY_REASON,
+            Errors::ERR_USER_ACCOUNT_DENIED_SECURITY_REASON
+        );
+    }
+
+    public static function fromAccessTokenManuallyDeactivatedReason(): static
+    {
+        return new static(
+            Errors::ERR_MSG_JWT_MANUALLY_REVOKED,
+            Errors::ERR_JWT_MANUALLY_REVOKED
         );
     }
 }

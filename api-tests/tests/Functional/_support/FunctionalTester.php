@@ -110,6 +110,21 @@ class FunctionalTester extends \Codeception\Actor
         return $user;
     }
 
+    public function haveUserAgent(?string $userAgent): void
+    {
+        if ($userAgent === null) {
+            $this->setServerParameters(['HTTP_USER_AGENT' => '']);
+            $this->deleteHeader('User-Agent');
+            $this->deleteHeader('User_Agent');
+
+            return;
+        }
+
+        $this->setServerParameters(['HTTP_USER_AGENT' => $userAgent]);
+        $this->haveHttpHeader('User-Agent', $userAgent);
+        $this->haveHttpHeader('User_Agent', $userAgent);
+    }
+
     public function postJson(string $url, $params = null, $files = []): void
     {
         $this->haveHttpHeader('Content-Type', 'application/json');

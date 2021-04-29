@@ -34,7 +34,7 @@ export default class BackupRepositoryBackend {
     async getApplicationInfo(): Promise<AppInfo|null> {
         return await this.get('/version', false).then(function (response) {
             if (response.data.version) {
-                return new AppInfo(response.data.version, response.data.dbType)
+                return new AppInfo(response.data.version, response.data.db_type)
             }
 
             return null

@@ -9,7 +9,8 @@
         "flow/jsonpath": "^0.5.0",
         "ramsey/uuid": "^4.1",
         "codeception/module-rest": "^1.2",
-        "codeception/module-phpbrowser": "^1.0"
+        "codeception/module-phpbrowser": "^1.0",
+        "symfony/var-dumper": "^5.2"
     },
     "autoload-dev": {
         "psr-4": {
