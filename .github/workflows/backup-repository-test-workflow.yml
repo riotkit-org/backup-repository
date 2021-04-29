@@ -42,13 +42,13 @@ jobs:
 
             # —— Tests —————————————————————————————————————————————————————————
             - name: "Server: Unit tests"
-              run: "rkd :test:unit || true"
-              if: ${{ always() }}  # @todo: Remove
+              run: "rkd :test:unit"
+              if: ${{ always() }}
               working-directory: "server"
 
             - name: "Bahub client: Unit tests"
               run: "rkd :test:unit"
-              if: ${{ always() }}  # @todo: Remove
+              if: ${{ always() }}
               working-directory: "bahub"
 
             # —— Reports ———————————————————————————————————————————————————————
