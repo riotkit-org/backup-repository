@@ -134,6 +134,15 @@ class Adapter(AdapterInterface):
     =========================
 
     Understands how to backup & restore running PostgreSQL databases using pg_dump/pg_dumpall and psql basic tools
+
+    Restore:
+        1. All connected clients are kicked off
+        2. Database connection limit is set to 0, so nobody can connect
+        3. Database is restored
+        4. The connection limits are restored to "unlimited"
+
+    Backup:
+        Uses just pg_dump/pg_dumpall.
     """
 
     def terminate_all_connections(self, definition: Definition):

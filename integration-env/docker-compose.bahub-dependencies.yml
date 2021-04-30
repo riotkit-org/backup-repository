@@ -17,6 +17,6 @@ services:
         environment:
             POSTGRES_PASSWORD: "communism-cannot-be-enforced"
             POSTGRES_USER: "bakunin"
-            POSTGRES_DB: "riotkit"
+            POSTGRES_DB: "bakunin"
         ports:
             - "5433:5432"
