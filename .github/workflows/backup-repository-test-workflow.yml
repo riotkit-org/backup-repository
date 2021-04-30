@@ -52,6 +52,14 @@ jobs:
               working-directory: "bahub"
 
             # —— Reports ———————————————————————————————————————————————————————
+            - name: Archive server unit tests results as annotations
+              uses: dorny/test-reporter@v1
+              if: always()
+              with:
+                  name: Server unit tests results
+                  path: server/var/tests/unit.junit.xml
+                  reporter: java-junit
+
             - name: "Make HTML report from server unit tests"
               run: "rkd :test:unit:html"
               if: ${{ always() }}
