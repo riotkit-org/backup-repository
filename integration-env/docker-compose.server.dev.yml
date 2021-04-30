@@ -7,7 +7,7 @@ services:
     server:
         image: quay.io/riotkit/backup-repository:latest-dev
         environment:
-            APP_ENV: "dev"
+            APP_ENV: "test"
         volumes:
             - /tmp/profiler:/tmp/profiler
             - ../server/src:/home/backuprepository/src
