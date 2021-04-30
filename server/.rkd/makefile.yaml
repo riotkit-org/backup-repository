@@ -47,7 +47,9 @@ tasks:
         description: Run unit tests
         steps: |
             mkdir -p var/tests
-            SYMFONY_DEPRECATIONS_HELPER=weak ./vendor/bin/phpunit --coverage-html=var/tests/coverage
+            export SYMFONY_DEPRECATIONS_HELPER=weak
+            export APP_ENV=test
+            ./vendor/bin/phpunit --coverage-html=var/tests/coverage
 
     :test:unit:html:
         description: Create report in HTML format
