@@ -2,7 +2,7 @@
     <div class="content">
         <div class="container-fluid">
             <div class="row">
-                <div class="col-7" v-if="isEditing && collection">
+                <div class="col-7" v-if="isEditing && collection && collection.id">
                     <permissions-list :collection="collection"/>
                 </div>
 
@@ -167,7 +167,7 @@ export default {
                     }
                 })
             }
-        }
+        },
     },
     mounted() {
         let collectionId = this.$route.params.pathMatch

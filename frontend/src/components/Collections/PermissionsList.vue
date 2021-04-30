@@ -52,6 +52,9 @@ export default {
             showCreationForm: true
         }
     },
+    mounted() {
+        this.refreshPermissions()
+    },
     methods: {
         /**
          * Updates permissions of a user that already has access to the collection
@@ -139,11 +142,10 @@ export default {
             this.$backupCollectionBackend().findAuthorizedUsersAndRoles(this.collection).then(function (users) {
                 that.users = users
             })
-        }
-    },
-    watch: {
-        'collection.id': function () {
-            if (!this.collection.id) {
+        },
+
+        refreshPermissions() {
+            if (!this.collection.id || !this.collection) {
                 return
             }
 
@@ -155,6 +157,15 @@ export default {
             })
 
             this.refreshAccessList()
+        }
+    },
+    watch: {
+        'collection.id': function () {
+            this.refreshPermissions()
+        },
+
+        'collection': function () {
+            this.refreshPermissions()
         }
     }
 }
