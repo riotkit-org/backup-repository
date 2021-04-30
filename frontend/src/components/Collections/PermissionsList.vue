@@ -53,7 +53,7 @@ export default {
         }
     },
     mounted() {
-        this.refreshPermissions()
+        this.refreshView()
     },
     methods: {
         /**
@@ -144,7 +144,7 @@ export default {
             })
         },
 
-        refreshPermissions() {
+        refreshView() {
             if (!this.collection.id || !this.collection) {
                 return
             }
@@ -161,11 +161,11 @@ export default {
     },
     watch: {
         'collection.id': function () {
-            this.refreshPermissions()
+            this.refreshView()
         },
 
         'collection': function () {
-            this.refreshPermissions()
+            this.refreshView()
         }
     }
 }
