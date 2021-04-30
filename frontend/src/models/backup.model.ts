@@ -5,13 +5,11 @@ import {RolesList} from "./auth.model.ts";
 // @ts-ignore
 import {PhpDate} from "./common.model.ts"
 
-import bytes from 'bytes'
-
 export class BackupCollection {
     id: string = ''
     maxBackupsCount: number = 2
-    maxOneBackupVersionSize: number = 52428800  // default 50 MB
-    maxCollectionSize: number = 115343360       // default 110 MB
+    maxOneBackupVersionSize: string = ''  // default 50 MB
+    maxCollectionSize: string = ''       // default 110 MB
     createdAt: string   = ''
     strategy: string    = 'delete_oldest_when_adding_new'
     description: string = ''
@@ -40,30 +38,28 @@ export class BackupCollection {
         return {
             id: this.id,
             maxBackupsCount: typeof this.maxBackupsCount === 'string' ? parseInt(this.maxBackupsCount) : this.maxBackupsCount,
-            maxOneVersionSize: this.getPrettyMaxOneVersionSize(),
-            maxCollectionSize: this.getPrettyMaxCollectionSize(),
+            maxOneVersionSize: this.getMaxOneVersionSize(),
+            maxCollectionSize: this.getMaxCollectionSize(),
             strategy: this.strategy,
             description: this.description,
             filename: this.filename
         }
     }
 
-    // @todo: Fix issue with inconsistent behavior on read/write bytes related to parsing bytes
-
-    getPrettyMaxOneVersionSize(): string {
-        return bytes(this.maxOneBackupVersionSize)
+    getMaxOneVersionSize(): string {
+        return this.maxOneBackupVersionSize
     }
 
     setMaxOneVersionSize(value: string): void {
-        this.maxOneBackupVersionSize = bytes.parse(value)
+        this.maxOneBackupVersionSize = value
     }
 
-    getPrettyMaxCollectionSize(): string {
-        return bytes(this.maxCollectionSize)
+    getMaxCollectionSize(): string {
+        return this.maxCollectionSize
     }
 
     setMaxCollectionSize(value: string): void {
-        this.maxCollectionSize = bytes.parse(value)
+        this.maxCollectionSize = value
     }
 }
 

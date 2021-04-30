@@ -142,7 +142,7 @@ export default {
                         that.collections.data.push({
                             id: '<small>' + collection.id + '</small>',
                             filename: collection.filename,
-                            limits: collection.maxBackupsCount + 'x' + collection.getPrettyMaxOneVersionSize() + ' (' + collection.getPrettyMaxCollectionSize() + ')',
+                            limits: collection.maxBackupsCount + 'x' + collection.getMaxOneVersionSize() + ' (' + collection.getMaxCollectionSize() + ')',
                             description: '<i>' + collection.description + '</i>',
                             _url: '#/admin/backup/collection/' + collection.id,
                             _active: true

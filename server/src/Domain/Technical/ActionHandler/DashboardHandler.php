@@ -6,6 +6,7 @@ use App\Domain\Authentication\Entity\User;
 use App\Domain\PermissionsReference;
 use App\Domain\Technical\Exception\AuthenticationException;
 use App\Infrastructure\Technical\Service\MetricsProvider;
+use ByteUnits\Metric;
 
 class DashboardHandler
 {
@@ -24,8 +25,8 @@ class DashboardHandler
             'status' => true,
             'data'   => [
                 'storage' => [
-                    'declared_space' => $canSeeSysMetrics ? $this->provider->findDeclaredStorageSpace() : null,
-                    'used_space'     => $canSeeSysMetrics ? $this->provider->findUsedStorageSpace() : null
+                    'declared_space' => $canSeeSysMetrics ? Metric::bytes($this->provider->findDeclaredStorageSpace())->format() : null,
+                    'used_space'     => $canSeeSysMetrics ? Metric::bytes($this->provider->findUsedStorageSpace())->format() : null
                 ],
                 'users' => [
                     'active_accounts' => $canSeeSysMetrics ? $this->provider->findActiveUsersCount() : null,

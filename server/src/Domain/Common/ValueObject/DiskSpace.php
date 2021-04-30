@@ -4,7 +4,6 @@ namespace App\Domain\Common\ValueObject;
 
 use App\Domain\Common\Exception\CommonStorageException;
 use App\Domain\Common\ValueObject\Numeric\PositiveNumberOrZero;
-
 use ByteUnits\Metric;
 use function ByteUnits\parse;
 
@@ -31,7 +30,14 @@ class DiskSpace extends PositiveNumberOrZero implements \JsonSerializable
         }
     }
 
-    public static function fromBytes(int $bytes)
+    /**
+     * @param int $bytes
+     *
+     * @return static
+     *
+     * @throws CommonStorageException
+     */
+    public static function fromBytes(int $bytes): static
     {
         return new static($bytes . 'b');
     }
@@ -54,8 +60,8 @@ class DiskSpace extends PositiveNumberOrZero implements \JsonSerializable
         return $new;
     }
 
-    public function jsonSerialize(): int
+    public function jsonSerialize(): string
     {
-        return $this->getValue();
+        return $this->toHumanReadable();
     }
 }

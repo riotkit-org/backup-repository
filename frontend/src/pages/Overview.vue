@@ -14,7 +14,7 @@
                         <div slot="content">
                             <p class="card-category">Used/Declared disk space</p>
                             <h5 class="card-title">
-                                {{ bytes(metrics.storage.used_space) }}/{{ bytes(metrics.storage.declared_space) }}
+                                {{ metrics.storage.used_space }}/{{ metrics.storage.declared_space }}
                             </h5>
                         </div>
                     </stats-card>
@@ -108,7 +108,6 @@
 import ChartCard from 'src/components/Cards/ChartCard.vue'
 import StatsCard from 'src/components/Cards/StatsCard.vue'
 import LTable from 'src/components/Table.vue'
-import bytes from 'bytes'
 
 export default {
     components: {
@@ -163,10 +162,6 @@ export default {
                     }
                 })
             })
-        },
-
-        bytes(size) {
-            return bytes(size)
         }
     },
 

@@ -22,9 +22,7 @@ use Psr\Log\LoggerInterface;
 
 class CollectionMapper
 {
-    public function __construct(private UserRepository $tokenRepository, private LoggerInterface $logger)
-    {
-    }
+    public function __construct(private LoggerInterface $logger) { }
 
     /**
      * Maps FORM into internal DTO and ValueObjects

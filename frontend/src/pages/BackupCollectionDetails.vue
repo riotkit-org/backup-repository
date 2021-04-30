@@ -58,7 +58,7 @@
                                     label="Max one version size"
                                     data-field="Max one version size"
                                     placeholder="150MB"
-                                    :initial-value="collection.getPrettyMaxOneVersionSize()"
+                                    :initial-value="collection.getMaxOneVersionSize()"
                                     @input="(value) => collection.setMaxOneVersionSize(value)"
                                 />
                             </div>
@@ -68,7 +68,7 @@
                                     label="Max overall collection size"
                                     data-field="Max overall collection size"
                                     placeholder="150MB"
-                                    :initial-value="collection.getPrettyMaxCollectionSize()"
+                                    :initial-value="collection.getMaxCollectionSize()"
                                     @input="(value) => collection.setMaxCollectionSize(value)"
                                 />
                             </div>
@@ -116,7 +116,7 @@ export default {
     data () {
         return {
             isEditing: false,
-            collection: new BackupCollection()
+            collection: null
         }
     },
     methods: {
@@ -172,6 +172,10 @@ export default {
     mounted() {
         let collectionId = this.$route.params.pathMatch
         this.isEditing = collectionId !== undefined
+
+        if (!this.isEditing) {
+            this.collection = new BackupCollection()
+        }
 
         if (collectionId) {
             this.fetchBackendData()
