@@ -19,6 +19,7 @@ Feature: Backup Repository due to its granular permissions can be used as a Back
         And I check "collections.can_use_listing_endpoint"
         And I check "security.list_permissions"
         And I check "security.can_see_own_access_tokens"
+        And I check "security.can_generate_custom_jwt"
         And I check "upload.all"
         Then I submit creation of user account
 

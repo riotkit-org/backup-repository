@@ -37,9 +37,9 @@ class TokenSearchCest
         $I->canSeeResponseContainsJson([
             'context' => [
                 'pagination' => [
-                    'page'         => 1,
-                    'perPageLimit' => 10,
-                    'maxPages'     => 5
+                    'page'           => 1,
+                    'per_page_limit' => 10,
+                    'max_pages'      => 5
                 ]
             ]
         ]);

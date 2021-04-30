@@ -237,7 +237,12 @@ class User extends \App\Domain\Common\SharedEntity\User implements \JsonSerializ
             'active'           => $this->active,
             'expired'          => !$this->isNotExpired(),
             'expires'          => ($this->getExpirationDate() ? $this->getExpirationDate()->format('Y-m-d H:i:s') : ''),
-            'data'             => $this->data,
+            'data'             => [
+                'tags'                 => $this->data[User::FIELD_TAGS] ?? [],
+                'max_allowed_filesize' => $this->data[User::FIELD_MAX_ALLOWED_FILE_SIZE] ?? null,
+                'allowed_ip_addresses' => $this->data[User::FIELD_ALLOWED_IPS] ?? [],
+                'allowed_user_agents'  => $this->data[User::FIELD_ALLOWED_UAS] ?? []
+            ],
             'permissions'      => $this->getPermissions(),
             'organization'     => $this->organization->getValue(),
             'about'            => $this->about->getValue(),

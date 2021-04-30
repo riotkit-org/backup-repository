@@ -30,7 +30,7 @@ tasks:
                 params=" ${params} --name='${ARG_FILTER}' "
             fi
 
-            if [[ $ARG_DOCKER == "Yes" ]]; then
+            if [[ $ARG_DOCKER == "True" ]]; then
                 config_path="./behat.docker.yml"
                 export TEST_ENV_TYPE=docker
             fi

@@ -7,7 +7,7 @@ Feature: I can manage my own access list
     Scenario: I can revoke current session, so then I expect that I will be logged out
         Given I visit authorization page
         And I follow "Revoke"
-        Then I should see message "Access denied"
+        Then I should see message "JSON Web Token (JWT) you are using to authenticate was manually revoked, and is no longer valid"
 
 
     Scenario: As a user with all permissions I can generate a new API token for longer period than 1 hour,
