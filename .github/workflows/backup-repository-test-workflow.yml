@@ -7,7 +7,7 @@ on:
             - primary
 
 jobs:
-    "unit_test":
+    "unit_test_server":
         runs-on: ubuntu-20.04
         steps:
             - name: "Checkout"
@@ -49,11 +49,6 @@ jobs:
               run: "rkd :test:unit"
               if: ${{ always() }}
               working-directory: "server"
-
-            - name: "Bahub client: Unit tests"
-              run: "rkd :test:unit"
-              if: ${{ always() }}
-              working-directory: "bahub"
 
             # —— Reports ———————————————————————————————————————————————————————
             - name: Archive server unit tests results as annotations
@@ -101,8 +96,29 @@ jobs:
                   name: api-documentation.swagger.json
                   path: server/swagger.json
 
+    "unit_test_bahub":
+        runs-on: ubuntu-20.04
+        steps:
+            - name: "Checkout"
+              uses: actions/checkout@v1
+
+            # —— Dependencies and environment ————————————————————————————————————
+            - name: "Install CI OS dependencies"
+              run: "sudo apt-get update; sudo apt-get install libssl-dev libcurl4-openssl-dev python-dev"
+
+            - name: "Install project dependencies"
+              run: "sudo pip install -r ./requirements-dev.txt -r ./bahub/requirements.txt -r ./docs/requirements.txt"
+
+            - name: "Run containers required for tests"
+              run: "rkd :bahub:env:adapters :server:env:db"
+
+            - name: "Bahub client: Unit tests"
+              run: "rkd :test:unit"
+              if: ${{ always() }}
+              working-directory: "bahub"
+
     "release_dev_dockers":
-        needs: unit_test
+        needs: ["unit_test_server", "unit_test_bahub"]
         runs-on: ubuntu-20.04
         steps:
             - name: "Checkout"
