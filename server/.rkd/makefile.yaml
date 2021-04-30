@@ -27,6 +27,10 @@ tasks:
 
             eval "composer install --no-scripts ${switches}"
 
+    :migrate:
+        description: Run database migrations
+        steps: ./bin/console doctrine:migrations:migrate -n
+
     :dev:server:
         description: Run development server
         steps: symfony serve -d

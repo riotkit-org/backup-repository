@@ -40,6 +40,10 @@ jobs:
             - name: "Run containers required for tests"
               run: "rkd :bahub:env:adapters :server:env:db"
 
+            - name: "Prepare local database for tests"
+              run: "rkd :migrate"
+              working-directory: "server"
+
             # —— Tests —————————————————————————————————————————————————————————
             - name: "Server: Unit tests"
               run: "rkd :test:unit"
