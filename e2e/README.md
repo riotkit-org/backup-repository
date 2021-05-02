@@ -37,7 +37,7 @@ Running on CI
 -------------
 
 **CI assumptions are:**
-- Application is running in PROD mode inside a docker container
+- Application is running in `APP_ENV=TEST` mode inside a docker container
 - Bahub is running in a production-like container with configuration from `bahub/bahub.conf.yaml`
 - There are test containers running like PostgreSQL, MySQL and other from docker-compose project placed there: `integration-env/docker-compose.bahub-dependencies.yml`
 - Browser is dockerized with a VNC available optionally
