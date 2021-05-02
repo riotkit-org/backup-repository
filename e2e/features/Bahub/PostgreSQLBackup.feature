@@ -19,11 +19,11 @@ Feature: As a system administrator I need to be able to create automated backups
 
         # Test database state before restore
         When I import SQL file "testfiles/Bahub/postgresql_tables.sql" into PostgreSQL test instance connecting to postgres database
-        Then I execute SQL "SELECT number FROM numbers" on PostgreSQL test instance in postgres database expecting "161" result
+        Then I expect "161" when I execute "SELECT number FROM numbers" on PostgreSQL test instance using "postgres" database
 
         # Test database after restore
         When I issue a backup restore of "latest" version using "db_postgres_dump_all_databases" definition for a collection I recently created
-        Then I execute SQL "SELECT number FROM numbers" on PostgreSQL test instance in postgres database expecting 'relation "numbers" does not exist' result
+        Then I expect 'relation "numbers" does not exist' when I execute "SELECT number FROM numbers" on PostgreSQL test instance using "postgres" database
 
 
     Scenario: As a system administrator I can make a backup of a single database inside of a PostgreSQL instance

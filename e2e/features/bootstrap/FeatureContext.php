@@ -370,13 +370,13 @@ class FeatureContext extends TechnicalContext
     }
 
     /**
-     * @When I execute SQL :sql on PostgreSQL test instance in :db database expecting :expects result
+     * @Then I expect :expects when I execute :sql on PostgreSQL test instance using :db database
      *
      * @param string $sql
      * @param string $db
      * @param string $expects
      */
-    public function iExecPostgreSQLQueryAndExpect(string $sql, string $db, string $expects): void
+    public function iExecPostgreSQLQueryAndExpect(string $expects, string $sql, string $db): void
     {
         exec('docker exec -it --user postgres s3pb_db_postgres_1 /bin/sh -c "echo \'' . $sql . '\' | psql -t -U bakunin ' . $db . '"', $output);
         $output = trim(implode("\n", $output));
