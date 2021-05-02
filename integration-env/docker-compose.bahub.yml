@@ -5,3 +5,4 @@ services:
         image: quay.io/riotkit/bahub:latest-dev
         volumes:
             - ./bahub.conf.yaml:/home/bahub/bahub.conf.yaml
+            - /var/run/docker.sock:/var/run/docker.sock

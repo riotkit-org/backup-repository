@@ -347,12 +347,41 @@ class FeatureContext extends TechnicalContext
      */
     public function iSubmitANewBackup(string $a, string $backupDefinition): void
     {
-        $this->execBahubCommand(':backup:make ' . $backupDefinition . ' -rl debug', [
+        $this->execBahubCommand('@ -rl debug :backup:make ' . $backupDefinition . ' ', [
             'API_TOKEN'          => $this->lastAssignedAuthorizationToken,
             'TEST_COLLECTION_ID' => $this->lastCreatedCollectionId,
         ]);
 
         // no assertion: error may be expected there
+    }
+
+    /**
+     * #Type Bahub
+     *
+     * @When I import SQL file :file into PostgreSQL test instance connecting to :db database
+     *
+     * @param string $file
+     * @param string $db
+     */
+    public function iImportSQLDumpIntoPostgreSQL(string $file, string $db): void
+    {
+        passthru('docker cp ' . __DIR__ . '/../../' . $file . ' s3pb_db_postgres_1:/tempfile.sql');
+        passthru('docker exec -it --user postgres s3pb_db_postgres_1 /bin/sh -c "cat /tempfile.sql | psql -U bakunin ' . $db . '"');
+    }
+
+    /**
+     * @When I execute SQL :sql on PostgreSQL test instance in :db database expecting :expects result
+     *
+     * @param string $sql
+     * @param string $db
+     * @param string $expects
+     */
+    public function iExecPostgreSQLQueryAndExpect(string $sql, string $db, string $expects): void
+    {
+        exec('docker exec -it --user postgres s3pb_db_postgres_1 /bin/sh -c "echo \'' . $sql . '\' | psql -t -U bakunin ' . $db . '"', $output);
+        $output = trim(implode("\n", $output));
+
+        Assertions::assertStringContainsString($expects, $output);
     }
 
     /**

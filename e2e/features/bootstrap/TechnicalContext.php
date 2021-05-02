@@ -139,6 +139,8 @@ class TechnicalContext extends MinkContext
 
     public function execBahubCommand(string $command, array $env = []): array
     {
+        $env['RKD_SYS_LOG_LEVEL'] = 'internal';
+
         return $this->environmentController->execBahubCommand($command, $env);
     }
 
