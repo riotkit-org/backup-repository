@@ -8,6 +8,5 @@ Server
    first-steps
    configuration-reference
    swagger-docs
-   domain/index
    encryption
    shell-access

@@ -6,4 +6,3 @@ Official clients
    :caption: Contents:
 
    bahub/index
-   kropotcli/index

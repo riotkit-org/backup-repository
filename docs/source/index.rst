@@ -1,21 +1,23 @@
 .. File Repository documentation master file, created by
    sphinx-quickstart on Thu Jan  3 18:33:15 2019.
 
-File Repository's documentation
-===============================
+Backup Repository's documentation
+=================================
 
-File Repository is a modern API application dedicated for storing files.
-It is able to use various storage backends including AWS S3, Dropbox, Google Drive and just filesystem.
-Lightweight, requires just PHP7 and at least SQLite3 or MySQL (other databases can be also supported in future due to using ORM).
+A specialized ninja for backup making - complete backups ecosystem. Fully multi-tenant, with its very granular permissions and client-side (E2E) encryption can act as a farm of backups for various people and organizations.
 
-Main functionality:
 
-- Strict access control, you can **generate a token** that will have access to specific actions on specific items
-- Store files where you need; on **AWS S3, Minio.io, FTP, local storage and others...**
-- **Deduplication for non-grouped files**. There will be no duplicated files stored on your disk
-- **Backups management**, you can define a collection of file versions that can **rotate on adding a new version**
-- API + lightweight frontend
-- Ready to integrate upload forms for your applications. Only generate token and redirect a user to an url
+**Main functionality:**
+
+- Fully **multi-tenant**, granular permissions and roles
+- **End-To-End encryption**. Server acts as a blob storage, client is encrypting client-side
+- Security focused, limit access by IP address, User Agent, limited scope API tokens. In future we may implement "scheduled backup windows" to prevent overwriting backups in short time periods
+- Backups rotation strategies
+- Very **low resources requirements**, a container with 256 MB ram and 0.5vCPU on a shared VM can fit
+- Fully compatible with containerized workflows (**Docker supported** out-of-the-box by both client and server)
+- Administrative **frontend in web browser**
+- **JSON API**, JSON Web Token (JWT), SWAGGER documentation for the API
+- On client side the backups are made on-the-fly, you don't need extra disk space for temporary storage
 
 .. toctree::
    :maxdepth: 5
@@ -25,7 +27,6 @@ Main functionality:
    docker
    project-rules
    clients/index
-   riotkit-guide
 
 From authors
 ============
@@ -39,8 +40,8 @@ Project was started as a part of RiotKit initiative, for the needs of grassroot 
 
 Technical description:
 
-Project was created in *Domain Driven* like design in PHP 7, with Symfony 4 framework.
-There are API tests written in *Codeception* and unit tests written in *PhpUnit*.
+Project was created in *Domain Driven* like design in PHP 8, with Symfony 4+ framework.
+There are API tests written in *Codeception*, E2E tests in Behat and unit tests written in *PhpUnit*.
 Feel free to submit pull requests, report issues, or join our team.
 The project is licensed with a MIT license.
 

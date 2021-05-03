@@ -1,10 +1,10 @@
 Shell access
 ============
 
-File Repository usage can be automated using shell commands.
-There are not so many commands, but basic usage could be automated using scripts.
+Backup Repository usage can be automated using shell commands.
+Although there is only few commands available, but it should be enough to cover basic automation needs.
 
-It is very helpful to create initially all required tokens and collections, so you can connect applications quickly and start doing backups or just file storing.
+It is very helpful to create initially all required accesses and collections, so you can connect applications quickly and start doing backups.
 
 Introduction
 ------------
@@ -47,12 +47,3 @@ without need to send any HTTP requests or even log in to the shell. It's an auto
                     ./bin/console backup:create-collection --ignore-error-if-exists --max-backups-count=5
                         --max-one-version-size=5kib --max-collection-size=50kib --strategy=delete_oldest_when_adding_new
                         --filename=postgres-single-db.sql.gz --id=${COLLECTIONS_POSTGRES_SINGLE_DB_ID};
-
-.. toctree::
-   :maxdepth: 2
-   :caption: Functionality:
-
-   domain/backup/shell-access
-   domain/authentication/shell-access
-   domain/technical/shell-access
-

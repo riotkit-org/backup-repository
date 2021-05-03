@@ -10,6 +10,5 @@ Please see https://semver.org/ for how we version the application.
 
 .. code:: yaml
 
-    quay.io/riotkit/file-repository:version
+    quay.io/riotkit/backup-repository:version
     quay.io/riotkit/bahub:version
-    quay.io/riotkit/kropot-cli
