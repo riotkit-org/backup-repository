@@ -1,4 +1,4 @@
-project = 'File Repository'
+project = 'Backup Repository'
 copyright = '2019, RiotKit Collective'
 author = 'RiotKit Collective'
 
