@@ -6,7 +6,7 @@ use App\Domain\Errors;
 
 class FileRetrievalError extends StorageException
 {
-    public static function fromUploadMaxFileSizeReachedCause()
+    public static function fromUploadMaxFileSizeReachedCause(): static
     {
         return new static(
             Errors::ERR_MSG_STORAGE_REACHED_MAX_FILE_SIZE,
@@ -14,7 +14,7 @@ class FileRetrievalError extends StorageException
         );
     }
 
-    public static function fromPostMaxSizeReachedCause()
+    public static function fromPostMaxSizeReachedCause(): static
     {
         return new static(
             Errors::ERR_MSG_STORAGE_REACHED_MAX_POST_SIZE,
@@ -22,7 +22,7 @@ class FileRetrievalError extends StorageException
         );
     }
 
-    public static function fromChunkedTransferNotSupported()
+    public static function fromChunkedTransferNotSupported(): static
     {
         return new static(
             Errors::ERR_MSG_CHUNKED_TRANSFER_NOT_SUPPORTED,
@@ -30,11 +30,19 @@ class FileRetrievalError extends StorageException
         );
     }
 
-    public static function fromEmptyRequestCause()
+    public static function fromEmptyRequestCause(): static
     {
         return new static(
             Errors::ERR_MSG_STORAGE_EMPTY_REQUEST,
             Errors::ERR_STORAGE_EMPTY_REQUEST
+        );
+    }
+
+    public static function fromInvalidReverseProxyUploadDirectory(): static
+    {
+        return new static(
+            Errors::ERR_MSG_INVALID_REVERSE_PROXY_UPLOAD_DIRECTORY,
+            Errors::ERR_INVALID_REVERSE_PROXY_UPLOAD_DIRECTORY
         );
     }
 

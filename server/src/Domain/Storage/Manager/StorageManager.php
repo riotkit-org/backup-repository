@@ -78,7 +78,6 @@ class StorageManager
         //       possibly eg. a replication may be delayed on database level
         //       if there is any replication set up outside of the application (eg. PostgreSQL + some clustering fs)
         if (!$existingFromRepository && $existsOnDisk) {
-            // @todo: Make a selectable policies for this case?
             return $this->writeManager->submitFileLostInRepositoryButExistingInStorage($name, $form, $path, $securityContext);
         }
 

@@ -67,6 +67,7 @@ COPY frontend/public/img /home/backuprepository/public/img/
 RUN mv /home/backuprepository/public/index.html /home/backuprepository/public/frontend.html
 
 ADD server/.infrastructure/container-files/nginx/nginx.conf.j2 /.etc.template/nginx/nginx.conf.j2
+ADD server/.infrastructure/container-files/nginx/fastcgi.conf.j2 /.etc.template/nginx/fastcgi.conf.j2
 ADD server/.infrastructure/container-files/php/upload.ini /usr/local/etc/php/conf.d/upload.ini
 
 # hack: Fix for the PHP not in PATH on www-data account

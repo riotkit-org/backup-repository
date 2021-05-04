@@ -183,6 +183,9 @@ final class Errors
     public const ERR_CHUNKED_TRANSFER_NOT_SUPPORTED     = 42022;
     public const ERR_MSG_CHUNKED_TRANSFER_NOT_SUPPORTED = '"Transfer-Encoding: Chunked" type uploads are not supported. Use a reverse proxy like NGINX with request buffering';
 
+    public const ERR_INVALID_REVERSE_PROXY_UPLOAD_DIRECTORY     = 42023;
+    public const ERR_MSG_INVALID_REVERSE_PROXY_UPLOAD_DIRECTORY = '"X-Internal-Filename" header present, but file not found. Please make sure the reverse proxy stores request body in same directory as specified in Backup Repository REVPROXY_STORAGE_DIR environment variable. Make sure the directory is accessible - especially when using docker, then it must be mounted as volume and visible by both NGINX and PHP';
+
 
     //
     // Permission errors

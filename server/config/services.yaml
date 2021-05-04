@@ -15,6 +15,7 @@ parameters:
     env(PASSWD_ALGORITHM): 'sha256'
     env(PASSWD_ITERATIONS): '90000'
     env(JWT_LIFETIME): '2 hours'
+    revproxy_storage_dir: '%env(resolve:REVPROXY_STORAGE_DIR)%'
     temp_directory: '%env(resolve:TEMP_DIRECTORY)%'
 
 services:
@@ -137,6 +138,11 @@ services:
         autowire: true
         arguments:
             $baseUrl: '%env(BASE_URL)%'
+
+    App\Domain\Storage\Provider\UserUploadProvider:
+        arguments:
+            $logger: '@logger'
+            $webserverTemporaryStoragePath: '%revproxy_storage_dir%'
 
     ro_fs:
         class: App\Infrastructure\Storage\Manager\FlysystemFilesystemManager

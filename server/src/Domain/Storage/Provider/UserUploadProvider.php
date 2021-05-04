@@ -13,7 +13,7 @@ class UserUploadProvider
      */
     private array $requestHeaders;
 
-    public function __construct(private LoggerInterface $logger)
+    public function __construct(private LoggerInterface $logger, private string $webserverTemporaryStoragePath)
     {
         $this->requestHeaders = $_SERVER;
     }
@@ -27,6 +27,18 @@ class UserUploadProvider
      */
     public function getStreamFromHttp(): Stream
     {
+        if ($this->hasPostedUsingLargeFileMechanism()) {
+            $this->logger->debug('Handling large file upload processed by reverse proxy');
+
+            $path = $this->webserverTemporaryStoragePath . '/' . basename($this->requestHeaders['X_INTERNAL_FILENAME']);
+
+            if (!is_file($path)) {
+                throw FileRetrievalError::fromInvalidReverseProxyUploadDirectory();
+            }
+
+            return new Stream(fopen($path, 'rb'));
+        }
+
         if ($this->hasPostedViaPHPUploadMechanism()) {
             $this->logger->debug('Handling Multipart upload via PHP mechanism');
 
@@ -60,6 +72,23 @@ class UserUploadProvider
         throw FileRetrievalError::fromEmptyRequestCause();
     }
 
+    /**
+     * HTTP - Large File Upload using Reverse Proxy
+     * --------------------------------------------
+     *
+     * Reverse proxy like NGINX has to store RAW REQUEST BODY into a file, then put that file name in header "X-Internal-Filename"
+     * so the Backup Repository will not have to take a big request - instead Backup Repository gets a path and can process a locally saved file.
+     * After the request NGINX removes that temporary file
+     *
+     * https://stackoverflow.com/questions/44371643/nginx-php-failing-with-large-file-uploads-over-6-gb/44751210#44751210
+     *
+     * @return bool
+     */
+    private function hasPostedUsingLargeFileMechanism(): bool
+    {
+        return isset($this->requestHeaders['X_INTERNAL_FILENAME']) && $this->requestHeaders['X_INTERNAL_FILENAME'];
+    }
+
     private function hasPostedViaPHPUploadMechanism(): bool
     {
         // could check $this->hasUserSentUrlEncodedContentType(), but will not, we can be more fault-tolerant
@@ -79,11 +108,16 @@ class UserUploadProvider
         return \strlen($part) > 8;
     }
 
+    /**
+     * HTTP Multipart upload: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Content-Disposition
+     *
+     * @return bool
+     */
     private function isMultipart(): bool
     {
         $contentType = strtolower($this->requestHeaders['CONTENT_TYPE'] ?? '');
 
-        return strpos($contentType, 'multipart/form-data') !== false;
+        return str_contains($contentType, 'multipart/form-data');
     }
 
     private function hasUserSentUrlEncodedContentType(): bool
@@ -93,6 +127,13 @@ class UserUploadProvider
         return \strtolower(\trim($headerValue)) === 'application/x-www-form-urlencoded';
     }
 
+    /**
+     * HTTP Chunked Transfer: https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Transfer-Encoding
+     *
+     * Currently not supported.
+     *
+     * @return bool
+     */
     private function isChunkedTransfer(): bool
     {
         return $this->requestHeaders['HTTP_TRANSFER_ENCODING'] ?? '' === 'chunked' &&
