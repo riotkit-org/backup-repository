@@ -32,14 +32,11 @@ without need to send any HTTP requests or even log in to the shell. It's an auto
     version: '2.3'
     services:
         filerepository:
-            image: quay.io/riotkit/file-repository:${FILE_REPOSITORY_VERSION}
+            image: quay.io/riotkit/backup-repository:${FILE_REPOSITORY_VERSION}
             environment:
-                # With this token you can do everything
-                SECURITY_ADMIN_TOKEN: "4253f6e5-5c0b-4888-8027-d36bf02eee04"
-
                 # Create a two backup collections, so right after startup you can run a backup, WHY NOT? :-)
                 # Please notice, that you can easily use there environment variables
-                POST_INSTALL_CMD:
+                POST_INSTALL_CMD: |
                     ./bin/console backup:create-collection --ignore-error-if-exists --max-backups-count=5
                         --max-one-version-size=10mib --max-collection-size=2gib --strategy=delete_oldest_when_adding_new
                         --filename=postgres.sql.gz --id=3dfa4ea9-1cec-4e24-b773-1cefb9c112c2;

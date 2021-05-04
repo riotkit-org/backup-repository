@@ -44,7 +44,7 @@ http {
         client_body_timeout {{ NGINX_CLIENT_BODY_TIMEOUT | default('60s') }};
         keepalive_timeout {{ NGINX_KEEPALIVE_TIMEOUT | default('30s') }};
 
-        # Allow requests to take long, big backups takes long to generate and send
+        # Allow requests to take long, big backups takes long to generate and to send
         fastcgi_read_timeout {{ NGINX_FASTCGI_READ_TIMEOUT | default('7200s') }};
         fastcgi_send_timeout {{ NGINX_FASTCGI_SEND_TIMEOUT | default('7200s') }};
 

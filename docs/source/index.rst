@@ -24,9 +24,9 @@ A specialized ninja for backup making - complete backups ecosystem. Fully multi-
    :caption: Contents:
 
    server/index
+   bahub/index
    docker
    project-rules
-   clients/index
 
 From authors
 ============

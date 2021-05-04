@@ -1,5 +1,5 @@
-Getting started
-###############
+Getting started - classic way
+#############################
 
 Requirements
 ------------
@@ -82,8 +82,18 @@ Now think about how the application should be connecting to database - using TCP
     # 2) Modify selected configuration to your needs
     # 3) Put configuration name in FS_RW_NAME and in FS_RO_NAME
 
+5. Generate JWT keys
+--------------------
 
-5. Install dependencies
+Generate private keys, replace "$JWT_PASSPHRASE" with a passphrase you have in :class:`.env` file. Keep the files in secret.
+
+.. code:: bash
+
+    openssl genpkey -out config/jwt/private.pem -aes256 -pass pass:$JWT_PASSPHRASE -algorithm rsa -pkeyopt rsa_keygen_bits:4096
+    openssl pkey -in config/jwt/private.pem -out config/jwt/public.pem -pubout -passin pass:$JWT_PASSPHRASE
+
+
+6. Install dependencies
 -----------------------
 
 .. code:: bash
@@ -91,7 +101,7 @@ Now think about how the application should be connecting to database - using TCP
     cd /var/www
     composer install
 
-6. Create an administrator account
+7. Create an administrator account
 ----------------------------------
 
 .. code:: bash
@@ -99,5 +109,5 @@ Now think about how the application should be connecting to database - using TCP
     cd /var/www
     ./bin/console auth:create-admin-account --email example@riseup.net --password example_1234
 
-7. DONE! Login using your created administrator account
--------------------------------------------------------
+8. DONE! Navigate to http://localhost and login using your created administrator account
+----------------------------------------------------------------------------------------

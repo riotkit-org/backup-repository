@@ -5,8 +5,8 @@ Server
    :maxdepth: 3
    :caption: Contents:
 
-   first-steps
+   first-steps-bare
+   first-steps-docker
+   concepts
    configuration-reference
-   swagger-docs
-   encryption
    shell-access
