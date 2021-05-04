@@ -80,6 +80,7 @@ services:
         class: App\Domain\Storage\Repository\StagingAreaRepository
         arguments:
             $tempPath: '%temp_directory%'
+            $logger: '@logger'
 
     App\Domain\Backup\Settings\BackupSettings:
         class: App\Domain\Backup\Settings\BackupSettings

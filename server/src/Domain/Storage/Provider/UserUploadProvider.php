@@ -36,7 +36,7 @@ class UserUploadProvider
                 throw FileRetrievalError::fromInvalidReverseProxyUploadDirectory();
             }
 
-            return new Stream(fopen($path, 'rb'));
+            return new Stream(fopen($path, 'rb'), $path);
         }
 
         if ($this->hasPostedViaPHPUploadMechanism()) {
@@ -49,7 +49,7 @@ class UserUploadProvider
                 throw FileRetrievalError::fromUploadMaxFileSizeReachedCause();
             }
 
-            return new Stream(fopen($file['tmp_name'], 'rb'));
+            return new Stream(fopen($file['tmp_name'], 'rb'), $file['tmp_name']);
         }
 
         if ($this->hasPostedRaw()) {

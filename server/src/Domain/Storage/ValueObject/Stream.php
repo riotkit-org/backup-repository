@@ -10,16 +10,14 @@ class Stream
      * @var resource
      */
     private $handle;
-    private string $id;
 
-    public function __construct($handle)
+    public function __construct($handle, private ?string $physicalFilePath = null)
     {
         if (!\is_resource($handle)) {
             throw new \InvalidArgumentException('Input value is not a resource');
         }
 
         $this->handle = $handle;
-        $this->id = uniqid('', true);
     }
 
     /**
@@ -39,5 +37,21 @@ class Stream
     public function getAsPSRStream(): StreamInterface
     {
         return new \GuzzleHttp\Psr7\Stream($this->attachTo());
+    }
+
+    /**
+     * Path to the file in local filesystem
+     * Optional - not in all cases it can be present
+     *
+     * @return string|null
+     */
+    public function getPhysicalFilePath(): ?string
+    {
+        return $this->physicalFilePath;
+    }
+
+    public function hasKnownLocationOnLocalDisk(): bool
+    {
+        return (string) $this->physicalFilePath !== '';
     }
 }
