@@ -14,4 +14,16 @@ class TechnicalCest
         $I->sendGET('/');
         $I->canSeeResponseCodeIs(200);
     }
+
+    public function testInfluxDBMetricsAreAccessibleWithoutJWTButSecuredWithConfigurableCode(FunctionalTester $I): void
+    {
+        $I->sendGET('/metrics/backup_repository_report/influxdb?code=test');
+        $I->seeResponseContains('backup_repository_report,base_url=http://server,app_env=');
+    }
+
+    public function testInfluxDBMetricsAreAccessibleOnlyOnValidCode(FunctionalTester $I): void
+    {
+        $I->sendGET('/metrics/backup_repository_report/influxdb');
+        $I->canSeeResponseCodeIs(403);
+    }
 }
