@@ -20,6 +20,13 @@ class InfluxDBMetricsFormatter
             }
         }
 
-        return $formattedAsInflux . ' ' . implode(',', $metricsToGlue) . ' ' . exec('date +%s%N');
+        return $formattedAsInflux . ' ' . implode(',', $metricsToGlue) . ' ' . $this->getCurrentTimestamp();
+    }
+
+    private function getCurrentTimestamp(): string
+    {
+        list($uSec, $sec) = explode(' ', microtime());
+
+        return sprintf('%d%06d', $sec, $uSec*1000000);
     }
 }
