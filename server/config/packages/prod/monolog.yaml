@@ -4,4 +4,8 @@ monolog:
             type: stream
             path: "%kernel.logs_dir%/%kernel.environment%.log"
             level: error
-            channels: ["!event", "!request.INFO"]
+            channels: ["!event", "!request.INFO", "!doctrine"]
+        console:
+            type: console
+            process_psr_3_messages: false
+            channels: ["!event", "!doctrine", "!request.INFO", "!console"]
