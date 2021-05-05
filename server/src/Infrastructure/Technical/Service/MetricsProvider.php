@@ -9,16 +9,11 @@ use Doctrine\DBAL\Connection;
 
 class MetricsProvider
 {
-    private Connection $db;
-    private VersionRepository $versionRepository;
-    private UserRepository $userRepository;
-
-    public function __construct(Connection $db, VersionRepository $versionRepository, UserRepository $userRepository)
-    {
-        $this->db                = $db;
-        $this->versionRepository = $versionRepository;
-        $this->userRepository    = $userRepository;
-    }
+    public function __construct(
+        private Connection $db,
+        private VersionRepository $versionRepository,
+        private UserRepository $userRepository
+    ) { }
 
     public function findDeclaredStorageSpace(): int
     {
@@ -55,7 +50,7 @@ class MetricsProvider
         return (int) $this->db->executeQuery('SELECT COUNT(id) FROM tags')->fetchOne();
     }
 
-    public function findRecentVersions(User $userContext, bool $showForAllUsers): array
+    public function findRecentVersions(?User $userContext, bool $showForAllUsers): array
     {
         if ($showForAllUsers) {
             return $this->versionRepository->findRecentlyPushedVersionsOfAnyCollection();

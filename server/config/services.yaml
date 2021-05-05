@@ -39,6 +39,15 @@ services:
         resource: '../src/Controller'
         tags: ['controller.service_arguments']
 
+    App\Controller\Technical\DashboardController:
+        public: true
+        arguments:
+            $handler: '@App\Domain\Technical\ActionHandler\DashboardHandler'
+            $influxFormatter: '@App\Domain\Technical\Service\InfluxDBMetricsFormatter'
+            $metricsCode: '%env(METRICS_CODE)%'
+            $baseUrl: '%env(BASE_URL)%'
+            $appEnv: '%env(APP_ENV)%'
+
     App\Domain\Technical\ActionHandler\HealthCheckHandler:
         autowire: true
         arguments:

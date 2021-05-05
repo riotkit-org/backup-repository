@@ -19,6 +19,13 @@ technical.dashboard:
     controller: 'App\Controller\Technical\DashboardController::showMetricsAction'
     methods: ['GET']
 
+influx_metrics:
+    path: /metrics/backup_repository_report/influxdb
+    controller: 'App\Controller\Technical\DashboardController::showMetricsAction'
+    methods: ['GET']
+    defaults:
+        format: influxdb
+
 app.swagger:
     path: /api/stable/doc.json
     controller: 'App\Controller\Technical\SwaggerDocsController::serveSwaggerFileAction'

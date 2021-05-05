@@ -1407,7 +1407,7 @@ paths:
             parameters:
                 - name: code
                   in: query
-                  description: Secret code given to monitoring tool, so nobody else can access this specific endpoint
+                  description: Secret code given to monitoring tool, so nobody else can access this specific endpoint (HEALTH_CHECK_CODE in configuration file)
                   type: string
             responses:
                 '200':
@@ -1418,6 +1418,89 @@ paths:
                 '503':
                     description: Same response format as for 200 code. 503 is when at least one check from list failed
                     {{  _self.response_health_check() | indent_by('                    ') }}
+
+    "/api/stable/metrics":
+        get:
+            summary: Metrics in context of a current User account. Administrator sees everything
+            tags: ['Technical']
+            parameters:
+                - name: code
+                  in: query
+                  description: Secret code for the automated access (METRICS_CODE in configuration file)
+                  type: string
+                - name: format
+                  in: query
+                  description: 'Output format - "json" or "influxdb"'
+                  type: string
+            responses:
+                '200':
+                    description: Regular response with metrics
+                    schema:
+                        type: object
+                        properties:
+                            status:
+                                type: boolean
+                                example: true
+                            data:
+                                type: object
+                                properties:
+                                    storage:
+                                        type: object
+                                        properties:
+                                            declared_space:
+                                                type: string
+                                                example: 1000GB
+                                            used_space:
+                                                type: string
+                                                example: 854GB
+                                    users:
+                                        type: object
+                                        properties:
+                                            active_accounts:
+                                                type: integer
+                                                example: 161
+                                            active_jwt_keys:
+                                                type: integer
+                                                example: 343
+                                    backup:
+                                        type: object
+                                        properties:
+                                            versions:
+                                                type: integer
+                                                example: 3446
+                                            collections:
+                                                type: integer
+                                                example: 105
+                                            recent_versions:
+                                                type: array
+                                                items:
+                                                    "$ref": "#/definitions/BackupCollection"
+                                    resources:
+                                        type: object
+                                        properties:
+                                            tags:
+                                                type: integer
+                                                example: 57
+                '403':
+                    description: When the 'code' parameter does not match the 'METRICS_CODE' setting
+
+    "/metrics/backup_repository_report/influxdb":
+        get:
+            summary: "Metrics in InfluxDB Line Protocol format (https://docs.influxdata.com/influxdb/v2.0/reference/syntax/line-protocol/)"
+            tags: ['Technical']
+            parameters:
+                - name: code
+                  in: query
+                  description: Secret code for the automated access (METRICS_CODE in configuration file)
+                  type: string
+            responses:
+                '200':
+                    description: Regular response with metrics
+                    schema:
+                        type: string
+                        example: "backup_repository_report,base_url=http://localhost:8000,app_env=dev storage_declared_space=0,storage_used_space=0,users_active_accounts=0,users_active_jwt_keys=0,backup_versions=0,backup_collections=0,resources_tags=0 1620237374990861021"
+                '403':
+                    description: When the 'code' parameter does not match the 'METRICS_CODE' setting
 
 # --------------------------
 #  API objects definitions

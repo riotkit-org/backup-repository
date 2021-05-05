@@ -47,3 +47,53 @@ Our infrastructure has to have higher limits and timeouts - it is a use case tha
 
 
 .. image:: ../_static/screenshots/proposed-infrastructure.png
+
+Monitoring
+**********
+
+Application exposes monitoring endpoints.
+
+1) /health?code=ABC
+-------------------
+
+Describes detailed the status of application with its dependent services.
+On each run the storage is checked for read and write access, a small file is written and then deleted to perform a test.
+
+**Important:** code parameter should contain a secret defined in :class:`HEALTH_CHECK_CODE` configuration option
+
+.. code:: json
+
+    {
+      "status": [
+        {
+          "storage": true,
+          "database": true
+        }
+      ],
+      "messages": [
+        {
+          "storage": [
+            "string"
+          ],
+          "database": [
+            "string"
+          ]
+        }
+      ],
+      "global_status": true,
+      "ident": [
+        "string"
+      ]
+    }
+
+2) /metrics/backup_repository_report/influxdb?code=DEF
+------------------------------------------------------
+
+Returns metrics in InfluxDB Line Protocol format.
+
+**Important:** code parameter should contain a secret defined in :class:`METRICS_CODE` configuration option. **Notice it is different from health check code.**
+
+
+.. code:: actionscript
+
+    backup_repository_report,base_url=http://localhost:8000,app_env=dev storage_declared_space=0,storage_used_space=0,users_active_accounts=0,users_active_jwt_keys=0,backup_versions=0,backup_collections=0,resources_tags=0 1620237873872992246
