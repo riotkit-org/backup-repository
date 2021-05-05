@@ -25,8 +25,8 @@ Global, hard limits can be configured for whole Backup Repository instance.
 Those would take effect also for administrators.
 
 .. literalinclude:: ../../../server/.env.dist
-   :start-after: <backups:storage>
-   :end-before: </backups:storage>
+   :start-after: <docs:backups>
+   :end-before: </docs:backups>
 
 4. Security
 -----------
