@@ -36,7 +36,7 @@ tasks:
         description: Remove containerized environment, containers and data
         steps:
             - docker-compose -p s3pb -f ./docker-compose.bahub.yml -f ./docker-compose.bahub-dependencies.yml -f ./docker-compose.server.yml rm -f -s -v
-            - sudo rm -rf data/postgres/*
+            - sudo /bin/bash -c "rm -rf data/postgres/*"
             - docker volume rm s3pb_jwt
 
     :logs:
