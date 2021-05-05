@@ -8,9 +8,13 @@ make_cache() {
 }
 
 create_dirs() {
-    echo " >> Creating directories"
-    mkdir -p vendor var var/cache var/tmp var/log var/storage var/uploads
-    chown www-data:www-data -R var/tmp var/cache var/storage var/log var/uploads
+    echo " >> Creating files and directories"
+
+    appLogPath="/home/backuprepository/var/log/${APP_ENV}.log"
+    touch "${appLogPath}"
+
+    mkdir -p vendor var var/cache var/cache/prod var/tmp var/log var/storage var/uploads
+    chown www-data:www-data -R var/tmp var/cache var/storage var/log var/uploads "${appLogPath}"
 }
 
 setup_admin_user() {
@@ -94,8 +98,6 @@ install_application
 setup_admin_user
 execute_post_install_commands
 
-appLogPath="/home/backuprepository/var/log/${APP_ENV}.log"
-touch "${appLogPath}"
 touch "/var/log/nginx/error.log"
 touch "/var/log/nginx/access.log"
 
