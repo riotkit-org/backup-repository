@@ -23,7 +23,7 @@ setup_admin_user() {
     # @todo: Refactor to admin account
     if [[ "${SECURITY_ADMIN_TOKEN}" ]]; then
         echo " >> Setting up default admin token provided with SECURITY_ADMIN_TOKEN environment variable"
-        ./bin/console auth:generate-admin-token --ignore-error-if-token-exists --id=${SECURITY_ADMIN_TOKEN} --expires='+10 years'
+        su www-data -s /bin/bash -c "./bin/console auth:generate-admin-token --ignore-error-if-token-exists --id=${SECURITY_ADMIN_TOKEN} --expires='+10 years'"
     fi
 }
 
@@ -52,11 +52,11 @@ install_application() {
     eval "composer install ${COMPOSER_ARGS}"
 
     echo " >> Updating the database..."
-    ./bin/console health:wait-for:database --timeout ${WAIT_FOR_DB_TIMEOUT}
-    ./bin/console doctrine:migrations:migrate -n
+    su www-data -s /bin/bash -c "./bin/console health:wait-for:database --timeout ${WAIT_FOR_DB_TIMEOUT}"
+    su www-data -s /bin/bash -c "./bin/console doctrine:migrations:migrate -n"
 
     if [[ "${CLEAR_CACHE}" == "true" ]]; then
-        ./bin/console cache:clear --env=${APP_ENV}
+        su www-data -s /bin/bash -c "./bin/console cache:clear --env=${APP_ENV}"
     fi
 }
 
