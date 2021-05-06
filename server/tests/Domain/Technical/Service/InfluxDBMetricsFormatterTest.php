@@ -29,7 +29,7 @@ class InfluxDBMetricsFormatterTest extends TestCase
 
         $this->assertStringContainsString('bakunin=1', $formatted);
         $this->assertStringContainsString('kropotkin=5', $formatted);
-        $this->assertStringContainsString('malatesta=yes', $formatted);
+        $this->assertStringContainsString('malatesta="yes"', $formatted);
 
         $this->assertStringNotContainsString('boolean=', $formatted);
         $this->assertStringNotContainsString('array=', $formatted);
@@ -40,7 +40,7 @@ class InfluxDBMetricsFormatterTest extends TestCase
         $formatter = new InfluxDBMetricsFormatter();
         $formatted = $formatter->format(['data' => []], 'http://localhost', 'test');
 
-        $this->assertStringContainsString('backup_repository_report,base_url=http://localhost,app_env=test  ', $formatted);
+        $this->assertStringContainsString('backup_repository_report,base_url="http://localhost",app_env="test"  ', $formatted);
     }
 
     public function testTimestampIsPresentAtTheEndOfMetricString(): void
@@ -50,6 +50,6 @@ class InfluxDBMetricsFormatterTest extends TestCase
 
         $exp = explode(' ', $formatted);
 
-        $this->assertIsNumeric($exp[count($exp) - 1]);
+        $this->assertIsNumeric(str_replace('us', '', $exp[count($exp) - 1]));
     }
 }

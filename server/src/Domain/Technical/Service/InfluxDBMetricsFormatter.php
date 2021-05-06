@@ -6,7 +6,7 @@ class InfluxDBMetricsFormatter
 {
     public function format(array $toFormat, string $baseUrl, string $appEnv): string
     {
-        $formattedAsInflux = 'backup_repository_report,base_url=' . $baseUrl . ',app_env=' . $appEnv;
+        $formattedAsInflux = 'backup_repository_report,base_url="' . $baseUrl . '",app_env="' . $appEnv . '"';
         $metricsToGlue = [];
 
         foreach ($toFormat['data'] as $metricGroupName => $metrics) {
@@ -16,11 +16,15 @@ class InfluxDBMetricsFormatter
                     continue;
                 }
 
-                $metricsToGlue[] = $metricGroupName . '_' . $metricName . '=' . $value;
+                if (is_string($value) && !is_numeric($value)) {
+                    $value = '"' . $value . '"';
+                }
+
+                $metricsToGlue[] = str_replace("\n", '', $metricGroupName . '_' . $metricName . '=' . $value);
             }
         }
 
-        return $formattedAsInflux . ' ' . implode(',', $metricsToGlue) . ' ' . $this->getCurrentTimestamp();
+        return $formattedAsInflux . ' ' . implode(',', $metricsToGlue) . ' ' . $this->getCurrentTimestamp() . 'us';
     }
 
     private function getCurrentTimestamp(): string
