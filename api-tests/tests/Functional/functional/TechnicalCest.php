@@ -18,7 +18,7 @@ class TechnicalCest
     public function testInfluxDBMetricsAreAccessibleWithoutJWTButSecuredWithConfigurableCode(FunctionalTester $I): void
     {
         $I->sendGET('/metrics/backup_repository_report/influxdb?code=test');
-        $I->seeResponseContains('backup_repository_report,base_url=http://server,app_env=');
+        $I->seeResponseContains('backup_repository_report,base_url="http://server",app_env=');
     }
 
     public function testInfluxDBMetricsAreAccessibleOnlyOnValidCode(FunctionalTester $I): void
