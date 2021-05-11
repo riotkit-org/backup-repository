@@ -56,5 +56,5 @@ WORKDIR /home/bahub
 # We need root permissions to preserve file permissions, especially on restore
 USER root
 
-ENTRYPOINT ["/usr/libexec/jobberrunner"]
+ENTRYPOINT ["/entrypoint.sh"]
 CMD ["--unixsocket", "/var/jobber/1000/cmd.sock", "/home/bahub/.jobber"]
