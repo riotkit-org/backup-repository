@@ -152,7 +152,7 @@ jobs:
               run: "docker push quay.io/riotkit/backup-repository:latest-dev && docker push quay.io/riotkit/bahub:latest-dev"
 
             - name: "Release Bahub to PyPI"
-              run: "rkd :py:publish --username=__token__ --password=${{ secrets.PYPI_BAHUB_TOKEN }} --skip-existing"
+              run: "rkd :py:build :py:publish --username=__token__ --password=${{ secrets.PYPI_BAHUB_TOKEN }} --skip-existing"
               working-directory: "bahub"
 
             - name: "Store docker images as artifacts"
