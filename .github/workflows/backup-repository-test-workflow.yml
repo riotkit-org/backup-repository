@@ -117,7 +117,7 @@ jobs:
               if: ${{ always() }}
               working-directory: "bahub"
 
-    "release_dev_dockers":
+    "release_snapshots":
         needs: ["unit_test_server", "unit_test_bahub"]
         runs-on: ubuntu-20.04
         steps:
@@ -150,6 +150,10 @@ jobs:
 
             - name: "Release development dockers"
               run: "docker push quay.io/riotkit/backup-repository:latest-dev && docker push quay.io/riotkit/bahub:latest-dev"
+
+            - name: "Release Bahub to PyPI"
+              run: "rkd :py:publish --username=__token__ --password=${{ secrets.PYPI_BAHUB_TOKEN }} --skip-existing"
+              working-directory: "bahub"
 
             - name: "Store docker images as artifacts"
               uses: actions/upload-artifact@v2
