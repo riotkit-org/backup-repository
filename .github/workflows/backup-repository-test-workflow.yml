@@ -164,7 +164,7 @@ jobs:
                       bahub.docker.tar.gz
 
     "integration_test":
-        needs: release_dev_dockers
+        needs: release_snapshots
         runs-on: ubuntu-20.04
         steps:
             - name: "Checkout"
