@@ -20,7 +20,7 @@ A specialized ninja for backup making - complete backups ecosystem. Fully multi-
 - On client side the backups are made on-the-fly, you don't need extra disk space for temporary storage
 
 .. toctree::
-   :maxdepth: 5
+   :maxdepth: 2
    :caption: Contents:
 
    server/index
