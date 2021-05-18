@@ -14,7 +14,24 @@ from .model import BackupDefinition
 
 
 class NotifierInterface(object):
-    """Notification sending service interface"""
+    """
+    Notification sending service interface
+
+    <sphinx:notification_types>
+
+    - Starting backup creation
+    - Backup was uploaded
+    - Failed to upload a backup
+
+    - Starting backup restore
+    - Backup was restored
+    - Failed to restore a backup
+
+    - Generic: Exception occurred
+
+    </sphinx:notification_types>
+
+    """
 
     config = {}
     sensitive_data: list

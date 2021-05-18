@@ -54,6 +54,7 @@ class RestoreTask(BaseTask):
         try:
             self.io().info('Spawning the backup adapter to start "restore" procedure specific to this backup type')
             self.io().info('Processing combined pipeline of buffers...')
+            self.notifier.starting_backup_restore(definition)
 
             # only download into a file
             if download_to:
@@ -62,6 +63,7 @@ class RestoreTask(BaseTask):
             else:
                 with definition.transport():
                     backup_adapter.restore(definition, enc_buffer, self._io)
+                    self.notifier.backup_was_restored(definition)
 
         except BackupProcessError as e:
             additional_info = definition.transport().get_failure_details()
@@ -70,6 +72,8 @@ class RestoreTask(BaseTask):
                 self.io().error_msg(additional_info)
 
             self.io().error_msg(e)
+            self.notifier.failed_to_restore_backup(definition, str(e))
+
             return False
 
         self.io().info_msg('Backup {} was restored to {}'.format(definition, version))

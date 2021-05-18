@@ -38,6 +38,8 @@ class BackupPreparationTask(BaseTask):
 
         # begin a backup, get a buffered reader
         with definition.transport():
+            self.notifier.starting_backup_creation(definition)
+
             backup_buffer = adapter.backup(definition)
 
             # buffers

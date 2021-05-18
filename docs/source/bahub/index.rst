@@ -9,3 +9,5 @@ Works in shell, can work as a docker container in the same network with schedule
    :caption: Contents:
 
    scheduling
+   notifications
+
