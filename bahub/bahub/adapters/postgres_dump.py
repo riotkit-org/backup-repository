@@ -17,7 +17,8 @@ class Definition(BackupDefinition):
     def get_spec_defaults() -> dict:
         return {
             'port': 5432,
-            'database': ''
+            'database': '',
+            'gzip_args': '-3'
         }
 
     @staticmethod
@@ -41,6 +42,9 @@ class Definition(BackupDefinition):
                 },
                 "password": {
                     "type": "string"
+                },
+                "gzip_args": {
+                    "type": "string"
                 }
             }
         }
@@ -60,7 +64,8 @@ class Definition(BackupDefinition):
                 'port': 5432,
                 'database': 'gitea',
                 'user': 'git_mdbDhSIfMFerfyAK',
-                'password': 'boltcutter-goes-click-clack-KIVesvKc6dPIQ7scNsQsDg8mcc1x4SxQUVMjWPIq/VE='
+                'password': 'boltcutter-goes-click-clack-KIVesvKc6dPIQ7scNsQsDg8mcc1x4SxQUVMjWPIq/VE=',
+                'gzip_args': '-3'
             }
         }
 
@@ -96,17 +101,17 @@ class Definition(BackupDefinition):
         :return:
         """
 
-        parameters = 'pg_dumpall' if self.is_dumping_all_databases() else 'pg_dump'
-        parameters += self._get_common_parameters()
-        parameters += ' --clean '
+        cmd = 'pg_dumpall' if self.is_dumping_all_databases() else 'pg_dump'
+        cmd += self._get_common_parameters()
+        cmd += ' --clean '
 
         if not self.is_dumping_all_databases():
-            parameters += ' --set ON_ERROR_STOP=on '
+            cmd += ' --set ON_ERROR_STOP=on '
 
         if self._spec.get('database'):
-            parameters += ' {database} '.format(database=self._spec.get('database'))
+            cmd += ' {database} '.format(database=self._spec.get('database'))
 
-        return parameters
+        return cmd + ' | gzip ' + self.get_gzip_args()
 
     def get_restore_command(self) -> str:
         """
@@ -114,7 +119,7 @@ class Definition(BackupDefinition):
         :return:
         """
 
-        parameters = 'psql ' + self._get_common_parameters()
+        parameters = 'gunzip | psql ' + self._get_common_parameters()
 
         if self._spec.get('database'):
             parameters += ' {database} '.format(database=self._spec.get('database'))
@@ -126,6 +131,9 @@ class Definition(BackupDefinition):
 
     def get_password(self) -> str:
         return self._spec.get('password')
+
+    def get_gzip_args(self) -> str:
+        return self._spec.get('gzip_args', '-3')
 
 
 class Adapter(AdapterInterface):

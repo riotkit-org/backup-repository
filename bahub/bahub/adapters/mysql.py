@@ -15,7 +15,8 @@ class Definition(BackupDefinition):
     def get_spec_defaults() -> dict:
         return {
             'port': 3306,
-            'database': ''
+            'database': '',
+            'gzip_args': '-3'
         }
 
     @staticmethod
@@ -39,6 +40,9 @@ class Definition(BackupDefinition):
                 },
                 "password": {
                     "type": "string"
+                },
+                "gzip_args": {
+                    "type": "string"
                 }
             }
         }
@@ -58,7 +62,8 @@ class Definition(BackupDefinition):
                 'port': 3306,
                 'database': 'gitea',
                 'user': 'git_mdbDhSIfMFerfyAK',
-                'password': 'boltcutter-goes-click-clack-KIVesvKc6dPIQ7scNsQsDg8mcc1x4SxQUVMjWPIq/VE='
+                'password': 'boltcutter-goes-click-clack-KIVesvKc6dPIQ7scNsQsDg8mcc1x4SxQUVMjWPIq/VE=',
+                'gzip_args': '-3'
             }
         }
 
@@ -117,6 +122,9 @@ class Definition(BackupDefinition):
 
         return parameters
 
+    def get_gzip_args(self) -> str:
+        return self._spec.get('gzip_args', '-3')
+
 
 class Adapter(AdapterInterface):
     """Contains a logic specific to MySQL - how to backup, and how to restore"""
@@ -124,10 +132,14 @@ class Adapter(AdapterInterface):
     def backup(self, definition: Definition) -> StreamableBuffer:
         backup_process = definition.transport().buffered_execute
 
-        return backup_process('mysqldump %s' % definition.get_dump_parameters())
+        return backup_process('mysqldump {} | gzip {}'.format(
+            definition.get_dump_parameters(),
+            definition.get_gzip_args()
+        ))
 
     def restore(self, definition: Definition, in_buffer: StreamableBuffer, io: IO) -> None:
-        restore_process = definition.transport().buffered_execute('mysql %s' % definition.get_restore_parameters(),
+        restore_process = definition.transport().buffered_execute('gunzip | mysql %s'
+                                                                  % definition.get_restore_parameters(),
                                                                   stdin=in_buffer)
 
         self._read_from_restore_process(restore_process, io)
