@@ -1,5 +1,13 @@
 package main
 
 type ActionContext struct {
-	actionType string
+	url          string
+	collectionId string
+	authToken    string
+	command      string
+	timeout      int
+
+	publicKey        string
+	privateKey       string
+	versionToRestore string
 }
