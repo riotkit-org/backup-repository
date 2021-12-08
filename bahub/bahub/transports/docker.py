@@ -116,5 +116,6 @@ class Transport(ShellTransport):
 
         try:
             return self._client.logs(tail=15, follow=False, stream=False)
+
         except Exception:
             return '-- No logs --'
