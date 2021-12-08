@@ -1,8 +1,8 @@
 package main
 
 import (
-	"awesomeProject/uploader"
 	"github.com/akamensky/argparse"
+	"github.com/riotkit-org/backup-repository/backup-maker/uploader"
 	log "github.com/sirupsen/logrus"
 	"os"
 )

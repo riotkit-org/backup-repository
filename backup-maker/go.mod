@@ -1,4 +1,4 @@
-module awesomeProject
+module github.com/riotkit-org/backup-repository/backup-maker
 
 go 1.17
 
