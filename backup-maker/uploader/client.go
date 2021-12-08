@@ -48,7 +48,11 @@ func gracefullyKillProcess(cmd *exec.Cmd) error {
 }
 
 // Upload is uploading bytes read from io.Reader stream into HTTP endpoint of Backup Repository server
-func Upload(domainWithSchema string, collectionId string, authToken string, body io.Reader) (string, string, error) {
+func Upload(domainWithSchema string, collectionId string, authToken string, body io.Reader, timeout int) (string, string, error) {
+	if timeout == 0 {
+		timeout = int(time.Second * 60 * 20)
+	}
+
 	url := fmt.Sprintf("%v/api/stable/repository/collection/%v/backup", domainWithSchema, collectionId)
 	log.Printf("Uploading to %v", url)
 
@@ -58,6 +62,7 @@ func Upload(domainWithSchema string, collectionId string, authToken string, body
 		url,
 		body)
 
+	client.Timeout = time.Second * 3600
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %v", authToken))
 
 	if err != nil {
@@ -86,7 +91,7 @@ func Upload(domainWithSchema string, collectionId string, authToken string, body
 
 // UploadFromCommandOutput pushes a stdout of executed command through HTTP endpoint of Backup Repository under specified domain
 // Upload is used to perform HTTP POST request
-func UploadFromCommandOutput(command string, url string, collectionId string, authToken string) error {
+func UploadFromCommandOutput(command string, url string, collectionId string, authToken string, timeout int) error {
 	log.Print("/bin/bash", "-c", command)
 	cmd := exec.Command("/bin/bash", "-c", command)
 	cmd.Stderr = os.Stderr
@@ -104,7 +109,7 @@ func UploadFromCommandOutput(command string, url string, collectionId string, au
 	}
 
 	log.Printf("Starting Upload() for PID=%v", cmd.Process.Pid)
-	status, out, uploadErr := Upload(url, collectionId, authToken, stdout)
+	status, out, uploadErr := Upload(url, collectionId, authToken, stdout, timeout)
 	if uploadErr != nil {
 		return uploadErr
 	}

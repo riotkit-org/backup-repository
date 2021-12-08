@@ -24,6 +24,7 @@ func main() {
 	collectionId := parser.String("i", "collection-id", &argparse.Options{Required: true, Help: "aaaa-bbb-ccc-dddd"})
 	authToken := parser.String("t", "auth-token", &argparse.Options{Required: true, Help: "JWT token that allows to upload at least one file successfully"})
 	command := parser.String("c", "cmd", &argparse.Options{Required: true, Help: "Command to execute, which output will be captured and sent to server"})
+	timeout := parser.Int("", "timeout", &argparse.Options{Required: false, Help: "Connection and read timeout in summary", Default: 60 * 20})
 
 	err := parser.Parse(os.Args)
 
@@ -32,7 +33,7 @@ func main() {
 	}
 
 	if makeCmd.Happened() {
-		err = uploader.UploadFromCommandOutput(*command, *domain, *collectionId, *authToken)
+		err = uploader.UploadFromCommandOutput(*command, *domain, *collectionId, *authToken, *timeout)
 		if err != nil {
 			log.Fatal(err)
 		}
