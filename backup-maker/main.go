@@ -15,31 +15,55 @@ func main() {
 
 	// make
 	makeCmd := parser.NewCommand("make", "Submit new backup version")
-	ctx.publicKey = *makeCmd.String("p", "public-key", &argparse.Options{Required: true, Help: "GPG public key"})
+	publicKeyPath := makeCmd.String("p", "public-key", &argparse.Options{Required: true, Help: "GPG public key"})
 
 	// restore
 	restoreCmd := parser.NewCommand("restore", "Restore a backup version")
-	ctx.privateKey = *restoreCmd.String("p", "private-key", &argparse.Options{Required: true, Help: "GPG public key"})
-	ctx.versionToRestore = *restoreCmd.String("s", "version", &argparse.Options{Required: false, Help: "Version number", Default: "latest"})
+	privateKey := restoreCmd.String("p", "private-key", &argparse.Options{Required: true, Help: "GPG public key"})
 
-	ctx.url = *parser.String("u", "url", &argparse.Options{Required: true, Help: "e.g. https://backups.example.org"})
-	ctx.collectionId = *parser.String("i", "collection-id", &argparse.Options{Required: true, Help: "aaaa-bbb-ccc-dddd"})
-	ctx.authToken = *parser.String("t", "auth-token", &argparse.Options{Required: true, Help: "JWT token that allows to upload at least one file successfully"})
-	ctx.command = *parser.String("c", "cmd", &argparse.Options{Required: true, Help: "Command to execute, which output will be captured and sent to server"})
-	ctx.timeout = *parser.Int("", "timeout", &argparse.Options{Required: false, Help: "Connection and read timeout in summary", Default: 60 * 20})
+	versionToRestore := restoreCmd.String("s", "version", &argparse.Options{Required: false, Help: "Version number", Default: "latest"})
+
+	url := parser.String("u", "url", &argparse.Options{Required: true, Help: "e.g. https://backups.example.org"})
+	collectionId := parser.String("i", "collection-id", &argparse.Options{Required: true, Help: "aaaa-bbb-ccc-dddd"})
+	authToken := parser.String("t", "auth-token", &argparse.Options{Required: true, Help: "JWT token that allows to upload at least one file successfully"})
+	command := parser.String("c", "cmd", &argparse.Options{Required: true, Help: "Command to execute, which output will be captured and sent to server"})
+	timeout := parser.Int("", "timeout", &argparse.Options{Required: false, Help: "Connection and read timeout in summary", Default: 60 * 20})
+	passphrase := parser.String("s", "passphrase", &argparse.Options{Required: true, Help: "Secret passphrase for GPG"})
+	logLevel := parser.Int("", "log-level", &argparse.Options{Required: false, Help: "Verbosity level. Set '5' to debug", Default: 4})
 
 	err := parser.Parse(os.Args)
+	log.SetLevel(log.Level(*logLevel))
+
+	// prepare context
+	ctx.privateKeyPath = *privateKey
+	ctx.publicKeyPath = *publicKeyPath
+	ctx.versionToRestore = *versionToRestore
+	ctx.url = *url
+	ctx.collectionId = *collectionId
+	ctx.authToken = *authToken
+	ctx.command = *command
+	ctx.timeout = *timeout
 
 	if err != nil {
 		log.Fatal(err)
 	}
 
+	// GPG
+	ctx.gpg, err = CreateGPGContext(ctx.publicKeyPath, ctx.privateKeyPath, *passphrase)
+	if err != nil {
+		ctx.gpg.cleanUp()
+		log.Fatalf("Fatal error happened when creating GPG context: %v", err)
+	}
+
+	// actions
 	if makeCmd.Happened() {
 		err = uploader.UploadFromCommandOutput(ctx.command, ctx.url, ctx.collectionId, ctx.authToken, ctx.timeout)
+		ctx.gpg.cleanUp()
+
 		if err != nil {
 			log.Fatal(err)
 		}
 	} else if restoreCmd.Happened() {
-		log.Println(ctx.publicKey, ctx.privateKey, ctx.versionToRestore)
+		ctx.gpg.cleanUp()
 	}
 }

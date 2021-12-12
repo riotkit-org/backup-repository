@@ -7,7 +7,13 @@ type ActionContext struct {
 	command      string
 	timeout      int
 
-	publicKey        string
-	privateKey       string
+	publicKeyPath    string
+	privateKeyPath   string
 	versionToRestore string
+
+	gpg GPGOperationContext
+}
+
+func (that ActionContext) GetCommand() string {
+	return that.command
 }
