@@ -1,8 +1,9 @@
-package uploader
+package client
 
 import (
 	"errors"
 	"fmt"
+	ctx "github.com/riotkit-org/backup-repository/backup-maker/context"
 	log "github.com/sirupsen/logrus"
 	"io"
 	"io/ioutil"
@@ -17,7 +18,7 @@ import (
 func gracefullyKillProcess(cmd *exec.Cmd) error {
 	var killErr error = nil
 
-	log.Println("Stopping backup process")
+	log.Println("Stopping process")
 
 	// protect against zombie processes
 	for retry := 0; retry < 5; retry++ {
@@ -91,9 +92,9 @@ func Upload(domainWithSchema string, collectionId string, authToken string, body
 
 // UploadFromCommandOutput pushes a stdout of executed command through HTTP endpoint of Backup Repository under specified domain
 // Upload is used to perform HTTP POST request
-func UploadFromCommandOutput(command string, url string, collectionId string, authToken string, timeout int) error {
-	log.Print("/bin/bash", "-c", command)
-	cmd := exec.Command("/bin/bash", "-c", command)
+func UploadFromCommandOutput(context ctx.ActionContext) error {
+	log.Print("/bin/bash", "-c", context.GetCommand())
+	cmd := exec.Command("/bin/bash", "-c", context.GetCommand())
 	cmd.Stderr = os.Stderr
 	stdout, pipeErr := cmd.StdoutPipe()
 	if pipeErr != nil {
@@ -109,8 +110,9 @@ func UploadFromCommandOutput(command string, url string, collectionId string, au
 	}
 
 	log.Printf("Starting Upload() for PID=%v", cmd.Process.Pid)
-	status, out, uploadErr := Upload(url, collectionId, authToken, stdout, timeout)
+	status, out, uploadErr := Upload(context.Url, context.CollectionId, context.AuthToken, stdout, context.Timeout)
 	if uploadErr != nil {
+		log.Errorf("Status: %v, Out: %v", status, out)
 		return uploadErr
 	}
 
@@ -119,7 +121,7 @@ func UploadFromCommandOutput(command string, url string, collectionId string, au
 		return killErr
 	}
 
-	fmt.Printf("Status: %v, Out: %v", status, out)
+	log.Info("Version uploaded")
 
 	return nil
 }
