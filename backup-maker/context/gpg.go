@@ -17,17 +17,17 @@ type GPGOperationContext struct {
 
 	// dynamic
 	Path             string
-	ShouldShowStdout bool
+	ShouldShowOutput bool
 }
 
 // CreateGPGContext is a factory method that creates a GPG directory and imports keys
-func CreateGPGContext(publicKeyPath string, privateKeyPath string, passphrase string, recipient string, shouldShowStdout bool) (GPGOperationContext, error) {
+func CreateGPGContext(publicKeyPath string, privateKeyPath string, passphrase string, recipient string, shouldShowOutput bool) (GPGOperationContext, error) {
 	ctx := GPGOperationContext{}
 	ctx.PublicKeyPath = publicKeyPath
 	ctx.PrivateKeyPath = privateKeyPath
 	ctx.Passphrase = passphrase
 	ctx.Recipient = recipient
-	ctx.ShouldShowStdout = shouldShowStdout
+	ctx.ShouldShowOutput = shouldShowOutput
 
 	path, err := ioutil.TempDir("/tmp", "backup-repository-gpg")
 	ctx.Path = path
@@ -77,10 +77,10 @@ func (that GPGOperationContext) importKeys() error {
 			"--import", keyPath,
 		)
 		cmd.Env = []string{fmt.Sprintf("GNUPGHOME=%v", that.Path)}
-		if that.ShouldShowStdout {
+		if that.ShouldShowOutput {
 			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
 		}
-		cmd.Stderr = os.Stderr
 
 		stdin, _ := cmd.StdinPipe()
 		_ = cmd.Start()
@@ -119,10 +119,10 @@ func (that GPGOperationContext) initializeGPGDirectory() error {
 
 	cmd.Env = []string{fmt.Sprintf("GNUPGHOME=%v", that.Path)}
 	stdin, err := cmd.StdinPipe()
-	if that.ShouldShowStdout {
+	if that.ShouldShowOutput {
 		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
 	}
-	cmd.Stderr = os.Stderr
 
 	if err != nil {
 		_ = cmd.Process.Kill()

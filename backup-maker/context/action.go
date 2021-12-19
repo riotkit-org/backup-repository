@@ -30,6 +30,6 @@ func (that ActionContext) GetCommand() string {
 	return that.Gpg.GetDecryptionCommand() + " | " + that.Command
 }
 
-func (that ActionContext) ShouldShowStdout() bool {
+func (that ActionContext) ShouldShowCommandsOutput() bool {
 	return that.LogLevel >= 5
 }

@@ -86,7 +86,7 @@ func createContextFromArgumentParsing() context.ActionContext {
 	}
 
 	// GPG
-	ctx.Gpg, err = context.CreateGPGContext(ctx.Gpg.PublicKeyPath, ctx.Gpg.PrivateKeyPath, passphrase, recipient, ctx.ShouldShowStdout())
+	ctx.Gpg, err = context.CreateGPGContext(ctx.Gpg.PublicKeyPath, ctx.Gpg.PrivateKeyPath, passphrase, recipient, ctx.ShouldShowCommandsOutput())
 
 	if err != nil {
 		ctx.Gpg.CleanUp()
