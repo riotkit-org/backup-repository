@@ -55,9 +55,9 @@ func DownloadBackupIntoStream(context ctx.ActionContext, writer io.Writer) error
 }
 
 func DownloadBackupIntoProcessStdin(context ctx.ActionContext, command string) error {
-	log.Debugf("Using command stdin as writer stream: `%v`", command)
+	log.Debugf("Using command stdin as writer stream: `%v`", context.GetPrintableCommand(command))
 
-	cmd := exec.Command("/bin/bash", "-c", command)
+	cmd := exec.Command("/bin/bash", "-c", context.GetCommand(command))
 	stdin, _ := cmd.StdinPipe()
 	if err := cmd.Start(); err != nil {
 		log.Errorf("Cannot start process: %v", err)
