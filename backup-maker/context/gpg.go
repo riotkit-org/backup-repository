@@ -58,6 +58,8 @@ func (that GPGOperationContext) CleanUp() {
 	if err != nil {
 		log.Fatalf("Cannot delete GPG directory at '%v'", that.Path)
 	}
+
+	_ = exec.Command("/bin/bash", "-c", fmt.Sprintf("ps axu | grep gpg-agent | grep %v | grep -v grep | awk '{print $2}' | xargs kill -9", that.Path)).Run()
 }
 
 // importKeys is importing PUBLIC and PRIVATE keys into local temporary keyring created on-the-fly
