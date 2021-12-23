@@ -1,6 +1,7 @@
 package context
 
 import (
+	"errors"
 	"fmt"
 	log "github.com/sirupsen/logrus"
 	"io"
@@ -42,7 +43,7 @@ func CreateGPGContext(publicKeyPath string, privateKeyPath string, passphrase st
 			return ctx, initErr
 		}
 		if importErr := ctx.importKeys(); importErr != nil {
-			return ctx, importErr
+			return ctx, errors.New(fmt.Sprintf("Cannot import key, error: %v", importErr))
 		}
 	} else {
 		log.Warningln("GPG disabled (no keys configured)")
