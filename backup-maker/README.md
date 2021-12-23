@@ -1,5 +1,12 @@
-Backup Repository Backup Maker
-==============================
+Backup Maker
+============
+
+Tiny backup client.
+
+**Features:**
+- Captures output from user-defined Backup/Restore commands
+- Automated GPG support enables easy E2E encryption
+- Buffered upload of backup made on-the-fly requires no additional disk space to create backup
 
 Usage
 -----
