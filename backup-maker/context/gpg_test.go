@@ -59,3 +59,14 @@ func TestGPGOperationContext_CleanUp(t *testing.T) {
 	out, _ := proc.Output()
 	assert.NotContains(t, string(out), "gpg-agent")
 }
+
+func TestGPGOperationContext_GetDecryptionCommand_GetEncryptionCommmand_DoesNotReturnCommandWhenGPGDisabled(t *testing.T) {
+	ctx, _ := CreateGPGContext("",
+		"",
+		"riotkit",
+		"example@riotkit.org",
+		true)
+
+	assert.Equal(t, "", ctx.GetDecryptionCommand())
+	assert.Equal(t, "", ctx.GetEncryptionCommand())
+}
