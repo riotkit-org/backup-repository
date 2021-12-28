@@ -37,7 +37,7 @@ func createContextFromArgumentParsing() context.ActionContext {
 
 	// restore
 	restoreCmd := parser.NewCommand("restore", "Restore a backup version")
-	restoreCmdPrivateKey := restoreCmd.String("p", "private-key", &argparse.Options{Required: false, Help: "GPG private key. [environment variable: BM_PUBLIC_KEY_PATH]"})
+	restoreCmdPrivateKey := restoreCmd.String("p", "private-key", &argparse.Options{Required: false, Help: "GPG private key. [environment variable: BM_PRIVATE_KEY_PATH]"})
 	restoreCmdCommand := restoreCmd.String("c", "cmd", &argparse.Options{Required: shouldBeRequired("BM_CMD"), Help: "Command which should take downloaded file as stdin stream e.g. some tar, unzip, psql [environment variable: BM_CMD]"})
 	restoreCmdPassphrase := restoreCmd.String("", "passphrase", &argparse.Options{Required: false, Help: "Secret passphrase for GPG [environment variable: BM_PASSPHRASE]"})
 	restoreCmdVersionToRestore := restoreCmd.String("s", "version", &argparse.Options{Required: false, Help: "Version number [environment variable: BM_VERSION]", Default: "latest"})
