@@ -27,7 +27,7 @@ func (that ActionContext) GetCommand(custom string) string {
 		cmd = custom
 	}
 
-	if !that.Gpg.enabled(that.ActionType) {
+	if !that.Gpg.Enabled(that.ActionType) {
 		return cmd
 	}
 

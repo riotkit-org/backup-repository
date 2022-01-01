@@ -20,6 +20,10 @@ func gracefullyKillProcess(cmd *exec.Cmd) error {
 
 	log.Println("Stopping process")
 
+	if cmd.ProcessState.Exited() {
+		return nil
+	}
+
 	// protect against zombie processes
 	for retry := 0; retry < 5; retry++ {
 		killErr = cmd.Process.Kill()
@@ -93,8 +97,8 @@ func Upload(domainWithSchema string, collectionId string, authToken string, body
 // UploadFromCommandOutput pushes a stdout of executed command through HTTP endpoint of Backup Repository under specified domain
 // Upload is used to perform HTTP POST request
 func UploadFromCommandOutput(context ctx.ActionContext) error {
-	log.Print("/bin/bash", "-c", context.GetPrintableCommand(""))
-	cmd := exec.Command("/bin/bash", "-c", context.GetCommand(""))
+	log.Print("/bin/bash", GetShellCommand(context.GetCommand("")))
+	cmd := exec.Command("/bin/bash", GetShellCommand(context.GetCommand(""))...)
 	cmd.Stderr = os.Stderr
 	stdout, pipeErr := cmd.StdoutPipe()
 	if pipeErr != nil {

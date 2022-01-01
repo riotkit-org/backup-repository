@@ -8,17 +8,17 @@ import (
 	"io"
 	"io/ioutil"
 	"net/http"
+	"os"
 	"os/exec"
 	"time"
 )
 
-func Download(context ctx.ActionContext) (io.ReadCloser, error) {
+func Download(context ctx.ActionContext, client HTTPClient) (io.ReadCloser, error) {
 	url := context.Url + fmt.Sprintf("/api/stable/repository/collection/%v/version/%v", context.CollectionId, context.VersionToRestore)
 	log.Infof("Downloading: %v", url)
 
-	client := http.Client{}
 	req, _ := http.NewRequest("GET", url, nil)
-	client.Timeout = time.Second * time.Duration(context.Timeout)
+	client.SetTimeout(context.Timeout)
 	req.Header.Set("Authorization", fmt.Sprintf("Bearer %v", context.AuthToken))
 
 	response, reqError := client.Do(req)
@@ -37,10 +37,10 @@ func Download(context ctx.ActionContext) (io.ReadCloser, error) {
 	return response.Body, nil
 }
 
-func DownloadBackupIntoStream(context ctx.ActionContext, writer io.Writer) error {
+func DownloadBackupIntoStream(context ctx.ActionContext, writer io.Writer, client HTTPClient) error {
 	log.Debugf("Downloading %v and copying into io.Writer stream", context.CollectionId)
 
-	buffer, httpErr := Download(context)
+	buffer, httpErr := Download(context, client)
 	if httpErr != nil {
 		log.Errorf("Cannot download to store in a file, HTTP error: %v", httpErr)
 		return httpErr
@@ -54,17 +54,20 @@ func DownloadBackupIntoStream(context ctx.ActionContext, writer io.Writer) error
 	return nil
 }
 
-func DownloadBackupIntoProcessStdin(context ctx.ActionContext, command string) error {
+func DownloadBackupIntoProcessStdin(context ctx.ActionContext, command string, client HTTPClient) error {
 	log.Debugf("Using command stdin as writer stream: `%v`", context.GetPrintableCommand(command))
 
-	cmd := exec.Command("/bin/bash", "-c", context.GetCommand(command))
+	cmd := exec.Command("/bin/bash", GetShellCommand(context.GetCommand(command))...)
 	stdin, _ := cmd.StdinPipe()
+	cmd.Stderr = os.Stderr
+	cmd.Stdout = os.Stdout
+
 	if err := cmd.Start(); err != nil {
 		log.Errorf("Cannot start process: %v", err)
 		return err
 	}
 
-	if downloadErr := DownloadBackupIntoStream(context, stdin); downloadErr != nil {
+	if downloadErr := DownloadBackupIntoStream(context, stdin, client); downloadErr != nil {
 		log.Errorf("Cannot download - fetching error or shell process error: %v", downloadErr)
 		_ = stdin.Close()
 		_ = cmd.Process.Kill()
@@ -73,18 +76,30 @@ func DownloadBackupIntoProcessStdin(context ctx.ActionContext, command string) e
 	}
 
 	_ = stdin.Close()
-	if err := gracefullyKillProcess(cmd); err != nil {
-		log.Errorf("Cannot end process: %v", err)
-		return err
-	}
 
-	return nil
+	var timer *time.Timer
+	var isErr error = nil
+
+	timer = time.AfterFunc(time.Second*time.Duration(context.Timeout), func() {
+		if err := gracefullyKillProcess(cmd); err != nil {
+			log.Errorf("Cannot end process: %v. Exit Code: %v", err, cmd.ProcessState.ExitCode())
+			isErr = err
+		}
+	})
+
+	if waitErr := cmd.Wait(); waitErr != nil {
+		log.Error("Process finished with error")
+		return waitErr
+	}
+	timer.Stop()
+
+	return isErr
 }
 
-func DownloadIntoFile(context ctx.ActionContext, targetFilePath string) error {
+func DownloadIntoFile(context ctx.ActionContext, targetFilePath string, client HTTPClient) error {
 	log.Debugf("Downloading %v into file %v", context.CollectionId, targetFilePath)
 
-	if err := DownloadBackupIntoProcessStdin(context, fmt.Sprintf("cat - > %v", targetFilePath)); err != nil {
+	if err := DownloadBackupIntoProcessStdin(context, fmt.Sprintf("cat - > %v", targetFilePath), client); err != nil {
 		return err
 	}
 

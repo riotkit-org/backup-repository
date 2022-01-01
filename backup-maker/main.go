@@ -155,17 +155,19 @@ func triggerMakeAction(ctx context.ActionContext) error {
 }
 
 func triggerRestoreAction(ctx context.ActionContext) error {
-	if restoreErr := client.DownloadBackupIntoProcessStdin(ctx, ctx.Command); restoreErr != nil {
+	if restoreErr := client.DownloadBackupIntoProcessStdin(ctx, ctx.Command, client.CreateHttpClient()); restoreErr != nil {
 		log.Error("Cannot restore backup")
 		log.Error(restoreErr)
 		return restoreErr
 	}
 
+	log.Info("Backup restored")
+
 	return nil
 }
 
 func triggerDownloadAction(ctx context.ActionContext) error {
-	if downloadErr := client.DownloadIntoFile(ctx, ctx.DownloadPath); downloadErr != nil {
+	if downloadErr := client.DownloadIntoFile(ctx, ctx.DownloadPath, client.CreateHttpClient()); downloadErr != nil {
 		log.Error("Cannot download file")
 		log.Error(downloadErr)
 		return downloadErr

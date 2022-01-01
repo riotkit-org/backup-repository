@@ -45,6 +45,7 @@ func CreateGPGContext(publicKeyPath string, privateKeyPath string, passphrase st
 		if importErr := ctx.importKeys(); importErr != nil {
 			return ctx, errors.New(fmt.Sprintf("Cannot import key, error: %v", importErr))
 		}
+		ctx.printImportedKeys()
 	} else {
 		log.Warningln("GPG disabled (no keys configured)")
 	}
@@ -98,6 +99,15 @@ func (that GPGOperationContext) importKeys() error {
 	}
 
 	return nil
+}
+
+func (that GPGOperationContext) printImportedKeys() {
+	log.Println("Imported keys:")
+	cmd := exec.Command("gpg", "--list-secret-keys")
+	cmd.Env = []string{fmt.Sprintf("GNUPGHOME=%v", that.Path)}
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	_ = cmd.Run()
 }
 
 // initializeGPGDirectory creates a GPG temporary keyring used on-the-fly, then it gets automatically deleted
@@ -174,7 +184,7 @@ func (that GPGOperationContext) GetDecryptionCommand() string {
 		that.Path, that.Recipient, that.Passphrase)
 }
 
-func (that GPGOperationContext) enabled(actionType string) bool {
+func (that GPGOperationContext) Enabled(actionType string) bool {
 	if actionType == "make" {
 		return that.PublicKeyPath != ""
 	}
