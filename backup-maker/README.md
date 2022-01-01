@@ -14,6 +14,7 @@ Tiny backup client packed in a single binary.
 ## Creating backup
 
 ```bash
+# most of commandline switches can be replaced with environment variables, check the table in other section of documentation
 export BM_AUTH_TOKEN="some-token"; \
 export BM_COLLECTION_ID="111-222-333-444"; \
 export BM_PASSPHRASE="riotkit"; \
