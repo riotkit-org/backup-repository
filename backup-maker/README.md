@@ -9,10 +9,9 @@ Tiny backup client packed in a single binary.
 - Buffered upload of backup made on-the-fly requires no additional disk space to create backup
 - Small, single binary, can be injected into container or distributed as a lightweight container
 
-Usage
------
+# Usage
 
-### Creating backup
+## Creating backup
 
 ```bash
 export BM_AUTH_TOKEN="some-token"; \
@@ -25,7 +24,7 @@ backup-maker make --url https://example.org \
     --log-level info
 ```
 
-### Restoring a backup
+## Restoring a backup
 
 ```bash
 # commandline switches could be there also replaced with environment variables
@@ -39,10 +38,42 @@ backup-maker restore --url $$(cat .build/test/domain.txt) \
     --log-level debug
 ```
 
-### Hints
+## Hints
 
 - Skip `--private-key` and `--passphrase` to disable GPG
 - Use `debug` log level to see GPG output and more verbose output at all
+
+
+## Proposed usage
+
+### Scenario 1: Standalone binary running from crontab
+
+Just schedule a cronjob that would trigger `backup-maker make` with proper switches. Create a helper script to easily restore backup as a part
+of a disaster recovery plan.
+
+### Scenario 2: Dockerized applications, keep it inside application container
+
+Pack `backup-maker` into docker image and trigger backups from internal or external crontab, jobber or other scheduler.
+
+### Scenario 3: Use with `backup-controller` in Kubernetes
+
+`backup-controller` acts as a scheduler, improving security and adding automation.
+
+1. Create token in `Backup Repository` that will have a possibility to generate temporary tokens for single-time file uploads
+2. Assign token to `backup-controller` (use it in configuration file)
+3. According to `backup-controller` documentation: Setup `Kubernetes` transport, so it will inject binary or run a `kind: Job`
+
+### Scenario 4: Use with `backup-controller` in Docker/Docker-Compose
+
+`backup-controller` acts as a scheduler, improving security and adding automation.
+
+1. Create token in `Backup Repository` that will have a possibility to generate temporary tokens for single-time file uploads
+2. Assign token to `backup-controller` (use it in configuration file)
+3. According to `backup-controller` documentation: Setup `Docker` transport, it will inject binary into existing application container or run a temporary container with attached application volumes
+
+### Scenario 5: Use with ArgoCD Workflows
+
+Create a definition of a ArgoCD Workflow that will spawn a Kubernetes job with defined token, collection id, command, GPG key.
 
 Environment variables
 ---------------------
