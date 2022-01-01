@@ -1,13 +1,16 @@
 Backup Maker
 ============
 
-Tiny backup client packed in a single binary.
+Tiny backup client packed in a single binary. Interacts with a `Backup Repository` server to store files, uses GPG to secure your
+backups even against the server administrator.
 
 **Features:**
 - Captures output from user-defined Backup/Restore commands
 - Automated, optional GPG support enables easy to use E2E encryption
 - Buffered upload of backup made on-the-fly requires no additional disk space to create backup
 - Small, single binary, can be injected into container or distributed as a lightweight container
+
+**Notice:** You need to have backup of your encryption private key. **Lost encryption key means your backups are unreadable!**
 
 # Usage
 
