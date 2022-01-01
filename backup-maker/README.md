@@ -5,25 +5,44 @@ Tiny backup client packed in a single binary.
 
 **Features:**
 - Captures output from user-defined Backup/Restore commands
-- Automated GPG support enables easy E2E encryption
+- Automated, optional GPG support enables easy to use E2E encryption
 - Buffered upload of backup made on-the-fly requires no additional disk space to create backup
 - Small, single binary, can be injected into container or distributed as a lightweight container
 
 Usage
 -----
 
-### Creating backup example
+### Creating backup
 
 ```bash
 export BM_AUTH_TOKEN="some-token"; \
 export BM_COLLECTION_ID="111-222-333-444"; \
 export BM_PASSPHRASE="riotkit"; \
-${BIN_PATH} make --url https://example.org \
+backup-maker make --url https://example.org \
     -c "tar -zcvf - ./" \
     --key build/test/backup.key \
     --recipient test@riotkit.org \
     --log-level info
 ```
+
+### Restoring a backup
+
+```bash
+# commandline switches could be there also replaced with environment variables
+backup-maker restore --url $$(cat .build/test/domain.txt) \
+    -i $$(cat .build/test/collection-id.txt) \
+    -t $$(cat .build/test/auth-token.txt) \
+    -c "cat - > /tmp/test" \
+    --private-key .build/test/backup.key \
+    --passphrase riotkit \
+    --recipient test@riotkit.org \
+    --log-level debug
+```
+
+### Hints
+
+- Skip `--private-key` and `--passphrase` to disable GPG
+- Use `debug` log level to see GPG output and more verbose output at all
 
 Environment variables
 ---------------------
