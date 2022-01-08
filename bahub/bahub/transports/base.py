@@ -1,10 +1,107 @@
+import os
+import sys
 from abc import abstractmethod
-from typing import Union, List, Optional
+from subprocess import Popen, PIPE
+from time import sleep
+from typing import List, Union, Optional
 from jsonschema import validate, draft7_format_checker, ValidationError
 from rkd.api.inputoutput import IO
+
+from ..bin import RequiredBinary
 from ..exception import SpecificationError
 from ..inputoutput import StreamableBuffer
+from ..model import BackupDefinition
 from ..schema import create_example_from_attributes
+
+
+class FilesystemInterface(object):
+    """
+    Interacts with filesystem
+    Implementations should allow interacting with filesystems in various places like remote filesystems or containers
+    """
+
+    io: IO
+
+    @abstractmethod
+    def force_mkdir(self, path: str):
+        pass
+
+    @abstractmethod
+    def download(self, url: str, destination_path: str):
+        pass
+
+    @abstractmethod
+    def delete_file(self, path: str):
+        pass
+
+    @abstractmethod
+    def link(self, src: str, dst: str):
+        pass
+
+    @abstractmethod
+    def make_executable(self, path: str):
+        pass
+
+    @abstractmethod
+    def file_exists(self, path: str) -> bool:
+        pass
+
+
+def download_required_tools(fs: FilesystemInterface, io: IO, bin_path: str,
+                            versions_path: str, binaries: List[RequiredBinary]) -> None:
+    """
+    Collects all binaries VERSIONED into /bin/versions then links into /bin as filenames without version included
+    Does not download binary twice
+    """
+
+    io.debug("Preparing environment")
+    fs.force_mkdir(os.path.dirname(bin_path))
+    fs.force_mkdir(bin_path)
+    fs.force_mkdir(versions_path)
+
+    for binary in binaries:
+        version_path = versions_path + "/" + binary.get_full_name_with_version()
+        bin_path = bin_path + "/" + binary.get_filename()
+
+        if not fs.file_exists(version_path):
+            io.debug(f"Downloading binary {binary.get_url()} into {version_path}")
+            fs.download(binary.get_url(), version_path)
+            fs.make_executable(versions_path)
+
+        try:
+            fs.delete_file(bin_path)
+        except FileNotFoundError:
+            pass
+
+        io.debug(f"Linking version {version_path} into {bin_path}")
+        fs.link(version_path, bin_path)
+
+
+def create_backup_maker_command(command: str, definition: BackupDefinition, is_backup: bool,
+                                version: str = "", prepend: list = None) -> List[str]:
+    args = [
+        "/usr/bin/env"
+    ]
+
+    if prepend:
+        args += prepend
+
+    args += [
+        "backup-maker", "make" if is_backup else "restore",
+        "--url", definition.access().url,
+        "--collection-id", definition.get_collection_id(),
+        "--auth-token", definition.access().token,
+        "--passphrase", definition.encryption().get_passphrase(),
+        "-c", command,
+        "--key", os.path.realpath(definition.encryption().get_public_key_path()),
+        "--recipient", definition.encryption().recipient(),
+        "--log-level", "info"
+    ]
+
+    if not is_backup:
+        args += ["--version", version]
+
+    return args
 
 
 class TransportInterface(object):
@@ -12,7 +109,7 @@ class TransportInterface(object):
     Transport
     =========
 
-    Defines how to execute shell commands. It is not that simple - there are many possibilities:
+    Defines how to trigger adapters. It is not that simple - there are many possibilities:
         - Simply just execute on local shell
         - Execute inside running Docker container
         - Execute in Kubernetes container
@@ -77,39 +174,20 @@ class TransportInterface(object):
                 raise SpecificationError('Linked transport "spec" section parsing error, ' + str(exc))
 
     @abstractmethod
-    def execute(self, command: str):
-        """
-        Execute a command with passing through all output to console
-
-        :param command:
-        :return:
-        """
-
+    def prepare_environment(self, binaries: List[RequiredBinary]) -> None:
         pass
 
     @abstractmethod
-    def capture(self, command: Union[str, List[str]]) -> bytes:
+    def schedule(self, command: str, definition, is_backup: bool, version: str = "") -> None:
         """
-        Capture output
-
-        :param command:
-        :return:
+        Schedule a backup
         """
-
         pass
 
     @abstractmethod
-    def buffered_execute(self, command: Union[str, List[str]],
-                         stdin: Optional[StreamableBuffer] = None,
-                         env: dict = None) -> StreamableBuffer:
-
+    def watch(self) -> bool:
         """
-        Open a process with two pipes - IN & OUT for streaming
-
-        :param command:
-        :param stdin:
-        :param env:
-        :return:
+        Watches output of the scheduled command and returns boolean to indicate result
         """
 
         pass
@@ -117,11 +195,41 @@ class TransportInterface(object):
     def get_failure_details(self) -> str:
         """
         Optionally raise a specific exception with more details
-
-        :return:
         """
 
         return ''
 
     def io(self) -> IO:
         return self._io
+
+    def _exec_command(self, command: Union[str, List[str]], stdin: Optional[StreamableBuffer] = None,
+                      env: dict = None) -> StreamableBuffer:
+
+        proc_env = dict(os.environ)
+
+        if env:
+            proc_env.update(env)
+
+        self.io().debug('_exec_command({command})'.format(command=command))
+        proc = Popen(command, shell=type(command) == str,
+                     stdout=PIPE,
+                     stderr=sys.stderr.fileno(),
+                     env=env,
+                     text=True)
+
+        def close_stream():
+            proc.stdout.close()
+            proc.terminate()
+            sleep(1)
+
+        return StreamableBuffer(
+            io=self._io,
+            read_callback=proc.stdout.read,
+            close_callback=close_stream,
+            eof_callback=lambda: proc.poll() is not None,
+            is_success_callback=lambda: proc.poll() == 0,
+            has_exited_with_failure=lambda: proc.poll() is not None and proc.poll() >= 1,
+            description='command <{}>'.format(command),
+            buffer=proc.stdout,
+            parent=stdin
+        )

@@ -39,5 +39,14 @@ TASKS = [
         cd ../ && sudo docker build . -f bahub/.rkd/docker/Dockerfile -t quay.io/riotkit/bahub:latest-dev
     ''']),
 
+    Pipeline(':test:dev:create', [':sh', '-c', '''
+        docker run --name nginx_bahub_test -d nginx:1.19 || true;
+    
+        export TEST_COLLECTION_ID=$(cat ../backup-maker/.build/test/collection-id.txt);
+        export SERVER_URL=$(cat ../backup-maker/.build/test/domain.txt);
+        export API_TOKEN=$(cat ../backup-maker/.build/test/collection-id.txt);
+        RKD_SYS_LOG_LEVEL=debug python -m bahub :backup:make -c ./bahub.conf.yaml fs_docker -rl debug
+    ''']),
+
     Pipeline(':test:unit', [':py:unittest'])
 ]

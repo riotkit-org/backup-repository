@@ -5,15 +5,17 @@ Filesystem Adapter
 Packs files and directories into TAR.GZ packages
 """
 import os
+from typing import List
 
-from rkd.api.inputoutput import IO
 from .base import AdapterInterface
+from ..bin import RequiredBinary
 from ..model import BackupDefinition
-from ..transports.base import StreamableBuffer
 
 
 class Definition(BackupDefinition):
-    """Configuration"""
+    """
+    Configuration
+    """
 
     @staticmethod
     def get_spec_defaults() -> dict:
@@ -67,23 +69,32 @@ class Definition(BackupDefinition):
 
 
 class Adapter(AdapterInterface):
-    """Defines how to make backup of files and directories"""
+    """
+    Defines how to make backup of files and directories
+    """
 
-    def backup(self, definition: Definition) -> StreamableBuffer:
-        """Pack files into a TAR.GZ and return as a output buffer"""
+    def create_backup_instruction(self, definition: Definition) -> str:
+        """
+        Pack files into a TAR.GZ
+        """
 
-        backup_process = definition.transport().buffered_execute
+        return 'tar %s | cat' % definition.get_backup_parameters()
 
-        return backup_process('set -euo pipefail; tar %s | cat' % definition.get_backup_parameters())
+    def create_restore_instruction(self, definition: Definition) -> str:
+        """
+        Unpack files from the TAR.GZ
+        """
 
-    def restore(self, definition: Definition, in_buffer: StreamableBuffer, io: IO) -> None:
-        """Unpack files from the TAR.GZ provided by in_buffer"""
-
-        restore_process = definition.transport()\
-            .buffered_execute('tar %s' % definition.get_restore_parameters(), stdin=in_buffer)
-
-        self._read_from_restore_process(restore_process, io)
+        return 'tar %s' % definition.get_restore_parameters()
 
     @staticmethod
     def create_definition(config: dict, name: str) -> Definition:
         return BackupDefinition.from_config(Definition, config, name)
+
+    def get_required_binaries(self) -> List[RequiredBinary]:
+        from ..bin import RequiredBinaryFromGithubRelease  # todo: remove (testing only)
+
+        return [
+            # todo: remove (testing only)
+            RequiredBinaryFromGithubRelease("riotkit-org/gpbkdf2", "v1.0", "gpbkdf2")
+        ]

@@ -5,4 +5,4 @@ certifi>=2020.12.5
 PyYAML>=5.3.1
 jsonschema>=3.2.0
 python-gnupg>=0.4.6
-docker-py>=1.10
+docker>=5.0.3

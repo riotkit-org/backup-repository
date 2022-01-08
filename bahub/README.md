@@ -83,8 +83,8 @@ Requirements
 - GNU tar
 - GNU Privacy Guard 2.x (mandatory, for E2E encryption support. There is no way to turn off encryption)
 
-Installing
-----------
+Usage
+-----
 
 a) via Python package (on host machine)
 

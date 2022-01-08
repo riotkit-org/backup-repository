@@ -68,7 +68,7 @@ class ConfigurationFactory(object):
 
         if len(invalid_vars) > 0:
             raise ConfigurationFactoryException(
-                'Following environment variables are not resolved: ' + (', '.join(invalid_vars))
+                'Following environment variables cannot be resolved: ' + (', '.join(invalid_vars))
             )
 
         return json_decode(content_as_str)
@@ -224,7 +224,7 @@ class ConfigurationFactory(object):
         return sensitive_data
 
 
-class DefinitionFactoryErrorCatcher:
+class DefinitionFactoryErrorCatcher(object):
     _key_name = ""
     _debug = False
 

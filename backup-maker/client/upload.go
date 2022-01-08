@@ -20,7 +20,7 @@ func gracefullyKillProcess(cmd *exec.Cmd) error {
 
 	log.Println("Stopping process")
 
-	if cmd.ProcessState.Exited() {
+	if cmd.ProcessState == nil || cmd.ProcessState.Exited() {
 		return nil
 	}
 

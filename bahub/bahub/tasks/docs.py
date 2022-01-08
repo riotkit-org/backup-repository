@@ -3,7 +3,7 @@ import yaml
 from argparse import ArgumentParser
 from rkd.api.contract import ExecutionContext, TaskInterface
 from ..importing import Importing
-from ..transports import transports
+from ..transports.all import transports
 from ..adapters import adapters
 from .base import BaseTask
 
@@ -32,7 +32,7 @@ class BackupTypeSchemaPrintingTask(BaseTask):
 
 
 class BackupTypeExampleTask(BaseTask):
-    """Shows a example configuration for a given backup type. See :help:info for list of built-in tasks"""
+    """Shows example configuration for a given backup type. See :help:info for list of built-in tasks"""
 
     def get_name(self) -> str: return ':example'
     def get_group_name(self) -> str: return ':help:backup'

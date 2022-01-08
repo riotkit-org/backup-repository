@@ -1,102 +1,58 @@
-import os
-from urllib.parse import quote as url_quote
-from json import dumps as json_dumps
+from dataclasses import dataclass
+from typing import List
 from abc import ABC, abstractmethod
 from jsonschema import validate, draft7_format_checker, ValidationError
-from .exception import ConfigurationFactoryException, SpecificationError
+
+from .bin import RequiredBinary
+from .exception import SpecificationError
 from .transports.base import TransportInterface
 from .schema import create_example_from_attributes
 
 
-class VersionAttributes(object):
-    """Key=Value storage per file"""
-
-    _store: dict
-
-    def __init__(self, attributes: dict):
-        self._store = attributes
-
-    def get(self, name: str) -> str:
-        return self._store[name]
-
-    def set(self, name: str, value: str):
-        self._store[name] = value
-
-    def get_crypto_initialization_vector(self) -> str:
-        return self.get('iv')
-
-    def set_crypto_initialization_vector(self, value: str):
-        self.set('iv', value)
-
-    @staticmethod
-    def create_empty():
-        return VersionAttributes({})
-
-    def serialize_to_querystring_value(self) -> str:
-        return url_quote(json_dumps(self._store))
-
-
+@dataclass
 class ServerAccess(object):
-    """Backup Repository user access"""
+    """
+    Backup Repository user access
+    """
 
-    _url = ""    # type: str
-    _token = ""  # type: str
-
-    def __init__(self, url: str, token: str):
-        self._url = url
-        self._token = token
+    url: str = ""
+    token: str = ""
 
     @staticmethod
     def from_config(config: dict):
         return ServerAccess(config['url'], config['token'])
 
     def get_url(self):
-        return self._url
+        return self.url
 
     def get_token(self):
-        return self._token
+        return self.token
 
-    def build_url(self, endpoint: str, attributes: VersionAttributes = None) -> str:
-
-        url = self._url.rstrip('/') + '/' + endpoint.lstrip('/')
+    def build_url(self, endpoint: str) -> str:
+        url = self.url.rstrip('/') + '/' + endpoint.lstrip('/')
         qs = '?'
-
-        if attributes:
-            qs += '&kv=' + attributes.serialize_to_querystring_value()
 
         return url + qs.replace('?&', '?')
 
 
 class Encryption(object):
-    """ Cryptography support (using OpenSSL command implementation) """
+    """
+    Cryptography support (using OpenSSL command implementation)
+    """
 
     _name: str
     _passphrase: str
-    _algorithm: str
-    _gnupg_home_path: str
-    _key_length: int
-    _key_type: str
-    _username: str
+    _public_key_path: str
+    _private_key_path: str
     _user_email: str
 
-    SUPPORTED_ALGORITHMS = ['aes256']
-
-    def __init__(self, name: str, passphrase: str, username: str, email: str, algorithm: str = 'aes256',
-                 gnupg_home_path: str = '~/.bahub-gnupg', key_length: int = 2048,
-                 key_type: str = 'RSA'):
+    def __init__(self, name: str, passphrase: str, email: str, public_key_path: str, private_key_path: str):
 
         self._name = name
         self._passphrase = passphrase
-        self._algorithm = algorithm
-        self._gnupg_home_path = os.path.expanduser(gnupg_home_path)
-        self._key_length = key_length
-        self._key_type = key_type
-        self._username = username
+        self._public_key_path = public_key_path
+        self._private_key_path = private_key_path
         self._user_email = email
-
-        if algorithm not in self.SUPPORTED_ALGORITHMS:
-            raise ConfigurationFactoryException('Crypto "' + algorithm + '" is not supported. Please use one of: ' +
-                                                str(self.SUPPORTED_ALGORITHMS))
 
     @staticmethod
     def from_config(name: str, config: dict):
@@ -110,37 +66,13 @@ class Encryption(object):
         return Encryption(
             name=name,
             passphrase=config.get('passphrase', ''),
-            algorithm=config['method'],
-            username=config['username'],
             email=config['email'],
-            gnupg_home_path=config.get('gnupg_home', '~/.bahub-gnupg'),
-            key_length=int(config.get('key_length', 2048)),
-            key_type=config.get('key_type', 'RSA')
+            public_key_path=config['public_key_path'],
+            private_key_path=config['private_key_path']
         )
 
-    def describe_as_attributes(self) -> VersionAttributes:
-        return VersionAttributes({
-            'recipient': self.recipient(),
-            'algorithm': self._algorithm
-        })
-
-    def get_home_dir(self) -> str:
-        return self._gnupg_home_path
-
-    def get_key_length(self) -> int:
-        return self._key_length
-
-    def get_key_type(self) -> str:
-        return self._key_type
-
-    def get_username(self) -> str:
-        return self._username
-
-    def get_userid(self) -> str:
-        return self._user_email
-
     def recipient(self):
-        return self.get_userid()
+        return self._user_email
 
     def get_passphrase(self) -> str:
         return self._passphrase
@@ -148,9 +80,20 @@ class Encryption(object):
     def name(self) -> str:
         return self._name
 
+    def get_public_key_path(self) -> str:
+        if not self._public_key_path:
+            return self.get_private_key_path()
+
+        return self._public_key_path
+
+    def get_private_key_path(self) -> str:
+        return self._private_key_path
+
 
 class BackupDefinition(ABC):
-    """Configuration definition containing credentials, tokens, ids"""
+    """
+    Configuration definition containing credentials, tokens, ids
+    """
 
     _access: ServerAccess
     _type: str = ""
@@ -230,7 +173,8 @@ class BackupDefinition(ABC):
     def get_collection_id(self) -> str:
         return self._collection_id
 
-    def transport(self) -> TransportInterface:
+    def transport(self, binaries: List[RequiredBinary]) -> TransportInterface:
+        self._transport.prepare_environment(binaries)
         return self._transport
 
     def get_sensitive_information(self) -> list:

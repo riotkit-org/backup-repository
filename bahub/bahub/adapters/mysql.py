@@ -2,14 +2,17 @@
 MySQL Adapter
 =============
 """
-from rkd.api.inputoutput import IO
+from typing import List
+
+from ..bin import RequiredBinary
 from ..model import BackupDefinition
-from ..inputoutput import StreamableBuffer
 from .base import AdapterInterface
 
 
 class Definition(BackupDefinition):
-    """Configuration"""
+    """
+    Configuration
+    """
 
     @staticmethod
     def get_spec_defaults() -> dict:
@@ -129,20 +132,17 @@ class Definition(BackupDefinition):
 class Adapter(AdapterInterface):
     """Contains a logic specific to MySQL - how to backup, and how to restore"""
 
-    def backup(self, definition: Definition) -> StreamableBuffer:
-        backup_process = definition.transport().buffered_execute
+    def get_required_binaries(self) -> List[RequiredBinary]:
+        return []
 
-        return backup_process('mysqldump {} | gzip {}'.format(
+    def create_backup_instruction(self, definition: Definition) -> str:
+        return 'mysqldump {} | gzip {}'.format(
             definition.get_dump_parameters(),
             definition.get_gzip_args()
-        ))
+        )
 
-    def restore(self, definition: Definition, in_buffer: StreamableBuffer, io: IO) -> None:
-        restore_process = definition.transport().buffered_execute('gunzip | mysql %s'
-                                                                  % definition.get_restore_parameters(),
-                                                                  stdin=in_buffer)
-
-        self._read_from_restore_process(restore_process, io)
+    def create_restore_instruction(self, definition: Definition) -> str:
+        return 'gunzip | mysql %s' % definition.get_restore_parameters()
 
     @staticmethod
     def create_definition(config: dict, name: str) -> Definition:

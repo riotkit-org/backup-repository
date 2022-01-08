@@ -15,11 +15,10 @@ accesses:
 
 encryption:
     strong:
-        gnupg_home: "${BUILD_DIR}/bahub-gnupg"
-        passphrase: "capitalism-must-end"
-        method: "aes256"
-        username: "Mikhail Bakunin"
-        email: "bakunin@example.org"
+        private_key_path: "../backup-maker/resources/test/gpg-key.asc"
+        public_key_path: ""
+        passphrase: "riotkit"
+        email: "test@riotkit.org"
 
 transports:
     local:
@@ -31,19 +30,35 @@ transports:
         spec:
             container: "s3pb_db_mysql_1"
 
-    docker_postgres:
+    docker_fs:
         type: bahub.transports.docker
         spec:
-            container: "s3pb_db_postgres_1"
+            container: "nginx_bahub_test"
 
-    docker_postgres_offline:
-        type: bahub.transports.temporarydocker
-        spec:
-            orig_container: "s3pb_db_postgres_1"
-            temp_container_image: "postgres:13.1"
-            shell: /bin/bash
+#    docker_postgres:
+#        type: bahub.transports.docker
+#        spec:
+#            container: "s3pb_db_postgres_1"
+#
+#    docker_postgres_offline:
+#        type: bahub.transports.temporarydocker
+#        spec:
+#            orig_container: "s3pb_db_postgres_1"
+#            temp_container_image: "postgres:13.1"
+#            shell: /bin/bash
 
 backups:
+    fs_docker:
+        meta:
+            type: bahub.adapters.filesystem
+            access: secured
+            encryption: strong
+            collection_id: "${TEST_COLLECTION_ID}"
+            transport: docker_fs
+        spec:
+            paths:
+                - /var/www
+
     fs:
         meta:
             type: bahub.adapters.filesystem
@@ -55,16 +70,16 @@ backups:
             paths:
                 - ./
 
-    postgres_fs_cold_files_backup:
-        meta:
-            type: bahub.adapters.filesystem
-            access: secured
-            encryption: strong
-            collection_id: "${TEST_COLLECTION_ID}"
-            transport: docker_postgres_offline
-        spec:
-            paths:
-                - /var/lib/postgresql
+#    postgres_fs_cold_files_backup:
+#        meta:
+#            type: bahub.adapters.filesystem
+#            access: secured
+#            encryption: strong
+#            collection_id: "${TEST_COLLECTION_ID}"
+#            transport: docker_postgres_offline
+#        spec:
+#            paths:
+#                - /var/lib/postgresql
 
     db_mysql:
         meta:
@@ -79,32 +94,32 @@ backups:
             user: "root"
             password: "root"
 
-    db_postgres_dump_all_databases:
-        meta:
-            type: bahub.adapters.postgres_dump
-            access: secured
-            encryption: strong
-            collection_id: "${TEST_COLLECTION_ID}"
-            transport: docker_postgres
-        spec:
-            host: "127.0.0.1"
-            port: 5432
-            user: "bakunin"
-            password: "communism-cannot-be-enforced"
-
-    db_postgres_dump_single_database:
-        meta:
-            type: bahub.adapters.postgres_dump
-            access: secured
-            encryption: strong
-            collection_id: "${TEST_COLLECTION_ID}"
-            transport: docker_postgres
-        spec:
-            host: "127.0.0.1"
-            port: 5432
-            user: "bakunin"
-            password: "communism-cannot-be-enforced"
-            database: "riotkit"
+#    db_postgres_dump_all_databases:
+#        meta:
+#            type: bahub.adapters.postgres_dump
+#            access: secured
+#            encryption: strong
+#            collection_id: "${TEST_COLLECTION_ID}"
+#            transport: docker_postgres
+#        spec:
+#            host: "127.0.0.1"
+#            port: 5432
+#            user: "bakunin"
+#            password: "communism-cannot-be-enforced"
+#
+#    db_postgres_dump_single_database:
+#        meta:
+#            type: bahub.adapters.postgres_dump
+#            access: secured
+#            encryption: strong
+#            collection_id: "${TEST_COLLECTION_ID}"
+#            transport: docker_postgres
+#        spec:
+#            host: "127.0.0.1"
+#            port: 5432
+#            user: "bakunin"
+#            password: "communism-cannot-be-enforced"
+#            database: "riotkit"
 
 #notifiers:
     #mattermost:

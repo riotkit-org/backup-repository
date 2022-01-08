@@ -1,10 +1,11 @@
+import shutil
 from time import sleep
 from typing import BinaryIO, Union, Optional, IO, Callable
 from urllib3 import HTTPResponse
 from rkd.api.inputoutput import IO as RKDIO
 from .exception import BufferingError
 
-BUFFER_CALLABLE_DEF = Callable[[Optional[int]], bytes]
+BUFFER_CALLABLE_DEF = Callable[[Optional[int]], str]
 
 
 class StreamableBuffer(object):
@@ -86,9 +87,8 @@ class StreamableBuffer(object):
 
         return self._read_callback(size) if buf is None else buf
 
-    def read_all(self) -> bytes:
-        # noinspection PyArgumentList
-        return self._read_callback()
+    def copy_to(self, destination_stream):
+        shutil.copyfileobj(self._buffer, destination_stream)
 
     def close(self):
         self._io.debug('Closing stream')
@@ -117,21 +117,6 @@ class StreamableBuffer(object):
             return True
 
         return self._has_exited_with_failure()
-
-    @staticmethod
-    def from_file(path: str, io: IO) -> 'StreamableBuffer':
-        handle = open(path, 'rb')
-
-        return StreamableBuffer(
-            io=io,
-            read_callback=handle.read,
-            close_callback=lambda: handle.close(),
-            eof_callback=lambda: handle.closed,
-            is_success_callback=lambda: handle.closed,
-            description='File stream <{}>'.format(path),
-            buffer=handle,
-            pre_validation_sleep=0
-        )
 
     def find_failure_cause(self) -> str:
         """Find a stream that broke the pipeline"""

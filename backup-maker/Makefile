@@ -1,4 +1,4 @@
-BIN_PATH=/tmp/backupmaker
+BIN_PATH=$$(pwd)/.build/backup-maker
 
 build:
 	go build -o ${BIN_PATH} github.com/riotkit-org/backup-repository/backup-maker
