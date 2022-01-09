@@ -1,7 +1,7 @@
 Bahub - shell backup client
 ===========================
 
-Backups made easy, automated, monitored.
+Backups made easy, automated, monitored and SECURED with an audited encryption.
 
 ```bash
 # common flows
@@ -23,10 +23,9 @@ accesses:
 
 encryption:
     my_key_pair_one:
-        gnupg_home: "~/.bahub-gnupg"
-        passphrase: "capitalism-must-end"
-        method: "aes256"
-        username: "Mikhail Bakunin"
+        private_key_path: "../backup-maker/resources/test/gpg-key.asc"
+        public_key_path: ""
+        passphrase: "riotkit"
         email: "bakunin@example.org"
 
 transports:
@@ -52,13 +51,14 @@ backups:
 ```
 
 **Features:**
-- **End-To-End encryption** using GNU Privacy Guard, you can store your backups on a remote server that will not know what you store
-- Natively sends backups to **Backup Repository server**, or stores into files
+- **End-To-End encryption** using GNU Privacy Guard, you can store your backups on a remote server that will not know what you store. We use GPG as it is audited and trusted.
+- Natively sends backups to **Backup Repository server**
 - Backups made with just a one **simple** command `bahub :backup:make my-db`
 - Restoring is as simple as backup `bahub :backup:restore my-db`
 - **Does not require additional disk space to store backup**, the backup is done on-the-fly
 - **Natively supports Docker**, including databases running in Docker
-- Understands what is to back up by using native methods such as `mysqldump`, `pg_dump` and others depending on what application is it
+- **Natively supports Kubernetes** by running backup commands as jobs or by running commands in application pods
+- Understands what is to back up by using native methods such as `mysqldump`, `pg_dump` and others depending on what application is it. You specify only if it is e.g. PostgreSQL and what are the credentials.
 - Supports "offline backup" of Docker containers by turning them off, then copying the data
 - Slack/Mattermost notifications about successes and failures
 - Errors monitoring with Sentry.io support
@@ -66,12 +66,12 @@ backups:
 **Abstract architecture:**
 - Adapters like `mysql`, `postgres_dump`, `filesystem` are defining how to properly do your backup, there can be many more adapters, even made by external people all around the world
 - Transports: We support executing backup in `sh` (local shell), `docker` (docker container), `temporarydocker` (offline, copying files of other docker container), but feel free to write your own transport or use transport written by other people. There are many possibilities such as enabling `SSH`, `Kubernetes`, `ECS` and more.
+- Decoupled: `Backup Controller` is scheduling backups, while `Backup Maker` is actually performing backup & encryption & sending. `Backup Controler` takes care to spawn `Backup Maker` always close to the application data, even if there are multiple data centers.
 
 **Extensible:**
-- Although we do not support currently Kubernetes or remote backups via SSH it does not mean
-  that it is impossible - Bahub is extensible, everyone can write an adapter that will enable `Kubernetes`, `ECS`, `SSH`
+- Although we do not support currently remote backups via SSH it does not mean that it is impossible - `Backup Controller` is extensible, everyone can write an adapter that will enable `ECS`, `Docker Swarm`, `SSH`
   or any other transport that can run commands and return output
-- Bahub can use backup adapters and command transports that are placed in other Python packages, so **any unofficial adapters and transports are easily pluggable!**
+- `Backup Controller` can use backup adapters and command transports that are placed in other Python packages, so **any unofficial adapters and transports are easily pluggable!**
 
 Requirements
 ------------
@@ -82,6 +82,11 @@ Requirements
 - PostgreSQL client tools (if going to backup & restore PostgreSQL databases)
 - GNU tar
 - GNU Privacy Guard 2.x (mandatory, for E2E encryption support. There is no way to turn off encryption)
+
+Architecture
+------------
+
+![](docs/backup-controller.svg)
 
 Usage
 -----
