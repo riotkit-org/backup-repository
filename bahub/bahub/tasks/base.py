@@ -72,6 +72,11 @@ class BaseTask(TaskInterface, ABC):
         if not is_success:
             self.io().error_msg('Process did not return success. Check previous messages for details')
 
+            additional_info = transport.get_failure_details()
+
+            if additional_info:
+                self.io().outln(additional_info)
+
         return is_success
 
     def configure_argparse(self, parser: ArgumentParser, with_definition: bool = True):
