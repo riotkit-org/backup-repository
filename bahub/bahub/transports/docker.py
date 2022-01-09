@@ -4,18 +4,16 @@ Docker Transport
 
 Executes commands inside a running docker container.
 
-Note: Requires access to the docker daemon. Make sure your user is in a "docker" group (has access to the socket)
+Note: Requires access to the docker daemon. Make sure your user is in a "docker" group (have access to the socket)
 """
 import docker
-from typing import List, Union, Generator
+from typing import List, Generator
 
 from docker import DockerClient
-from docker.errors import NotFound
 from docker.models.containers import Container
 from rkd.api.inputoutput import IO
 from .base import TransportInterface, FilesystemInterface, download_required_tools, create_backup_maker_command
 from ..bin import RequiredBinary
-from ..exception import DockerContainerError
 
 
 class DockerFilesystemTransport(FilesystemInterface):
@@ -54,8 +52,7 @@ class Transport(TransportInterface):
     Docker Transport
     ================
 
-    Why is docker-py not used fully? Because it lacks support for stdin & stdout read-write at one time in exec_start()
-    which makes it unusable in buffered_execute()
+    Enables a hot-backup inside a running application container
     """
 
     _container_name: str
@@ -65,8 +62,8 @@ class Transport(TransportInterface):
     bin_path: str = "/tmp/.br"
     versions_path: str = "/tmp/.br/versions"
     binaries: List[RequiredBinary]
-    response_stream: Generator
-    response_status = None
+    _exec_stream: Generator
+    _exec_id: str
 
     def __init__(self, spec: dict, io: IO):
         super().__init__(spec, io)
@@ -105,36 +102,70 @@ class Transport(TransportInterface):
         self.binaries = binaries
 
     def schedule(self, command: str, definition, is_backup: bool, version: str = "") -> None:
+        """
+        Runs a command inside a container
+
+        :param command:
+        :param definition:
+        :param is_backup:
+        :param version:
+        :return:
+        """
+
         download_required_tools(self.fs, self.io(), self.bin_path, self.versions_path, self.binaries)
-        exit_code, stream = self.container.exec_run(
-            create_backup_maker_command(),
-            stream=True
+        complete_cmd = create_backup_maker_command(command, definition, is_backup, version)
+
+        self.io().debug(f"Docker exec: {complete_cmd}")
+
+        # spawn command
+        response = self._client.api.exec_create(
+            self.container.id,
+            complete_cmd,
+            environment={
+                'PATH': self.discover_path_variable_in_container() + ":" + self.bin_path
+            }
         )
 
-        self.response_stream = stream
-        self.response_status = exit_code
+        # start spawned command. Save its ID - we will be able to track its status later
+        self._exec_id = response['Id']
+        self._exec_stream = self._client.api.exec_start(
+            response['Id'], stream=True
+        )
 
     def watch(self) -> bool:
-        for lines in self.response_stream:
+        """
+        Watches live stream from `docker exec` and asserts exit_code == 0
+        :return:
+        """
+
+        for lines in self._exec_stream:
             for line in lines.split(b'\n'):
                 self.io().info(line.decode('utf-8'))
 
-        return False
+        self.io().debug(f"Docker exec process returned code={self._exit_code}")
+        return self._exit_code == 0
+
+    def discover_path_variable_in_container(self) -> str:
+        """
+        Returns $PATH value from container
+        :return:
+        """
+
+        exit_code, output = self.container.exec_run(['/bin/sh', '-c', 'echo "$PATH"'])
+
+        return str(output.decode('utf-8')).strip()
+
+    @property
+    def _exit_code(self) -> int:
+        return int(self._client.api.exec_inspect(self._exec_id)['ExitCode'])
 
     def get_failure_details(self) -> str:
-        return 'Error occurred while trying to execute command inside docker container - {}, logs: {}'.format(
-            self._container_name,
-            self._try_to_collect_logs()
-        )
-
-    def _assert_container_is_fine(self):
-        try:
-            inspected = self._client.inspect_container(self._container_name)
-        except NotFound:
-            raise DockerContainerError.from_container_not_found(self._container_name)
-
-        if not inspected['State']['Running']:
-            raise DockerContainerError.from_container_not_running(self._container_name, inspected['State']['Status'])
+        return "Error occurred while trying to execute command inside docker container - {}, \n" \
+               "=======> LOGS FROM CONTAINER:\n {} =======> END OF LOGS"\
+            .format(
+                self._container_name,
+                self._try_to_collect_logs()
+            )
 
     def _try_to_collect_logs(self) -> str:
         """
@@ -142,7 +173,7 @@ class Transport(TransportInterface):
         """
 
         try:
-            return self._client.logs(tail=15, follow=False, stream=False)
+            return self.container.logs(tail=15, follow=False, stream=False).decode('utf-8')
 
         except Exception:
             return '-- No logs --'
