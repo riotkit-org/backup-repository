@@ -10,7 +10,6 @@ from rkd.api.inputoutput import IO
 from ..bin import RequiredBinary
 from ..exception import SpecificationError
 from ..inputoutput import StreamableBuffer
-from ..model import BackupDefinition
 from ..schema import create_example_from_attributes
 
 
@@ -77,7 +76,7 @@ def download_required_tools(fs: FilesystemInterface, io: IO, bin_path: str,
         fs.link(version_path, bin_path)
 
 
-def create_backup_maker_command(command: str, definition: BackupDefinition, is_backup: bool,
+def create_backup_maker_command(command: str, definition, is_backup: bool,
                                 version: str = "", prepend: list = None) -> List[str]:
     args = [
         "/usr/bin/env"
