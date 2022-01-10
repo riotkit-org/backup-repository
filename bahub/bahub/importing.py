@@ -7,6 +7,10 @@ from .transports.base import TransportInterface
 
 
 class Importing(object):
+    """
+    Adapter and Transport importer
+    """
+
     @staticmethod
     def import_adapter(import_str: str) -> Tuple[Type[AdapterInterface], Type[BackupDefinition]]:
         """

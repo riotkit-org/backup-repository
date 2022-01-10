@@ -36,10 +36,23 @@ transports:
             container: "bahub_adapter_integrations_db_mysql_1"
 
 backups:
-    db_mysql:
+    # ===
+    #   list of backups - name: settings
+    #   usage: bahub :backup:make db_mysql_something
+    # ===
+    db_mysql_something:
+        # ===
+        #   Metadata for backup definition, wires backup settings with those abstractions:
+        #     encryption: How to encrypt your data
+        #     access: How to access Backup Repository server (JWT token, url)
+        #     collection_id: Where to place data on Backup Repository server (need to create a collection and copy it's id)
+        #     transport: Where to run backup - "in a Docker container?", "in Kubernetes kind: Job?", "with kubectl exec?", "with docker exec?", "through ssh?"
+        #
+        #   Notice: Metadata is mostly a reference to globally defined settings in this YAML document
+        # ===
         meta:
             type: bahub.adapters.mysql   # Please notice: This is a Python package path, unofficial adapters are welcome!
-            access: my_local_instance    # Please notice: You can backup to multiple remote servers
+            access: my_local_instance    # Please notice: You can make backup to different remote servers
             encryption: my_key_pair_one  # Please notice: You can encrypt with different keys as you wish
             collection_id: "11111-2222-33333-4444" # collection id created on Backup Repository server (optional when saving backup to file only)
             transport: my_docker_mysql_container  # Please notice: You can execute the backup EVERYWHERE
