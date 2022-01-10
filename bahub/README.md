@@ -1,7 +1,8 @@
-Bahub - shell backup client
-===========================
+Backup Controller
+=================
 
 Backups made easy, automated, monitored and SECURED with an audited encryption.
+Schedules backup tasks executed by `Backup Maker`, uploaded to `Backup Repository` server.
 
 ```bash
 # common flows
