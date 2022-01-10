@@ -116,5 +116,6 @@ Copyleft
 --------
 
 Created by **RiotKit Collective**.
-Project created to provide a zero-knowledge backup storage using strong encryption, with granular permissions management and advanced multi-tenancy.
+
+Project was created to provide a zero-knowledge backup storage using strong encryption, with granular permissions management and advanced multi-tenancy.
 We use it to support multiple libertarian collectives across the world by providing a mechanism, without knowing what data is stored for our and their security.
