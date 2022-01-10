@@ -107,8 +107,8 @@ Architecture
 
 ![](docs/backup-controller.svg)
 
-Usage
------
+Installing
+----------
 
 a) via Python package (on host machine)
 
@@ -117,6 +117,12 @@ pip install bahub
 ```
 
 b) via Docker (in a container)
+
+```bash
+# todo
+```
+
+c) using Helm in Kubernetes
 
 ```bash
 # todo
