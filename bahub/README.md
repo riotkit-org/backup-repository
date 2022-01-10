@@ -42,6 +42,11 @@ backups:
             encryption: my_key_pair_one  # Please notice: You can encrypt with different keys as you wish
             collection_id: "11111-2222-33333-4444" # collection id created on Backup Repository server (optional when saving backup to file only)
             transport: my_docker_mysql_container  # Please notice: You can execute the backup EVERYWHERE
+            
+        # ===
+        #  "spec" section contains INPUT PARAMETERS to adapter, in this example to "bahub.adapters.mysql"
+        #  You can implement your adapter and use it there.
+        # ===
         spec:
             host: "my-database-host.local"
             port: 3306
