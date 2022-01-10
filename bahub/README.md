@@ -84,7 +84,7 @@ backups:
 
 **Abstract architecture:**
 - Adapters like `mysql`, `postgres_dump`, `filesystem` are defining how to properly do your backup, there can be many more adapters, even made by external people all around the world
-- Transports: We support executing backup in `sh` (local shell), `docker` (docker container), `temporarydocker` (offline, copying files of other docker container), but feel free to write your own transport or use transport written by other people. There are many possibilities such as enabling `SSH`, `Kubernetes`, `ECS` and more.
+- Transports: We support executing backup in `sh` (local shell), `docker` (docker container), `sidedocker` (offline, copying files of other docker container), but feel free to write your own transport or use transport written by other people. There are many possibilities such as enabling `SSH`, `Kubernetes`, `ECS` and more.
 - Decoupled: `Backup Controller` is scheduling backups, while `Backup Maker` is actually performing backup & encryption & sending. `Backup Controler` takes care to spawn `Backup Maker` always close to the application data, even if there are multiple data centers.
 
 **Extensible:**

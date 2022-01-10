@@ -116,8 +116,5 @@ Copyleft
 --------
 
 Created by **RiotKit Collective**.
-Project initially created for three purposes:
-
-- To store static files uploaded for users (libertarian/anarchist portal)
-- To store and serve training video files (video archive)
-- To store backups and version them. Limit the disk space and permissions to create a shared space for multiple organizations fighting for human-rights, tenants-rights, working-class rights and animals-rights.
+Project created to provide a zero-knowledge backup storage using strong encryption, with granular permissions management and advanced multi-tenancy.
+We use it to support multiple libertarian collectives across the world by providing a mechanism, without knowing what data is stored for our and their security.
