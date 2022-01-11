@@ -6,18 +6,22 @@ Executes commands inside a running docker container.
 
 Note: Requires access to the docker daemon. Make sure your user is in a "docker" group (have access to the socket)
 """
+import subprocess
+
 import docker
 from typing import List, Generator
 
 from docker import DockerClient
 from docker.models.containers import Container
 from rkd.api.inputoutput import IO
-from .base import TransportInterface, FilesystemInterface, download_required_tools, create_backup_maker_command
+from .base import TransportInterface, download_required_tools, create_backup_maker_command
 from ..bin import RequiredBinary
+from ..fs import FilesystemInterface
 
 
 class DockerFilesystemTransport(FilesystemInterface):
     container: Container
+    io: IO
 
     def __init__(self, container: Container):
         self.container = container
@@ -46,6 +50,18 @@ class DockerFilesystemTransport(FilesystemInterface):
         exit_code, result = self.container.exec_run(["test", "-f", path])
         return exit_code == 0
 
+    def copy_to(self, local_path: str, dst_path: str):
+        subprocess.check_call(["docker", "cp", local_path, self.container.id + ":" + dst_path])
+
+    def pack(self, archive_path: str, src_path: str):
+        exit_code, result = self.container.exec_run(["tar", "-zcf", archive_path, "*", ".*"], workdir=src_path)
+        assert exit_code == 0, f"Cannot pack '{src_path}'/* into {archive_path} (both paths inside container)"
+
+    def unpack(self, archive_path: str, dst_path: str):
+        exit_code, result = self.container.exec_run(["tar", "-xf", archive_path, "--directory", dst_path])
+        assert exit_code == 0, f"Cannot unpack tar archive from '{archive_path}' to '{dst_path}' " \
+                               f"(both paths inside container)"
+
 
 class Transport(TransportInterface):
     """
@@ -58,7 +74,7 @@ class Transport(TransportInterface):
     _container_name: str
     _shell: str
     _client: DockerClient
-    container: Container = None
+    container: Container
     bin_path: str = "/tmp/.br"
     versions_path: str = "/tmp/.br/versions"
     binaries: List[RequiredBinary]
@@ -112,6 +128,9 @@ class Transport(TransportInterface):
         :return:
         """
 
+        new_path = self.discover_path_variable_in_container() + ":" + self.bin_path
+        self.io().debug(f"Setting $PATH={new_path}")
+
         download_required_tools(self.fs, self.io(), self.bin_path, self.versions_path, self.binaries)
         complete_cmd = create_backup_maker_command(command, definition, is_backup, version)
 
@@ -122,7 +141,7 @@ class Transport(TransportInterface):
             self.container.id,
             complete_cmd,
             environment={
-                'PATH': self.discover_path_variable_in_container() + ":" + self.bin_path
+                'PATH': new_path
             }
         )
 

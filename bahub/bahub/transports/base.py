@@ -13,69 +13,6 @@ from ..inputoutput import StreamableBuffer
 from ..schema import create_example_from_attributes
 
 
-class FilesystemInterface(object):
-    """
-    Interacts with filesystem
-    Implementations should allow interacting with filesystems in various places like remote filesystems or containers
-    """
-
-    io: IO
-
-    @abstractmethod
-    def force_mkdir(self, path: str):
-        pass
-
-    @abstractmethod
-    def download(self, url: str, destination_path: str):
-        pass
-
-    @abstractmethod
-    def delete_file(self, path: str):
-        pass
-
-    @abstractmethod
-    def link(self, src: str, dst: str):
-        pass
-
-    @abstractmethod
-    def make_executable(self, path: str):
-        pass
-
-    @abstractmethod
-    def file_exists(self, path: str) -> bool:
-        pass
-
-
-def download_required_tools(fs: FilesystemInterface, io: IO, bin_path: str,
-                            versions_path: str, binaries: List[RequiredBinary]) -> None:
-    """
-    Collects all binaries VERSIONED into /bin/versions then links into /bin as filenames without version included
-    Does not download binary twice
-    """
-
-    io.debug("Preparing environment")
-    fs.force_mkdir(os.path.dirname(bin_path))
-    fs.force_mkdir(bin_path)
-    fs.force_mkdir(versions_path)
-
-    for binary in binaries:
-        version_path = versions_path + "/" + binary.get_full_name_with_version()
-        bin_path = bin_path + "/" + binary.get_filename()
-
-        if not fs.file_exists(version_path):
-            io.debug(f"Downloading binary {binary.get_url()} into {version_path}")
-            fs.download(binary.get_url(), version_path)
-            fs.make_executable(versions_path)
-
-        try:
-            fs.delete_file(bin_path)
-        except FileNotFoundError:
-            pass
-
-        io.debug(f"Linking version {version_path} into {bin_path}")
-        fs.link(version_path, bin_path)
-
-
 def create_backup_maker_command(command: str, definition, is_backup: bool,
                                 version: str = "", prepend: list = None) -> List[str]:
     args = [

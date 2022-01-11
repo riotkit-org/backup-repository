@@ -1,6 +1,6 @@
 from .docker import Transport as DockerTransport
 from .sh import Transport as ShellTransport
-from .temporarydocker import Transport as TemporaryDockerTransport
+from .sidedocker import Transport as TemporaryDockerTransport
 
 
 def transports():

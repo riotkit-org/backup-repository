@@ -5,19 +5,23 @@ Shell Transport
 Executes a command in the shell
 """
 import os
+import shutil
 import subprocess
 import sys
 from typing import List
 
 from rkd.api.inputoutput import IO
 
-from .base import TransportInterface, FilesystemInterface, download_required_tools, create_backup_maker_command
+from .base import TransportInterface, download_required_tools, create_backup_maker_command
 from ..bin import RequiredBinary
+from ..fs import FilesystemInterface
 from ..inputoutput import StreamableBuffer
 from ..model import BackupDefinition
 
 
 class LocalFilesystem(FilesystemInterface):
+    io: IO
+
     def force_mkdir(self, path: str):
         try:
             os.mkdir(path)
@@ -38,6 +42,15 @@ class LocalFilesystem(FilesystemInterface):
 
     def file_exists(self, path: str) -> bool:
         return os.path.isfile(path)
+
+    def pack(self, archive_path: str, src_path: str):
+        subprocess.check_call(["tar", "-zcf", archive_path, "*", ".*"], cwd=src_path)
+
+    def copy_to(self, local_path: str, dst_path: str):
+        shutil.copyfile(local_path, dst_path)
+
+    def unpack(self, archive_path: str, dst_path: str):
+        subprocess.check_call(["tar", "-xf", archive_path, "--directory", dst_path])
 
 
 class Transport(TransportInterface):

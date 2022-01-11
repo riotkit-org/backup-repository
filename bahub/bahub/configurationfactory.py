@@ -245,5 +245,6 @@ class DefinitionFactoryErrorCatcher(object):
 
             raise ConfigurationFactoryException(
                 ' ERROR: There was a problem during parsing the configuration at section "' +
-                self._key_name + '" in key ' + str(exc_val) + '. Possibly the key is missing. Details: ' + str(exc_type))
+                self._key_name + '" in key ' + str(exc_val) + '. Possibly the key is missing. Details: ' + str(exc_type)
+            )
 

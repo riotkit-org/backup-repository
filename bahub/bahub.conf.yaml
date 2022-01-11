@@ -35,6 +35,13 @@ transports:
         spec:
             container: "nginx_bahub_test"
 
+    side_docker_fs:
+        type: bahub.transports.sidedocker
+        spec:
+            orig_container: "nginx_bahub_test"
+            temp_container_image: "debian:11.2"
+            pull: true
+
 #    docker_postgres:
 #        type: bahub.transports.docker
 #        spec:
@@ -54,7 +61,7 @@ backups:
             access: secured
             encryption: strong
             collection_id: "${TEST_COLLECTION_ID}"
-            transport: docker_fs
+            transport: side_docker_fs
         spec:
             paths:
                 - /var/www

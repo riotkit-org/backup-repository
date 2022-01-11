@@ -1,9 +1,9 @@
 from rkd.api.inputoutput import IO
 from rkd.api.testing import BasicTestingCase
-from bahub.transports.temporarydocker import Transport
+from bahub.transports.sidedocker import Transport
 
 
-class TestTemporaryDockerTransport(BasicTestingCase):
+class TestSideDockerTransport(BasicTestingCase):
     """
     Functional test - requires docker daemon and docker client tools
     """
