@@ -1,4 +1,5 @@
 from abc import abstractmethod
+from typing import List
 
 
 class FilesystemInterface(object):
@@ -32,7 +33,7 @@ class FilesystemInterface(object):
         pass
 
     @abstractmethod
-    def pack(self, archive_path: str, src_path: str):
+    def pack(self, archive_path: str, src_path: str, files_list: List[str]):
         pass
 
     @abstractmethod

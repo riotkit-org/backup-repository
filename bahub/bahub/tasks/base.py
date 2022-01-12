@@ -2,18 +2,19 @@ import os
 from abc import ABC
 from argparse import ArgumentParser
 from traceback import print_exc
-from typing import Dict, Union, Optional
+from typing import Dict, Union, Optional, List
 from rkd.api.contract import TaskInterface, ExecutionContext, ArgumentEnv
 from rkd.yaml_parser import YamlFileLoader
 from rkd.exception import YAMLFileValidationError
 
 from ..adapters.base import AdapterInterface
 from ..api import BackupRepository
-from ..bin import get_backup_maker_binaries
+from ..bin import get_backup_maker_binaries, download_required_tools, RequiredBinary
 from ..configurationfactory import ConfigurationFactory
 from ..model import BackupDefinition
 from ..notifier import MultiplexedNotifiers, NotifierInterface
 from ..security import create_sensitive_data_stripping_filter
+from ..transports.sh import LocalFilesystem
 
 
 class BaseTask(TaskInterface, ABC):
@@ -49,13 +50,32 @@ class BaseTask(TaskInterface, ABC):
 
         return True
 
+    def prepare_binaries_cache(self, binaries: List[RequiredBinary]):
+        download_required_tools(
+            fs=LocalFilesystem(),
+            io=self.io(),
+            bin_path=os.path.expanduser("~/.backup-controller"),
+            versions_path=os.path.expanduser("~/.backup-controller/versions"),
+            binaries=binaries
+        )
+
     def call_backup_maker(self, context: ExecutionContext, is_backup: bool, version: str = "") -> bool:
+        """
+        Schedules a "Backup Maker" to perform action.
+
+        The scheduling is done by using a Transport layer which takes responsibility for allocating resources,
+        spawning the process and tracking it.
+        """
+
         definition_name = context.get_arg('definition')
         definition = self.config.get_definition(definition_name)
         adapter: AdapterInterface = self.config.get_adapter(definition_name)()
+        required_binaries = adapter.get_required_binaries() + get_backup_maker_binaries()
+
+        self.prepare_binaries_cache(required_binaries)
 
         # begin a backup, get a buffered reader
-        with definition.transport(binaries=adapter.get_required_binaries() + get_backup_maker_binaries()) as transport:
+        with definition.transport(binaries=required_binaries) as transport:
             self.notifier.starting_backup_creation(definition)
 
             if is_backup:

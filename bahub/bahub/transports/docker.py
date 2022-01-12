@@ -6,16 +6,15 @@ Executes commands inside a running docker container.
 
 Note: Requires access to the docker daemon. Make sure your user is in a "docker" group (have access to the socket)
 """
+import os
 import subprocess
-
 import docker
 from typing import List, Generator
-
-from docker import DockerClient
 from docker.models.containers import Container
 from rkd.api.inputoutput import IO
-from .base import TransportInterface, download_required_tools, create_backup_maker_command
-from ..bin import RequiredBinary
+from .base import TransportInterface, create_backup_maker_command
+from .sh import LocalFilesystem
+from ..bin import RequiredBinary, download_required_tools, fetch_required_tools_from_cache
 from ..fs import FilesystemInterface
 
 
@@ -53,14 +52,17 @@ class DockerFilesystemTransport(FilesystemInterface):
     def copy_to(self, local_path: str, dst_path: str):
         subprocess.check_call(["docker", "cp", local_path, self.container.id + ":" + dst_path])
 
-    def pack(self, archive_path: str, src_path: str):
-        exit_code, result = self.container.exec_run(["tar", "-zcf", archive_path, "*", ".*"], workdir=src_path)
-        assert exit_code == 0, f"Cannot pack '{src_path}'/* into {archive_path} (both paths inside container)"
+    def pack(self, archive_path: str, src_path: str, files_list: List[str]):
+        if not files_list:
+            files_list = ["*", ".*"]
+
+        exit_code, result = self.container.exec_run(["tar", "-zcf", archive_path] + files_list, workdir=src_path)
+        assert exit_code == 0, f"Cannot pack '{src_path}'/* into {archive_path} (both paths inside container). {result}"
 
     def unpack(self, archive_path: str, dst_path: str):
         exit_code, result = self.container.exec_run(["tar", "-xf", archive_path, "--directory", dst_path])
         assert exit_code == 0, f"Cannot unpack tar archive from '{archive_path}' to '{dst_path}' " \
-                               f"(both paths inside container)"
+                               f"(both paths inside container). {result}"
 
 
 class Transport(TransportInterface):
@@ -73,7 +75,8 @@ class Transport(TransportInterface):
 
     _container_name: str
     _shell: str
-    _client: DockerClient
+    # _client: DockerClient
+    _client = None
     container: Container
     bin_path: str = "/tmp/.br"
     versions_path: str = "/tmp/.br/versions"
@@ -88,6 +91,7 @@ class Transport(TransportInterface):
         self._io = io
         self._container_name = spec.get('container')
         self._shell = spec.get('shell', '/bin/sh')
+        # todo: do not use docker in constructor
         self._client = docker.from_env()
         self._populate_container_information()
 
@@ -131,7 +135,16 @@ class Transport(TransportInterface):
         new_path = self.discover_path_variable_in_container() + ":" + self.bin_path
         self.io().debug(f"Setting $PATH={new_path}")
 
-        download_required_tools(self.fs, self.io(), self.bin_path, self.versions_path, self.binaries)
+        fetch_required_tools_from_cache(
+            local_cache_fs=LocalFilesystem(),
+            dst_fs=self.fs,
+            io=self.io(),
+            bin_path=self.bin_path,
+            versions_path=self.versions_path,
+            local_versions_path=os.path.expanduser("~/.backup-controller/versions"),  # todo
+            binaries=self.binaries
+        )
+
         complete_cmd = create_backup_maker_command(command, definition, is_backup, version)
 
         self.io().debug(f"Docker exec: {complete_cmd}")

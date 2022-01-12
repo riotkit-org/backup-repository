@@ -12,8 +12,8 @@ from typing import List
 
 from rkd.api.inputoutput import IO
 
-from .base import TransportInterface, download_required_tools, create_backup_maker_command
-from ..bin import RequiredBinary
+from .base import TransportInterface, create_backup_maker_command
+from ..bin import RequiredBinary, download_required_tools, fetch_required_tools_from_cache
 from ..fs import FilesystemInterface
 from ..inputoutput import StreamableBuffer
 from ..model import BackupDefinition
@@ -43,8 +43,11 @@ class LocalFilesystem(FilesystemInterface):
     def file_exists(self, path: str) -> bool:
         return os.path.isfile(path)
 
-    def pack(self, archive_path: str, src_path: str):
-        subprocess.check_call(["tar", "-zcf", archive_path, "*", ".*"], cwd=src_path)
+    def pack(self, archive_path: str, src_path: str, files_list: List[str]):
+        if not files_list:
+            files_list = ["*", ".*"]
+
+        subprocess.check_call(["tar", "-zcf", archive_path] + files_list, cwd=src_path)
 
     def copy_to(self, local_path: str, dst_path: str):
         shutil.copyfile(local_path, dst_path)
@@ -71,7 +74,15 @@ class Transport(TransportInterface):
         self.fs = LocalFilesystem()
 
     def prepare_environment(self, binaries: List[RequiredBinary]) -> None:
-        download_required_tools(self.fs, self.io(), self.bin_path, self.versions_path, binaries)
+        fetch_required_tools_from_cache(
+            local_cache_fs=LocalFilesystem(),
+            dst_fs=self.fs,
+            io=self.io(),
+            bin_path=self.bin_path,
+            versions_path=self.versions_path,
+            local_versions_path=os.path.expanduser("~/.backup-controller/versions"),
+            binaries=binaries
+        )
 
     def schedule(self, command: str, definition: BackupDefinition, is_backup: bool, version: str = "") -> None:
         self.handle = self._exec_command(

@@ -11,11 +11,16 @@ Those binaries are fetched to the local cache, then are distributed to remote fi
 
 import os.path
 from typing import List
+from tempfile import TemporaryFile, NamedTemporaryFile
 from rkd.api.inputoutput import IO
 from bahub.fs import FilesystemInterface
 
 
 class RequiredBinary(object):
+    """
+    Binary file downloadable from specified URL address
+    """
+
     url: str
 
     def __init__(self, url: str):
@@ -35,6 +40,10 @@ class RequiredBinary(object):
 
 
 class RequiredBinaryFromGithubRelease(RequiredBinary):
+    """
+    Binary file released on GitHub
+    """
+
     version: str
     binary_name: str
 
@@ -56,15 +65,11 @@ class RequiredBinaryFromGithubRelease(RequiredBinary):
 def download_required_tools(fs: FilesystemInterface, io: IO, bin_path: str,
                             versions_path: str, binaries: List[RequiredBinary]) -> None:
     """
-    Collects all binaries VERSIONED into /bin/versions then links into /bin as filenames without version included
-    Does not download binary twice
+    Collects all binaries VERSIONED into /bin/versions
+    Does not download binary twice.
 
-    Todo:
-        Download to local directory, then copy over network
-        Why?
-            1. On target environment there could be blocked egress traffic
-            2. Tar + gzip could be used
-            3. Local cache can speed up when having multiple backups
+    Actually this method should be used to download tools into local `Backup Controller` cache at first stage.
+    At later stage - tools are copied to target environment and symbolic links are used.
     """
 
     io.debug("Preparing environment")
@@ -74,24 +79,16 @@ def download_required_tools(fs: FilesystemInterface, io: IO, bin_path: str,
 
     for binary in binaries:
         version_path = versions_path + "/" + binary.get_full_name_with_version()
-        # bin_path = bin_path + "/" + binary.get_filename()
 
         if not fs.file_exists(version_path):
             io.debug(f"Downloading binary {binary.get_url()} into {version_path}")
             fs.download(binary.get_url(), version_path)
             fs.make_executable(versions_path)
 
-        # try:
-        #     fs.delete_file(bin_path)
-        # except FileNotFoundError:
-        #     pass
 
-        # io.debug(f"Linking version {version_path} into {bin_path}")
-        # fs.link(version_path, bin_path)
-
-
-def fetch_required_tools(local_cache_fs: FilesystemInterface, dst_fs: FilesystemInterface, io: IO,
-                         bin_path: str, versions_path: str, local_bin_path: str, binaries: List[RequiredBinary]):
+def fetch_required_tools_from_cache(local_cache_fs: FilesystemInterface, dst_fs: FilesystemInterface, io: IO,
+                                    bin_path: str, versions_path: str, local_versions_path: str,
+                                    binaries: List[RequiredBinary]):
     """
     Pack selected binaries from local cache, send them to remote filesystem and unpack
 
@@ -100,27 +97,39 @@ def fetch_required_tools(local_cache_fs: FilesystemInterface, dst_fs: Filesystem
     :param io:
     :param bin_path: dst_fs's part of $PATH (where symbolic links are stored)
     :param versions_path: dst_fs's path where the versioned binaries are stored
-    :param local_bin_path:
+    :param local_versions_path:
     :param binaries:
     :return:
     """
 
-    to_transfer = []
+    io.info("Copying required tools from scheduler to Backup Maker target environment")
+    selected_files_to_transfer = []
 
+    # 1: Collect list of binaries that needs to be packed into archive
     for binary in binaries:
         version_path = versions_path + "/" + binary.get_full_name_with_version()
 
         if not dst_fs.file_exists(version_path):
-            to_transfer.append(binary.get_full_name_with_version())
+            selected_files_to_transfer.append(binary.get_full_name_with_version())
 
-    tmp_archive_path = '... tmp generate filename'
-    local_cache_fs.pack(tmp_archive_path, local_bin_path, to_transfer)
+    io.info(f"Missing binaries: {selected_files_to_transfer}. Will be copied to target environment")
 
-    dst_fs.copy_to(tmp_archive_path, '/tmp/.backup-tools.tar.gz')
-    dst_fs.unpack('/tmp/.backup-tools.tar.gz', bin_path)
+    if not selected_files_to_transfer:
+        io.info(f"All binaries are up-to-date")
+        return
 
-    local_cache_fs.delete_file(tmp_archive_path)
+    # 2: Pack everything into archive
+    with NamedTemporaryFile() as tmp_archive_path:
+        local_cache_fs.pack(tmp_archive_path.name, local_versions_path, selected_files_to_transfer)
 
+        # 3: Unpack archive at destination filesystem
+        io.debug(f"Unpacking at {versions_path}")
+        dst_fs.copy_to(tmp_archive_path.name, '/tmp/.backup-tools.tar.gz')
+        dst_fs.force_mkdir(bin_path)
+        dst_fs.force_mkdir(versions_path)
+        dst_fs.unpack('/tmp/.backup-tools.tar.gz', versions_path)
+
+    # 3: Link versioned files into generic names e.g. "v1.2.3-pg-backuper" into "pg-backuper"
     for binary in binaries:
         bin_path = bin_path + "/" + binary.get_filename()
         version_path = versions_path + "/" + binary.get_full_name_with_version()
@@ -128,6 +137,7 @@ def fetch_required_tools(local_cache_fs: FilesystemInterface, dst_fs: Filesystem
         io.debug(f"Linking version {version_path} into {bin_path}")
         dst_fs.delete_file(bin_path)
         dst_fs.link(version_path, bin_path)
+        dst_fs.make_executable(bin_path)
 
 
 def get_backup_maker_binaries() -> List[RequiredBinary]:
