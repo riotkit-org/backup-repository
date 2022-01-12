@@ -14,6 +14,7 @@ from ..configurationfactory import ConfigurationFactory
 from ..model import BackupDefinition
 from ..notifier import MultiplexedNotifiers, NotifierInterface
 from ..security import create_sensitive_data_stripping_filter
+from ..settings import BIN_CACHE_PATH, BIN_VERSION_CACHE_PATH, CONFIG_PATH
 from ..transports.sh import LocalFilesystem
 
 
@@ -24,7 +25,7 @@ class BaseTask(TaskInterface, ABC):
 
     def get_declared_envs(self) -> Dict[str, Union[str, ArgumentEnv]]:
         return {
-            'CONFIG': ArgumentEnv('CONFIG', '--config', os.path.expanduser('~/.bahub.yaml')),
+            'CONFIG': ArgumentEnv('CONFIG', '--config', CONFIG_PATH),
             'DEBUG': ArgumentEnv('DEBUG', '--debug', '')
         }
 
@@ -51,11 +52,16 @@ class BaseTask(TaskInterface, ABC):
         return True
 
     def prepare_binaries_cache(self, binaries: List[RequiredBinary]):
+        """
+        Binaries cache keeps single-binary applications required to perform a backup
+        Files are copied from the cache to the destination environment e.g. Docker container or Kubernetes POD
+        """
+
         download_required_tools(
             fs=LocalFilesystem(),
             io=self.io(),
-            bin_path=os.path.expanduser("~/.backup-controller"),
-            versions_path=os.path.expanduser("~/.backup-controller/versions"),
+            bin_path=BIN_CACHE_PATH,
+            versions_path=BIN_VERSION_CACHE_PATH,
             binaries=binaries
         )
 
@@ -101,7 +107,7 @@ class BaseTask(TaskInterface, ABC):
 
     def configure_argparse(self, parser: ArgumentParser, with_definition: bool = True):
         # do not require as switch, allow to use env
-        parser.add_argument('--config', '-c', default=os.path.expanduser('~/.bahub.yaml'), required=False)
+        parser.add_argument('--config', '-c', default=CONFIG_PATH, required=False)
         parser.add_argument('--debug', action='store_true')
         parser.add_argument('--show-secrets', action='store_true', help='Do not hide secrets in output')
 

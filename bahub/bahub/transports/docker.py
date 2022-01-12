@@ -16,6 +16,7 @@ from .base import TransportInterface, create_backup_maker_command
 from .sh import LocalFilesystem
 from ..bin import RequiredBinary, download_required_tools, fetch_required_tools_from_cache
 from ..fs import FilesystemInterface
+from ..settings import TARGET_ENV_BIN_PATH, TARGET_ENV_VERSIONS_PATH
 
 
 class DockerFilesystemTransport(FilesystemInterface):
@@ -78,8 +79,8 @@ class Transport(TransportInterface):
     # _client: DockerClient
     _client = None
     container: Container
-    bin_path: str = "/tmp/.br"
-    versions_path: str = "/tmp/.br/versions"
+    bin_path: str = TARGET_ENV_BIN_PATH
+    versions_path: str = TARGET_ENV_VERSIONS_PATH
     binaries: List[RequiredBinary]
     _exec_stream: Generator
     _exec_id: str

@@ -60,30 +60,16 @@
                 "passphrase": {
                     "type": "string"
                 },
-                "method": {
+                "public_key_path": {
                     "type": "string",
-                    "default": "aes256",
                     "examples": [
-                        "aes256"
+                        "/home/anarchist/gpg.pub"
                     ]
                 },
-                "gnupg_home": {
-                    "type": "string",
-                    "default": "~/.bahub-gnupg"
-                },
-                "key_length": {
-                    "type": "integer",
-                    "default": 2048
-                },
-                "key_type": {
-                    "type": "string",
-                    "default": "RSA"
-                },
-                "username": {
+                "private_key_path": {
                     "type": "string",
                     "examples": [
-                        "Mikhail Bakunin",
-                        "Peter Kropotkin"
+                        "/home/anarchist/gpg.key"
                     ]
                 },
                 "email": {
