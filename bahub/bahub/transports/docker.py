@@ -10,11 +10,12 @@ import os
 import subprocess
 import docker
 from typing import List, Generator
+from docker import DockerClient
 from docker.models.containers import Container
 from rkd.api.inputoutput import IO
 from .base import TransportInterface, create_backup_maker_command
 from .sh import LocalFilesystem
-from ..bin import RequiredBinary, download_required_tools, fetch_required_tools_from_cache
+from ..bin import RequiredBinary, fetch_required_tools_from_cache
 from ..fs import FilesystemInterface
 from ..settings import TARGET_ENV_BIN_PATH, TARGET_ENV_VERSIONS_PATH
 
@@ -76,8 +77,7 @@ class Transport(TransportInterface):
 
     _container_name: str
     _shell: str
-    # _client: DockerClient
-    _client = None
+    _client: DockerClient
     container: Container
     bin_path: str = TARGET_ENV_BIN_PATH
     versions_path: str = TARGET_ENV_VERSIONS_PATH
@@ -92,12 +92,17 @@ class Transport(TransportInterface):
         self._io = io
         self._container_name = spec.get('container')
         self._shell = spec.get('shell', '/bin/sh')
-        # todo: do not use docker in constructor
-        self._client = docker.from_env()
-        self._populate_container_information()
+
+    @property
+    def client(self) -> DockerClient:
+        if not self._client:
+            self._client = docker.from_env()
+            self._populate_container_information()
+
+        return self._client
 
     def _populate_container_information(self):
-        self.container = self._client.containers.get(self._container_name)
+        self.container = self.client.containers.get(self._container_name)
         self.fs = DockerFilesystemTransport(self.container)
 
     @staticmethod
@@ -151,7 +156,7 @@ class Transport(TransportInterface):
         self.io().debug(f"Docker exec: {complete_cmd}")
 
         # spawn command
-        response = self._client.api.exec_create(
+        response = self.client.api.exec_create(
             self.container.id,
             complete_cmd,
             environment={
@@ -161,7 +166,7 @@ class Transport(TransportInterface):
 
         # start spawned command. Save its ID - we will be able to track its status later
         self._exec_id = response['Id']
-        self._exec_stream = self._client.api.exec_start(
+        self._exec_stream = self.client.api.exec_start(
             response['Id'], stream=True
         )
 
@@ -190,7 +195,7 @@ class Transport(TransportInterface):
 
     @property
     def _exit_code(self) -> int:
-        return int(self._client.api.exec_inspect(self._exec_id)['ExitCode'])
+        return int(self.client.api.exec_inspect(self._exec_id)['ExitCode'])
 
     def get_failure_details(self) -> str:
         return "Error occurred while trying to execute command inside docker container - {}, \n" \

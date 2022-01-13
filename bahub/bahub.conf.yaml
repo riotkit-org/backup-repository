@@ -25,10 +25,10 @@ transports:
         type: bahub.transports.sh
         spec: {}
 
-#    docker_mysql:
-#        type: bahub.transports.docker
-#        spec:
-#            container: "s3pb_db_mysql_1"
+    docker_mysql:
+        type: bahub.transports.docker
+        spec:
+            container: "s3pb_db_mysql_1"
 
     docker_fs:
         type: bahub.transports.docker
@@ -41,6 +41,12 @@ transports:
             orig_container: "nginx_bahub_test"
             temp_container_image: "alpine:3.12"
             pull: false
+
+    kubernetes_pod_fs:
+        type: bahub.transports.kubernetespodexec
+        spec:
+            namespace: kube-system
+            selector: "component=etcd"
 
 #    docker_postgres:
 #        type: bahub.transports.docker
@@ -55,6 +61,17 @@ transports:
 #            shell: /bin/bash
 
 backups:
+    fs_kubernetes_pod:
+        meta:
+            type: bahub.adapters.filesystem
+            access: secured
+            encryption: strong
+            collection_id: "${TEST_COLLECTION_ID}"
+            transport: kubernetes_pod_fs
+        spec:
+            paths:
+                - /var/www
+
     fs_docker:
         meta:
             type: bahub.adapters.filesystem

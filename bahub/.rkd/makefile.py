@@ -45,7 +45,7 @@ TASKS = [
         export TEST_COLLECTION_ID=$(cat ../backup-maker/.build/test/collection-id.txt);
         export SERVER_URL=$(cat ../backup-maker/.build/test/domain.txt);
         export API_TOKEN=$(cat ../backup-maker/.build/test/collection-id.txt);
-        RKD_SYS_LOG_LEVEL=debug python -m bahub :backup:make -c ./bahub.conf.yaml fs_docker -rl debug
+        RKD_SYS_LOG_LEVEL=debug python -m bahub :backup:make -c ./bahub.conf.yaml fs_kubernetes_pod -rl debug
     ''']),
 
     Pipeline(':test:unit', [':py:unittest'])
