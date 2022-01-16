@@ -8,13 +8,17 @@ from kubernetes.stream import stream
 from kubernetes.stream.ws_client import WSClient, ERROR_CHANNEL
 from rkd.api.inputoutput import IO
 
-from bahub.bin import RequiredBinary
+from bahub.bin import RequiredBinary, fetch_required_tools_from_cache
+from bahub.settings import BIN_VERSION_CACHE_PATH, TARGET_ENV_BIN_PATH, TARGET_ENV_VERSIONS_PATH
 from bahub.transports.base import TransportInterface, create_backup_maker_command
+from bahub.transports.kubernetes import KubernetesPodFilesystem
+from bahub.transports.sh import LocalFilesystem
 
 
 class Transport(TransportInterface):
     _v1_core_api: client.CoreV1Api
     _process: WSClient
+    _binaries: List[RequiredBinary]
 
     _namespace: str
     _selector: str
@@ -56,7 +60,7 @@ class Transport(TransportInterface):
         return self._v1_core_api
 
     def prepare_environment(self, binaries: List[RequiredBinary]) -> None:
-        pass
+        self._binaries = binaries
 
     def schedule(self, command: str, definition, is_backup: bool, version: str = "") -> None:
         """
@@ -66,11 +70,20 @@ class Transport(TransportInterface):
         pod_name = self.find_pod_name()
         self.wait_for_pod_to_be_ready(pod_name, self._namespace)
 
-        # todo: fetch_required_tools_from_cache()
+        fetch_required_tools_from_cache(
+            local_cache_fs=LocalFilesystem(),
+            dst_fs=KubernetesPodFilesystem(pod_name, self._namespace, self.io()),
+            io=self.io(),
+            bin_path=TARGET_ENV_BIN_PATH,
+            versions_path=TARGET_ENV_VERSIONS_PATH,
+            local_versions_path=BIN_VERSION_CACHE_PATH,
+            binaries=self._binaries
+        )
 
         complete_cmd = create_backup_maker_command(command, definition, is_backup, version)
         self.io().debug(f"POD exec: `{complete_cmd}`")
 
+        # todo: Move to a function e.g. "pod_exec"
         self._process = stream(
             self._v1_core_api.connect_get_namespaced_pod_exec,
             pod_name,
@@ -83,6 +96,10 @@ class Transport(TransportInterface):
         )
 
     def watch(self) -> bool:
+        """
+        Buffers stdout/stderr to io.debug() and notifies about exit code at the end
+        """
+
         while self._process.is_open():
             self._process.update(timeout=1)
 
@@ -95,6 +112,7 @@ class Transport(TransportInterface):
                 if line:
                     self.io().debug(line)
 
+        # https://github.com/kubernetes-client/python/issues/812
         errors = yaml.load(self._process.read_channel(ERROR_CHANNEL), yaml.FullLoader)
 
         if "details" in errors:
