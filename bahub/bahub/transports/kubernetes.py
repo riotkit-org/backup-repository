@@ -55,17 +55,17 @@ class ExecResult(object):
 
         errors = yaml.load(self._process.read_channel(ERROR_CHANNEL), yaml.FullLoader)
 
-        if "details" in errors:
+        if errors and "details" in errors:
             for error in errors['details']['causes']:
                 if "reason" not in error:
                     self._io.error(error['message'])
-                    return True
+                    return False
 
                 if error['reason'] == 'ExitCode' and int(error['message']) > 0:
                     self._io.error(f"Process inside POD exited with status {int(error['message'])}")
-                    return True
+                    return False
 
-        return False
+        return True
 
 
 def pod_exec(pod_name: str, namespace: str, cmd: List[str], io: IO) -> ExecResult:
