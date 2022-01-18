@@ -43,3 +43,11 @@ class FilesystemInterface(object):
     @abstractmethod
     def file_exists(self, path: str) -> bool:
         pass
+
+    @abstractmethod
+    def find_temporary_dir_path(self) -> str:
+        pass
+
+    @abstractmethod
+    def move(self, src: str, dst: str):
+        pass

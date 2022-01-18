@@ -45,8 +45,8 @@ transports:
     kubernetes_pod_fs:
         type: bahub.transports.kubernetespodexec
         spec:
-            namespace: kube-system
-            selector: "component=etcd"
+            namespace: default
+            selector: "run=nginx"
 
 #    docker_postgres:
 #        type: bahub.transports.docker

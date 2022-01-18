@@ -8,6 +8,7 @@ import os
 import shutil
 import subprocess
 import sys
+from tempfile import TemporaryDirectory
 from typing import List
 
 from rkd.api.inputoutput import IO
@@ -54,6 +55,12 @@ class LocalFilesystem(FilesystemInterface):
 
     def unpack(self, archive_path: str, dst_path: str):
         subprocess.check_call(["tar", "-xf", archive_path, "--directory", dst_path])
+
+    def find_temporary_dir_path(self) -> str:
+        return TemporaryDirectory().name
+
+    def move(self, src: str, dst: str):
+        subprocess.check_call(["mv", src, dst])
 
 
 class Transport(TransportInterface):

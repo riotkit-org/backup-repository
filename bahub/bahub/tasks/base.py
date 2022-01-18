@@ -76,7 +76,8 @@ class BaseTask(TaskInterface, ABC):
         definition_name = context.get_arg('definition')
         definition = self.config.get_definition(definition_name)
         adapter: AdapterInterface = self.config.get_adapter(definition_name)()
-        required_binaries = adapter.get_required_binaries() + get_backup_maker_binaries()
+        required_binaries = adapter.get_required_binaries() + get_backup_maker_binaries() + \
+                            definition.get_transport_required_tools()
 
         self.prepare_binaries_cache(required_binaries)
 

@@ -8,6 +8,7 @@ Note: Requires access to the docker daemon. Make sure your user is in a "docker"
 """
 import os
 import subprocess
+from tempfile import TemporaryDirectory
 import docker
 from typing import List, Generator
 from docker import DockerClient
@@ -65,6 +66,13 @@ class DockerFilesystemTransport(FilesystemInterface):
         exit_code, result = self.container.exec_run(["tar", "-xf", archive_path, "--directory", dst_path])
         assert exit_code == 0, f"Cannot unpack tar archive from '{archive_path}' to '{dst_path}' " \
                                f"(both paths inside container). {result}"
+
+    def find_temporary_dir_path(self) -> str:
+        return TemporaryDirectory().name
+
+    def move(self, src: str, dst: str):
+        exit_code, result = self.container.exec_run(["mv", src, dst])
+        return exit_code == 0, f"Cannot move file '{src}' to '{dst}'"
 
 
 class Transport(TransportInterface):

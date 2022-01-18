@@ -169,3 +169,6 @@ class TransportInterface(object):
             buffer=proc.stdout,
             parent=stdin
         )
+
+    def get_required_binaries(self):
+        return []

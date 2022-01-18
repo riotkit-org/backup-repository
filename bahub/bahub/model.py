@@ -177,6 +177,9 @@ class BackupDefinition(ABC):
         self._transport.prepare_environment(binaries)
         return self._transport
 
+    def get_transport_required_tools(self) -> List[RequiredBinary]:
+        return self._transport.get_required_binaries()
+
     def get_sensitive_information(self) -> list:
         return []
 

@@ -1,12 +1,12 @@
 from typing import List, Callable
 
 import yaml
+from tempfile import TemporaryDirectory
 from kubernetes.stream.ws_client import WSClient, ERROR_CHANNEL
 from rkd.api.inputoutput import IO
-
-from bahub.fs import FilesystemInterface
 from kubernetes import client
 from kubernetes.stream import stream
+from ..fs import FilesystemInterface
 
 
 class ExecResult(object):
@@ -129,14 +129,31 @@ class KubernetesPodFilesystem(FilesystemInterface):
         if not files_list:
             files_list = ["*", ".*"]
 
-        # todo: SET WORKDIR!
         self._exec(
-            ["tar", "-zcf", archive_path] + files_list,
+            ["tracexit", f"env:PWD={src_path}", "tar", "-zcf", archive_path] + files_list,
             f"Cannot pack files from {src_path} into {archive_path} (inside POD)"
         )
 
     def unpack(self, archive_path: str, dst_path: str):
-        pass
+        self._exec(
+            ["tar", "-xf", archive_path, "--directory", dst_path],
+            f"Cannot unpack files from '{archive_path}' to '{dst_path}'"
+        )
 
     def file_exists(self, path: str) -> bool:
-        pass
+        try:
+            self._exec(["test", "-f", path], f"File does not exist")
+
+        except AssertionError:
+            return False
+
+        return True
+
+    def find_temporary_dir_path(self) -> str:
+        return TemporaryDirectory().name
+
+    def move(self, src: str, dst: str):
+        self._exec(
+            ["mv", src, dst],
+            f"Cannot move file {src} to {dst} inside POD"
+        )

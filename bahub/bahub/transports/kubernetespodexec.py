@@ -8,11 +8,12 @@ from kubernetes.stream import stream
 from kubernetes.stream.ws_client import WSClient, ERROR_CHANNEL
 from rkd.api.inputoutput import IO
 
-from bahub.bin import RequiredBinary, fetch_required_tools_from_cache
+from bahub.bin import RequiredBinary, fetch_required_tools_from_cache, RequiredBinaryFromGithubReleasePackedInArchive
 from bahub.settings import BIN_VERSION_CACHE_PATH, TARGET_ENV_BIN_PATH, TARGET_ENV_VERSIONS_PATH
 from bahub.transports.base import TransportInterface, create_backup_maker_command
 from bahub.transports.kubernetes import KubernetesPodFilesystem
 from bahub.transports.sh import LocalFilesystem
+from bahub.versions import TRACEXIT_BIN_VERSION
 
 
 class Transport(TransportInterface):
@@ -165,3 +166,13 @@ class Transport(TransportInterface):
         pod_metadata: V1ObjectMeta = pod.metadata
 
         return pod_metadata.name
+
+    def get_required_binaries(self):
+        return [
+            RequiredBinaryFromGithubReleasePackedInArchive(
+                project_name="riotkit-org/tracexit",
+                version=TRACEXIT_BIN_VERSION,
+                binary_name="tracexit",
+                archive_name=f"tracexit_{TRACEXIT_BIN_VERSION}_linux_amd64.tar.gz"  # todo: support for multiple architectures
+            )
+        ]

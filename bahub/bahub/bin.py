@@ -38,6 +38,9 @@ class RequiredBinary(object):
     def get_url(self):
         return self.url
 
+    def is_archive(self) -> bool:
+        return self.url.endswith('tar.gz')
+
 
 class RequiredBinaryFromGithubRelease(RequiredBinary):
     """
@@ -62,6 +65,20 @@ class RequiredBinaryFromGithubRelease(RequiredBinary):
         return self.binary_name
 
 
+class RequiredBinaryFromGithubReleasePackedInArchive(RequiredBinaryFromGithubRelease):
+    """
+    Binary file released on GitHub as tar.gz packaged archive
+    (e.g. by GoReleaser)
+    """
+
+    def __init__(self, project_name: str, version: str, binary_name: str, archive_name: str):
+        super().__init__(project_name, version, archive_name)
+        self.binary_name = binary_name
+
+    def is_archive(self) -> bool:
+        return True
+
+
 def download_required_tools(fs: FilesystemInterface, io: IO, bin_path: str,
                             versions_path: str, binaries: List[RequiredBinary]) -> None:
     """
@@ -80,10 +97,21 @@ def download_required_tools(fs: FilesystemInterface, io: IO, bin_path: str,
     for binary in binaries:
         version_path = versions_path + "/" + binary.get_full_name_with_version()
 
+        io.debug(f"Searching for tool {version_path}")
+
         if not fs.file_exists(version_path):
-            io.debug(f"Downloading binary {binary.get_url()} into {version_path}")
-            fs.download(binary.get_url(), version_path)
-            fs.make_executable(versions_path)
+            io.debug(f"Downloading tool {binary.get_url()} into {version_path}")
+
+            if binary.is_archive():
+                tmp_dir = fs.find_temporary_dir_path()
+                fs.force_mkdir(tmp_dir)
+                fs.download(binary.get_url(), tmp_dir + "/archive.tar.gz")
+                fs.unpack(tmp_dir + "/archive.tar.gz", tmp_dir)
+                fs.move(tmp_dir + "/" + binary.get_filename(), version_path)
+                fs.make_executable(version_path)
+            else:
+                fs.download(binary.get_url(), version_path)
+                fs.make_executable(version_path)
 
 
 def fetch_required_tools_from_cache(local_cache_fs: FilesystemInterface, dst_fs: FilesystemInterface, io: IO,
