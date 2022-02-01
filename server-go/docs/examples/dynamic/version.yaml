@@ -1,0 +1,14 @@
+---
+apiVersion: backups.riotkit.org/v1alpha1
+kind: Version
+metadata:
+    name: iwa-ait-1
+    labels:
+        backups.riotkit.org/collection: iwa-ait
+spec:
+    selector:
+        name: iwa-ait
+    version: 1
+    filename: iwa-ait-v1.tar.gz
+    uploadDate: "2022-01-01 06:30"
+    uploadedBy: admin
