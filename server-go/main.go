@@ -25,7 +25,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	json, err := provider.GetSingleDocument("deployment", "nginx")
+	json, err := provider.GetSingleDocument("GrantedAccess", "39671096ba800ca9b238c7c01b053fa0d5d09ca3151e050d148ddfffaefa9466ceba75d47c2098a0f72110aea4deeb24f6cd1b31f27e27aa6fe7b82dad956049")
 
 	fmt.Println("!!!", json)
 
