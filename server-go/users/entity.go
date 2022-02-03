@@ -1,17 +1,17 @@
 package users
 
-type Permissions interface {
-}
+import "github.com/riotkit-org/backup-repository/config"
 
 type UserPermissions struct {
 }
 
 type User struct {
-	Id          string
-	Email       string
-	Permissions UserPermissions
+	Metadata config.ObjectMetadata `json:"metadata"`
+	Spec     Spec                  `json:"spec"`
 }
 
-func (u User) toJson() {
-
+type Spec struct {
+	Id          string          `json:"id"`
+	Email       string          `json:"email"`
+	Permissions UserPermissions `json:"permissions"`
 }

@@ -1,17 +1,19 @@
 apiVersion: apiextensions.k8s.io/v1
 kind: "CustomResourceDefinition"
 metadata:
-    name: "grantedaccess.backups.riotkit.org"
+    name: "grantedaccesses.backups.riotkit.org"
 spec:
     group: "backups.riotkit.org"
     scope: "Namespaced"
     names:
-        plural: "grantedaccess"
+        plural: "grantedaccesses"
         singular: "grantedaccess"
         kind: "GrantedAccess"
         shortNames:
             - "gaccess"
             - "brjwts"
+        categories:
+            - "backuprepository"
     versions:
         - name: v1alpha1
           served: true
@@ -24,11 +26,11 @@ spec:
                   properties:
                       spec:
                           type: object
-                          required: ["expiresAt", "active", "description", "requesterIP"]
+                          required: ["expiresAt", "deactivated", "description", "requesterIP"]
                           properties:
                               expiresAt:
                                   type: "string"
-                              active:
+                              deactivated:
                                   type: "boolean"
                               description:
                                   type: "string"
@@ -39,9 +41,9 @@ spec:
               type: string
               jsonPath: .spec.expiresAt
 
-            - name: Is active
+            - name: Is deactivated
               type: boolean
-              jsonPath: .spec.active
+              jsonPath: .spec.deactivated
 
             - name: Requester
               type: string

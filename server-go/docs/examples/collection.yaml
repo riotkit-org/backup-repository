@@ -1,6 +1,6 @@
 ---
 apiVersion: backups.riotkit.org/v1alpha1
-kind: Collection
+kind: BackupCollection
 metadata:
     name: iwa-ait
 spec:

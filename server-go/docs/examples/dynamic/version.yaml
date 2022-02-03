@@ -1,6 +1,6 @@
 ---
 apiVersion: backups.riotkit.org/v1alpha1
-kind: Version
+kind: BackupVersion
 metadata:
     name: iwa-ait-1
     labels:
