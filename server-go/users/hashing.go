@@ -11,6 +11,7 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
+	"github.com/sirupsen/logrus"
 	"golang.org/x/crypto/argon2"
 	"strings"
 )
@@ -61,6 +62,9 @@ func ComparePassword(password string, hash string) (bool, error) {
 	parts := strings.Split(hash, "$")
 
 	if len(parts) < 3 {
+		logrus.Warning("Password format is invalid. To properly encode a password use `backup-repository " +
+			"--encode-password='your-password'` and put it in `kind: Secret` or in `kind: BackupUser`")
+
 		return false, errors.New("invalid password hash format. Check `kind: Secret` or `kind: BackupUser`")
 	}
 
