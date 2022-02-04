@@ -9,6 +9,10 @@ import (
 )
 
 func main() {
+	// todo: Add argparsing
+	//       --provider=kubernetes
+	//       --encode-password=...
+
 	configProvider, err := config.CreateConfigurationProvider("kubernetes")
 	if err != nil {
 		log.Fatal(err)
@@ -23,4 +27,6 @@ func main() {
 	// todo: Second thread - configuration changes watcher
 	//       Notice: Fork configuration objects on each request? Or do not allow updating, when any request is pending?
 	http.SpawnHttpApplication(ctx)
+
+	// todo: Add commandline arg --encode-password=... to allow password hashing from commandline (should not run whole application)
 }

@@ -5,12 +5,41 @@ import (
 	"errors"
 	"fmt"
 	"github.com/riotkit-org/backup-repository/config"
+	"github.com/sirupsen/logrus"
+	"github.com/tidwall/gjson"
 )
 
 const KIND = "BackupUser"
 
 type userRepository struct {
 	config.ConfigurationProvider
+}
+
+func (r userRepository) fillPasswordFromKindSecret(user User) error {
+	if user.Spec.PasswordFromRef.Name != "" {
+		secretDoc, secretErr := r.GetSingleDocumentAnyType("Secret", user.Spec.PasswordFromRef.Name, "", "v1")
+
+		if secretErr != nil {
+			logrus.Errorf("Cannot fetch user hashed password from `kind: Secret`. Maybe it does not exist? %v", secretErr)
+			return secretErr
+		}
+
+		secret := gjson.Get(secretDoc, fmt.Sprintf("data.%v", user.Spec.PasswordFromRef.Entry))
+
+		if secret.String() == "" {
+			logrus.Errorf(
+				"Cannot retrieve password from `kind: Secret` of name '%v', field '%v'",
+				user.Spec.PasswordFromRef.Name,
+				user.Spec.PasswordFromRef.Entry,
+			)
+
+			return errors.New("invalid field name in `kind: Secret`")
+		}
+
+		user.PasswordFromSecret = secret.String()
+	}
+
+	return nil
 }
 
 func (r userRepository) findUserByLogin(login string) (User, error) {
@@ -22,6 +51,10 @@ func (r userRepository) findUserByLogin(login string) (User, error) {
 	}
 
 	err := json.Unmarshal([]byte(doc), &user)
+
+	if fillErr := r.fillPasswordFromKindSecret(user); fillErr != nil {
+		return user, fillErr
+	}
 
 	return user, err
 }

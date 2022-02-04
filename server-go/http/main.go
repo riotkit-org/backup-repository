@@ -8,7 +8,15 @@ import (
 func SpawnHttpApplication(ctx core.ApplicationContainer) {
 	r := gin.Default()
 
-	addLookupUserRoute(r, ctx)
+	authMiddleware := createAuthenticationMiddleware(r, ctx)
+
+	router := r.Group("/api/stable")
+	router.POST("/auth/login", authMiddleware.LoginHandler)
+	router.GET("/auth/refresh_token", authMiddleware.RefreshHandler)
+	router.Use(authMiddleware.MiddlewareFunc())
+	{
+		addLookupUserRoute(router, ctx)
+	}
 
 	_ = r.Run()
 }

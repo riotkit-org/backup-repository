@@ -15,12 +15,12 @@ type ConfigurationInKubernetes struct {
 	apiVersion string
 }
 
-func (o ConfigurationInKubernetes) GetSingleDocument(kind string, id string) (string, error) {
+func (o ConfigurationInKubernetes) GetSingleDocumentAnyType(kind string, id string, apiGroup string, apiVersion string) (string, error) {
 	object := &unstructured.Unstructured{}
 	object.SetGroupVersionKind(schema.GroupVersionKind{
-		Group:   o.apiGroup,
+		Group:   apiGroup,
 		Kind:    kind,
-		Version: o.apiVersion,
+		Version: apiVersion,
 	})
 
 	if err := o.api.Get(context.Background(), k8sClient.ObjectKey{Namespace: o.namespace, Name: id}, object); err != nil {
@@ -36,6 +36,10 @@ func (o ConfigurationInKubernetes) GetSingleDocument(kind string, id string) (st
 
 	logrus.Debugf("GetSingleDocument(%v, %v) OK", kind, id)
 	return string(content), nil
+}
+
+func (o ConfigurationInKubernetes) GetSingleDocument(kind string, id string) (string, error) {
+	return o.GetSingleDocumentAnyType(kind, id, o.apiGroup, o.apiVersion)
 }
 
 func CreateKubernetesConfigurationProvider(api k8sClient.Client, namespace string) ConfigurationInKubernetes {
