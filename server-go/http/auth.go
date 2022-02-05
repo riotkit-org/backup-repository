@@ -62,8 +62,11 @@ func createAuthenticationMiddleware(r *gin.Engine, di core.ApplicationContainer)
 			}
 
 			if !user.IsPasswordValid(password) {
+				logrus.Debugf("Invalid password for '%v'", userID)
 				return nil, jwt.ErrFailedAuthentication
 			}
+
+			// todo: Store JWT hash shortcut to be able to revoke any JWT by admin any time
 
 			return &AuthUser{UserName: userID, subject: user}, nil
 		},

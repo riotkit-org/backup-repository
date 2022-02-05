@@ -15,7 +15,7 @@ type userRepository struct {
 	config.ConfigurationProvider
 }
 
-func (r userRepository) fillPasswordFromKindSecret(user User) error {
+func (r userRepository) fillPasswordFromKindSecret(user *User) error {
 	if user.Spec.PasswordFromRef.Name != "" {
 		secretDoc, secretErr := r.GetSingleDocumentAnyType("Secret", user.Spec.PasswordFromRef.Name, "", "v1")
 
@@ -37,8 +37,10 @@ func (r userRepository) fillPasswordFromKindSecret(user User) error {
 		}
 
 		user.PasswordFromSecret = secret.String()
+		return nil
 	}
 
+	logrus.Warn("`kind: Secret` not specified for user") // todo: debug
 	return nil
 }
 
@@ -52,7 +54,7 @@ func (r userRepository) findUserByLogin(login string) (User, error) {
 
 	err := json.Unmarshal([]byte(doc), &user)
 
-	if fillErr := r.fillPasswordFromKindSecret(user); fillErr != nil {
+	if fillErr := r.fillPasswordFromKindSecret(&user); fillErr != nil {
 		return user, fillErr
 	}
 
