@@ -3,10 +3,11 @@
 // Thanks to Edd Turtle
 //
 
-package users
+package security
 
 import (
 	"crypto/rand"
+	"crypto/sha256"
 	"crypto/subtle"
 	"encoding/base64"
 	"errors"
@@ -93,4 +94,10 @@ func ComparePassword(password string, hash string) (bool, error) {
 
 	logrus.Debugf("Comparing passwords...")
 	return subtle.ConstantTimeCompare(decodedHash, comparisonHash) == 1, nil
+}
+
+func HashJWT(jwt string) string {
+	asByte := sha256.Sum256([]byte(jwt))
+
+	return string(asByte[:])
 }

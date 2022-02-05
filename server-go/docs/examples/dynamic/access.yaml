@@ -5,6 +5,7 @@ metadata:
     # hash of the JWT
     name: 39671096ba800ca9b238c7c01b053fa0d5d09ca3151e050d148ddfffaefa9466ceba75d47c2098a0f72110aea4deeb24f6cd1b31f27e27aa6fe7b82dad956049
 spec:
+    user: admin
     expiresAt: "2022-01-01 08:00"
     active: true
     description: "Temporary token for single file upload"

@@ -5,6 +5,7 @@ import (
 	"github.com/riotkit-org/backup-repository/config"
 	"github.com/riotkit-org/backup-repository/core"
 	"github.com/riotkit-org/backup-repository/http"
+	"github.com/riotkit-org/backup-repository/security"
 	"github.com/riotkit-org/backup-repository/users"
 	log "github.com/sirupsen/logrus"
 	"os"
@@ -13,7 +14,8 @@ import (
 type options struct {
 	Help                 bool   `short:"h" long:"help" description:"Shows this help message"`
 	Provider             string `short:"p" long:"provider" description:"Configuration provider. Choice: 'kubernetes', 'filesystem'" default:"kubernetes"`
-	EncodePasswordAction string `short:"e" long:"encode-password" description:"Encode a password from CLI instead of running a server"`
+	EncodePasswordAction string `long:"encode-password" description:"Encode a password from CLI instead of running a server"`
+	HashJWT              string `long:"hash-jwt" description:"Generate a hash from JWT"`
 }
 
 func main() {
@@ -29,8 +31,13 @@ func main() {
 	}
 	// allows encoding passwords from CLI to make the configmap creation easier
 	if opts.EncodePasswordAction != "" {
-		hash, _ := users.CreateHashFromPassword(opts.EncodePasswordAction)
+		hash, _ := security.CreateHashFromPassword(opts.EncodePasswordAction)
 		println(hash)
+		os.Exit(0)
+	}
+	// allows to hash a JWT, to be later used in comparison in `kind: GrantedAccess`
+	if opts.HashJWT != "" {
+		println(security.HashJWT(opts.HashJWT))
 		os.Exit(0)
 	}
 

@@ -2,6 +2,7 @@ package users
 
 import (
 	"github.com/riotkit-org/backup-repository/config"
+	"github.com/riotkit-org/backup-repository/security"
 	"github.com/sirupsen/logrus"
 )
 
@@ -35,7 +36,7 @@ func (u User) getPasswordHash() string {
 }
 
 func (u User) IsPasswordValid(password string) bool {
-	result, err := ComparePassword(password, u.getPasswordHash())
+	result, err := security.ComparePassword(password, u.getPasswordHash())
 	if err != nil {
 		logrus.Errorf("Cannot decode password: '%v'", err)
 	}

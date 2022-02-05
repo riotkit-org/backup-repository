@@ -9,7 +9,7 @@ import (
 	"github.com/tidwall/gjson"
 )
 
-const KIND = "BackupUser"
+const KindBackupUser = "BackupUser"
 
 type userRepository struct {
 	config.ConfigurationProvider
@@ -45,7 +45,7 @@ func (r userRepository) fillPasswordFromKindSecret(user *User) error {
 }
 
 func (r userRepository) findUserByLogin(login string) (User, error) {
-	doc, retrieveErr := r.GetSingleDocument(KIND, login)
+	doc, retrieveErr := r.GetSingleDocument(KindBackupUser, login)
 	user := User{}
 
 	if retrieveErr != nil {
