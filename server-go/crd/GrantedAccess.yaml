@@ -39,6 +39,10 @@ spec:
                               requesterIP:
                                   type: "string"
           additionalPrinterColumns:
+            - name: User
+              type: string
+              jsonPath: .spec.user
+
             - name: Expiration
               type: string
               jsonPath: .spec.expiresAt

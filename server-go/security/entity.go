@@ -1,6 +1,9 @@
 package security
 
-import "github.com/riotkit-org/backup-repository/config"
+import (
+	"github.com/riotkit-org/backup-repository/config"
+	"time"
+)
 
 type GrantedAccessSpec struct {
 	ExpiresAt   string `json:"expiresAt"`
@@ -14,13 +17,11 @@ type GrantedAccess struct {
 	Spec     GrantedAccessSpec     `json:"grantedAccessSpec"`
 }
 
-func NewGrantedAccess(jwt string, expiresAt string, active bool, description string, requesterIP string) GrantedAccess {
-	// todo: reformat date
-
+func NewGrantedAccess(jwt string, expiresAt time.Time, active bool, description string, requesterIP string) GrantedAccess {
 	return GrantedAccess{
 		Metadata: config.ObjectMetadata{Name: HashJWT(jwt)},
 		Spec: GrantedAccessSpec{
-			ExpiresAt:   expiresAt,
+			ExpiresAt:   expiresAt.Format(time.RFC3339),
 			Active:      active,
 			Description: description,
 			RequesterIP: requesterIP,

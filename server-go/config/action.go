@@ -3,14 +3,15 @@ package config
 import (
 	"errors"
 	"fmt"
-	k8sClient "sigs.k8s.io/controller-runtime/pkg/client"
+	"k8s.io/client-go/dynamic"
 	"sigs.k8s.io/controller-runtime/pkg/client/config"
 )
 
 func CreateConfigurationProvider(providerName string) (ConfigurationProvider, error) {
 
 	if providerName == "kubernetes" {
-		client, err := k8sClient.New(config.GetConfigOrDie(), k8sClient.Options{})
+		client, err := dynamic.NewForConfig(config.GetConfigOrDie())
+
 		if err != nil {
 			return nil, err
 		}

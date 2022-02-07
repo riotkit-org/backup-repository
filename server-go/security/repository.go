@@ -13,5 +13,5 @@ type GrantedAccessRepository struct {
 }
 
 func (g GrantedAccessRepository) StoreGeneratedAccessInformation(access GrantedAccess) {
-	g.config.StoreDocument(access)
+	g.config.StoreDocument(KindGrantedAccess, access)
 }

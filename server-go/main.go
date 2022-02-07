@@ -47,8 +47,9 @@ func main() {
 	}
 
 	ctx := core.ApplicationContainer{
-		Config: configProvider,
-		Users:  users.NewUsersService(configProvider),
+		Config:          configProvider,
+		Users:           users.NewUsersService(configProvider),
+		GrantedAccesses: security.NewService(configProvider),
 	}
 
 	// todo: First thread - HTTP

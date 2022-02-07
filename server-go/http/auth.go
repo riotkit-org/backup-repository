@@ -5,7 +5,6 @@ import (
 	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
 	"github.com/riotkit-org/backup-repository/core"
-	"github.com/riotkit-org/backup-repository/security"
 	"github.com/riotkit-org/backup-repository/users"
 	"github.com/sirupsen/logrus"
 	"net/http"
@@ -90,13 +89,14 @@ func createAuthenticationMiddleware(r *gin.Engine, di core.ApplicationContainer)
 		TokenHeadName: "Bearer",
 		TimeFunc:      time.Now,
 		LoginResponse: func(c *gin.Context, code int, token string, expire time.Time) {
+			hashedShortcut := di.GrantedAccesses.StoreJWTAsGrantedAccess(token, expire, c.ClientIP(), "Login")
+
 			c.JSON(http.StatusOK, gin.H{
 				"code":   http.StatusOK,
 				"token":  token,
+				"hash":   hashedShortcut,
 				"expire": expire.Format(time.RFC3339),
 			})
-
-			security.StoreJWTAsGrantedAccess(token, expire, c.ClientIP(), "Login")
 		},
 
 		// todo: Check if token was not revoked

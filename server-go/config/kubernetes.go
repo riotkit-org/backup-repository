@@ -2,28 +2,26 @@ package config
 
 import (
 	"context"
+	"github.com/fatih/structs"
 	"github.com/sirupsen/logrus"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime/schema"
-	k8sClient "sigs.k8s.io/controller-runtime/pkg/client"
+	"k8s.io/client-go/dynamic"
 )
 
 type ConfigurationInKubernetes struct {
-	api        k8sClient.Client
+	api        dynamic.Interface
 	namespace  string
 	apiGroup   string
 	apiVersion string
 }
 
 func (o ConfigurationInKubernetes) GetSingleDocumentAnyType(kind string, id string, apiGroup string, apiVersion string) (string, error) {
-	object := &unstructured.Unstructured{}
-	object.SetGroupVersionKind(schema.GroupVersionKind{
-		Group:   apiGroup,
-		Kind:    kind,
-		Version: apiVersion,
-	})
+	resource := schema.GroupVersionResource{Group: apiGroup, Version: apiVersion, Resource: kind}
+	object, err := o.api.Resource(resource).Namespace(o.namespace).Get(context.Background(), id, metav1.GetOptions{})
 
-	if err := o.api.Get(context.Background(), k8sClient.ObjectKey{Namespace: o.namespace, Name: id}, object); err != nil {
+	if err != nil {
 		logrus.Warnf("Kubernetes API returned error: %v", err)
 		return "", err
 	}
@@ -42,7 +40,27 @@ func (o ConfigurationInKubernetes) GetSingleDocument(kind string, id string) (st
 	return o.GetSingleDocumentAnyType(kind, id, o.apiGroup, o.apiVersion)
 }
 
-func CreateKubernetesConfigurationProvider(api k8sClient.Client, namespace string) ConfigurationInKubernetes {
+func (o ConfigurationInKubernetes) StoreDocument(kind string, document interface{}) error {
+	resource := schema.GroupVersionResource{Group: o.apiGroup, Version: o.apiVersion, Resource: kind}
+	object := unstructured.Unstructured{Object: structs.Map(document)}
+
+	_, err := o.api.Resource(resource).Namespace(o.namespace).Update(
+		context.Background(),
+		&object,
+		metav1.UpdateOptions{},
+	)
+
+	// todo: if update fails specifically, then attempt to create object
+
+	if err != nil {
+		logrus.Errorf("Cannot stored document of `kind: %v`. Error: %v", kind, err)
+		return err
+	}
+
+	return nil
+}
+
+func CreateKubernetesConfigurationProvider(api dynamic.Interface, namespace string) ConfigurationInKubernetes {
 	// todo: Implement caching by composition
 	return ConfigurationInKubernetes{
 		api:        api,
