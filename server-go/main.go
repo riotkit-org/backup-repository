@@ -16,6 +16,7 @@ type options struct {
 	Provider             string `short:"p" long:"provider" description:"Configuration provider. Choice: 'kubernetes', 'filesystem'" default:"kubernetes"`
 	EncodePasswordAction string `long:"encode-password" description:"Encode a password from CLI instead of running a server"`
 	HashJWT              string `long:"hash-jwt" description:"Generate a hash from JWT"`
+	Level                string `long:"log-level" description:"Log level" default:"debug"`
 }
 
 func main() {
@@ -23,8 +24,11 @@ func main() {
 	p := flags.NewParser(&opts, flags.Default&^flags.HelpFlag)
 	_, err := p.Parse()
 	if err != nil {
+		println(err)
 		os.Exit(1)
 	}
+	logLevel, _ := log.ParseLevel(opts.Level)
+	log.SetLevel(logLevel)
 	if opts.Help {
 		p.WriteHelp(os.Stdout)
 		os.Exit(0)
@@ -40,12 +44,11 @@ func main() {
 		println(security.HashJWT(opts.HashJWT))
 		os.Exit(0)
 	}
-
 	configProvider, err := config.CreateConfigurationProvider(opts.Provider)
 	if err != nil {
+		log.Error("Cannot create ConfigurationProvider")
 		log.Fatal(err)
 	}
-
 	ctx := core.ApplicationContainer{
 		Config:          configProvider,
 		Users:           users.NewUsersService(configProvider),
