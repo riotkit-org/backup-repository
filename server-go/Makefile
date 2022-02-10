@@ -18,3 +18,7 @@ postgres:
         -p 5432:5432 \
         postgres:14.1-alpine
 
+postgres_refresh:
+	docker rm -f br_postgres || true
+	sudo rm -rf /tmp/br_postgres
+	make postgres

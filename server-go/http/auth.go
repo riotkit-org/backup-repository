@@ -87,10 +87,11 @@ func createAuthenticationMiddleware(r *gin.Engine, di core.ApplicationContainer)
 			return false
 		},
 		Unauthorized: func(c *gin.Context, code int, message string) {
-			c.JSON(code, gin.H{
+			c.IndentedJSON(code, gin.H{
 				"status":  false,
 				"code":    code,
 				"message": message,
+				"data":    gin.H{},
 			})
 		},
 		TokenLookup:   "header: Authorization, query: token, cookie: jwt",
@@ -100,11 +101,13 @@ func createAuthenticationMiddleware(r *gin.Engine, di core.ApplicationContainer)
 			hashedShortcut := di.GrantedAccesses.StoreJWTAsGrantedAccess(
 				token, expire, c.ClientIP(), "Login", security.ExtractLoginFromJWT(token))
 
-			c.JSON(http.StatusOK, gin.H{
-				"code":   http.StatusOK,
-				"token":  token,
-				"hash":   hashedShortcut,
-				"expire": expire.Format(time.RFC3339),
+			c.IndentedJSON(http.StatusOK, gin.H{
+				"code": http.StatusOK,
+				"data": gin.H{
+					"token":  token,
+					"hash":   hashedShortcut,
+					"expire": expire.Format(time.RFC3339),
+				},
 			})
 		},
 
@@ -129,16 +132,20 @@ func addLookupUserRoute(r *gin.RouterGroup, ctx core.ApplicationContainer) {
 		//user.Permissions.Can()
 
 		if err != nil {
-			c.JSON(404, gin.H{
+			c.IndentedJSON(404, gin.H{
 				"status": false,
 				"error":  err,
+				"data":   gin.H{},
 			})
 			return
 		}
 
-		c.JSON(404, gin.H{
+		c.IndentedJSON(200, gin.H{
 			"status": true,
-			"user":   user,
+			"data": gin.H{
+				"email":       user.Spec.Email,
+				"permissions": user.Spec.Permissions,
+			},
 		})
 	})
 }

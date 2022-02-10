@@ -21,12 +21,14 @@ func (s Service) StoreJWTAsGrantedAccess(token string, expire time.Time, ip stri
 }
 
 func (s Service) IsTokenStillValid(token string) bool {
-	if _, err := s.repository.getGrantedAccessByHashedToken(HashJWT(token)); err != nil {
-		logrus.Debugf("IsTokenValid(false): %v", err)
+	ga, err := s.repository.getGrantedAccessByHashedToken(HashJWT(token))
+
+	if err != nil {
+		logrus.Errorf("IsTokenValid(false): %v", err)
 		return false
 	}
 
-	return true
+	return ga.IsValid()
 }
 
 func NewService(db *gorm.DB) Service {
