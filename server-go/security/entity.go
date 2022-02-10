@@ -25,17 +25,17 @@ func (ga GrantedAccess) IsNotExpired() bool {
 
 func (ga GrantedAccess) IsValid() bool {
 	if ga.Deactivated {
-		logrus.Error("IsValid(false): Account is deactivated")
+		logrus.Warningf("IsValid(false): Account is deactivated [id=%v]", ga.ID)
 		return false
 	}
 
 	if ga.DeletedAt.Valid {
-		logrus.Error("IsValid(false): JWT deleted")
+		logrus.Warningf("IsValid(false): JWT deleted [id=%v]", ga.ID)
 		return false
 	}
 
 	if ga.IsNotExpired() {
-		logrus.Error("IsValid(false): JWT expired")
+		logrus.Warningf("IsValid(false): JWT expired [id=%v]", ga.ID)
 		return false
 	}
 
