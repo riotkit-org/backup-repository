@@ -9,7 +9,7 @@ import (
 	"github.com/tidwall/gjson"
 )
 
-const KindBackupUser = "BackupUser"
+const KindBackupUser = "backupusers"
 
 type userRepository struct {
 	config.ConfigurationProvider
@@ -17,7 +17,7 @@ type userRepository struct {
 
 func (r userRepository) fillPasswordFromKindSecret(user *User) error {
 	if user.Spec.PasswordFromRef.Name != "" {
-		secretDoc, secretErr := r.GetSingleDocumentAnyType("Secret", user.Spec.PasswordFromRef.Name, "", "v1")
+		secretDoc, secretErr := r.GetSingleDocumentAnyType("secrets", user.Spec.PasswordFromRef.Name, "", "v1")
 
 		if secretErr != nil {
 			logrus.Errorf("Cannot fetch user hashed password from `kind: Secret`. Maybe it does not exist? %v", secretErr)

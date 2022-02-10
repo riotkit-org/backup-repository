@@ -4,6 +4,7 @@ import (
 	"github.com/jessevdk/go-flags"
 	"github.com/riotkit-org/backup-repository/config"
 	"github.com/riotkit-org/backup-repository/core"
+	"github.com/riotkit-org/backup-repository/db"
 	"github.com/riotkit-org/backup-repository/http"
 	"github.com/riotkit-org/backup-repository/security"
 	"github.com/riotkit-org/backup-repository/users"
@@ -16,6 +17,11 @@ type options struct {
 	Provider             string `short:"p" long:"provider" description:"Configuration provider. Choice: 'kubernetes', 'filesystem'" default:"kubernetes"`
 	EncodePasswordAction string `long:"encode-password" description:"Encode a password from CLI instead of running a server"`
 	HashJWT              string `long:"hash-jwt" description:"Generate a hash from JWT"`
+	DbHostname           string `long:"db-hostname" description:"Hostname for database connection" default:"localhost"`
+	DbUsername           string `long:"db-user" description:"Username for database connection"`
+	DbPassword           string `long:"db-password" description:"Password for database connection"`
+	DbName               string `long:"db-name" description:"Database name inside a database"`
+	DbPort               int    `long:"db-port" description:"Database name inside a database" default:"5432"`
 }
 
 func main() {
@@ -43,13 +49,20 @@ func main() {
 
 	configProvider, err := config.CreateConfigurationProvider(opts.Provider)
 	if err != nil {
+		log.Errorln("Cannot initialize Configuration Provider")
 		log.Fatal(err)
 	}
+	dbDriver, err := db.CreateDatabaseDriver(opts.DbHostname, opts.DbUsername, opts.DbPassword, opts.DbName, opts.DbPort, "")
+	if err != nil {
+		log.Errorln("Cannot initialize database connection")
+		log.Fatal(err)
+	}
+	db.InitializeDatabase(dbDriver)
 
 	ctx := core.ApplicationContainer{
 		Config:          configProvider,
 		Users:           users.NewUsersService(configProvider),
-		GrantedAccesses: security.NewService(configProvider),
+		GrantedAccesses: security.NewService(dbDriver),
 	}
 
 	// todo: First thread - HTTP

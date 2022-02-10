@@ -18,8 +18,8 @@ type Spec struct {
 	Id              string                `json:"id"`
 	Email           string                `json:"email"`
 	Permissions     UserPermissions       `json:"permissions"`
-	Password        string                `json:"password"`
-	PasswordFromRef PasswordFromSecretRef `json:"passwordFromRef"`
+	Password        string                `json:"-"`
+	PasswordFromRef PasswordFromSecretRef `json:"-"`
 }
 
 type User struct {

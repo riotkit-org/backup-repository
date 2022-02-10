@@ -5,6 +5,7 @@ import (
 	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
 	"github.com/riotkit-org/backup-repository/core"
+	"github.com/riotkit-org/backup-repository/security"
 	"github.com/riotkit-org/backup-repository/users"
 	"github.com/sirupsen/logrus"
 	"net/http"
@@ -40,19 +41,28 @@ func createAuthenticationMiddleware(r *gin.Engine, di core.ApplicationContainer)
 			return jwt.MapClaims{}
 		},
 		IdentityHandler: func(c *gin.Context) interface{} {
+			// check if token was not revoked
+			token, _ := c.Get("JWT_TOKEN")
+			if !di.GrantedAccesses.IsTokenStillValid(token.(string)) {
+				logrus.Debugf("Unauthorized: Token id=%v", token)
+				return nil
+			}
+
+			// login user
 			claims := jwt.ExtractClaims(c)
 			return &AuthUser{
 				UserName: claims[IdentityKey].(string),
 			}
 		},
 		Authenticator: func(c *gin.Context) (interface{}, error) {
-			var loginVals loginForm
-			if err := c.ShouldBind(&loginVals); err != nil {
-				logrus.Warningf("Cannot bind user values in Authenticator: %v", err)
+			var loginValues loginForm
+			if err := c.ShouldBind(&loginValues); err != nil {
+				logrus.Errorf("Cannot bind user values in Authenticator: %v", err)
 				return "", jwt.ErrMissingLoginValues
 			}
-			userID := loginVals.Username
-			password := loginVals.Password
+
+			userID := loginValues.Username
+			password := loginValues.Password
 
 			user, err := di.Users.LookupUser(userID)
 			logrus.Info("Looking up user", userID)
@@ -66,8 +76,6 @@ func createAuthenticationMiddleware(r *gin.Engine, di core.ApplicationContainer)
 				logrus.Debugf("Invalid password for '%v'", userID)
 				return nil, jwt.ErrFailedAuthentication
 			}
-
-			// todo: Store JWT hash shortcut to be able to revoke any JWT by admin any time
 
 			return &AuthUser{UserName: userID, subject: user}, nil
 		},
@@ -89,7 +97,8 @@ func createAuthenticationMiddleware(r *gin.Engine, di core.ApplicationContainer)
 		TokenHeadName: "Bearer",
 		TimeFunc:      time.Now,
 		LoginResponse: func(c *gin.Context, code int, token string, expire time.Time) {
-			hashedShortcut := di.GrantedAccesses.StoreJWTAsGrantedAccess(token, expire, c.ClientIP(), "Login")
+			hashedShortcut := di.GrantedAccesses.StoreJWTAsGrantedAccess(
+				token, expire, c.ClientIP(), "Login", security.ExtractLoginFromJWT(token))
 
 			c.JSON(http.StatusOK, gin.H{
 				"code":   http.StatusOK,

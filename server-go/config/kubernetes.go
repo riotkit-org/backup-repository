@@ -44,10 +44,10 @@ func (o ConfigurationInKubernetes) StoreDocument(kind string, document interface
 	resource := schema.GroupVersionResource{Group: o.apiGroup, Version: o.apiVersion, Resource: kind}
 	object := unstructured.Unstructured{Object: structs.Map(document)}
 
-	_, err := o.api.Resource(resource).Namespace(o.namespace).Update(
+	_, err := o.api.Resource(resource).Namespace(o.namespace).Create(
 		context.Background(),
 		&object,
-		metav1.UpdateOptions{},
+		metav1.CreateOptions{},
 	)
 
 	// todo: if update fails specifically, then attempt to create object

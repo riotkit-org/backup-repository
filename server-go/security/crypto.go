@@ -10,6 +10,7 @@ import (
 	"crypto/sha256"
 	"crypto/subtle"
 	"encoding/base64"
+	"encoding/hex"
 	"errors"
 	"fmt"
 	"github.com/sirupsen/logrus"
@@ -99,5 +100,5 @@ func ComparePassword(password string, hash string) (bool, error) {
 func HashJWT(jwt string) string {
 	asByte := sha256.Sum256([]byte(jwt))
 
-	return string(asByte[:])
+	return hex.EncodeToString(asByte[:])
 }
