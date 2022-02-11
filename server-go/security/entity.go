@@ -9,11 +9,16 @@ import (
 type Permissions []string
 
 func (p Permissions) HasRole(name string) bool {
+	return p.has(name) || p.has(RoleSysAdmin)
+}
+
+func (p Permissions) has(name string) bool {
 	for _, cursor := range p {
 		if cursor == name {
 			return true
 		}
 	}
+
 	return false
 }
 

@@ -24,6 +24,4 @@ spec:
     accessControl:
         - name: admin
           roles:
-              - uploader
-              - downloader
-              - manager
+              - collectionManager

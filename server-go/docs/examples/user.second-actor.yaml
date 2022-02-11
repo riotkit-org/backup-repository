@@ -14,4 +14,3 @@ spec:
         entry: admin
     roles:
         - collectionManager
-

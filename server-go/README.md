@@ -69,7 +69,7 @@ Domain objects should implement a logic that checks given `Actor` if it can act 
 ```go
 func (u User) CanViewMyProfile(actor User) bool {
 	// rbac
-	if actor.Spec.Roles.HasRole(security.RoleSysAdmin) || actor.Spec.Roles.HasRole(security.RoleUserManager) {
+	if actor.Spec.Roles.HasRole(security.RoleUserManager) {
 		return true
 	}
 
