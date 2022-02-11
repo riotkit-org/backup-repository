@@ -41,6 +41,11 @@ func NewService(db *gorm.DB) Service {
 
 // ExtractLoginFromJWT returns username of a user that owns this token
 func ExtractLoginFromJWT(jwt string) string {
+	// optionally extract token from Authorization header
+	if strings.HasPrefix(jwt, "Bearer") {
+		jwt = jwt[7:]
+	}
+
 	split := strings.SplitN(jwt, ".", 3)
 
 	json, err := base64.RawStdEncoding.DecodeString(split[1])

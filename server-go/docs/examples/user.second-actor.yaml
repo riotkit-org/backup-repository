@@ -1,0 +1,17 @@
+---
+apiVersion: backups.riotkit.org/v1alpha1
+kind: BackupUser
+metadata:
+    name: some-user
+spec:
+    email: user@riseup.net
+    deactivated: false
+    organization: "Riotkit"
+    about: "Example user"
+    password: ""
+    passwordFromRef:
+        name: backup-repository-passwords
+        entry: admin
+    roles:
+        - collectionManager
+

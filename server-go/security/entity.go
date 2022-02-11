@@ -6,6 +6,20 @@ import (
 	"time"
 )
 
+type Permissions []string
+
+func (p Permissions) HasRole(name string) bool {
+	for _, cursor := range p {
+		if cursor == name {
+			return true
+		}
+	}
+	return false
+}
+
+//
+// GrantedAccess stores information about generated JWT tokens (successful logins to the system)
+//
 type GrantedAccess struct {
 	CreatedAt time.Time
 	UpdatedAt time.Time

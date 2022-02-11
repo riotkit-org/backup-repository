@@ -8,7 +8,6 @@ import (
 	"github.com/riotkit-org/backup-repository/security"
 	"github.com/riotkit-org/backup-repository/users"
 	"github.com/sirupsen/logrus"
-	"net/http"
 	"time"
 )
 
@@ -101,13 +100,10 @@ func createAuthenticationMiddleware(r *gin.Engine, di core.ApplicationContainer)
 			hashedShortcut := di.GrantedAccesses.StoreJWTAsGrantedAccess(
 				token, expire, c.ClientIP(), "Login", security.ExtractLoginFromJWT(token))
 
-			c.IndentedJSON(http.StatusOK, gin.H{
-				"code": http.StatusOK,
-				"data": gin.H{
-					"token":  token,
-					"hash":   hashedShortcut,
-					"expire": expire.Format(time.RFC3339),
-				},
+			OKResponse(c, gin.H{
+				"token":  token,
+				"hash":   hashedShortcut,
+				"expire": expire.Format(time.RFC3339),
 			})
 		},
 
@@ -125,27 +121,27 @@ func createAuthenticationMiddleware(r *gin.Engine, di core.ApplicationContainer)
 // addLookupUserRoute returns User object for a lookup
 func addLookupUserRoute(r *gin.RouterGroup, ctx core.ApplicationContainer) {
 	r.GET("/auth/user/:userName", func(c *gin.Context) {
+		// subject
 		user, err := ctx.Users.LookupUser(c.Param("userName"))
-
-		// todo: create current user context
-		// todo: validate if user can lookup this user
-		//user.Permissions.Can()
-
 		if err != nil {
-			c.IndentedJSON(404, gin.H{
-				"status": false,
-				"error":  err,
-				"data":   gin.H{},
-			})
+			NotFoundResponse(c, err)
 			return
 		}
 
-		c.IndentedJSON(200, gin.H{
-			"status": true,
-			"data": gin.H{
-				"email":       user.Spec.Email,
-				"permissions": user.Spec.Permissions,
-			},
+		// security - check if context user has permissions to view requested user
+		ctxUser, ctxErr := GetContextUser(ctx, c)
+		if ctxErr != nil {
+			UnauthorizedResponse(c, err)
+			return
+		}
+		if !user.CanViewMyProfile(ctxUser) {
+			UnauthorizedResponse(c, errors.New("no permissions to view that user account"))
+			return
+		}
+
+		OKResponse(c, gin.H{
+			"email":       user.Spec.Email,
+			"permissions": user.Spec.Roles,
 		})
 	})
 }
