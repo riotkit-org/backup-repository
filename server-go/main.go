@@ -47,6 +47,9 @@ func main() {
 		os.Exit(0)
 	}
 
+	logLevel, _ := log.ParseLevel("debug")
+	log.SetLevel(logLevel)
+
 	configProvider, err := config.CreateConfigurationProvider(opts.Provider)
 	if err != nil {
 		log.Errorln("Cannot initialize Configuration Provider")
