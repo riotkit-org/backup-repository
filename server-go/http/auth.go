@@ -169,7 +169,7 @@ func addLogoutRoute(r *gin.RouterGroup, ctx *core.ApplicationContainer) {
 		if shouldTryImpersonate && ctxUser.Spec.Roles.HasRole(security.RoleSysAdmin) {
 			revokeErr := ctx.GrantedAccesses.RevokeSessionBySessionId(impersonateToken)
 			if revokeErr != nil {
-				ServerErrorResponse(c, revokeErr)
+				NotFoundResponse(c, revokeErr)
 				return
 			}
 		} else {
