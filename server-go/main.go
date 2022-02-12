@@ -6,6 +6,7 @@ import (
 	"github.com/riotkit-org/backup-repository/core"
 	"github.com/riotkit-org/backup-repository/db"
 	"github.com/riotkit-org/backup-repository/http"
+	//"github.com/riotkit-org/backup-repository/http"
 	"github.com/riotkit-org/backup-repository/security"
 	"github.com/riotkit-org/backup-repository/users"
 	log "github.com/sirupsen/logrus"
@@ -62,16 +63,19 @@ func main() {
 	}
 	db.InitializeDatabase(dbDriver)
 
+	usersService := users.NewUsersService(configProvider)
+	gaService := security.NewService(dbDriver)
+
 	ctx := core.ApplicationContainer{
-		Config:          configProvider,
-		Users:           users.NewUsersService(configProvider),
-		GrantedAccesses: security.NewService(dbDriver),
+		Config:          &configProvider,
+		Users:           &usersService,
+		GrantedAccesses: &gaService,
 	}
 
 	// todo: First thread - HTTP
 	// todo: Second thread - configuration changes watcher
 	//       Notice: Fork configuration objects on each request? Or do not allow updating, when any request is pending?
-	http.SpawnHttpApplication(ctx)
+	http.SpawnHttpApplication(&ctx)
 
 	// todo: Add commandline arg --encode-password=... to allow password hashing from commandline (should not run whole application)
 }

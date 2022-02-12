@@ -5,7 +5,7 @@ import (
 	"github.com/riotkit-org/backup-repository/core"
 )
 
-func SpawnHttpApplication(ctx core.ApplicationContainer) {
+func SpawnHttpApplication(ctx *core.ApplicationContainer) {
 	r := gin.Default()
 
 	authMiddleware := createAuthenticationMiddleware(r, ctx)

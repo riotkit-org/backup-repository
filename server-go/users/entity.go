@@ -44,7 +44,7 @@ func (u User) IsPasswordValid(password string) bool {
 // Security / RBAC
 //
 
-func (u User) CanViewMyProfile(actor User) bool {
+func (u User) CanViewMyProfile(actor *User) bool {
 	// rbac
 	if actor.Spec.Roles.HasRole(security.RoleUserManager) {
 		return true

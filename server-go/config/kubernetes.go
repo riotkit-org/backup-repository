@@ -8,6 +8,7 @@ import (
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
 	"k8s.io/apimachinery/pkg/runtime/schema"
 	"k8s.io/client-go/dynamic"
+	"sigs.k8s.io/controller-runtime/pkg/client/config"
 )
 
 type ConfigurationInKubernetes struct {
@@ -17,7 +18,7 @@ type ConfigurationInKubernetes struct {
 	apiVersion string
 }
 
-func (o ConfigurationInKubernetes) GetSingleDocumentAnyType(kind string, id string, apiGroup string, apiVersion string) (string, error) {
+func (o *ConfigurationInKubernetes) GetSingleDocumentAnyType(kind string, id string, apiGroup string, apiVersion string) (string, error) {
 	resource := schema.GroupVersionResource{Group: apiGroup, Version: apiVersion, Resource: kind}
 	object, err := o.api.Resource(resource).Namespace(o.namespace).Get(context.Background(), id, metav1.GetOptions{})
 
@@ -36,11 +37,11 @@ func (o ConfigurationInKubernetes) GetSingleDocumentAnyType(kind string, id stri
 	return string(content), nil
 }
 
-func (o ConfigurationInKubernetes) GetSingleDocument(kind string, id string) (string, error) {
+func (o *ConfigurationInKubernetes) GetSingleDocument(kind string, id string) (string, error) {
 	return o.GetSingleDocumentAnyType(kind, id, o.apiGroup, o.apiVersion)
 }
 
-func (o ConfigurationInKubernetes) StoreDocument(kind string, document interface{}) error {
+func (o *ConfigurationInKubernetes) StoreDocument(kind string, document interface{}) error {
 	resource := schema.GroupVersionResource{Group: o.apiGroup, Version: o.apiVersion, Resource: kind}
 	object := unstructured.Unstructured{Object: structs.Map(document)}
 
@@ -60,9 +61,12 @@ func (o ConfigurationInKubernetes) StoreDocument(kind string, document interface
 	return nil
 }
 
-func CreateKubernetesConfigurationProvider(api dynamic.Interface, namespace string) ConfigurationInKubernetes {
+func CreateKubernetesConfigurationProvider(namespace string) *ConfigurationInKubernetes {
+	api, _ := dynamic.NewForConfig(config.GetConfigOrDie())
+	// todo: Error handling
+
 	// todo: Implement caching by composition
-	return ConfigurationInKubernetes{
+	return &ConfigurationInKubernetes{
 		api:        api,
 		namespace:  namespace,
 		apiVersion: "v1alpha1",

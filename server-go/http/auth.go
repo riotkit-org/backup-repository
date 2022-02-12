@@ -24,7 +24,7 @@ type AuthUser struct {
 }
 
 // todo: https://github.com/julianshen/gin-limiter
-func createAuthenticationMiddleware(r *gin.Engine, di core.ApplicationContainer) *jwt.GinJWTMiddleware {
+func createAuthenticationMiddleware(r *gin.Engine, di *core.ApplicationContainer) *jwt.GinJWTMiddleware {
 	authMiddleware, err := jwt.New(&jwt.GinJWTMiddleware{
 		Realm:       "backup-repository",
 		Key:         []byte("secret key"), // todo: PARAMETRIZE!!!
@@ -76,7 +76,7 @@ func createAuthenticationMiddleware(r *gin.Engine, di core.ApplicationContainer)
 				return nil, jwt.ErrFailedAuthentication
 			}
 
-			return &AuthUser{UserName: userID, subject: user}, nil
+			return &AuthUser{UserName: userID}, nil
 		},
 		Authorizator: func(data interface{}, c *gin.Context) bool {
 			if _, ok := data.(*AuthUser); ok {
@@ -119,7 +119,7 @@ func createAuthenticationMiddleware(r *gin.Engine, di core.ApplicationContainer)
 }
 
 // addLookupUserRoute returns User object for a lookup
-func addLookupUserRoute(r *gin.RouterGroup, ctx core.ApplicationContainer) {
+func addLookupUserRoute(r *gin.RouterGroup, ctx *core.ApplicationContainer) {
 	r.GET("/auth/user/:userName", func(c *gin.Context) {
 		// subject
 		user, err := ctx.Users.LookupUser(c.Param("userName"))

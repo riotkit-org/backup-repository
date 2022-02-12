@@ -44,19 +44,19 @@ func (r userRepository) fillPasswordFromKindSecret(user *User) error {
 	return nil
 }
 
-func (r userRepository) findUserByLogin(login string) (User, error) {
+func (r userRepository) findUserByLogin(login string) (*User, error) {
 	doc, retrieveErr := r.GetSingleDocument(KindBackupUser, login)
 	user := User{}
 
 	if retrieveErr != nil {
-		return user, errors.New(fmt.Sprintf("Error retrieving user: %v", retrieveErr))
+		return &user, errors.New(fmt.Sprintf("Error retrieving user: %v", retrieveErr))
 	}
 
 	err := json.Unmarshal([]byte(doc), &user)
 
 	if fillErr := r.fillPasswordFromKindSecret(&user); fillErr != nil {
-		return user, fillErr
+		return &user, fillErr
 	}
 
-	return user, err
+	return &user, err
 }

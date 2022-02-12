@@ -8,7 +8,7 @@ import (
 )
 
 // GetContextUser returns a User{} that is authenticated in current request
-func GetContextUser(ctx core.ApplicationContainer, c *gin.Context) (users.User, error) {
+func GetContextUser(ctx *core.ApplicationContainer, c *gin.Context) (*users.User, error) {
 	username := security.ExtractLoginFromJWT(c.GetHeader("Authorization"))
 
 	return ctx.Users.LookupUser(username)

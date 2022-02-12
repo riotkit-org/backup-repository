@@ -15,6 +15,7 @@ import (
 	"fmt"
 	"github.com/sirupsen/logrus"
 	"golang.org/x/crypto/argon2"
+	"runtime"
 	"strings"
 )
 
@@ -52,6 +53,9 @@ func CreateHashFromPassword(password string) (string, error) {
 
 	format := "$argon2id$v=%d$m=%d,t=%d,p=%d$%s$%s"
 	full := fmt.Sprintf(format, argon2.Version, c.memory, c.time, c.threads, b64Salt, b64Hash)
+
+	runtime.GC()
+
 	return base64.StdEncoding.EncodeToString([]byte(full)), nil
 }
 
@@ -92,6 +96,7 @@ func ComparePassword(password string, hash string) (bool, error) {
 
 	c.keyLen = uint32(len(decodedHash))
 	comparisonHash := argon2.IDKey([]byte(password), salt, c.time, c.memory, c.threads, c.keyLen)
+	runtime.GC()
 
 	logrus.Debugf("Comparing passwords...")
 	return subtle.ConstantTimeCompare(decodedHash, comparisonHash) == 1, nil
