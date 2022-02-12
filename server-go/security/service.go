@@ -31,6 +31,10 @@ func (s Service) IsTokenStillValid(token string) bool {
 	return ga.IsValid()
 }
 
+func (s Service) GetGrantedAccessInformation(token string) (GrantedAccess, error) {
+	return s.repository.getGrantedAccessByHashedToken(HashJWT(token))
+}
+
 func NewService(db *gorm.DB) Service {
 	return Service{
 		repository: GrantedAccessRepository{

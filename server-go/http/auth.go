@@ -154,10 +154,14 @@ func addWhoamiRoute(r *gin.RouterGroup, ctx *core.ApplicationContainer) {
 			return
 		}
 
+		token, _ := c.Get("JWT_TOKEN")
+		ga, _ := ctx.GrantedAccesses.GetGrantedAccessInformation(token.(string))
+
 		OKResponse(c, gin.H{
-			"email":       ctxUser.Spec.Email,
-			"permissions": ctxUser.Spec.Roles,
-			"sessionId":   GetCurrentSessionId(c),
+			"email":         ctxUser.Spec.Email,
+			"permissions":   ctxUser.Spec.Roles,
+			"sessionId":     GetCurrentSessionId(c),
+			"grantedAccess": ga,
 		})
 	})
 }
