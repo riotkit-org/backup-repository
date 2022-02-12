@@ -16,6 +16,7 @@ func SpawnHttpApplication(ctx *core.ApplicationContainer) {
 	router.Use(authMiddleware.MiddlewareFunc())
 	{
 		addLookupUserRoute(router, ctx)
+		addWhoamiRoute(router, ctx)
 	}
 
 	_ = r.Run()

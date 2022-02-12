@@ -129,7 +129,7 @@ func addLookupUserRoute(r *gin.RouterGroup, ctx *core.ApplicationContainer) {
 		// security - check if context user has permissions to view requested user
 		ctxUser, ctxErr := GetContextUser(ctx, c)
 		if ctxErr != nil {
-			UnauthorizedResponse(c, err)
+			UnauthorizedResponse(c, ctxErr)
 			return
 		}
 		if !user.CanViewMyProfile(ctxUser) {
@@ -140,6 +140,24 @@ func addLookupUserRoute(r *gin.RouterGroup, ctx *core.ApplicationContainer) {
 		OKResponse(c, gin.H{
 			"email":       user.Spec.Email,
 			"permissions": user.Spec.Roles,
+		})
+	})
+}
+
+// addWhoamiRoute Returns information about current session
+// sessionId is a hashed JWT, by this we identify granted accesses to be able to revoke them later
+func addWhoamiRoute(r *gin.RouterGroup, ctx *core.ApplicationContainer) {
+	r.GET("/auth/whoami", func(c *gin.Context) {
+		ctxUser, ctxErr := GetContextUser(ctx, c)
+		if ctxErr != nil {
+			UnauthorizedResponse(c, ctxErr)
+			return
+		}
+
+		OKResponse(c, gin.H{
+			"email":       ctxUser.Spec.Email,
+			"permissions": ctxUser.Spec.Roles,
+			"sessionId":   GetCurrentSessionId(c),
 		})
 	})
 }

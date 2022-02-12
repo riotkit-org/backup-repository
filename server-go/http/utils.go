@@ -13,3 +13,7 @@ func GetContextUser(ctx *core.ApplicationContainer, c *gin.Context) (*users.User
 
 	return ctx.Users.LookupUser(username)
 }
+
+func GetCurrentSessionId(c *gin.Context) string {
+	return security.HashJWT(c.GetHeader("Authorization")[7:])
+}
