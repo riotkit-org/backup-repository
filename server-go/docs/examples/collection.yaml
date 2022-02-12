@@ -5,7 +5,7 @@ metadata:
     name: iwa-ait
 spec:
     description: IWA-AIT website files
-    filename: iwa-ait.tar.gz
+    filenameTemplate: iwa-ait-${version}.tar.gz
     maxBackupsCount: 5
     maxOneVersionSize: 10G
     maxCollectionSize: 55G
@@ -16,12 +16,12 @@ spec:
           duration: 1h
 
     # fifo, fifo-plus-older
-    strategy: fifo-plus-older
+    strategyName: fifo-plus-older
     strategySpec:
         keepLastOlderNotMoreThan: 5d
         maxOlderCopies: 2
 
     accessControl:
-        - name: admin
+        - userName: admin
           roles:
               - collectionManager

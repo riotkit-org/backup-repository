@@ -6,6 +6,10 @@ import (
 	"time"
 )
 
+//
+// User permissions
+//
+
 type Permissions []string
 
 func (p Permissions) HasRole(name string) bool {
@@ -21,6 +25,17 @@ func (p Permissions) has(name string) bool {
 
 	return false
 }
+
+//
+// Permissions for objects
+//
+
+type AccessControlObject struct {
+	UserName string        `json:"userName"`
+	Roles    []Permissions `json:"roles"`
+}
+
+type AccessControlList []AccessControlObject
 
 //
 // GrantedAccess stores information about generated JWT tokens (successful logins to the system)
