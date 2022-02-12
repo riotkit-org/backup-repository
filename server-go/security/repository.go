@@ -15,8 +15,8 @@ type GrantedAccessRepository struct {
 	db *gorm.DB
 }
 
-func (g GrantedAccessRepository) create(access *GrantedAccess) {
-	g.db.Model(&GrantedAccess{}).Create(&access)
+func (g GrantedAccessRepository) create(access *GrantedAccess) error {
+	return g.db.Model(&GrantedAccess{}).Create(&access).Error
 }
 
 func (g GrantedAccessRepository) getGrantedAccessByHashedToken(hashedToken interface{}) (GrantedAccess, error) {
@@ -43,6 +43,13 @@ func (g GrantedAccessRepository) checkSessionExistsById(id string) bool {
 
 func (g GrantedAccessRepository) revokeById(id string) error {
 	return g.db.Model(&GrantedAccess{}).Where("id = ?", id).Update("deactivated", true).Error
+}
+
+func (g GrantedAccessRepository) findForUsername(name string) []GrantedAccess {
+	var result []GrantedAccess
+	g.db.Model(&GrantedAccess{}).Where("granted_accesses.user = ?", name).Order("created_at desc").Limit(100).Find(&result)
+
+	return result
 }
 
 func InitializeModel(db *gorm.DB) error {

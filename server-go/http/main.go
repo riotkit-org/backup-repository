@@ -28,6 +28,7 @@ func SpawnHttpApplication(ctx *core.ApplicationContainer) {
 		addLookupUserRoute(router, ctx)
 		addWhoamiRoute(router, ctx)
 		addLogoutRoute(router, ctx)
+		addGrantedAccessSearchRoute(router, ctx)
 	}
 
 	_ = r.Run()

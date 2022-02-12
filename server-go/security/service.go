@@ -16,7 +16,11 @@ type Service struct {
 
 func (s Service) StoreJWTAsGrantedAccess(token string, expire time.Time, ip string, description string, username string) string {
 	ga := NewGrantedAccess(token, expire, false, description, ip, username)
-	s.repository.create(&ga)
+
+	if err := s.repository.create(&ga); err != nil {
+		logrus.Errorf("Cannot store GrantedAccess. Possibly tried to store same JWT twice. Error: %v", err)
+		return ""
+	}
 
 	return ga.ID
 }
@@ -46,6 +50,10 @@ func (s Service) RevokeSessionBySessionId(sessionId string) error {
 
 func (s Service) RevokeSessionByJWT(jwt string) error {
 	return s.RevokeSessionBySessionId(HashJWT(jwt))
+}
+
+func (s Service) GetAllGrantedAccessesForUserByUsername(name string) []GrantedAccess {
+	return s.repository.findForUsername(name)
 }
 
 func NewService(db *gorm.DB) Service {

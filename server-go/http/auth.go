@@ -23,7 +23,10 @@ type AuthUser struct {
 	subject  users.User
 }
 
-// todo: https://github.com/julianshen/gin-limiter
+//
+// Authentication middleware is used in almost every endpoint to prevalidate user credentials
+// also it provides login endpoints
+//
 func createAuthenticationMiddleware(r *gin.Engine, di *core.ApplicationContainer) *jwt.GinJWTMiddleware {
 	authMiddleware, err := jwt.New(&jwt.GinJWTMiddleware{
 		Realm:       "backup-repository",
@@ -100,6 +103,11 @@ func createAuthenticationMiddleware(r *gin.Engine, di *core.ApplicationContainer
 			hashedShortcut := di.GrantedAccesses.StoreJWTAsGrantedAccess(
 				token, expire, c.ClientIP(), "Login", security.ExtractLoginFromJWT(token))
 
+			if hashedShortcut == "" {
+				ServerErrorResponse(c, errors.New("too short interval between login attempts"))
+				return
+			}
+
 			OKResponse(c, gin.H{
 				"token":  token,
 				"hash":   hashedShortcut,
@@ -165,6 +173,8 @@ func addLogoutRoute(r *gin.RouterGroup, ctx *core.ApplicationContainer) {
 		impersonateToken, shouldTryImpersonate := c.GetQuery("sessionId")
 		ctxUser, _ := GetContextUser(ctx, c)
 
+		// todo: Allow user to logout it's other session than current session
+
 		// permissions check: Only System Administrator can revoke other tokens
 		if shouldTryImpersonate && ctxUser.Spec.Roles.HasRole(security.RoleSysAdmin) {
 			revokeErr := ctx.GrantedAccesses.RevokeSessionBySessionId(impersonateToken)
@@ -183,6 +193,32 @@ func addLogoutRoute(r *gin.RouterGroup, ctx *core.ApplicationContainer) {
 		OKResponse(c, gin.H{
 			"message":   "JWT was revoked",
 			"sessionId": security.HashJWT(token.(string)),
+		})
+	})
+}
+
+// addGrantedAccessSearchRoute is useful for audit. All granted user sessions are listed there and can be revoked with a logout endpoint
+func addGrantedAccessSearchRoute(r *gin.RouterGroup, ctx *core.ApplicationContainer) {
+	r.GET("/auth/token", func(c *gin.Context) {
+		var userName string
+		ctxUser, _ := GetContextUser(ctx, c)
+		impersonateUser, shouldTryImpersonate := c.GetQuery("userName")
+		userName = ctxUser.Metadata.Name
+
+		// security: System Administrator can additionally list other user GrantedAccesses
+		if shouldTryImpersonate {
+			if !ctxUser.Spec.Roles.HasRole(security.RoleSysAdmin) {
+				UnauthorizedResponse(c, errors.New("no permissions to act as other user"))
+				return
+			}
+
+			userName = impersonateUser
+		}
+
+		tokens := ctx.GrantedAccesses.GetAllGrantedAccessesForUserByUsername(userName)
+
+		OKResponse(c, gin.H{
+			"grantedAccesses": tokens,
 		})
 	})
 }
