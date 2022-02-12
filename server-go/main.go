@@ -23,6 +23,7 @@ type options struct {
 	DbPassword           string `long:"db-password" description:"Password for database connection"`
 	DbName               string `long:"db-name" description:"Database name inside a database"`
 	DbPort               int    `long:"db-port" description:"Database name inside a database" default:"5432"`
+	JwtSecretKey         string `long:"jwt-secret-key" short:"s" description:"Secret used for generating JSON Web Tokens for authentication"`
 }
 
 func main() {
@@ -70,6 +71,7 @@ func main() {
 		Config:          &configProvider,
 		Users:           &usersService,
 		GrantedAccesses: &gaService,
+		JwtSecretKey:    opts.JwtSecretKey,
 	}
 
 	// todo: First thread - HTTP

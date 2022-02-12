@@ -30,7 +30,7 @@ type AuthUser struct {
 func createAuthenticationMiddleware(r *gin.Engine, di *core.ApplicationContainer) *jwt.GinJWTMiddleware {
 	authMiddleware, err := jwt.New(&jwt.GinJWTMiddleware{
 		Realm:       "backup-repository",
-		Key:         []byte("secret key"), // todo: PARAMETRIZE!!!
+		Key:         []byte(di.JwtSecretKey),
 		Timeout:     time.Hour * 87600,
 		MaxRefresh:  time.Hour * 87600,
 		IdentityKey: IdentityKey,
