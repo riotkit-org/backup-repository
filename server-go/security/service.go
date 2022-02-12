@@ -20,8 +20,8 @@ func (s Service) StoreJWTAsGrantedAccess(token string, expire time.Time, ip stri
 	return ga.ID
 }
 
-func (s Service) IsTokenStillValid(token string) bool {
-	ga, err := s.repository.getGrantedAccessByHashedToken(HashJWT(token))
+func (s Service) IsTokenStillValid(jwt string) bool {
+	ga, err := s.repository.getGrantedAccessByHashedToken(HashJWT(jwt))
 
 	if err != nil {
 		logrus.Errorf("IsTokenValid(false): %v", err)
@@ -31,8 +31,12 @@ func (s Service) IsTokenStillValid(token string) bool {
 	return ga.IsValid()
 }
 
-func (s Service) GetGrantedAccessInformation(token string) (GrantedAccess, error) {
-	return s.repository.getGrantedAccessByHashedToken(HashJWT(token))
+func (s Service) GetGrantedAccessInformation(jwt string) (GrantedAccess, error) {
+	return s.repository.getGrantedAccessByHashedToken(HashJWT(jwt))
+}
+
+func (s Service) RevokeSessionByJWT(jwt string) error {
+	return s.repository.revokeById(HashJWT(jwt))
 }
 
 func NewService(db *gorm.DB) Service {

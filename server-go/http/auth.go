@@ -127,11 +127,7 @@ func addLookupUserRoute(r *gin.RouterGroup, ctx *core.ApplicationContainer) {
 		}
 
 		// security - check if context user has permissions to view requested user
-		ctxUser, ctxErr := GetContextUser(ctx, c)
-		if ctxErr != nil {
-			UnauthorizedResponse(c, ctxErr)
-			return
-		}
+		ctxUser, _ := GetContextUser(ctx, c)
 		if !user.CanViewMyProfile(ctxUser) {
 			UnauthorizedResponse(c, errors.New("no permissions to view that user account"))
 			return
@@ -148,12 +144,7 @@ func addLookupUserRoute(r *gin.RouterGroup, ctx *core.ApplicationContainer) {
 // sessionId is a hashed JWT, by this we identify granted accesses to be able to revoke them later
 func addWhoamiRoute(r *gin.RouterGroup, ctx *core.ApplicationContainer) {
 	r.GET("/auth/whoami", func(c *gin.Context) {
-		ctxUser, ctxErr := GetContextUser(ctx, c)
-		if ctxErr != nil {
-			UnauthorizedResponse(c, ctxErr)
-			return
-		}
-
+		ctxUser, _ := GetContextUser(ctx, c)
 		token, _ := c.Get("JWT_TOKEN")
 		ga, _ := ctx.GrantedAccesses.GetGrantedAccessInformation(token.(string))
 
@@ -162,6 +153,24 @@ func addWhoamiRoute(r *gin.RouterGroup, ctx *core.ApplicationContainer) {
 			"permissions":   ctxUser.Spec.Roles,
 			"sessionId":     GetCurrentSessionId(c),
 			"grantedAccess": ga,
+		})
+	})
+}
+
+// addLogoutRoute Revokes a current JWT specified in current session (e.g. from Authorization header)
+// Logout does not delete GrantedAccess, but disables it so user cannot use it, but it remains in database for auditing
+func addLogoutRoute(r *gin.RouterGroup, ctx *core.ApplicationContainer) {
+	r.GET("/auth/logout", func(c *gin.Context) {
+		token, _ := c.Get("JWT_TOKEN")
+		revokeErr := ctx.GrantedAccesses.RevokeSessionByJWT(token.(string))
+		if revokeErr != nil {
+			ServerErrorResponse(c, revokeErr)
+			return
+		}
+
+		OKResponse(c, gin.H{
+			"message":   "JWT was revoked",
+			"sessionId": security.HashJWT(token.(string)),
 		})
 	})
 }

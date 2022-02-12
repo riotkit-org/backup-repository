@@ -24,3 +24,11 @@ func UnauthorizedResponse(c *gin.Context, err error) {
 		"data":   gin.H{},
 	})
 }
+
+func ServerErrorResponse(c *gin.Context, err error) {
+	c.IndentedJSON(500, gin.H{
+		"status": false,
+		"error":  err.Error(),
+		"data":   gin.H{},
+	})
+}

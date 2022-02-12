@@ -31,6 +31,10 @@ func (g GrantedAccessRepository) getGrantedAccessByHashedToken(hashedToken inter
 	return gaModel, nil
 }
 
+func (g GrantedAccessRepository) revokeById(id string) error {
+	return g.db.Model(&GrantedAccess{}).Where("id = ?", id).Update("deactivated", true).Error
+}
+
 func InitializeModel(db *gorm.DB) error {
 	return db.AutoMigrate(&GrantedAccess{})
 }

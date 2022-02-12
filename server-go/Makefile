@@ -10,6 +10,10 @@ test_lookup:
 test_whoami:
 	curl -s -X GET -H 'Authorization: Bearer ${TOKEN}' -H 'Content-Type: application/json' 'http://localhost:8080/api/stable/auth/whoami'
 
+test_logout:
+	curl -s -X GET -H 'Authorization: Bearer ${TOKEN}' -H 'Content-Type: application/json' 'http://localhost:8080/api/stable/auth/logout'
+
+
 postgres:
 	docker run -d \
         --name br_postgres \
