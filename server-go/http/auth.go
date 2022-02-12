@@ -109,9 +109,9 @@ func createAuthenticationMiddleware(r *gin.Engine, di *core.ApplicationContainer
 			}
 
 			OKResponse(c, gin.H{
-				"token":  token,
-				"hash":   hashedShortcut,
-				"expire": expire.Format(time.RFC3339),
+				"token":     token,
+				"sessionId": hashedShortcut,
+				"expire":    expire.Format(time.RFC3339),
 			})
 		},
 	})
@@ -170,19 +170,32 @@ func addWhoamiRoute(r *gin.RouterGroup, ctx *core.ApplicationContainer) {
 func addLogoutRoute(r *gin.RouterGroup, ctx *core.ApplicationContainer) {
 	r.DELETE("/auth/logout", func(c *gin.Context) {
 		token, _ := c.Get("JWT_TOKEN")
-		impersonateToken, shouldTryImpersonate := c.GetQuery("sessionId")
+		tokenFromQuery, shouldTryTokenFromQuery := c.GetQuery("sessionId")
 		ctxUser, _ := GetContextUser(ctx, c)
 
-		// todo: Allow user to logout it's other session than current session
-
 		// permissions check: Only System Administrator can revoke other tokens
-		if shouldTryImpersonate && ctxUser.Spec.Roles.HasRole(security.RoleSysAdmin) {
-			revokeErr := ctx.GrantedAccesses.RevokeSessionBySessionId(impersonateToken)
+		if shouldTryTokenFromQuery {
+			gaFromQuery, receiveErr := ctx.GrantedAccesses.GetGrantedAccessInformationBySessionId(tokenFromQuery)
+			if receiveErr != nil {
+				ServerErrorResponse(c, receiveErr)
+				return
+			}
+
+			// only System Administrator can revoke tokens of other users
+			// but user can revoke his/her own token
+			if gaFromQuery.User != ctxUser.Metadata.Name && !ctxUser.Spec.Roles.HasRole(security.RoleSysAdmin) {
+				UnauthorizedResponse(c, errors.New("you don't have permissions to revoke session of other user"))
+				return
+			}
+
+			// revoke ANY session that user is granted to
+			revokeErr := ctx.GrantedAccesses.RevokeSessionBySessionId(tokenFromQuery)
 			if revokeErr != nil {
 				NotFoundResponse(c, revokeErr)
 				return
 			}
 		} else {
+			// revoke CURRENT session user is using to perform this request
 			revokeErr := ctx.GrantedAccesses.RevokeSessionByJWT(token.(string))
 			if revokeErr != nil {
 				ServerErrorResponse(c, revokeErr)

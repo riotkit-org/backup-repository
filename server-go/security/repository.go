@@ -52,6 +52,11 @@ func (g GrantedAccessRepository) findForUsername(name string) []GrantedAccess {
 	return result
 }
 
+func (g GrantedAccessRepository) findOneBySessionId(id string) (GrantedAccess, error) {
+	var result GrantedAccess
+	return result, g.db.Model(&GrantedAccess{}).Where("granted_accesses.id = ?", id).Limit(1).Find(&result).Error
+}
+
 func InitializeModel(db *gorm.DB) error {
 	return db.AutoMigrate(&GrantedAccess{})
 }

@@ -56,6 +56,10 @@ func (s Service) GetAllGrantedAccessesForUserByUsername(name string) []GrantedAc
 	return s.repository.findForUsername(name)
 }
 
+func (s Service) GetGrantedAccessInformationBySessionId(sessionId string) (GrantedAccess, error) {
+	return s.repository.findOneBySessionId(sessionId)
+}
+
 func NewService(db *gorm.DB) Service {
 	return Service{
 		repository: GrantedAccessRepository{
