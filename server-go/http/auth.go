@@ -106,8 +106,6 @@ func createAuthenticationMiddleware(r *gin.Engine, di *core.ApplicationContainer
 				"expire": expire.Format(time.RFC3339),
 			})
 		},
-
-		// todo: Check if token was not revoked
 	})
 
 	if err != nil {
