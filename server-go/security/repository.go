@@ -31,6 +31,16 @@ func (g GrantedAccessRepository) getGrantedAccessByHashedToken(hashedToken inter
 	return gaModel, nil
 }
 
+func (g GrantedAccessRepository) checkSessionExistsById(id string) bool {
+	var exists bool
+
+	if err := g.db.Model(&GrantedAccess{}).Select("count(*) > 0").Where("id = ?", id).Find(&exists).Error; err != nil {
+		logrus.Errorln("checkSessionExistsById(): %v", err)
+	}
+
+	return exists
+}
+
 func (g GrantedAccessRepository) revokeById(id string) error {
 	return g.db.Model(&GrantedAccess{}).Where("id = ?", id).Update("deactivated", true).Error
 }

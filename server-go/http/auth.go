@@ -160,12 +160,24 @@ func addWhoamiRoute(r *gin.RouterGroup, ctx *core.ApplicationContainer) {
 // addLogoutRoute Revokes a current JWT specified in current session (e.g. from Authorization header)
 // Logout does not delete GrantedAccess, but disables it so user cannot use it, but it remains in database for auditing
 func addLogoutRoute(r *gin.RouterGroup, ctx *core.ApplicationContainer) {
-	r.GET("/auth/logout", func(c *gin.Context) {
+	r.DELETE("/auth/logout", func(c *gin.Context) {
 		token, _ := c.Get("JWT_TOKEN")
-		revokeErr := ctx.GrantedAccesses.RevokeSessionByJWT(token.(string))
-		if revokeErr != nil {
-			ServerErrorResponse(c, revokeErr)
-			return
+		impersonateToken, shouldTryImpersonate := c.GetQuery("sessionId")
+		ctxUser, _ := GetContextUser(ctx, c)
+
+		// permissions check: Only System Administrator can revoke other tokens
+		if shouldTryImpersonate && ctxUser.Spec.Roles.HasRole(security.RoleSysAdmin) {
+			revokeErr := ctx.GrantedAccesses.RevokeSessionBySessionId(impersonateToken)
+			if revokeErr != nil {
+				ServerErrorResponse(c, revokeErr)
+				return
+			}
+		} else {
+			revokeErr := ctx.GrantedAccesses.RevokeSessionByJWT(token.(string))
+			if revokeErr != nil {
+				ServerErrorResponse(c, revokeErr)
+				return
+			}
 		}
 
 		OKResponse(c, gin.H{

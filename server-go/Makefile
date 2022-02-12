@@ -11,7 +11,10 @@ test_whoami:
 	curl -s -X GET -H 'Authorization: Bearer ${TOKEN}' -H 'Content-Type: application/json' 'http://localhost:8080/api/stable/auth/whoami'
 
 test_logout:
-	curl -s -X GET -H 'Authorization: Bearer ${TOKEN}' -H 'Content-Type: application/json' 'http://localhost:8080/api/stable/auth/logout'
+	curl -s -X DELETE -H 'Authorization: Bearer ${TOKEN}' -H 'Content-Type: application/json' 'http://localhost:8080/api/stable/auth/logout'
+
+test_logout_other_user:
+	curl -s -X DELETE -H 'Authorization: Bearer ${TOKEN}' -H 'Content-Type: application/json' 'http://localhost:8080/api/stable/auth/logout?sessionId=${OTHER_USER_SESSION_ID}'
 
 
 postgres:

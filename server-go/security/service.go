@@ -2,6 +2,7 @@ package security
 
 import (
 	"encoding/base64"
+	"errors"
 	"github.com/sirupsen/logrus"
 	"github.com/tidwall/gjson"
 	"gorm.io/gorm"
@@ -35,8 +36,16 @@ func (s Service) GetGrantedAccessInformation(jwt string) (GrantedAccess, error) 
 	return s.repository.getGrantedAccessByHashedToken(HashJWT(jwt))
 }
 
+func (s Service) RevokeSessionBySessionId(sessionId string) error {
+	if !s.repository.checkSessionExistsById(sessionId) {
+		return errors.New("specified session identifier is not valid, cannot find GrantedAccess of specified id")
+	}
+
+	return s.repository.revokeById(sessionId)
+}
+
 func (s Service) RevokeSessionByJWT(jwt string) error {
-	return s.repository.revokeById(HashJWT(jwt))
+	return s.RevokeSessionBySessionId(HashJWT(jwt))
 }
 
 func NewService(db *gorm.DB) Service {
