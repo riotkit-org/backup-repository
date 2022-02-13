@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/jessevdk/go-flags"
+	"github.com/riotkit-org/backup-repository/collections"
 	"github.com/riotkit-org/backup-repository/config"
 	"github.com/riotkit-org/backup-repository/core"
 	"github.com/riotkit-org/backup-repository/db"
@@ -66,12 +67,14 @@ func main() {
 
 	usersService := users.NewUsersService(configProvider)
 	gaService := security.NewService(dbDriver)
+	collectionsService := collections.NewService(configProvider)
 
 	ctx := core.ApplicationContainer{
 		Config:          &configProvider,
 		Users:           &usersService,
 		GrantedAccesses: &gaService,
 		JwtSecretKey:    opts.JwtSecretKey,
+		Collections:     &collectionsService,
 	}
 
 	// todo: First thread - HTTP
