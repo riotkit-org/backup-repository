@@ -5,9 +5,9 @@ import (
 	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
 	"github.com/riotkit-org/backup-repository/core"
+	"github.com/riotkit-org/backup-repository/security"
 	"github.com/riotkit-org/backup-repository/users"
 	"github.com/sirupsen/logrus"
-	"net/http"
 	"time"
 )
 
@@ -23,11 +23,14 @@ type AuthUser struct {
 	subject  users.User
 }
 
-// todo: https://github.com/julianshen/gin-limiter
-func createAuthenticationMiddleware(r *gin.Engine, di core.ApplicationContainer) *jwt.GinJWTMiddleware {
+//
+// Authentication middleware is used in almost every endpoint to prevalidate user credentials
+// also it provides login endpoints
+//
+func createAuthenticationMiddleware(r *gin.Engine, di *core.ApplicationContainer) *jwt.GinJWTMiddleware {
 	authMiddleware, err := jwt.New(&jwt.GinJWTMiddleware{
 		Realm:       "backup-repository",
-		Key:         []byte("secret key"), // todo: PARAMETRIZE!!!
+		Key:         []byte(di.JwtSecretKey),
 		Timeout:     time.Hour * 87600,
 		MaxRefresh:  time.Hour * 87600,
 		IdentityKey: IdentityKey,
@@ -40,19 +43,28 @@ func createAuthenticationMiddleware(r *gin.Engine, di core.ApplicationContainer)
 			return jwt.MapClaims{}
 		},
 		IdentityHandler: func(c *gin.Context) interface{} {
+			// check if token was not revoked
+			token, _ := c.Get("JWT_TOKEN")
+			if !di.GrantedAccesses.IsTokenStillValid(token.(string)) {
+				logrus.Debugf("Unauthorized: Token id=%v", token)
+				return nil
+			}
+
+			// login user
 			claims := jwt.ExtractClaims(c)
 			return &AuthUser{
 				UserName: claims[IdentityKey].(string),
 			}
 		},
 		Authenticator: func(c *gin.Context) (interface{}, error) {
-			var loginVals loginForm
-			if err := c.ShouldBind(&loginVals); err != nil {
-				logrus.Warningf("Cannot bind user values in Authenticator: %v", err)
+			var loginValues loginForm
+			if err := c.ShouldBind(&loginValues); err != nil {
+				logrus.Errorf("Cannot bind user values in Authenticator: %v", err)
 				return "", jwt.ErrMissingLoginValues
 			}
-			userID := loginVals.Username
-			password := loginVals.Password
+
+			userID := loginValues.Username
+			password := loginValues.Password
 
 			user, err := di.Users.LookupUser(userID)
 			logrus.Info("Looking up user", userID)
@@ -67,9 +79,7 @@ func createAuthenticationMiddleware(r *gin.Engine, di core.ApplicationContainer)
 				return nil, jwt.ErrFailedAuthentication
 			}
 
-			// todo: Store JWT hash shortcut to be able to revoke any JWT by admin any time
-
-			return &AuthUser{UserName: userID, subject: user}, nil
+			return &AuthUser{UserName: userID}, nil
 		},
 		Authorizator: func(data interface{}, c *gin.Context) bool {
 			if _, ok := data.(*AuthUser); ok {
@@ -79,27 +89,31 @@ func createAuthenticationMiddleware(r *gin.Engine, di core.ApplicationContainer)
 			return false
 		},
 		Unauthorized: func(c *gin.Context, code int, message string) {
-			c.JSON(code, gin.H{
+			c.IndentedJSON(code, gin.H{
 				"status":  false,
 				"code":    code,
 				"message": message,
+				"data":    gin.H{},
 			})
 		},
 		TokenLookup:   "header: Authorization, query: token, cookie: jwt",
 		TokenHeadName: "Bearer",
 		TimeFunc:      time.Now,
 		LoginResponse: func(c *gin.Context, code int, token string, expire time.Time) {
-			hashedShortcut := di.GrantedAccesses.StoreJWTAsGrantedAccess(token, expire, c.ClientIP(), "Login")
+			hashedShortcut := di.GrantedAccesses.StoreJWTAsGrantedAccess(
+				token, expire, c.ClientIP(), "Login", security.ExtractLoginFromJWT(token))
 
-			c.JSON(http.StatusOK, gin.H{
-				"code":   http.StatusOK,
-				"token":  token,
-				"hash":   hashedShortcut,
-				"expire": expire.Format(time.RFC3339),
+			if hashedShortcut == "" {
+				ServerErrorResponse(c, errors.New("too short interval between login attempts"))
+				return
+			}
+
+			OKResponse(c, gin.H{
+				"token":     token,
+				"sessionId": hashedShortcut,
+				"expire":    expire.Format(time.RFC3339),
 			})
 		},
-
-		// todo: Check if token was not revoked
 	})
 
 	if err != nil {
@@ -111,25 +125,113 @@ func createAuthenticationMiddleware(r *gin.Engine, di core.ApplicationContainer)
 }
 
 // addLookupUserRoute returns User object for a lookup
-func addLookupUserRoute(r *gin.RouterGroup, ctx core.ApplicationContainer) {
+func addLookupUserRoute(r *gin.RouterGroup, ctx *core.ApplicationContainer) {
 	r.GET("/auth/user/:userName", func(c *gin.Context) {
+		// subject
 		user, err := ctx.Users.LookupUser(c.Param("userName"))
-
-		// todo: create current user context
-		// todo: validate if user can lookup this user
-		//user.Permissions.Can()
-
 		if err != nil {
-			c.JSON(404, gin.H{
-				"status": false,
-				"error":  err,
-			})
+			NotFoundResponse(c, err)
 			return
 		}
 
-		c.JSON(404, gin.H{
-			"status": true,
-			"user":   user,
+		// security - check if context user has permissions to view requested user
+		ctxUser, _ := GetContextUser(ctx, c)
+		if !user.CanViewMyProfile(ctxUser) {
+			UnauthorizedResponse(c, errors.New("no permissions to view that user account"))
+			return
+		}
+
+		OKResponse(c, gin.H{
+			"email":       user.Spec.Email,
+			"permissions": user.Spec.Roles,
+		})
+	})
+}
+
+// addWhoamiRoute Returns information about current session
+// sessionId is a hashed JWT, by this we identify granted accesses to be able to revoke them later
+func addWhoamiRoute(r *gin.RouterGroup, ctx *core.ApplicationContainer) {
+	r.GET("/auth/whoami", func(c *gin.Context) {
+		ctxUser, _ := GetContextUser(ctx, c)
+		token, _ := c.Get("JWT_TOKEN")
+		ga, _ := ctx.GrantedAccesses.GetGrantedAccessInformation(token.(string))
+
+		OKResponse(c, gin.H{
+			"email":         ctxUser.Spec.Email,
+			"permissions":   ctxUser.Spec.Roles,
+			"sessionId":     GetCurrentSessionId(c),
+			"grantedAccess": ga,
+		})
+	})
+}
+
+// addLogoutRoute Revokes a current JWT specified in current session (e.g. from Authorization header)
+// Logout does not delete GrantedAccess, but disables it so user cannot use it, but it remains in database for auditing
+func addLogoutRoute(r *gin.RouterGroup, ctx *core.ApplicationContainer) {
+	r.DELETE("/auth/logout", func(c *gin.Context) {
+		token, _ := c.Get("JWT_TOKEN")
+		tokenFromQuery, shouldTryTokenFromQuery := c.GetQuery("sessionId")
+		ctxUser, _ := GetContextUser(ctx, c)
+
+		// permissions check: Only System Administrator can revoke other tokens
+		if shouldTryTokenFromQuery {
+			gaFromQuery, receiveErr := ctx.GrantedAccesses.GetGrantedAccessInformationBySessionId(tokenFromQuery)
+			if receiveErr != nil {
+				ServerErrorResponse(c, receiveErr)
+				return
+			}
+
+			// only System Administrator can revoke tokens of other users
+			// but user can revoke his/her own token
+			if gaFromQuery.User != ctxUser.Metadata.Name && !ctxUser.Spec.Roles.HasRole(security.RoleSysAdmin) {
+				UnauthorizedResponse(c, errors.New("you don't have permissions to revoke session of other user"))
+				return
+			}
+
+			// revoke ANY session that user is granted to
+			revokeErr := ctx.GrantedAccesses.RevokeSessionBySessionId(tokenFromQuery)
+			if revokeErr != nil {
+				NotFoundResponse(c, revokeErr)
+				return
+			}
+		} else {
+			// revoke CURRENT session user is using to perform this request
+			revokeErr := ctx.GrantedAccesses.RevokeSessionByJWT(token.(string))
+			if revokeErr != nil {
+				ServerErrorResponse(c, revokeErr)
+				return
+			}
+		}
+
+		OKResponse(c, gin.H{
+			"message":   "JWT was revoked",
+			"sessionId": security.HashJWT(token.(string)),
+		})
+	})
+}
+
+// addGrantedAccessSearchRoute is useful for audit. All granted user sessions are listed there and can be revoked with a logout endpoint
+func addGrantedAccessSearchRoute(r *gin.RouterGroup, ctx *core.ApplicationContainer) {
+	r.GET("/auth/token", func(c *gin.Context) {
+		var userName string
+		ctxUser, _ := GetContextUser(ctx, c)
+		impersonateUser, shouldTryImpersonate := c.GetQuery("userName")
+		userName = ctxUser.Metadata.Name
+
+		// security: System Administrator can additionally list other user GrantedAccesses
+		if shouldTryImpersonate {
+			if !ctxUser.Spec.Roles.HasRole(security.RoleSysAdmin) {
+				UnauthorizedResponse(c, errors.New("no permissions to act as other user"))
+				return
+			}
+
+			userName = impersonateUser
+		}
+
+		tokens := ctx.GrantedAccesses.GetAllGrantedAccessesForUserByUsername(userName)
+
+		OKResponse(c, gin.H{
+			"grantedAccesses": tokens,
 		})
 	})
 }

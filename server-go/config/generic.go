@@ -1,5 +1,5 @@
 package config
 
 type ObjectMetadata struct {
-	Name string `json:"name"`
+	Name string `json:"name" structs:"name"`
 }

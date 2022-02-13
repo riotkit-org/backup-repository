@@ -1,30 +1,88 @@
 package security
 
 import (
-	"github.com/riotkit-org/backup-repository/config"
+	"github.com/sirupsen/logrus"
+	"gorm.io/gorm"
 	"time"
 )
 
-type GrantedAccessSpec struct {
-	ExpiresAt   string `json:"expiresAt"`
-	Active      bool   `json:"active"`
-	Description string `json:"description"`
-	RequesterIP string `json:"requesterIP"`
+//
+// User permissions
+//
+
+type Permissions []string
+
+func (p Permissions) HasRole(name string) bool {
+	return p.has(name) || p.has(RoleSysAdmin)
 }
 
+func (p Permissions) has(name string) bool {
+	for _, cursor := range p {
+		if cursor == name {
+			return true
+		}
+	}
+
+	return false
+}
+
+//
+// Permissions for objects
+//
+
+type AccessControlObject struct {
+	UserName string        `json:"userName"`
+	Roles    []Permissions `json:"roles"`
+}
+
+type AccessControlList []AccessControlObject
+
+//
+// GrantedAccess stores information about generated JWT tokens (successful logins to the system)
+//
 type GrantedAccess struct {
-	Metadata config.ObjectMetadata `json:"metadata"`
-	Spec     GrantedAccessSpec     `json:"grantedAccessSpec"`
+	CreatedAt time.Time
+	UpdatedAt time.Time
+	DeletedAt gorm.DeletedAt `gorm:"index"`
+
+	ID          string    `json:"id"          structs:"id" sql:"type:string;primary_key;default:uuid_generate_v4()`
+	ExpiresAt   time.Time `json:"expiresAt"   structs:"expiresAt"`
+	Deactivated bool      `json:"deactivated" structs:"deactivated"`
+	Description string    `json:"description" structs:"description"`
+	RequesterIP string    `json:"requesterIP" structs:"requesterIP"`
+	User        string    `json:"user"        structs:"user"`
 }
 
-func NewGrantedAccess(jwt string, expiresAt time.Time, active bool, description string, requesterIP string) GrantedAccess {
+func (ga GrantedAccess) IsNotExpired() bool {
+	return time.Now().After(ga.ExpiresAt)
+}
+
+func (ga GrantedAccess) IsValid() bool {
+	if ga.Deactivated {
+		logrus.Warningf("IsValid(false): Account is deactivated [id=%v]", ga.ID)
+		return false
+	}
+
+	if ga.DeletedAt.Valid {
+		logrus.Warningf("IsValid(false): JWT deleted [id=%v]", ga.ID)
+		return false
+	}
+
+	if ga.IsNotExpired() {
+		logrus.Warningf("IsValid(false): JWT expired [id=%v]", ga.ID)
+		return false
+	}
+
+	return true
+}
+
+func NewGrantedAccess(jwt string, expiresAt time.Time, deactivated bool, description string, requesterIP string, username string) GrantedAccess {
 	return GrantedAccess{
-		Metadata: config.ObjectMetadata{Name: HashJWT(jwt)},
-		Spec: GrantedAccessSpec{
-			ExpiresAt:   expiresAt.Format(time.RFC3339),
-			Active:      active,
-			Description: description,
-			RequesterIP: requesterIP,
-		},
+		ID:          HashJWT(jwt),
+		ExpiresAt:   expiresAt,
+		Deactivated: deactivated,
+		Description: description,
+		RequesterIP: requesterIP,
+		User:        username,
 	}
 }

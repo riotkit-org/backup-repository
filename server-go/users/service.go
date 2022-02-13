@@ -13,6 +13,6 @@ func NewUsersService(provider config.ConfigurationProvider) Service {
 	}
 }
 
-func (a Service) LookupUser(login string) (User, error) {
+func (a Service) LookupUser(login string) (*User, error) {
 	return a.findUserByLogin(login)
 }

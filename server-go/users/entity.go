@@ -6,9 +6,6 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-type UserPermissions struct {
-}
-
 type PasswordFromSecretRef struct {
 	Name  string `json:"name"`
 	Entry string `json:"entry"`
@@ -17,7 +14,7 @@ type PasswordFromSecretRef struct {
 type Spec struct {
 	Id              string                `json:"id"`
 	Email           string                `json:"email"`
-	Permissions     UserPermissions       `json:"permissions"`
+	Roles           security.Permissions  `json:"roles"`
 	Password        string                `json:"password"`
 	PasswordFromRef PasswordFromSecretRef `json:"passwordFromRef"`
 }
@@ -41,4 +38,18 @@ func (u User) IsPasswordValid(password string) bool {
 		logrus.Errorf("Cannot decode password: '%v'", err)
 	}
 	return result
+}
+
+//
+// Security / RBAC
+//
+
+func (u User) CanViewMyProfile(actor *User) bool {
+	// rbac
+	if actor.Spec.Roles.HasRole(security.RoleUserManager) {
+		return true
+	}
+
+	// user can view self info
+	return u.Spec.Email == actor.Spec.Email
 }

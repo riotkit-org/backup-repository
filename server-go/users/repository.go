@@ -9,7 +9,7 @@ import (
 	"github.com/tidwall/gjson"
 )
 
-const KindBackupUser = "BackupUser"
+const KindBackupUser = "backupusers"
 
 type userRepository struct {
 	config.ConfigurationProvider
@@ -17,7 +17,7 @@ type userRepository struct {
 
 func (r userRepository) fillPasswordFromKindSecret(user *User) error {
 	if user.Spec.PasswordFromRef.Name != "" {
-		secretDoc, secretErr := r.GetSingleDocumentAnyType("Secret", user.Spec.PasswordFromRef.Name, "", "v1")
+		secretDoc, secretErr := r.GetSingleDocumentAnyType("secrets", user.Spec.PasswordFromRef.Name, "", "v1")
 
 		if secretErr != nil {
 			logrus.Errorf("Cannot fetch user hashed password from `kind: Secret`. Maybe it does not exist? %v", secretErr)
@@ -44,19 +44,19 @@ func (r userRepository) fillPasswordFromKindSecret(user *User) error {
 	return nil
 }
 
-func (r userRepository) findUserByLogin(login string) (User, error) {
+func (r userRepository) findUserByLogin(login string) (*User, error) {
 	doc, retrieveErr := r.GetSingleDocument(KindBackupUser, login)
 	user := User{}
 
 	if retrieveErr != nil {
-		return user, errors.New(fmt.Sprintf("Error retrieving user: %v", retrieveErr))
+		return &user, errors.New(fmt.Sprintf("Error retrieving user: %v", retrieveErr))
 	}
 
 	err := json.Unmarshal([]byte(doc), &user)
 
 	if fillErr := r.fillPasswordFromKindSecret(&user); fillErr != nil {
-		return user, fillErr
+		return &user, fillErr
 	}
 
-	return user, err
+	return &user, err
 }

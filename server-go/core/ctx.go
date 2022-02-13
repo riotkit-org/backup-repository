@@ -7,7 +7,8 @@ import (
 )
 
 type ApplicationContainer struct {
-	Config          config.ConfigurationProvider
-	Users           users.Service
-	GrantedAccesses security.Service
+	Config          *config.ConfigurationProvider
+	Users           *users.Service
+	GrantedAccesses *security.Service
+	JwtSecretKey    string
 }
