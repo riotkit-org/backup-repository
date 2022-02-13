@@ -6,7 +6,6 @@ import (
 	"github.com/riotkit-org/backup-repository/core"
 	"github.com/riotkit-org/backup-repository/db"
 	"github.com/riotkit-org/backup-repository/http"
-	//"github.com/riotkit-org/backup-repository/http"
 	"github.com/riotkit-org/backup-repository/security"
 	"github.com/riotkit-org/backup-repository/users"
 	log "github.com/sirupsen/logrus"
