@@ -1,0 +1,91 @@
+apiVersion: apiextensions.k8s.io/v1
+kind: "CustomResourceDefinition"
+metadata:
+    name: "backupcollections.backups.riotkit.org"
+spec:
+    group: "backups.riotkit.org"
+    scope: "Namespaced"
+    names:
+        plural: "backupcollections"
+        singular: "backupcollection"
+        kind: "BackupCollection"
+        shortNames:
+            - "brcollections"
+            - "brc"
+        categories:
+            - "backuprepository"
+    versions:
+        - name: v1alpha1
+          served: true
+          storage: true
+
+          schema:
+              openAPIV3Schema:
+                  type: object
+                  required: ["spec"]
+                  properties:
+                      spec:
+                          type: object
+                          required: ["description", "filenameTemplate", "maxBackupsCount", "maxOneVersionSize", "maxCollectionSize", "strategyName", "strategySpec"]
+                          properties:
+                              description:
+                                  type: string
+                              filenameTemplate:
+                                  type: string
+                              maxBackupsCount:
+                                  type: integer
+                              maxOneVersionSize:
+                                  type: string
+                                  pattern: '([0-9]+)(K|G|B|T)'
+                              maxCollectionSize:
+                                  type: string
+                                  pattern: '([0-9]+)(K|G|B|T)'
+                              window:
+                                  type: array
+                                  items:
+                                      type: object
+                                      properties:
+                                          from:
+                                              type: string
+                                          duration:
+                                              type: string
+                                              pattern: '([0-9]+)(m|h)'
+                              strategyName:
+                                  type: string
+                                  enum: ["fifo", "fifo-plus-older"]
+                              strategySpec:
+                                  type: object
+                                  properties:
+                                      keepLastOlderNotMoreThan:
+                                          type: string
+                                      maxOlderCopies:
+                                          type: integer
+                              accessControl:
+                                  type: array
+                                  items:
+                                      type: object
+                                      attributes:
+                                          userName: string
+                                          roles:
+                                              type: array
+                                              items:
+                                                  type: string
+                                                  enum: ["collectionManager", "uploader", "downloader"]
+
+
+          additionalPrinterColumns:
+            - name: "Strategy"
+              type: string
+              jsonPath: .spec.strategyName
+
+            - name: "Filename template"
+              type: string
+              jsonPath: .spec.filenameTemplate
+
+            - name: "Max backups count"
+              type: string
+              jsonPath: .spec.maxBackupsCount
+
+            - name: "Max collection size"
+              type: string
+              jsonPath: .spec.maxCollectionSize
