@@ -8,6 +8,17 @@ Cloud-native, zero-knowledge, multi-tenant backup storage with minimal footprint
 - GPG E2E encryption
 - Configuration via GitOps (Configuration as a Code)
 
+**Technology stack:**
+- Kubernetes Client ([client-go](https://github.com/kubernetes/client-go))
+- [GORM for database support](https://gorm.io/index.html)
+- [GO Cloud for storage support](https://gocloud.dev/howto/blob)
+- [GIN](https://github.com/gin-gonic/gin) + [GIN JWT](https://github.com/appleboy/gin-jwt) for web framework
+
+**Requirements:**
+- Kubernetes (if wanting to use Kubernetes)
+- PostgreSQL
+- At least 128Mb ram for small scale usage
+- Storage provider (S3, GCS, Min.io, local filesystem, and others supported by https://gocloud.dev/howto/blob/#services)
 
 Security
 --------
