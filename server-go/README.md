@@ -1,12 +1,14 @@
 Backup Repository
 =================
 
-Cloud-native, zero-knowledge, multi-tenant backup storage with minimal footprint.
+Cloud-native, zero-knowledge, multi-tenant, security-first backup storage with minimal footprint.
 
 **Natively supports:**
 - Kubernetes (but does not require)
 - GPG E2E encryption
 - Configuration via GitOps (Configuration as a Code)
+- Multi-tenancy with configurable Quotas
+- Multiple cloud providers as a backend storage (all supported by [GO Cloud](https://gocloud.dev/howto/blob/#services))
 
 **Technology stack:**
 - Kubernetes Client ([client-go](https://github.com/kubernetes/client-go))
@@ -17,7 +19,7 @@ Cloud-native, zero-knowledge, multi-tenant backup storage with minimal footprint
 **Requirements:**
 - Kubernetes (if wanting to use Kubernetes)
 - PostgreSQL
-- At least 128Mb ram for small scale usage
+- About 128Mb ram for small scale usage (**Note**: _We use Argon2di and performing file uploads + calculations on buffers_)
 - Storage provider (S3, GCS, Min.io, local filesystem, and others supported by https://gocloud.dev/howto/blob/#services)
 
 Security
