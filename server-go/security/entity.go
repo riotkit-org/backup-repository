@@ -31,8 +31,8 @@ func (p Permissions) has(name string) bool {
 //
 
 type AccessControlObject struct {
-	UserName string        `json:"userName"`
-	Roles    []Permissions `json:"roles"`
+	UserName string      `json:"userName"`
+	Roles    Permissions `json:"roles"`
 }
 
 type AccessControlList []AccessControlObject
