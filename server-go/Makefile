@@ -40,3 +40,8 @@ postgres_refresh:
 	docker rm -f br_postgres || true
 	sudo rm -rf /tmp/br_postgres
 	make postgres
+
+minio:
+	docker run -d \
+		--name br_minio \
+		minio

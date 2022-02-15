@@ -7,7 +7,8 @@ import (
 	"github.com/riotkit-org/backup-repository/config"
 	"github.com/riotkit-org/backup-repository/security"
 	"github.com/riotkit-org/backup-repository/users"
-	cron "github.com/robfig/cron/v3"
+	"github.com/robfig/cron/v3"
+	"strings"
 	"time"
 )
 
@@ -104,4 +105,8 @@ func (c Collection) CanUploadToMe(user *users.User) bool {
 	}
 
 	return false
+}
+
+func (c *Collection) GenerateNextVersionFilename(version int) string {
+	return strings.Replace(c.Spec.FilenameTemplate, "${version}", string(rune(version)), 1)
 }

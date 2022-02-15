@@ -40,6 +40,10 @@ func addUploadRoute(r *gin.RouterGroup, ctx *core.ApplicationContainer) {
 			return
 		}
 
+		// todo: support Url encoded and raw body
+		// c.Request.Body
+		// ctx.Storage
+
 		println(collection)
 	})
 }

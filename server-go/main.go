@@ -8,6 +8,7 @@ import (
 	"github.com/riotkit-org/backup-repository/db"
 	"github.com/riotkit-org/backup-repository/http"
 	"github.com/riotkit-org/backup-repository/security"
+	"github.com/riotkit-org/backup-repository/storage"
 	"github.com/riotkit-org/backup-repository/users"
 	log "github.com/sirupsen/logrus"
 	"os"
@@ -25,6 +26,7 @@ type options struct {
 	DbPort               int    `long:"db-port" description:"Database name inside a database" default:"5432"`
 	JwtSecretKey         string `long:"jwt-secret-key" short:"s" description:"Secret used for generating JSON Web Tokens for authentication"`
 	Level                string `long:"log-level" description:"Log level" default:"debug"`
+	StorageDriverUrl     string `long:"--storage-url" description:"Storage driver url compatible with GO Cloud (https://gocloud.dev/howto/blob/)"`
 }
 
 func main() {
@@ -68,6 +70,11 @@ func main() {
 	usersService := users.NewUsersService(configProvider)
 	gaService := security.NewService(dbDriver)
 	collectionsService := collections.NewService(configProvider)
+	storageService, storageError := storage.NewService(opts.StorageDriverUrl)
+	if err != nil {
+		log.Errorln("Cannot initialize storage driver")
+		log.Fatal(storageError)
+	}
 
 	ctx := core.ApplicationContainer{
 		Config:          &configProvider,
@@ -75,6 +82,7 @@ func main() {
 		GrantedAccesses: &gaService,
 		JwtSecretKey:    opts.JwtSecretKey,
 		Collections:     &collectionsService,
+		Storage:         &storageService,
 	}
 
 	// todo: First thread - HTTP
