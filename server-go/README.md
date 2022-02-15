@@ -30,6 +30,10 @@ Security
 - All JWT's can be revoked anytime. There is a list of generated tokens stored in configuration (only sha256 shortcuts)
 - Passwords are encoded with `argon2di` (winner of the 2015 Password Hashing Competition, recommended by OWASP)
 - All objects are managed by RBAC (Role Based Access Control)
+- Server works on 1001, [non-root container](https://kubesec.io/basics/containers-securitycontext-runasnonroot-true/)
+- There is a separate [ServiceAccount](https://kubesec.io/basics/service-accounts/) using namespace-scoped roles
+- We use [distroless](https://github.com/GoogleContainerTools/distroless) images
+- By default, we set [requests and limits](https://kubesec.io/basics/containers-resources-limits-memory/) for `kind: Pod` in Kubernetes
 
 ```go
 Argon2Config{
