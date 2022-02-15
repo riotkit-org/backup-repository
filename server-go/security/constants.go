@@ -5,5 +5,8 @@ const (
 	RoleCollectionManager = "collectionManager"
 	RoleBackupDownloader  = "backupDownloader"
 	RoleBackupUploader    = "backupUploader"
-	RoleSysAdmin          = "systemAdmin"
+
+	// RoleUploadsAnytime allows uploading versions regardless of Backup Windows
+	RoleUploadsAnytime = "uploadsAnytime"
+	RoleSysAdmin       = "systemAdmin"
 )
