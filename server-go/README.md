@@ -94,3 +94,21 @@ func (u User) CanViewMyProfile(actor User) bool {
 	return u.Spec.Email == actor.Spec.Email
 }
 ```
+
+#### ACL in code
+
+```go
+func (c Collection) CanUploadToMe(user *users.User) bool {
+	if user.Spec.Roles.HasRole(security.RoleBackupUploader) {
+		return true
+	}
+
+	for _, permitted := range c.Spec.AccessControl {
+		if permitted.UserName == user.Metadata.Name && permitted.Roles.HasRole(security.RoleBackupUploader) {
+			return true
+		}
+	}
+
+	return false
+}
+```
