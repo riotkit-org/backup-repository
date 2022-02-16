@@ -26,7 +26,8 @@ type options struct {
 	DbPort               int    `long:"db-port" description:"Database name inside a database" default:"5432"`
 	JwtSecretKey         string `long:"jwt-secret-key" short:"s" description:"Secret used for generating JSON Web Tokens for authentication"`
 	Level                string `long:"log-level" description:"Log level" default:"debug"`
-	StorageDriverUrl     string `long:"--storage-url" description:"Storage driver url compatible with GO Cloud (https://gocloud.dev/howto/blob/)"`
+	StorageDriverUrl     string `long:"storage-url" description:"Storage driver url compatible with GO Cloud (https://gocloud.dev/howto/blob/)"`
+	IsGCS                bool   `long:"use-google-cloud" description:"If using Google Cloud Storage, then in --storage-url just type bucket name"`
 }
 
 func main() {
@@ -70,8 +71,8 @@ func main() {
 	usersService := users.NewUsersService(configProvider)
 	gaService := security.NewService(dbDriver)
 	collectionsService := collections.NewService(configProvider)
-	storageService, storageError := storage.NewService(opts.StorageDriverUrl)
-	if err != nil {
+	storageService, storageError := storage.NewService(dbDriver, opts.StorageDriverUrl, opts.IsGCS)
+	if storageError != nil {
 		log.Errorln("Cannot initialize storage driver")
 		log.Fatal(storageError)
 	}

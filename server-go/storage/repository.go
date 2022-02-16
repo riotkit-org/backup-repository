@@ -1,8 +1,22 @@
 package storage
 
+import (
+	"gorm.io/gorm"
+)
+
 type VersionsRepository struct {
+	db *gorm.DB
 }
 
-func (r VersionsRepository) findLastHighestVersionNumber(name string) interface{} {
+func (vr VersionsRepository) findLastHighestVersionNumber(collectionId string) (int, error) {
+	maxNum := 0
+	err := vr.db.Model(&UploadedVersion{}).Select("uploaded_versions.version_number").Where("uploaded_versions.collection_id = ?", collectionId).Order("uploaded_versions.version_number DESC").Limit(1).Find(&maxNum).Error
+	if err != nil {
+		return 0, err
+	}
+	return maxNum, nil
+}
 
+func InitializeModel(db *gorm.DB) error {
+	return db.AutoMigrate(&UploadedVersion{})
 }

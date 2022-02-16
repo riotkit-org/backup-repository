@@ -1,8 +1,6 @@
 package storage
 
 import (
-	"github.com/google/uuid"
-	"github.com/riotkit-org/backup-repository/collections"
 	"gorm.io/gorm"
 	"time"
 )
@@ -24,21 +22,4 @@ type UploadedVersion struct {
 
 func (u *UploadedVersion) GetTargetPath() string {
 	return u.CollectionId + "/" + u.Filename
-}
-
-func CreateNewVersionFromCollection(c collections.Collection, svc Service, uploader string, uploaderSessionId string, filesize int) UploadedVersion {
-	nextVersion := svc.FindNextVersionForCollectionId(c.Metadata.Name)
-
-	return UploadedVersion{
-		Id:                  uuid.New().String(),
-		CollectionId:        c.Metadata.Name,
-		VersionNumber:       nextVersion,
-		Filename:            c.GenerateNextVersionFilename(nextVersion),
-		Filesize:            filesize,
-		UploadedBySessionId: uploaderSessionId,
-		Uploader:            uploader,
-		CreatedAt:           time.Time{},
-		UpdatedAt:           time.Time{},
-		DeletedAt:           gorm.DeletedAt{},
-	}
 }

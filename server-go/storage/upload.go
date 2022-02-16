@@ -1,7 +1,6 @@
 package storage
 
 import (
-	"bytes"
 	"context"
 	"errors"
 	"fmt"
@@ -9,66 +8,75 @@ import (
 	"io"
 )
 
-func (s *Service) createGPGValidator() func([]byte) error {
-	startFound := false
-	endingFound := false
-
-	return func(buff []byte) error {
-		if bytes.Contains(buff, []byte("-----BEGIN PGP MESSAGE")) {
-			startFound = true
-		}
-		if bytes.Contains(buff, []byte("-----END PGP MESSAGE")) {
-			endingFound = true
-		}
-		return nil
-	}
-}
-
-func (s *Service) UploadFile(inputStream io.ReadCloser, version UploadedVersion) (bool, error) {
+func (s *Service) UploadFile(inputStream io.ReadCloser, version *UploadedVersion) (int, error) {
 	writeStream, err := s.storage.NewWriter(context.Background(), version.GetTargetPath(), &blob.WriterOptions{})
+	defer writeStream.Close()
+
 	if err != nil {
-		return false, errors.New(fmt.Sprintf("cannot upload file, attempted to open a writable stream, error: %v", err))
+		return 0, errors.New(fmt.Sprintf("cannot upload file, attempted to open a writable stream, error: %v", err))
 	}
 
-	if writeErr := s.CopyStream(inputStream, writeStream, 1024, s.createGPGValidator()); writeErr != nil {
-		return false, errors.New(fmt.Sprintf("cannot upload file, cannot copy stream, error: %v", writeErr))
+	middlewares := nestedStreamMiddlewares{
+		// todo: add a middleware to abort file upload if filesize reached the limit
+		s.createNonEmptyMiddleware(),
+		s.createGPGStreamMiddleware(),
 	}
 
-	return true, nil
+	wroteLen, writeErr := s.CopyStream(inputStream, writeStream, 1024, middlewares)
+	if writeErr != nil {
+		return wroteLen, errors.New(fmt.Sprintf("cannot upload file, cannot copy stream, error: %v", writeErr))
+	}
+
+	return wroteLen, nil
 }
 
-// CopyStream copies a readable stream to writable stream, while providing a possibility to use a validation callback on-the-fly
-func (s *Service) CopyStream(inputStream io.ReadCloser, writeStream io.WriteCloser, bufferLen int, processor func([]byte) error) error {
-	p := make([]byte, bufferLen)
+// CopyStream copies a readable stream to writable stream, while providing a possibility to use a validation callbacks on-the-fly
+func (s *Service) CopyStream(inputStream io.ReadCloser, writeStream io.WriteCloser, bufferLen int, middlewares nestedStreamMiddlewares) (int, error) {
+	buff := make([]byte, bufferLen)
+	previousBuff := make([]byte, bufferLen)
+	totalLength := 0
+	chunkNum := 0
 
 	for {
-		n, err := inputStream.Read(p)
+		n, err := inputStream.Read(buff)
+		chunkNum += 1
 
 		if err != nil {
 			if err == io.EOF {
-				// validation callback
-				if processingError := processor(p[:n]); processingError != nil {
-					return processingError
+				totalLength += len(buff[:n])
+
+				// validation callbacks
+				if err := middlewares.processChunk(buff[:n], totalLength, previousBuff, chunkNum); err != nil {
+					return totalLength, err
 				}
+
 				// write to second stream
-				_, writeErr := writeStream.Write(p[:n])
-				if writeErr != nil {
-					return writeErr
+				if _, writeErr := writeStream.Write(buff[:n]); writeErr != nil {
+					return totalLength, writeErr
 				}
+
+				break
 			}
 
-			break
+			return totalLength, errors.New(fmt.Sprintf("cannot copy stream, error: %v", err))
 		}
-		// validation callback
-		if processingError := processor(p[:n]); processingError != nil {
-			return processingError
+
+		totalLength += len(buff[:n])
+		previousBuff = buff[:n]
+
+		// validation callbacks
+		if err := middlewares.processChunk(buff[:n], totalLength, []byte(""), chunkNum); err != nil {
+			return totalLength, err
 		}
 		// write to second stream
-		_, writeErr := writeStream.Write(p[:n])
+		_, writeErr := writeStream.Write(buff[:n])
 		if writeErr != nil {
-			return writeErr
+			return totalLength, writeErr
+		}
+		if err := middlewares.checkFinalStatusAfterFilesWasUploaded(); err != nil {
+			return totalLength, err
 		}
 	}
 
-	return nil
+	return totalLength, nil
 }

@@ -108,5 +108,5 @@ func (c Collection) CanUploadToMe(user *users.User) bool {
 }
 
 func (c *Collection) GenerateNextVersionFilename(version int) string {
-	return strings.Replace(c.Spec.FilenameTemplate, "${version}", string(rune(version)), 1)
+	return strings.Replace(c.Spec.FilenameTemplate, "${version}", fmt.Sprintf("%v", version), 1)
 }

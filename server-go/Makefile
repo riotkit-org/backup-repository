@@ -25,6 +25,9 @@ test_list_auths:
 test_list_auths_other_user:
 	curl -s -X GET -H 'Authorization: Bearer ${TOKEN}' -H 'Content-Type: application/json' 'http://localhost:8080/api/stable/auth/token?userName=some-user'
 
+test_upload_by_form:
+	curl -s -X POST -H 'Authorization: Bearer ${TOKEN}' -F "file=@./storage/.test_data/test.gpg" 'http://localhost:8080/api/stable/repository/collection/iwa-ait/version'
+
 postgres:
 	docker run -d \
         --name br_postgres \
@@ -44,4 +47,9 @@ postgres_refresh:
 minio:
 	docker run -d \
 		--name br_minio \
-		minio
+		-p 9000:9000 \
+	    -p 9001:9001 \
+	    -v /tmp/br_minio:/data \
+	    -e "MINIO_ROOT_USER=AKIAIOSFODNN7EXAMPLE" \
+	    -e "MINIO_ROOT_PASSWORD=wJaFuCKtnFEMI/CApItaliSM/bPxRfiCYEXAMPLEKEY" \
+		quay.io/minio/minio:RELEASE.2022-02-16T00-35-27Z server /data

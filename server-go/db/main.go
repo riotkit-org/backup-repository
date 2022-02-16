@@ -3,6 +3,7 @@ package db
 import (
 	"fmt"
 	"github.com/riotkit-org/backup-repository/security"
+	"github.com/riotkit-org/backup-repository/storage"
 	"github.com/sirupsen/logrus"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -18,6 +19,10 @@ func CreateDatabaseDriver(hostname string, user string, password string, dbname 
 func InitializeDatabase(db *gorm.DB) bool {
 	if err := security.InitializeModel(db); err != nil {
 		logrus.Errorf("Cannot initialize GrantedAccess model: %v", err)
+		return false
+	}
+	if err := storage.InitializeModel(db); err != nil {
+		logrus.Errorf("Cannot initialize UploadedVersion model: %v", err)
 		return false
 	}
 

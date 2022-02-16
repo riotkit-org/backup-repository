@@ -2,9 +2,11 @@ package http
 
 import (
 	"errors"
+	"fmt"
 	"github.com/gin-gonic/gin"
 	"github.com/riotkit-org/backup-repository/core"
 	"github.com/riotkit-org/backup-repository/security"
+	"io"
 	"time"
 )
 
@@ -12,16 +14,15 @@ func addUploadRoute(r *gin.RouterGroup, ctx *core.ApplicationContainer) {
 	r.POST("/repository/collection/:collectionId/version", func(c *gin.Context) {
 		// todo: check if rotation strategy allows uploading
 		// todo: deactivate token if temporary token is used
-		// todo: handle upload
 		// todo: check uploaded file size, respect quotas and additional space
 		// todo: check if there are gpg header and footer
 		// todo: handle upload interruptions
 
 		ctxUser, _ := GetContextUser(ctx, c)
 
-		// Check if Colection exists
-		collection, err := ctx.Collections.GetCollectionById(c.Param("collectionId"))
-		if err != nil {
+		// Check if Collection exists
+		collection, findError := ctx.Collections.GetCollectionById(c.Param("collectionId"))
+		if findError != nil {
 			NotFoundResponse(c, errors.New("cannot find specified collection"))
 			return
 		}
@@ -40,10 +41,52 @@ func addUploadRoute(r *gin.RouterGroup, ctx *core.ApplicationContainer) {
 			return
 		}
 
-		// todo: support Url encoded and raw body
-		// c.Request.Body
-		// ctx.Storage
+		// Increment a version, generate target file path name that will be used on storage
+		sessionId := GetCurrentSessionId(c)
+		version, factoryError := ctx.Storage.CreateNewVersionFromCollection(collection, ctxUser.Metadata.Name, sessionId, 0)
+		if factoryError != nil {
+			ServerErrorResponse(c, errors.New(fmt.Sprintf("cannot increment version. %v", factoryError)))
+			return
+		}
 
-		println(collection)
+		var stream io.ReadCloser
+
+		// Support form data
+		if c.ContentType() == "application/x-www-form-urlencoded" || c.ContentType() == "multipart/form-data" {
+			var openErr error
+			fh, ffErr := c.FormFile("file")
+			if ffErr != nil {
+				ServerErrorResponse(c, errors.New(fmt.Sprintf("cannot read file from multipart/urlencoded form: %v", ffErr)))
+				return
+			}
+			stream, openErr = fh.Open()
+			if openErr != nil {
+				ServerErrorResponse(c, errors.New(fmt.Sprintf("cannot open file from multipart/urlencoded form: %v", openErr)))
+			}
+
+		} else {
+			// Support RAW sent data via body
+			stream = c.Request.Body
+		}
+
+		// Upload a file from selected source, then handle errors - delete file from storage if not uploaded successfully
+		wroteLen, uploadError := ctx.Storage.UploadFile(stream, &version)
+		if uploadError != nil {
+			// todo: make sure the uploaded file will be deleted
+
+			ServerErrorResponse(c, errors.New(fmt.Sprintf("cannot upload version. %v", uploadError)))
+			return
+		}
+
+		// Set a valid filesize that is known after receiving the file
+		version.Filesize = wroteLen
+
+		// Append version to the registry
+		//ctx.Storage.SubmitVersion(version)
+
+		// todo: add UploadedVersion to database
+		OKResponse(c, gin.H{
+			"version": version,
+		})
 	})
 }
