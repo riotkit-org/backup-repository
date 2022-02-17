@@ -49,12 +49,13 @@ func (s *Service) CreateNewVersionFromCollection(c *collections.Collection, uplo
 	}, nil
 }
 
+// NewService is a factory method that knows how to construct a Storage provider, distincting multiple types of providers
 func NewService(db *gorm.DB, driverUrl string, isUsingGCS bool) (Service, error) {
 	repository := VersionsRepository{db: db}
 
 	// Google Cloud requires extra support
 	if isUsingGCS {
-		gcsCredentials, err := gcp.DefaultCredentials(context.Background())
+		gcsCredentials, err := gcp.DefaultCredentials(context.TODO())
 		if err != nil {
 			return Service{}, errors.New(fmt.Sprintf("cannot grab credentials for Google Cloud Storage: %v", err))
 		}
@@ -62,9 +63,13 @@ func NewService(db *gorm.DB, driverUrl string, isUsingGCS bool) (Service, error)
 		if loginErr != nil {
 			return Service{}, errors.New(fmt.Sprintf("cannot login to Google Cloud Storage: %v", loginErr))
 		}
-		driver, openErr := gcsblob.OpenBucket(context.Background(), client, driverUrl, nil)
+		driver, openErr := gcsblob.OpenBucket(context.TODO(), client, driverUrl, nil)
 		if openErr != nil {
 			return Service{}, errors.New(fmt.Sprintf("cannot open Google Cloud Storage bucket: %v", openErr))
+		}
+		if result, err := driver.IsAccessible(context.TODO()); err != nil || !result {
+			logrus.Warningln("If connection status is still failing without a message then, check if bucket exists")
+			return Service{}, errors.New(fmt.Sprintf("Google Cloud Storage bucket is not accessible: %v || connection status = %v", err, result))
 		}
 		return Service{storage: driver, repository: &repository}, nil
 	}
@@ -73,6 +78,12 @@ func NewService(db *gorm.DB, driverUrl string, isUsingGCS bool) (Service, error)
 	if err != nil {
 		logrus.Errorf("Cannot construct storage driver: %v", err)
 		return Service{}, err
+	}
+	if result, err := driver.IsAccessible(context.TODO()); err != nil || !result {
+		logrus.Warningln("For S3-compatible adapters it may be need to set environment variables: AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY")
+		logrus.Warningln("For Min.io example connection string is: 's3://mybucket?endpoint=localhost:9000&disableSSL=true&s3ForcePathStyle=true&region=eu-central-1'")
+		logrus.Warningln("If connection status is still failing without a message then, check if bucket exists")
+		return Service{}, errors.New(fmt.Sprintf("bucket is not accessible: %v || connection status = %v", err, result))
 	}
 
 	return Service{storage: driver, repository: &repository}, nil
