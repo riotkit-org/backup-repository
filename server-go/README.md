@@ -3,12 +3,18 @@ Backup Repository
 
 Cloud-native, zero-knowledge, multi-tenant, security-first backup storage with minimal footprint.
 
+TLDR; Storage for E2E GPG-encrypted files, with multi-user, quotas, versioning, stored on Cloud Storage and deployed on Kubernetes or standalone.
+
 **Natively supports:**
 - Kubernetes (but does not require)
 - GPG E2E encryption
 - Configuration via GitOps (Configuration as a Code)
 - Multi-tenancy with configurable Quotas
 - Multiple cloud providers as a backend storage (all supported by [GO Cloud](https://gocloud.dev/howto/blob/#services))
+
+**Notice:**
+- Project is more focusing on security than on performance
+- Due to E2E nature there is no incremental backups support. Incremental backups would need to be implemented client-side with some encrypted metadata stored on server. In the future it may be implemented, but is not our priority. Feel free to send a Pull Request
 
 **Technology stack:**
 - Kubernetes Client ([client-go](https://github.com/kubernetes/client-go))
