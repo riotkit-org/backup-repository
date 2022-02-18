@@ -49,6 +49,19 @@ func (s *Service) CreateNewVersionFromCollection(c *collections.Collection, uplo
 	}, nil
 }
 
+func (s *Service) CreateRotationStrategyCase(collection *collections.Collection) (RotationStrategy, error) {
+	foundVersions, err := s.repository.findAllVersionsForCollectionId(collection.Metadata.Name)
+	if err != nil {
+		return &FifoRotationStrategy{}, errors.New(fmt.Sprintf("cannot construct rotation strategy, cannot findAllVersionsForCollectionId, error: %v", err))
+	}
+
+	if collection.Spec.StrategyName == "fifo" {
+		return NewFifoRotationStrategy(collection, foundVersions), nil
+	}
+
+	return &FifoRotationStrategy{}, errors.New(fmt.Sprintf("collection configuration error: unrecognized backup strategy type '%v'", collection.Spec.StrategyName))
+}
+
 // NewService is a factory method that knows how to construct a Storage provider, distincting multiple types of providers
 func NewService(db *gorm.DB, driverUrl string, isUsingGCS bool) (Service, error) {
 	repository := VersionsRepository{db: db}
@@ -74,6 +87,7 @@ func NewService(db *gorm.DB, driverUrl string, isUsingGCS bool) (Service, error)
 		return Service{storage: driver, repository: &repository}, nil
 	}
 
+	// AWS S3, Min.io, CEPH and others compatible with S3 protocol
 	driver, err := blob.OpenBucket(context.Background(), driverUrl)
 	if err != nil {
 		logrus.Errorf("Cannot construct storage driver: %v", err)

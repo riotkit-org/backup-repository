@@ -17,6 +17,16 @@ func (vr VersionsRepository) findLastHighestVersionNumber(collectionId string) (
 	return maxNum, nil
 }
 
+func (vr VersionsRepository) findAllVersionsForCollectionId(collectionId string) ([]UploadedVersion, error) {
+	var foundVersions []UploadedVersion
+
+	err := vr.db.Model(&UploadedVersion{}).Where("uploaded_versions.collection_id = ?", collectionId).Order("uploaded_versions.version_number DESC").Find(&foundVersions).Error
+	if err != nil {
+		return []UploadedVersion{}, err
+	}
+	return foundVersions, nil
+}
+
 func InitializeModel(db *gorm.DB) error {
 	return db.AutoMigrate(&UploadedVersion{})
 }

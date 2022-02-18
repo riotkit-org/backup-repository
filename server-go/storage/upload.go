@@ -20,7 +20,6 @@ func (s *Service) UploadFile(inputStream io.ReadCloser, version *UploadedVersion
 	}
 
 	middlewares := nestedStreamMiddlewares{
-		// todo: add a middleware to abort file upload if filesize reached the limit
 		s.createNonEmptyMiddleware(),
 		s.createGPGStreamMiddleware(),
 	}

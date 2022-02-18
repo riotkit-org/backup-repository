@@ -6,6 +6,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/riotkit-org/backup-repository/core"
 	"github.com/riotkit-org/backup-repository/security"
+	"github.com/sirupsen/logrus"
 	"io"
 	"time"
 )
@@ -15,8 +16,8 @@ func addUploadRoute(r *gin.RouterGroup, ctx *core.ApplicationContainer) {
 		// todo: check if rotation strategy allows uploading
 		// todo: deactivate token if temporary token is used
 		// todo: check uploaded file size, respect quotas and additional space
-		// todo: check if there are gpg header and footer
 		// todo: handle upload interruptions
+		// todo: locking support! There should be no concurrent uploads to the same collection
 
 		ctxUser, _ := GetContextUser(ctx, c)
 
@@ -46,6 +47,17 @@ func addUploadRoute(r *gin.RouterGroup, ctx *core.ApplicationContainer) {
 		version, factoryError := ctx.Storage.CreateNewVersionFromCollection(collection, ctxUser.Metadata.Name, sessionId, 0)
 		if factoryError != nil {
 			ServerErrorResponse(c, errors.New(fmt.Sprintf("cannot increment version. %v", factoryError)))
+			return
+		}
+
+		// Check rotation strategy: Is it allowed to upload? Is there enough space?
+		rotationStrategyCase, strategyFactorialError := ctx.Storage.CreateRotationStrategyCase(collection)
+		if strategyFactorialError != nil {
+			logrus.Errorf(fmt.Sprintf("Cannot create collection strategy for collectionId=%v, error: %v", collection.Metadata.Name, strategyFactorialError))
+			ServerErrorResponse(c, errors.New("internal error while trying to create rotation strategy. Check server logs"))
+		}
+		if err := rotationStrategyCase.CanUpload(version); err != nil {
+			UnauthorizedResponse(c, errors.New(fmt.Sprintf("backup collection strategy declined a possibility to upload, %v", err)))
 			return
 		}
 
@@ -82,8 +94,11 @@ func addUploadRoute(r *gin.RouterGroup, ctx *core.ApplicationContainer) {
 		version.Filesize = wroteLen
 
 		// Append version to the registry
+		// todo
 		//ctx.Storage.SubmitVersion(version)
+		//ctx.Storage.CleanUpOlderVersions(rotationStrategyCase.GetVersionsThatShouldBeDeletedIfThisVersionUploaded(version))
 
+		// todo: Rotate collection
 		// todo: add UploadedVersion to database
 		OKResponse(c, gin.H{
 			"version": version,
