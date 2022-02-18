@@ -42,7 +42,6 @@ func (frs *FifoRotationStrategy) GetVersionsThatShouldBeDeletedIfThisVersionUplo
 	return existingVersions[0:1]
 }
 
-// todo: test reference
 func NewFifoRotationStrategy(collection *collections.Collection, existingVersions []UploadedVersion) *FifoRotationStrategy {
 	return &FifoRotationStrategy{
 		collection:       collection,
