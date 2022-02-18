@@ -5,6 +5,7 @@ import (
 	"sort"
 )
 
+// RotationStrategy defines how old backups should be rotated
 type RotationStrategy interface {
 	// CanUpload returns nil if YES, error if NO
 	CanUpload(version UploadedVersion) error
@@ -21,10 +22,12 @@ type FifoRotationStrategy struct {
 	existingVersions []UploadedVersion
 }
 
+// CanUpload RotationStrategy can decide if we can still upload
 func (frs *FifoRotationStrategy) CanUpload(version UploadedVersion) error {
 	return nil
 }
 
+// GetVersionsThatShouldBeDeletedIfThisVersionUploaded interface implementation that allows RotationStrategy to decide which versions should be deleted right now, when uploading a new version
 func (frs *FifoRotationStrategy) GetVersionsThatShouldBeDeletedIfThisVersionUploaded(version UploadedVersion) []UploadedVersion {
 	existingVersions := frs.existingVersions
 
@@ -42,9 +45,12 @@ func (frs *FifoRotationStrategy) GetVersionsThatShouldBeDeletedIfThisVersionUplo
 	return existingVersions[0:1]
 }
 
+// NewFifoRotationStrategy is a factorial method
 func NewFifoRotationStrategy(collection *collections.Collection, existingVersions []UploadedVersion) *FifoRotationStrategy {
 	return &FifoRotationStrategy{
 		collection:       collection,
 		existingVersions: existingVersions,
 	}
 }
+
+// todo: implement "fifo-plus-older"
