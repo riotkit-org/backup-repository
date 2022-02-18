@@ -27,6 +27,15 @@ func (vr VersionsRepository) findAllVersionsForCollectionId(collectionId string)
 	return foundVersions, nil
 }
 
+func (vr VersionsRepository) delete(version *UploadedVersion) (error, bool) {
+	var result bool
+	return vr.db.Model(&UploadedVersion{}).Where("uploaded_versions.id = ?", version.Id).Delete(&result).Error, result
+}
+
+func (vr VersionsRepository) create(version *UploadedVersion) error {
+	return vr.db.Create(version).Error
+}
+
 func InitializeModel(db *gorm.DB) error {
 	return db.AutoMigrate(&UploadedVersion{})
 }

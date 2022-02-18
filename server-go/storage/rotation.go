@@ -34,8 +34,8 @@ func (frs *FifoRotationStrategy) GetVersionsThatShouldBeDeletedIfThisVersionUplo
 	}
 
 	// order by version number DESCENDING
-	sort.SliceStable(&existingVersions, func(i, j int) bool {
-		return existingVersions[i].VersionNumber > existingVersions[j].VersionNumber
+	sort.SliceStable(existingVersions, func(i, j int) bool {
+		return existingVersions[i].VersionNumber < existingVersions[j].VersionNumber
 	})
 
 	// oldest element

@@ -3,6 +3,7 @@ build:
 
 test_login:
 	curl -s -X POST -d '{"username":"admin","password":"admin"}' -H 'Content-Type: application/json' 'http://localhost:8080/api/stable/auth/login'
+	@echo "Now do export TOKEN=..."
 
 test_login_some_user:
 	curl -s -X POST -d '{"username":"some-user","password":"admin"}' -H 'Content-Type: application/json' 'http://localhost:8080/api/stable/auth/login'
@@ -52,4 +53,4 @@ minio:
 	    -v /tmp/br_minio:/data \
 	    -e "MINIO_ROOT_USER=AKIAIOSFODNN7EXAMPLE" \
 	    -e "MINIO_ROOT_PASSWORD=wJaFuCKtnFEMI/CApItaliSM/bPxRfiCYEXAMPLEKEY" \
-		quay.io/minio/minio:RELEASE.2022-02-16T00-35-27Z server /data
+		quay.io/minio/minio:RELEASE.2022-02-16T00-35-27Z server /data --console-address 0.0.0.0:9001

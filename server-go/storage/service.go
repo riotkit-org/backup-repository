@@ -62,6 +62,36 @@ func (s *Service) CreateRotationStrategyCase(collection *collections.Collection)
 	return &FifoRotationStrategy{}, errors.New(fmt.Sprintf("collection configuration error: unrecognized backup strategy type '%v'", collection.Spec.StrategyName))
 }
 
+func (s *Service) CleanUpOlderVersions(versions []UploadedVersion) bool {
+	logrus.Infof("Cleaning up older versions")
+	isError := false
+
+	for _, version := range versions {
+		if err := s.Delete(&version); err != nil {
+			logrus.Errorf("Consistency error! Cannot delete version id=%v, of collectionId=%v, error: %v", version.Id, version.CollectionId, err)
+			isError = true
+		} else {
+			logrus.Debugf("Deleted version: id=%v, version=%v, of collectionId=%v", version.Id, version.VersionNumber, version.CollectionId)
+		}
+	}
+
+	return isError
+}
+
+func (s *Service) Delete(version *UploadedVersion) error {
+	if err := s.storage.Delete(context.TODO(), version.GetTargetPath()); err != nil {
+		return errors.New(fmt.Sprintf("cannot delete from storage at path '%v', error: %v", version.GetTargetPath(), err))
+	}
+	if err, _ := s.repository.delete(version); err != nil {
+		return errors.New(fmt.Sprintf("cannot delete version from database - id=%v, version=%v, error=%v", version.Id, version.VersionNumber, err))
+	}
+	return nil
+}
+
+func (s *Service) RegisterVersion(version *UploadedVersion) error {
+	return s.repository.create(version)
+}
+
 // NewService is a factory method that knows how to construct a Storage provider, distincting multiple types of providers
 func NewService(db *gorm.DB, driverUrl string, isUsingGCS bool) (Service, error) {
 	repository := VersionsRepository{db: db}

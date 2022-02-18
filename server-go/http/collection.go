@@ -13,7 +13,6 @@ import (
 
 func addUploadRoute(r *gin.RouterGroup, ctx *core.ApplicationContainer) {
 	r.POST("/repository/collection/:collectionId/version", func(c *gin.Context) {
-		// todo: check if rotation strategy allows uploading
 		// todo: deactivate token if temporary token is used
 		// todo: check uploaded file size, respect quotas and additional space
 		// todo: handle upload interruptions
@@ -55,6 +54,7 @@ func addUploadRoute(r *gin.RouterGroup, ctx *core.ApplicationContainer) {
 		if strategyFactorialError != nil {
 			logrus.Errorf(fmt.Sprintf("Cannot create collection strategy for collectionId=%v, error: %v", collection.Metadata.Name, strategyFactorialError))
 			ServerErrorResponse(c, errors.New("internal error while trying to create rotation strategy. Check server logs"))
+			return
 		}
 		if err := rotationStrategyCase.CanUpload(version); err != nil {
 			UnauthorizedResponse(c, errors.New(fmt.Sprintf("backup collection strategy declined a possibility to upload, %v", err)))
@@ -84,7 +84,7 @@ func addUploadRoute(r *gin.RouterGroup, ctx *core.ApplicationContainer) {
 		// Upload a file from selected source, then handle errors - delete file from storage if not uploaded successfully
 		wroteLen, uploadError := ctx.Storage.UploadFile(stream, &version)
 		if uploadError != nil {
-			// todo: make sure the uploaded file will be deleted
+			_ = ctx.Storage.Delete(&version)
 
 			ServerErrorResponse(c, errors.New(fmt.Sprintf("cannot upload version. %v", uploadError)))
 			return
@@ -94,12 +94,12 @@ func addUploadRoute(r *gin.RouterGroup, ctx *core.ApplicationContainer) {
 		version.Filesize = wroteLen
 
 		// Append version to the registry
-		// todo
-		//ctx.Storage.SubmitVersion(version)
-		//ctx.Storage.CleanUpOlderVersions(rotationStrategyCase.GetVersionsThatShouldBeDeletedIfThisVersionUploaded(version))
+		if err := ctx.Storage.RegisterVersion(&version); err != nil {
+			_ = ctx.Storage.Delete(&version)
+		}
+		ctx.Storage.CleanUpOlderVersions(rotationStrategyCase.GetVersionsThatShouldBeDeletedIfThisVersionUploaded(version))
+		logrus.Infof("Uploaded v%v for collectionId=%v, size=%v", version.VersionNumber, version.CollectionId, version.Filesize)
 
-		// todo: Rotate collection
-		// todo: add UploadedVersion to database
 		OKResponse(c, gin.H{
 			"version": version,
 		})

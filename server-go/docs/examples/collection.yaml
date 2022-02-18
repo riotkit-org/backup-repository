@@ -16,7 +16,7 @@ spec:
           duration: 1h
 
     # fifo, fifo-plus-older
-    strategyName: fifo-plus-older
+    strategyName: fifo
     strategySpec:
         keepLastOlderNotMoreThan: 5d
         maxOlderCopies: 2
