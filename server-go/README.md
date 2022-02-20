@@ -119,6 +119,26 @@ func (c Collection) CanUploadToMe(user *users.User) bool {
 }
 ```
 
+#### Backup Windows
+
+Good practice is to **limit how often versions can be submitted**. Attacker would need to be very patient to overwrite your past backups with malicious ones.
+
+In emergency cases `System Administrator` or person with `uploadsAnytime` role can upload backups between backup windows. Be careful! Do not set up automated backups with administrator account or with account that has `uploadsAnytime` role.
+
+
+```yaml
+---
+apiVersion: backups.riotkit.org/v1alpha1
+kind: BackupCollection
+# ...
+spec:
+    # ...
+    window:
+        # allow to send backups only everyday starting from 00:30 to 01:30
+        - from: "00 30 * * *"
+          duration: 1h
+```
+
 Quota
 -----
 
@@ -135,7 +155,7 @@ apiVersion: backups.riotkit.org/v1alpha1
 kind: BackupCollection
 # ...
 spec:
-# ...
+    # ...
     maxBackupsCount: 5
     maxOneVersionSize: 1M
     maxCollectionSize: 5M
@@ -161,7 +181,7 @@ apiVersion: backups.riotkit.org/v1alpha1
 kind: BackupCollection
 # ...
 spec:
-# ...
+    # ...
     maxBackupsCount: 5
     maxOneVersionSize: 1M
     maxCollectionSize: 10M
@@ -181,6 +201,6 @@ apiVersion: backups.riotkit.org/v1alpha1
 kind: BackupCollection
 # ...
 spec:
-# ...
+    # ...
     strategyName: fifo
 ```
