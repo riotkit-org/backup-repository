@@ -30,7 +30,7 @@ func (s *Service) FindNextVersionForCollectionId(name string) (int, error) {
 	return lastHigherVersion + 1, nil
 }
 
-func (s *Service) CreateNewVersionFromCollection(c *collections.Collection, uploader string, uploaderSessionId string, filesize int) (UploadedVersion, error) {
+func (s *Service) CreateNewVersionFromCollection(c *collections.Collection, uploader string, uploaderSessionId string, filesize int64) (UploadedVersion, error) {
 	nextVersion, err := s.FindNextVersionForCollectionId(c.Metadata.Name)
 	if err != nil {
 		return UploadedVersion{}, err
@@ -92,6 +92,89 @@ func (s *Service) RegisterVersion(version *UploadedVersion) error {
 	return s.repository.create(version)
 }
 
+func (s *Service) CalculateMaximumAllowedUploadFilesize(collection *collections.Collection, excluding []UploadedVersion) (int64, error) {
+	maxExtraSpace, err := collection.GetEstimatedCollectionExtraSpace()
+	if err != nil {
+		return 0, errors.New(fmt.Sprintf("cannot calculate maximum allowed filesize for upload: %v", err))
+	}
+	maxOneVersionSize, err := collection.GetMaxOneVersionSizeInBytes()
+	if err != nil {
+		return 0, errors.New(fmt.Sprintf("cannot calculate maximum allowed filesize for upload: %v", err))
+	}
+
+	// collection does not have extra space
+	if maxExtraSpace == 0 {
+		logrus.Debugf("Collection id=%v does not have extra space", collection.GetId())
+		return maxOneVersionSize, nil
+	}
+
+	currentVersionsInCollection, err := s.repository.findAllVersionsForCollectionId(collection.GetId())
+	if err != nil {
+		return 0, errors.New(fmt.Sprintf("cannot calculate maximum allowed filesize for upload: %v", err))
+	}
+
+	// collection has additional extra space to use
+	usedExtraSpace, err := s.CalculateAllocatedSpaceAboveSingleVersionLimit(
+		collection,
+		currentVersionsInCollection,
+		excluding,
+	)
+	logrus.Debugf("Remaining extra space in collection (id=%v) is %vb", collection.GetId(), usedExtraSpace)
+	if err != nil {
+		return 0, errors.New(fmt.Sprintf("cannot calculate maximum allowed filesize for upload: %v", err))
+	}
+	remainedExtraSpace := maxExtraSpace - usedExtraSpace
+
+	if remainedExtraSpace < 0 {
+		return 0, errors.New(fmt.Sprintf("weird thing happened, maxExtraSpace-usedExtraSpace gave minus result. Corrupted collection"))
+	}
+
+	return remainedExtraSpace + maxOneVersionSize, nil
+}
+
+func (s *Service) CalculateAllocatedSpaceAboveSingleVersionLimit(collection *collections.Collection, existing []UploadedVersion, excluding []UploadedVersion) (int64, error) {
+	var ids []string
+	var allocatedSpaceAboveLimit int64
+	maxOneVersionSize, err := collection.GetMaxOneVersionSizeInBytes()
+	if err != nil {
+		return 0, errors.New(fmt.Sprintf("cannot calculate allocated space above single version limit in collection, error: %v", err))
+	}
+
+	for _, version := range excluding {
+		ids = append(ids, version.Id)
+	}
+
+	for _, version := range existing {
+		// optionally exclude selected versions
+		if contains(ids, version.Id) {
+			logrus.Debugf("Excluding version id=%v", version.Id)
+			continue
+		}
+		if version.Filesize > maxOneVersionSize {
+			diff := version.Filesize - maxOneVersionSize
+			logrus.Debugf("Version id=%v is exceeding its limit by %v", version.Id, diff)
+			allocatedSpaceAboveLimit += diff
+		}
+	}
+
+	return allocatedSpaceAboveLimit, nil
+}
+
+func (s *Service) CreateStandardMiddleWares(versionsToDelete []UploadedVersion, collection *collections.Collection) (NestedStreamMiddlewares, error) {
+	maxAllowedFilesize, err := s.CalculateMaximumAllowedUploadFilesize(collection, versionsToDelete)
+	logrus.Debugf("CalculateMaximumAllowedUploadFilesize(%v) = %v", collection.GetId(), maxAllowedFilesize)
+
+	if err != nil {
+		return NestedStreamMiddlewares{}, errors.New(fmt.Sprintf("cannot construct standard middlewares, error: %v", err))
+	}
+
+	return NestedStreamMiddlewares{
+		s.createQuotaMaxFileSizeMiddleware(maxAllowedFilesize),
+		s.createNonEmptyMiddleware(),
+		s.createGPGStreamMiddleware(),
+	}, nil
+}
+
 // NewService is a factory method that knows how to construct a Storage provider, distincting multiple types of providers
 func NewService(db *gorm.DB, driverUrl string, isUsingGCS bool) (Service, error) {
 	repository := VersionsRepository{db: db}
@@ -131,4 +214,13 @@ func NewService(db *gorm.DB, driverUrl string, isUsingGCS bool) (Service, error)
 	}
 
 	return Service{storage: driver, repository: &repository}, nil
+}
+
+func contains(s []string, e string) bool {
+	for _, a := range s {
+		if a == e {
+			return true
+		}
+	}
+	return false
 }

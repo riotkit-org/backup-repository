@@ -29,6 +29,18 @@ test_list_auths_other_user:
 test_upload_by_form:
 	curl -s -X POST -H 'Authorization: Bearer ${TOKEN}' -F "file=@./storage/.test_data/test.gpg" 'http://localhost:8080/api/stable/repository/collection/iwa-ait/version'
 
+test_upload_by_form_1mb:
+	@echo "-----BEGIN PGP MESSAGE-----" > /tmp/1mb.gpg
+	@openssl rand -base64 $$((735*1024*1)) >> /tmp/1mb.gpg
+	@echo "-----END PGP MESSAGE-----" >> /tmp/1mb.gpg
+	curl -s -X POST -H 'Authorization: Bearer ${TOKEN}' -F "file=@/tmp/1mb.gpg" 'http://localhost:8080/api/stable/repository/collection/iwa-ait/version'
+
+test_upload_by_form_5mb:
+	@echo "-----BEGIN PGP MESSAGE-----" > /tmp/5mb.gpg
+	@openssl rand -base64 $$((735*1024*5)) >> /tmp/5mb.gpg
+	@echo "-----END PGP MESSAGE-----" >> /tmp/5mb.gpg
+	curl -s -X POST -H 'Authorization: Bearer ${TOKEN}' -F "file=@/tmp/5mb.gpg" 'http://localhost:8080/api/stable/repository/collection/iwa-ait/version'
+
 postgres:
 	docker run -d \
         --name br_postgres \

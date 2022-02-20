@@ -36,10 +36,10 @@ spec:
                                   type: integer
                               maxOneVersionSize:
                                   type: string
-                                  pattern: '([0-9]+)(K|G|B|T)'
+                                  pattern: '([0-9]+)(B|K|M|G|T)'
                               maxCollectionSize:
                                   type: string
-                                  pattern: '([0-9]+)(K|G|B|T)'
+                                  pattern: '([0-9]+)(B|K|M|G|T)'
                               window:
                                   type: array
                                   items:

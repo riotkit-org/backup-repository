@@ -14,7 +14,6 @@ import (
 func addUploadRoute(r *gin.RouterGroup, ctx *core.ApplicationContainer) {
 	r.POST("/repository/collection/:collectionId/version", func(c *gin.Context) {
 		// todo: deactivate token if temporary token is used
-		// todo: check uploaded file size, respect quotas and additional space
 		// todo: handle upload interruptions
 		// todo: locking support! There should be no concurrent uploads to the same collection
 
@@ -27,12 +26,12 @@ func addUploadRoute(r *gin.RouterGroup, ctx *core.ApplicationContainer) {
 			return
 		}
 
-		// Check permissions
+		// [SECURITY] Check permissions
 		if !collection.CanUploadToMe(ctxUser) {
 			UnauthorizedResponse(c, errors.New("not authorized to upload versions to this collection"))
 		}
 
-		// Backup Windows support
+		// [SECURITY] Backup Windows support
 		if !ctx.Collections.ValidateIsBackupWindowAllowingToUpload(collection, time.Now()) &&
 			!ctxUser.Spec.Roles.HasRole(security.RoleUploadsAnytime) {
 
@@ -41,7 +40,7 @@ func addUploadRoute(r *gin.RouterGroup, ctx *core.ApplicationContainer) {
 			return
 		}
 
-		// Increment a version, generate target file path name that will be used on storage
+		// [ROTATION STRATEGY][VERSIONING] Increment a version, generate target file path name that will be used on storage
 		sessionId := GetCurrentSessionId(c)
 		version, factoryError := ctx.Storage.CreateNewVersionFromCollection(collection, ctxUser.Metadata.Name, sessionId, 0)
 		if factoryError != nil {
@@ -49,7 +48,7 @@ func addUploadRoute(r *gin.RouterGroup, ctx *core.ApplicationContainer) {
 			return
 		}
 
-		// Check rotation strategy: Is it allowed to upload? Is there enough space?
+		// [ROTATION STRATEGY] Is it allowed to upload? Is there enough space?
 		rotationStrategyCase, strategyFactorialError := ctx.Storage.CreateRotationStrategyCase(collection)
 		if strategyFactorialError != nil {
 			logrus.Errorf(fmt.Sprintf("Cannot create collection strategy for collectionId=%v, error: %v", collection.Metadata.Name, strategyFactorialError))
@@ -63,7 +62,7 @@ func addUploadRoute(r *gin.RouterGroup, ctx *core.ApplicationContainer) {
 
 		var stream io.ReadCloser
 
-		// Support form data
+		// [HTTP] Support form data
 		if c.ContentType() == "application/x-www-form-urlencoded" || c.ContentType() == "multipart/form-data" {
 			var openErr error
 			fh, ffErr := c.FormFile("file")
@@ -75,14 +74,23 @@ func addUploadRoute(r *gin.RouterGroup, ctx *core.ApplicationContainer) {
 			if openErr != nil {
 				ServerErrorResponse(c, errors.New(fmt.Sprintf("cannot open file from multipart/urlencoded form: %v", openErr)))
 			}
+			defer stream.Close()
 
 		} else {
-			// Support RAW sent data via body
+			// [HTTP] Support RAW sent data via body
 			stream = c.Request.Body
 		}
 
-		// Upload a file from selected source, then handle errors - delete file from storage if not uploaded successfully
-		wroteLen, uploadError := ctx.Storage.UploadFile(stream, &version)
+		// [VALIDATION] Middlewares
+		versionsToDelete := rotationStrategyCase.GetVersionsThatShouldBeDeletedIfThisVersionUploaded(version)
+		middlewares, err := ctx.Storage.CreateStandardMiddleWares(versionsToDelete, collection)
+		if err != nil {
+			ServerErrorResponse(c, errors.New(fmt.Sprintf("cannot construct validators %v", err)))
+			return
+		}
+
+		// [HTTP] Upload a file from selected source, then handle errors - delete file from storage if not uploaded successfully
+		wroteLen, uploadError := ctx.Storage.UploadFile(stream, &version, &middlewares)
 		if uploadError != nil {
 			_ = ctx.Storage.Delete(&version)
 
@@ -97,7 +105,7 @@ func addUploadRoute(r *gin.RouterGroup, ctx *core.ApplicationContainer) {
 		if err := ctx.Storage.RegisterVersion(&version); err != nil {
 			_ = ctx.Storage.Delete(&version)
 		}
-		ctx.Storage.CleanUpOlderVersions(rotationStrategyCase.GetVersionsThatShouldBeDeletedIfThisVersionUploaded(version))
+		ctx.Storage.CleanUpOlderVersions(versionsToDelete)
 		logrus.Infof("Uploaded v%v for collectionId=%v, size=%v", version.VersionNumber, version.CollectionId, version.Filesize)
 
 		OKResponse(c, gin.H{
@@ -105,3 +113,7 @@ func addUploadRoute(r *gin.RouterGroup, ctx *core.ApplicationContainer) {
 		})
 	})
 }
+
+// todo: healthcheck route
+//       to detect if anything was uploaded in previous Backup Window
+//       to detect if any version is bigger than expected

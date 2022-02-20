@@ -3,6 +3,7 @@ package storage
 import (
 	"bytes"
 	"errors"
+	"fmt"
 )
 
 //
@@ -12,11 +13,11 @@ import (
 
 type streamMiddleware struct {
 	// []byte - current buffer value
-	// int    - total read size till this moment
+	// int64  - total read size till this moment
 	// []byte - if current buffer is an END OF STREAM, then this parameter will contain previous hunk,
 	//          so you can join previous+last to have full information in case, when last hunk would be too small
 	// int    - processed chunk number
-	processor      func([]byte, int, []byte, int) error
+	processor      func([]byte, int64, []byte, int) error
 	resultReporter func() error
 }
 
@@ -24,9 +25,9 @@ type streamMiddleware struct {
 // Aggregation of middlewares
 //
 
-type nestedStreamMiddlewares []streamMiddleware
+type NestedStreamMiddlewares []streamMiddleware
 
-func (nv nestedStreamMiddlewares) processChunk(chunk []byte, processedTotalBytes int, previousHunkBeforeEof []byte, chunkNum int) error {
+func (nv NestedStreamMiddlewares) processChunk(chunk []byte, processedTotalBytes int64, previousHunkBeforeEof []byte, chunkNum int) error {
 	for _, processor := range nv {
 		if processingError := processor.processor(chunk, processedTotalBytes, previousHunkBeforeEof, chunkNum); processingError != nil {
 			return processingError
@@ -35,7 +36,7 @@ func (nv nestedStreamMiddlewares) processChunk(chunk []byte, processedTotalBytes
 	return nil
 }
 
-func (nv nestedStreamMiddlewares) checkFinalStatusAfterFilesWasUploaded() error {
+func (nv NestedStreamMiddlewares) checkFinalStatusAfterFilesWasUploaded() error {
 	for _, processor := range nv {
 		if processingError := processor.resultReporter(); processingError != nil {
 			return processingError
@@ -50,7 +51,7 @@ func (nv nestedStreamMiddlewares) checkFinalStatusAfterFilesWasUploaded() error 
 
 // createGPGStreamMiddleware Checks if stream is a valid GPG encrypted file by checking GPG header and footer
 func (s *Service) createGPGStreamMiddleware() streamMiddleware {
-	validator := func(buff []byte, totalLength int, previousHunkBeforeEof []byte, chunkNum int) error {
+	validator := func(buff []byte, totalLength int64, previousHunkBeforeEof []byte, chunkNum int) error {
 		if chunkNum == 1 && !bytes.Contains(buff, []byte("-----BEGIN PGP MESSAGE")) {
 			return errors.New("first chunk of uploaded data does not contain a valid GPG header")
 		}
@@ -74,9 +75,9 @@ func (s *Service) createGPGStreamMiddleware() streamMiddleware {
 
 // createNonEmptyMiddleware Checks if anything was sent at all
 func (s *Service) createNonEmptyMiddleware() streamMiddleware {
-	recordedTotalLength := 0
+	var recordedTotalLength int64
 
-	validator := func(buff []byte, totalLength int, previousHunkBeforeEof []byte, chunkNum int) error {
+	validator := func(buff []byte, totalLength int64, previousHunkBeforeEof []byte, chunkNum int) error {
 		recordedTotalLength = totalLength
 		return nil
 	}
@@ -90,4 +91,18 @@ func (s *Service) createNonEmptyMiddleware() streamMiddleware {
 	}
 
 	return streamMiddleware{processor: validator, resultReporter: resultReporter}
+}
+
+// createQuotaMaxFileSizeMiddleware Takes care about the maximum allowed filesize limit
+func (s *Service) createQuotaMaxFileSizeMiddleware(maxFileSize int64) streamMiddleware {
+	validator := func(buff []byte, totalLength int64, previousHunkBeforeEof []byte, chunkNum int) error {
+		if totalLength > maxFileSize {
+			return errors.New(fmt.Sprintf("filesize reached allowed limit. Uploaded %vbytes, allowed to upload only %v bytes", totalLength, maxFileSize))
+		}
+		return nil
+	}
+
+	return streamMiddleware{processor: validator, resultReporter: func() error {
+		return nil
+	}}
 }

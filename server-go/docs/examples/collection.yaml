@@ -7,8 +7,8 @@ spec:
     description: IWA-AIT website files
     filenameTemplate: iwa-ait-${version}.tar.gz
     maxBackupsCount: 5
-    maxOneVersionSize: 10G
-    maxCollectionSize: 55G
+    maxOneVersionSize: 1M
+    maxCollectionSize: 10M
 
     # optional
     window:

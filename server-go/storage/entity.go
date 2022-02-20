@@ -10,7 +10,7 @@ type UploadedVersion struct {
 	CollectionId  string `json:"collectionId"`
 	VersionNumber int    `json:"versionNumber"`
 	Filename      string `json:"filename"` // full filename e.g. iwa-ait-v1-db.tar.gz
-	Filesize      int    `json:"filesize"` // in bytes
+	Filesize      int64  `json:"filesize"` // in bytes
 
 	// auditing
 	UploadedBySessionId string `json:"uploadedBySessionId"`

@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"github.com/labstack/gommon/bytes"
 	"github.com/riotkit-org/backup-repository/config"
 	"github.com/riotkit-org/backup-repository/security"
 	"github.com/riotkit-org/backup-repository/users"
@@ -109,4 +110,39 @@ func (c Collection) CanUploadToMe(user *users.User) bool {
 
 func (c *Collection) GenerateNextVersionFilename(version int) string {
 	return strings.Replace(c.Spec.FilenameTemplate, "${version}", fmt.Sprintf("%v", version), 1)
+}
+
+// getEstimatedDiskSpaceForFullCollectionInBytes returns a calculation how many disk space would be required to store all versions (excluding extra disk space)
+// in ideal case it would be: MaxBackupsCount * MaxOneVersionSize
+func (c *Collection) getEstimatedDiskSpaceForFullCollectionInBytes() (int64, error) {
+	maxVersionSizeInBytes, err := c.GetMaxOneVersionSizeInBytes()
+	if err != nil {
+		return 0, errors.New(fmt.Sprintf("cannot calculate estimated collection size: %v", err))
+	}
+	return int64(c.Spec.MaxBackupsCount) * maxVersionSizeInBytes, nil
+}
+
+func (c *Collection) GetMaxOneVersionSizeInBytes() (int64, error) {
+	return bytes.Parse(c.Spec.MaxOneVersionSize)
+}
+
+// GetEstimatedCollectionExtraSpace returns total space that can be extra allocated in case, when a single version exceeds its limit. Returned value is estimated, does not include real state.
+func (c *Collection) GetEstimatedCollectionExtraSpace() (int64, error) {
+	estimatedStandardCollectionSize, err := c.getEstimatedDiskSpaceForFullCollectionInBytes()
+	if err != nil {
+		return 0, errors.New(fmt.Sprintf("cannot calculate GetEstimatedCollectionExtraSpace(): %v", err))
+	}
+	maxCollectionSizeInBytes, err := c.getMaxCollectionSizeInBytes()
+	if err != nil {
+		return 0, errors.New(fmt.Sprintf("cannot calculate GetEstimatedCollectionExtraSpace(): %v", err))
+	}
+	return maxCollectionSizeInBytes - estimatedStandardCollectionSize, nil
+}
+
+func (c *Collection) getMaxCollectionSizeInBytes() (int64, error) {
+	return bytes.Parse(c.Spec.MaxCollectionSize)
+}
+
+func (c *Collection) GetId() string {
+	return c.Metadata.Name
 }

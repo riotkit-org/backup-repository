@@ -9,7 +9,7 @@ import (
 	"io"
 )
 
-func (s *Service) UploadFile(inputStream io.ReadCloser, version *UploadedVersion) (int, error) {
+func (s *Service) UploadFile(inputStream io.ReadCloser, version *UploadedVersion, middlewares *NestedStreamMiddlewares) (int64, error) {
 	writeStream, err := s.storage.NewWriter(context.Background(), version.GetTargetPath(), &blob.WriterOptions{})
 	defer func() {
 		writeStream.Close()
@@ -17,11 +17,6 @@ func (s *Service) UploadFile(inputStream io.ReadCloser, version *UploadedVersion
 
 	if err != nil {
 		return 0, errors.New(fmt.Sprintf("cannot upload file, attempted to open a writable stream, error: %v", err))
-	}
-
-	middlewares := nestedStreamMiddlewares{
-		s.createNonEmptyMiddleware(),
-		s.createGPGStreamMiddleware(),
 	}
 
 	wroteLen, writeErr := s.CopyStream(inputStream, writeStream, 1024*1024, middlewares)
@@ -47,10 +42,10 @@ func (s *Service) UploadFile(inputStream io.ReadCloser, version *UploadedVersion
 }
 
 // CopyStream copies a readable stream to writable stream, while providing a possibility to use a validation callbacks on-the-fly
-func (s *Service) CopyStream(inputStream io.ReadCloser, writeStream io.WriteCloser, bufferLen int, middlewares nestedStreamMiddlewares) (int, error) {
+func (s *Service) CopyStream(inputStream io.ReadCloser, writeStream io.WriteCloser, bufferLen int, middlewares *NestedStreamMiddlewares) (int64, error) {
 	buff := make([]byte, bufferLen)
 	previousBuff := make([]byte, bufferLen)
-	totalLength := 0
+	var totalLength int64
 	chunkNum := 0
 
 	for {
@@ -59,7 +54,7 @@ func (s *Service) CopyStream(inputStream io.ReadCloser, writeStream io.WriteClos
 
 		if err != nil {
 			if err == io.EOF {
-				totalLength += len(buff[:n])
+				totalLength += int64(len(buff[:n]))
 
 				// validation callbacks
 				if err := middlewares.processChunk(buff[:n], totalLength, previousBuff, chunkNum); err != nil {
@@ -77,7 +72,7 @@ func (s *Service) CopyStream(inputStream io.ReadCloser, writeStream io.WriteClos
 			return totalLength, errors.New(fmt.Sprintf("cannot copy stream, error: %v", err))
 		}
 
-		totalLength += len(buff[:n])
+		totalLength += int64(len(buff[:n]))
 		previousBuff = buff[:n]
 
 		// validation callbacks
