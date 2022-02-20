@@ -175,7 +175,7 @@ Rotation Strategies gives control over backup versioning.
 
 First in first out. When adding a new version deletes oldest.
 
-```
+```yaml
 ---
 apiVersion: backups.riotkit.org/v1alpha1
 kind: BackupCollection
