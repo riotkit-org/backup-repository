@@ -118,3 +118,48 @@ func (c Collection) CanUploadToMe(user *users.User) bool {
 	return false
 }
 ```
+
+Quota
+-----
+
+System is fully multi-tenant. `System administrator` can create a collection with specified storage limits on single file, whole collection, select a rotation strategy.
+Concept is simple - there ca be stored X versions of Y size in given collection. Additionally, there is such thing as `extra space` which allows to upload a file that exceeds the limit to not break
+the backup pipeline. Such situation is immediately reported in a collection health check as a warning.
+
+```yaml
+---
+apiVersion: backups.riotkit.org/v1alpha1
+kind: BackupCollection
+# ...
+spec:
+# ...
+    maxBackupsCount: 5
+    maxOneVersionSize: 1M
+    maxCollectionSize: 5M
+```
+
+#### Extra space
+
+The following example allows uploading files of 1 MB size normally, but optionally allows uploading larger files that could in summary take additional 5MB.
+For example one of uploaded versions can be a 5MB file, or there could be two versions of 2,5MB file each - both exceeding the soft limit of `maxOneVersionSize`. The `maxCollectionSize` is a hard limit.
+
+```bash
+maxBackupsCount = 5
+maxOneVersionSize = 1MB
+maxCollectionSize = 10MB
+
+estimatedCollectionSize = maxBackupsCount * maxOneVersionSize = 5 * 1MB = 5MB
+extraSpace = maxCollectionSize - estimatedCollectionSize = 10MB - 5MB
+```
+
+```yaml
+---
+apiVersion: backups.riotkit.org/v1alpha1
+kind: BackupCollection
+# ...
+spec:
+# ...
+    maxBackupsCount: 5
+    maxOneVersionSize: 1M
+    maxCollectionSize: 10M
+```
