@@ -160,7 +160,7 @@ func (s *Service) CalculateAllocatedSpaceAboveSingleVersionLimit(collection *col
 	return allocatedSpaceAboveLimit, nil
 }
 
-func (s *Service) CreateStandardMiddleWares(versionsToDelete []UploadedVersion, collection *collections.Collection) (NestedStreamMiddlewares, error) {
+func (s *Service) CreateStandardMiddleWares(context context.Context, versionsToDelete []UploadedVersion, collection *collections.Collection) (NestedStreamMiddlewares, error) {
 	maxAllowedFilesize, err := s.CalculateMaximumAllowedUploadFilesize(collection, versionsToDelete)
 	logrus.Debugf("CalculateMaximumAllowedUploadFilesize(%v) = %v", collection.GetId(), maxAllowedFilesize)
 
@@ -169,6 +169,7 @@ func (s *Service) CreateStandardMiddleWares(versionsToDelete []UploadedVersion, 
 	}
 
 	return NestedStreamMiddlewares{
+		s.createRequestCancelledMiddleware(context),
 		s.createQuotaMaxFileSizeMiddleware(maxAllowedFilesize),
 		s.createNonEmptyMiddleware(),
 		s.createGPGStreamMiddleware(),

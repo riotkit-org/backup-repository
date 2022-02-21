@@ -2,8 +2,10 @@ package storage
 
 import (
 	"bytes"
+	"context"
 	"errors"
 	"fmt"
+	"github.com/sirupsen/logrus"
 )
 
 //
@@ -105,4 +107,20 @@ func (s *Service) createQuotaMaxFileSizeMiddleware(maxFileSize int64) streamMidd
 	return streamMiddleware{processor: validator, resultReporter: func() error {
 		return nil
 	}}
+}
+
+// createRequestCancelledMiddleware handles the request cancellation
+func (s *Service) createRequestCancelledMiddleware(context context.Context) streamMiddleware {
+	return streamMiddleware{
+		processor: func(i []byte, i2 int64, i3 []byte, i4 int) error {
+			if context.Err() != nil {
+				logrus.Warning(fmt.Sprintf("Upload was cancelled: %v", context.Err()))
+				return errors.New("upload was cancelled")
+			}
+			return nil
+		},
+		resultReporter: func() error {
+			return nil
+		},
+	}
 }
