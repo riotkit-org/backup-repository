@@ -1,9 +1,0 @@
-# Used by Docker container to write values and overwrite cache.yaml
-
-framework:
-    cache:
-        app: "{{ CACHE_ADAPTER_TYPE }}"
-
-        # providers
-        default_redis_provider: "{{ CACHE_REDIS_URL }}"
-        default_memcached_provider: "{{ CACHE_MEMCACHED_PROVIDER }}"

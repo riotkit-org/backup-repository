@@ -1,7 +1,0 @@
-App\Domain\Authentication\ValueObject\Permissions:
-    type: embeddable
-    fields:
-        value:
-            type: json_array
-            column: permissions
-            nullable: false

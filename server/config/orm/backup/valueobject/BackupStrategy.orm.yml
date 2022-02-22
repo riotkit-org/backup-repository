@@ -1,7 +1,0 @@
-App\Domain\Backup\ValueObject\BackupStrategy:
-    type: embeddable
-    fields:
-        value:
-            type: string
-            column: strategy
-            nullable: false

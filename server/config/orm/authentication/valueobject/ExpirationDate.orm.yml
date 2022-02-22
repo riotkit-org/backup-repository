@@ -1,7 +1,0 @@
-App\Domain\Authentication\ValueObject\ExpirationDate:
-    type: embeddable
-    fields:
-        value:
-            type: datetime_immutable
-            column: expiration_date
-            nullable: false

@@ -1,7 +1,0 @@
-App\Domain\Backup\ValueObject\Filename:
-    type: embeddable
-    fields:
-        value:
-            type: string
-            column: filename
-            nullable: false

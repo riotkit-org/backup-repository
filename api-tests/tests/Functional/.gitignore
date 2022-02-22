@@ -1,6 +1,0 @@
-./_output/*
-!/./_output/.gitkeep
-./_generated/*
-!./_generated/.gitignore
-./_data/*
-!./_data/.gitkeep

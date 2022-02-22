@@ -1,9 +1,0 @@
-# Used by Docker container to write values and overwrite cache.yaml
-
-framework:
-    cache:
-        app: "cache.adapter.filesystem"
-
-        # providers
-        default_redis_provider: "redis://localhost"
-        default_memcached_provider: "memcached://localhost"

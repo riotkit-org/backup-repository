@@ -1,5 +1,0 @@
-api_login_check:
-    #methods: ['POST', 'PUT', 'PATCH']
-    path: /api/stable/login_check
-
-# @todo: Redirect to "/" when a GET is issued

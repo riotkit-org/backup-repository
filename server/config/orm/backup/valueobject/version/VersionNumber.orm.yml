@@ -1,7 +1,0 @@
-App\Domain\Backup\ValueObject\Version\VersionNumber:
-    type: embeddable
-    fields:
-        value:
-            type: string
-            column: version
-            nullable: false

@@ -1,2 +1,0 @@
-sphinx-glpi-theme
-sphinx>=3

@@ -1,7 +1,0 @@
-App\Domain\Authentication\ValueObject\Organization:
-    type: embeddable
-    fields:
-        value:
-            type: string
-            column: organization
-            nullable: false

@@ -1,6 +1,0 @@
-.venv
-.rkd/logs
-*.pyc
-*.log
-*__pycache__*
-.rkd/docker/Dockerfile

@@ -1,9 +1,0 @@
-# version in semver format eg. 3.0.0-dev, 3.0.0-alpha, 3.0.0-RC1, 3.0.0
-version: 4.0.0-dev
-
-# release name
-# https://anfenglishmobile.com/culture/bozkurt-the-art-of-working-with-copper-46698
-name: Coppersmith
-
-# development, testing, stable
-status: development

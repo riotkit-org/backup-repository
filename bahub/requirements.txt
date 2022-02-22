@@ -1,8 +1,0 @@
-rkd>=2.3.5.dev19
-requests>=2.25
-pycurl>=7.43
-certifi>=2020.12.5
-PyYAML>=5.3.1
-jsonschema>=3.2.0
-python-gnupg>=0.4.6
-docker>=5.0.3

@@ -1,5 +1,0 @@
-
-errors:
-    path: /test/errors/500
-    controller: 'App\Controller\Technical\TestErrorController::serveInternalServerError'
-    methods: ['GET']

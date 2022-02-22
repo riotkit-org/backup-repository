@@ -1,7 +1,0 @@
-App\Domain\Backup\ValueObject\Collection\BackupSize:
-    type: embeddable
-    fields:
-        value:
-            type: integer
-            column: max_one_version_size
-            nullable: false
