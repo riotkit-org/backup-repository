@@ -144,6 +144,7 @@ func addDownloadRoute(r *gin.RouterGroup, ctx *core.ApplicationContainer, reques
 			// [SECURITY] Check permissions
 			if !collection.CanDownloadFromMe(ctxUser) {
 				UnauthorizedResponse(c, errors.New("not authorized to download versions from this collection"))
+				return
 			}
 
 			// Check version
