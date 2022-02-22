@@ -17,7 +17,6 @@ func addUploadRoute(r *gin.RouterGroup, ctx *core.ApplicationContainer, requestT
 		timeout.WithTimeout(requestTimeout),
 		timeout.WithHandler(func(c *gin.Context) {
 			// todo: deactivate token if temporary token is used
-			// todo: locking support! There should be no concurrent uploads to the same collection
 
 			ctxUser, _ := GetContextUser(ctx, c)
 
@@ -41,6 +40,14 @@ func addUploadRoute(r *gin.RouterGroup, ctx *core.ApplicationContainer, requestT
 					"You need a token from a user that has a special permission 'uploadsAnytime'"))
 				return
 			}
+
+			// [SECURITY] Do not allow parallel uploads to the same collection
+			lock, lockErr := ctx.Locks.Lock(collection.GetGlobalIdentifier(), requestTimeout)
+			if lockErr != nil {
+				ServerErrorResponse(c, errors.New("cannot upload to same collection in parallel"))
+				return
+			}
+			defer lock.Unlock()
 
 			// [ROTATION STRATEGY][VERSIONING] Increment a version, generate target file path name that will be used on storage
 			sessionId := GetCurrentSessionId(c)

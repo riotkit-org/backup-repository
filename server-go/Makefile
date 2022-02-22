@@ -33,13 +33,13 @@ test_upload_by_form_1mb:
 	@echo "-----BEGIN PGP MESSAGE-----" > /tmp/1mb.gpg
 	@openssl rand -base64 $$((735*1024*1)) >> /tmp/1mb.gpg
 	@echo "-----END PGP MESSAGE-----" >> /tmp/1mb.gpg
-	curl -s -X POST -H 'Authorization: Bearer ${TOKEN}' -F "file=@/tmp/1mb.gpg" 'http://localhost:8080/api/stable/repository/collection/iwa-ait/version'
+	curl -vvv -X POST -H 'Authorization: Bearer ${TOKEN}' -F "file=@/tmp/1mb.gpg" 'http://localhost:8080/api/stable/repository/collection/iwa-ait/version' --limit-rate 100K
 
 test_upload_by_form_5mb:
 	@echo "-----BEGIN PGP MESSAGE-----" > /tmp/5mb.gpg
 	@openssl rand -base64 $$((735*1024*5)) >> /tmp/5mb.gpg
 	@echo "-----END PGP MESSAGE-----" >> /tmp/5mb.gpg
-	curl -s -X POST -H 'Authorization: Bearer ${TOKEN}' -F "file=@/tmp/5mb.gpg" 'http://localhost:8080/api/stable/repository/collection/iwa-ait/version'
+	curl -vvv -X POST -H 'Authorization: Bearer ${TOKEN}' -F "file=@/tmp/5mb.gpg" 'http://localhost:8080/api/stable/repository/collection/iwa-ait/version' --limit-rate 1000K
 
 postgres:
 	docker run -d \
@@ -48,13 +48,13 @@ postgres:
         -e POSTGRES_USER=postgres \
         -e POSTGRES_DB=postgres \
         -e PGDATA=/var/lib/postgresql/data/pgdata \
-        -v /tmp/br_postgres:/var/lib/postgresql/data \
+        -v $$(pwd)/.build/postgres:/var/lib/postgresql \
         -p 5432:5432 \
         postgres:14.1-alpine
 
 postgres_refresh:
 	docker rm -f br_postgres || true
-	sudo rm -rf /tmp/br_postgres
+	sudo rm -rf $$(pwd)/.build/postgres
 	make postgres
 
 minio:
@@ -62,7 +62,7 @@ minio:
 		--name br_minio \
 		-p 9000:9000 \
 	    -p 9001:9001 \
-	    -v /tmp/br_minio:/data \
+	    -v $$(pwd)/.build/minio:/data \
 	    -e "MINIO_ROOT_USER=AKIAIOSFODNN7EXAMPLE" \
 	    -e "MINIO_ROOT_PASSWORD=wJaFuCKtnFEMI/CApItaliSM/bPxRfiCYEXAMPLEKEY" \
 		quay.io/minio/minio:RELEASE.2022-02-16T00-35-27Z server /data --console-address 0.0.0.0:9001

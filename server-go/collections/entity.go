@@ -146,3 +146,7 @@ func (c *Collection) getMaxCollectionSizeInBytes() (int64, error) {
 func (c *Collection) GetId() string {
 	return c.Metadata.Name
 }
+
+func (c Collection) GetGlobalIdentifier() string {
+	return "collection:" + c.GetId()
+}

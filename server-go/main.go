@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/jessevdk/go-flags"
 	"github.com/riotkit-org/backup-repository/collections"
+	"github.com/riotkit-org/backup-repository/concurrency"
 	"github.com/riotkit-org/backup-repository/config"
 	"github.com/riotkit-org/backup-repository/core"
 	"github.com/riotkit-org/backup-repository/db"
@@ -66,6 +67,7 @@ func main() {
 		log.Errorln("Cannot initialize database connection")
 		log.Fatal(err)
 	}
+	locksService := concurrency.NewService(dbDriver)
 	db.InitializeDatabase(dbDriver)
 
 	usersService := users.NewUsersService(configProvider)
@@ -84,6 +86,7 @@ func main() {
 		JwtSecretKey:    opts.JwtSecretKey,
 		Collections:     &collectionsService,
 		Storage:         &storageService,
+		Locks:           &locksService,
 	}
 
 	// todo: First thread - HTTP

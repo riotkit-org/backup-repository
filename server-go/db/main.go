@@ -2,6 +2,7 @@ package db
 
 import (
 	"fmt"
+	"github.com/riotkit-org/backup-repository/concurrency"
 	"github.com/riotkit-org/backup-repository/security"
 	"github.com/riotkit-org/backup-repository/storage"
 	"github.com/sirupsen/logrus"
@@ -23,6 +24,10 @@ func InitializeDatabase(db *gorm.DB) bool {
 	}
 	if err := storage.InitializeModel(db); err != nil {
 		logrus.Errorf("Cannot initialize UploadedVersion model: %v", err)
+		return false
+	}
+	if err := concurrency.InitializeModel(db); err != nil {
+		logrus.Errorf("Cannot initialize Locks model: %v", err)
 		return false
 	}
 

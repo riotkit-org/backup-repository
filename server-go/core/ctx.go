@@ -2,6 +2,7 @@ package core
 
 import (
 	"github.com/riotkit-org/backup-repository/collections"
+	"github.com/riotkit-org/backup-repository/concurrency"
 	"github.com/riotkit-org/backup-repository/config"
 	"github.com/riotkit-org/backup-repository/security"
 	"github.com/riotkit-org/backup-repository/storage"
@@ -15,4 +16,5 @@ type ApplicationContainer struct {
 	Collections     *collections.Service
 	Storage         *storage.Service
 	JwtSecretKey    string
+	Locks           *concurrency.LocksService
 }
