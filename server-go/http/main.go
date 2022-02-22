@@ -16,20 +16,26 @@ func SpawnHttpApplication(ctx *core.ApplicationContainer) {
 	// for two reasons:
 	//     1) to protect against brute force
 	//     2) to protect against memory overflow attacks (argon2di uses a lot of memory to calculate hash during login. But that's intended - the password is a lot more difficult to crack in case, when hash would leak)
-	rateLimitMiddleware := limiter.NewRateLimiter(time.Minute, 10, func(ctx *gin.Context) (string, error) {
-		return ctx.ClientIP(), nil
+	authRateLimitMiddleware := limiter.NewRateLimiter(time.Minute, 10, func(ctx *gin.Context) (string, error) {
+		return "auth:" + ctx.ClientIP(), nil
 	})
 
+	// default rate limiter
+	defaultRateLimitMiddleware := limiter.NewRateLimiter(time.Second, 5, func(ctx *gin.Context) (string, error) {
+		return "default:" + ctx.ClientIP(), nil
+	}).Middleware()
+
 	router := r.Group("/api/stable")
-	router.POST("/auth/login", rateLimitMiddleware.Middleware(), authMiddleware.LoginHandler)
-	router.GET("/auth/refresh_token", rateLimitMiddleware.Middleware(), authMiddleware.RefreshHandler)
+	router.POST("/auth/login", authRateLimitMiddleware.Middleware(), authMiddleware.LoginHandler)
+	router.GET("/auth/refresh_token", authRateLimitMiddleware.Middleware(), authMiddleware.RefreshHandler)
 	router.Use(authMiddleware.MiddlewareFunc())
 	{
-		addLookupUserRoute(router, ctx)
-		addWhoamiRoute(router, ctx)
-		addLogoutRoute(router, ctx)
-		addGrantedAccessSearchRoute(router, ctx)
+		addLookupUserRoute(router, ctx, defaultRateLimitMiddleware)
+		addWhoamiRoute(router, ctx, defaultRateLimitMiddleware)
+		addLogoutRoute(router, ctx, defaultRateLimitMiddleware)
+		addGrantedAccessSearchRoute(router, ctx, defaultRateLimitMiddleware)
 		addUploadRoute(router, ctx, 180*time.Minute)
+		addDownloadRoute(router, ctx, 180*time.Minute, defaultRateLimitMiddleware)
 	}
 
 	_ = r.Run()

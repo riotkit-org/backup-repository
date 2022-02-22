@@ -33,7 +33,7 @@ func (s *Service) UploadFile(inputStream io.ReadCloser, version *UploadedVersion
 
 	// Check if filesize matches buffered stream size
 	attributes, err := s.storage.Attributes(context.TODO(), version.GetTargetPath())
-	if attributes.Size != int64(wroteLen) {
+	if attributes.Size != wroteLen {
 		logrus.Errorln(fmt.Sprintf("file written to the storage does not match uploaded file, the filesize is not matching %v != %v for file '%v'", wroteLen, attributes.Size, version.GetTargetPath()))
 		return wroteLen, errors.New("storage error")
 	}
@@ -42,7 +42,7 @@ func (s *Service) UploadFile(inputStream io.ReadCloser, version *UploadedVersion
 }
 
 // CopyStream copies a readable stream to writable stream, while providing a possibility to use a validation callbacks on-the-fly
-func (s *Service) CopyStream(inputStream io.ReadCloser, writeStream io.WriteCloser, bufferLen int, middlewares *NestedStreamMiddlewares) (int64, error) {
+func (s *Service) CopyStream(inputStream io.ReadCloser, writeStream io.Writer, bufferLen int, middlewares *NestedStreamMiddlewares) (int64, error) {
 	buff := make([]byte, bufferLen)
 	previousBuff := make([]byte, bufferLen)
 	var totalLength int64

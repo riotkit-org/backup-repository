@@ -41,6 +41,9 @@ test_upload_by_form_5mb:
 	@echo "-----END PGP MESSAGE-----" >> /tmp/5mb.gpg
 	curl -vvv -X POST -H 'Authorization: Bearer ${TOKEN}' -F "file=@/tmp/5mb.gpg" 'http://localhost:8080/api/stable/repository/collection/iwa-ait/version' --limit-rate 1000K
 
+test_download:
+	curl -vvv -X GET -H 'Authorization: Bearer ${TOKEN}' 'http://localhost:8080/api/stable/repository/collection/iwa-ait/version/latest' > /tmp/downloaded --limit-rate 100K
+
 postgres:
 	docker run -d \
         --name br_postgres \

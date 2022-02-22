@@ -7,6 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/riotkit-org/backup-repository/core"
 	"github.com/riotkit-org/backup-repository/security"
+	"github.com/riotkit-org/backup-repository/storage"
 	"github.com/sirupsen/logrus"
 	"io"
 	"time"
@@ -123,8 +124,57 @@ func addUploadRoute(r *gin.RouterGroup, ctx *core.ApplicationContainer, requestT
 		}),
 		timeout.WithResponse(RequestTimeoutResponse),
 	)
-
 	r.POST("/repository/collection/:collectionId/version", timeoutMiddleware)
+}
+
+// addDownloadRoute adds a collection version download endpoint
+func addDownloadRoute(r *gin.RouterGroup, ctx *core.ApplicationContainer, requestTimeout time.Duration, rateLimiter gin.HandlerFunc) {
+	timeoutMiddleware := timeout.New(
+		timeout.WithTimeout(requestTimeout),
+		timeout.WithHandler(func(c *gin.Context) {
+			ctxUser, _ := GetContextUser(ctx, c)
+
+			// Check if Collection exists
+			collection, findError := ctx.Collections.GetCollectionById(c.Param("collectionId"))
+			if findError != nil {
+				NotFoundResponse(c, errors.New("cannot find specified collection"))
+				return
+			}
+
+			// [SECURITY] Check permissions
+			if !collection.CanDownloadFromMe(ctxUser) {
+				UnauthorizedResponse(c, errors.New("not authorized to download versions from this collection"))
+			}
+
+			// Check version
+			version, err := ctx.Storage.GetVersionByNum(collection.GetId(), c.Param("versionNum"))
+			if err != nil {
+				NotFoundResponse(c, errors.New("cannot find specified version"))
+				return
+			}
+
+			// Read from storage
+			middlewares := storage.NestedStreamMiddlewares{}
+			stream, err := ctx.Storage.ReadFile(c.Request.Context(), version.GetTargetPath())
+			if err != nil {
+				ServerErrorResponse(c, errors.New(fmt.Sprintf("cannot read from storage: %v", err)))
+				return
+			}
+
+			// Inform the browser about content type
+			c.Header("Content-Type", "application/octet-stream")
+			c.Header("Content-Disposition", fmt.Sprintf("attachment; filename=\"%v\"", version.Filename))
+			c.Header("Content-Length", fmt.Sprintf("%v", version.Filesize))
+
+			// Write output directly to the HTTP response writer
+			if _, err := ctx.Storage.CopyStream(stream, c.Writer, 1024*1024, &middlewares); err != nil {
+				ServerErrorResponse(c, errors.New(fmt.Sprintf("cannot copy stream to download a version: %v", err)))
+				return
+			}
+		}),
+		timeout.WithResponse(RequestTimeoutResponse),
+	)
+	r.GET("/repository/collection/:collectionId/version/:versionNum", rateLimiter, timeoutMiddleware)
 }
 
 // todo: healthcheck route

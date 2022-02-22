@@ -37,6 +37,16 @@ type AccessControlObject struct {
 
 type AccessControlList []AccessControlObject
 
+// IsPermitted checks if given user is granted a role in this list
+func (acl AccessControlList) IsPermitted(username string, role string) bool {
+	for _, permitted := range acl {
+		if permitted.UserName == username && permitted.Roles.HasRole(role) {
+			return true
+		}
+	}
+	return false
+}
+
 //
 // GrantedAccess stores information about generated JWT tokens (successful logins to the system)
 //

@@ -41,6 +41,12 @@ func (vr VersionsRepository) create(version *UploadedVersion) error {
 	return vr.db.Create(version).Error
 }
 
+func (vr VersionsRepository) getByVersionNum(id string, versionNum string) (UploadedVersion, error) {
+	var version UploadedVersion
+	err := vr.db.Model(&UploadedVersion{}).Where("uploaded_versions.collection_id = ? AND uploaded_versions.version_number = ?", id, versionNum).Limit(1).Find(&version).Error
+	return version, err
+}
+
 // InitializeModel connects model to migrations
 func InitializeModel(db *gorm.DB) error {
 	return db.AutoMigrate(&UploadedVersion{})

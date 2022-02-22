@@ -13,6 +13,8 @@ import (
 	_ "gocloud.dev/blob/s3blob"
 	"gocloud.dev/gcp"
 	"gorm.io/gorm"
+	"io"
+	"strings"
 	"time"
 )
 
@@ -174,6 +176,22 @@ func (s *Service) CreateStandardMiddleWares(context context.Context, versionsToD
 		s.createNonEmptyMiddleware(),
 		s.createGPGStreamMiddleware(),
 	}, nil
+}
+
+func (s *Service) GetVersionByNum(collectionId string, version string) (UploadedVersion, error) {
+	if version == "latest" {
+		v, err := s.repository.findLastHighestVersionNumber(collectionId)
+		if err != nil {
+			return UploadedVersion{}, errors.New("cannot find version. probably the collection is empty")
+		}
+		version = fmt.Sprintf("%v", v)
+	}
+
+	return s.repository.getByVersionNum(collectionId, strings.TrimPrefix(version, "v"))
+}
+
+func (s *Service) ReadFile(ctx context.Context, path string) (io.ReadCloser, error) {
+	return s.storage.NewReader(ctx, path, &blob.ReaderOptions{})
 }
 
 // NewService is a factory method that knows how to construct a Storage provider, distincting multiple types of providers

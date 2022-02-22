@@ -94,18 +94,14 @@ type Collection struct {
 	Spec     Spec                  `json:"spec"`
 }
 
+// CanUploadToMe answers if user can add new versions to the collection
 func (c Collection) CanUploadToMe(user *users.User) bool {
-	if user.Spec.Roles.HasRole(security.RoleBackupUploader) {
-		return true
-	}
+	return user.Spec.Roles.HasRole(security.RoleBackupUploader) || c.Spec.AccessControl.IsPermitted(user.Metadata.Name, security.RoleBackupUploader)
+}
 
-	for _, permitted := range c.Spec.AccessControl {
-		if permitted.UserName == user.Metadata.Name && permitted.Roles.HasRole(security.RoleBackupUploader) {
-			return true
-		}
-	}
-
-	return false
+// CanDownloadFromMe answers if user can download versions to this collection
+func (c Collection) CanDownloadFromMe(user *users.User) bool {
+	return user.Spec.Roles.HasRole(security.RoleBackupDownloader) || c.Spec.AccessControl.IsPermitted(user.Metadata.Name, security.RoleBackupDownloader)
 }
 
 func (c *Collection) GenerateNextVersionFilename(version int) string {
