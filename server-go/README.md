@@ -48,6 +48,11 @@ backup-repository \
     --storage-url="s3://mybucket?endpoint=localhost:9000&disableSSL=true&s3ForcePathStyle=true&region=eu-central-1"
 ```
 
+Documentation
+-------------
+
+### [For documentation please look into `./docs` directory](./docs/README.md)
+
 Security
 --------
 
