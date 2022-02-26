@@ -25,9 +25,7 @@ kind: BackupUser
 - [`kind: BackupCollection`](examples/collection.yaml)
 - [`kind: Secret` (secrets referenced in above examples for `kind: BackupUser` and `kind: BackupCollection`)](examples/secret.yaml)
 
-**Your server instance can be configured using those YAML's basically, the rest are highly dynamic changing data that is configured via API, it includes the following:**
-- Authentication keys
-- Uploaded backup versions that are rotating
+**Your server instance can be configured using those YAML's basically, the rest are highly dynamic changing data that is configured via API, it includes `Authentication keys` and `Uploaded backup versions that are rotating`**
 
 API
 ---
