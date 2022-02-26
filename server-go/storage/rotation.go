@@ -41,8 +41,11 @@ func (frs *FifoRotationStrategy) GetVersionsThatShouldBeDeletedIfThisVersionUplo
 		return existingVersions[i].VersionNumber < existingVersions[j].VersionNumber
 	})
 
+	toDelete := len(existingVersions) - frs.collection.Spec.MaxBackupsCount
+	toDelete = toDelete + 1 // consider tha we are going to upload new version now
+
 	// oldest element
-	return existingVersions[0:1]
+	return existingVersions[0:toDelete]
 }
 
 // NewFifoRotationStrategy is a factorial method

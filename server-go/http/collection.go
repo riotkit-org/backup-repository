@@ -219,3 +219,34 @@ func addCollectionHealthRoute(r *gin.Engine, ctx *core.ApplicationContainer, rat
 		})
 	})
 }
+
+func addCollectionListingRoute(r *gin.RouterGroup, ctx *core.ApplicationContainer, requestTimeout time.Duration, rateLimiter gin.HandlerFunc) {
+	r.GET("/repository/collection/:collectionId/version", rateLimiter, func(c *gin.Context) {
+		ctxUser, _ := GetContextUser(ctx, c)
+
+		// Check if Collection exists
+		collection, findError := ctx.Collections.GetCollectionById(c.Param("collectionId"))
+		if findError != nil {
+			logrus.Errorln(findError)
+			NotFoundResponse(c, errors.New("cannot find specified collection"))
+			return
+		}
+
+		// [SECURITY] Check permissions
+		if !collection.CanListMyVersions(ctxUser) {
+			UnauthorizedResponse(c, errors.New("not authorized to list versions"))
+			return
+		}
+
+		versions, err := ctx.Storage.FindAllActiveVersionsFor(collection.GetId())
+		if err != nil {
+			logrus.Errorf("Error while trying to list versions for collection id=%v, err: %v", collection.GetId(), err)
+			ServerErrorResponse(c, errors.New("cannot list versions, listing error. Check server logs"))
+			return
+		}
+
+		OKResponse(c, gin.H{
+			"versions": versions,
+		})
+	})
+}

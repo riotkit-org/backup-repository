@@ -46,6 +46,9 @@ test_download:
 test_collection_health:
 	curl -s -X GET -H 'Authorization: admin' 'http://localhost:8080/api/stable/repository/collection/iwa-ait/health'
 
+test_list_versions:
+	curl -s -X GET -H 'Authorization: Bearer ${TOKEN}' 'http://localhost:8080/api/stable/repository/collection/iwa-ait/version'
+
 postgres:
 	docker run -d \
         --name br_postgres \

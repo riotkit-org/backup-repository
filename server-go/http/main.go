@@ -36,6 +36,7 @@ func SpawnHttpApplication(ctx *core.ApplicationContainer) {
 		addGrantedAccessSearchRoute(router, ctx, defaultRateLimitMiddleware)
 		addUploadRoute(router, ctx, 180*time.Minute)
 		addDownloadRoute(router, ctx, 180*time.Minute, defaultRateLimitMiddleware)
+		addCollectionListingRoute(router, ctx, 30*time.Second, defaultRateLimitMiddleware)
 	}
 
 	// collection health

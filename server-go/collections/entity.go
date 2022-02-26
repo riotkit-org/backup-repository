@@ -151,6 +151,11 @@ func (c Collection) CanDownloadFromMe(user *users.User) bool {
 	return user.Spec.Roles.HasRole(security.RoleBackupDownloader) || c.Spec.AccessControl.IsPermitted(user.Metadata.Name, security.RoleBackupDownloader)
 }
 
+// CanListMyVersions answers if user can list versions
+func (c Collection) CanListMyVersions(user *users.User) bool {
+	return c.CanUploadToMe(user) || c.CanDownloadFromMe(user)
+}
+
 func (c *Collection) GenerateNextVersionFilename(version int) string {
 	return strings.Replace(c.Spec.FilenameTemplate, "${version}", fmt.Sprintf("%v", version), 1)
 }

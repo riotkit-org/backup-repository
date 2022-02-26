@@ -69,7 +69,7 @@ func (s *Service) CleanUpOlderVersions(versions []UploadedVersion) bool {
 	isError := false
 
 	for _, version := range versions {
-		if err := s.Delete(&version); err != nil {
+		if err := s.Delete(&version); len(err) > 0 {
 			logrus.Errorf("Consistency error! Cannot delete version id=%v, of collectionId=%v, error: %v", version.Id, version.CollectionId, err)
 			isError = true
 		} else {
@@ -80,18 +80,20 @@ func (s *Service) CleanUpOlderVersions(versions []UploadedVersion) bool {
 	return isError
 }
 
-func (s *Service) Delete(version *UploadedVersion) error {
+func (s *Service) Delete(version *UploadedVersion) []error {
+	var collectedErrors []error
+
 	if err, _ := s.repository.delete(version); err != nil {
 		if !strings.Contains(err.Error(), "code=NotFound") {
-			return errors.New(fmt.Sprintf("cannot delete version from database - id=%v, version=%v, error=%v", version.Id, version.VersionNumber, err))
+			collectedErrors = append(collectedErrors, errors.New(fmt.Sprintf("cannot delete version from database - id=%v, version=%v, error=%v", version.Id, version.VersionNumber, err)))
 		}
 	}
 
 	if err := s.storage.Delete(context.TODO(), version.GetTargetPath()); err != nil {
-		return errors.New(fmt.Sprintf("cannot delete from storage at path '%v', error: %v", version.GetTargetPath(), err))
+		collectedErrors = append(collectedErrors, errors.New(fmt.Sprintf("cannot delete from storage at path '%v', error: %v", version.GetTargetPath(), err)))
 	}
 
-	return nil
+	return collectedErrors
 }
 
 func (s *Service) RegisterVersion(version *UploadedVersion) error {
