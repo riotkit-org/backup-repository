@@ -169,6 +169,10 @@ func (c *Collection) GetMaxOneVersionSizeInBytes() (int64, error) {
 	return bytes.Parse(c.Spec.MaxOneVersionSize)
 }
 
+func (c *Collection) GetCollectionMaxSize() (int64, error) {
+	return bytes.Parse(c.Spec.MaxCollectionSize)
+}
+
 // GetEstimatedCollectionExtraSpace returns total space that can be extra allocated in case, when a single version exceeds its limit. Returned value is estimated, does not include real state.
 func (c *Collection) GetEstimatedCollectionExtraSpace() (int64, error) {
 	estimatedStandardCollectionSize, err := c.getEstimatedDiskSpaceForFullCollectionInBytes()

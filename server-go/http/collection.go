@@ -204,6 +204,7 @@ func addCollectionHealthRoute(r *gin.Engine, ctx *core.ApplicationContainer, rat
 		healthStatuses := health.Validators{
 			health.NewBackupWindowValidator(ctx.Storage),
 			health.NewVersionsSizeValidator(ctx.Storage),
+			health.NewSumOfVersionsValidator(ctx.Storage),
 		}.Validate(collection)
 
 		if !healthStatuses.GetOverallStatus() {
