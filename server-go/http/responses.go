@@ -36,6 +36,14 @@ func ServerErrorResponse(c *gin.Context, err error) {
 	})
 }
 
+func ServerErrorResponseWithData(c *gin.Context, err error, data gin.H) {
+	c.IndentedJSON(500, gin.H{
+		"status": false,
+		"error":  err.Error(),
+		"data":   data,
+	})
+}
+
 func RequestTimeoutResponse(c *gin.Context) {
 	c.IndentedJSON(http.StatusRequestTimeout, gin.H{
 		"status": false,

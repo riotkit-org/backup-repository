@@ -48,6 +48,16 @@ func (acl AccessControlList) IsPermitted(username string, role string) bool {
 }
 
 //
+// PasswordFromSecretRef references passwords stored in ConfigMaps
+//    Name is the ConfigMap name
+//    Entry is the key name in .data
+//
+type PasswordFromSecretRef struct {
+	Name  string `json:"name"`
+	Entry string `json:"entry"`
+}
+
+//
 // GrantedAccess stores information about generated JWT tokens (successful logins to the system)
 //
 type GrantedAccess struct {

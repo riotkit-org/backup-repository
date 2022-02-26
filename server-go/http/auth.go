@@ -117,7 +117,7 @@ func createAuthenticationMiddleware(r *gin.Engine, di *core.ApplicationContainer
 	})
 
 	if err != nil {
-		logrus.Error("Error while setting up authentication middleware")
+		logrus.Error("IsError while setting up authentication middleware")
 		logrus.Fatal(err)
 	}
 

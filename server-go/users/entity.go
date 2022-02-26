@@ -6,17 +6,12 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-type PasswordFromSecretRef struct {
-	Name  string `json:"name"`
-	Entry string `json:"entry"`
-}
-
 type Spec struct {
-	Id              string                `json:"id"`
-	Email           string                `json:"email"`
-	Roles           security.Permissions  `json:"roles"`
-	Password        string                `json:"password"`
-	PasswordFromRef PasswordFromSecretRef `json:"passwordFromRef"`
+	Id              string                         `json:"id"`
+	Email           string                         `json:"email"`
+	Roles           security.Permissions           `json:"roles"`
+	Password        string                         `json:"password"`
+	PasswordFromRef security.PasswordFromSecretRef `json:"passwordFromRef"`
 }
 
 type User struct {

@@ -43,14 +43,13 @@ func (b *BackupWindow) UnmarshalJSON(in []byte) error {
 	parser := cron.NewParser(cron.Minute | cron.Hour | cron.Dom | cron.Month | cron.DowOptional)
 	err := errors.New("")
 	b.parsed, err = parser.Parse(b.From)
-
 	if err != nil {
-		return errors.New(fmt.Sprintf("cannot parse Backup Window: %v. Error: %v", b.From, err))
+		return errors.New(fmt.Sprintf("cannot parse Backup Window: %v. IsError: %v", b.From, err))
 	}
 
 	b.parsedDuration, err = time.ParseDuration(b.Duration)
 	if err != nil {
-		return errors.New(fmt.Sprintf("cannot parse Backup Window - duation parsing, Error: %v", err))
+		return errors.New(fmt.Sprintf("cannot parse Backup Window - duation parsing, IsError: %v", err))
 	}
 
 	return nil
@@ -101,23 +100,45 @@ func (b *BackupWindow) GetStartingDateOfPreviousScheduledRun(current time.Time) 
 	return time.Time{}, errors.New("unknown error while attempting to find start date for backup window")
 }
 
+func (b *BackupWindow) IsInPreviousWindowTimeSlot(now time.Time, latestVersionCreation time.Time) (bool, error) {
+	previousRun, err := b.GetStartingDateOfPreviousScheduledRun(now)
+	if err != nil {
+		return false, err
+	}
+
+	endDate := previousRun.Add(b.parsedDuration)
+
+	return latestVersionCreation.After(previousRun) && latestVersionCreation.Before(endDate), nil
+}
+
 type BackupWindows []BackupWindow
 
 type Spec struct {
-	Description       string                     `json:"description"`
-	FilenameTemplate  string                     `json:"filenameTemplate"`
-	MaxBackupsCount   int                        `json:"maxBackupsCount"`
-	MaxOneVersionSize string                     `json:"maxOneVersionSize"`
-	MaxCollectionSize string                     `json:"maxCollectionSize"`
-	Windows           BackupWindows              `json:"windows"`
-	StrategyName      string                     `json:"strategyName"`
-	StrategySpec      StrategySpec               `json:"strategySpec"`
-	AccessControl     security.AccessControlList `json:"accessControl"`
+	Description       string                         `json:"description"`
+	FilenameTemplate  string                         `json:"filenameTemplate"`
+	MaxBackupsCount   int                            `json:"maxBackupsCount"`
+	MaxOneVersionSize string                         `json:"maxOneVersionSize"`
+	MaxCollectionSize string                         `json:"maxCollectionSize"`
+	Windows           BackupWindows                  `json:"windows"`
+	StrategyName      string                         `json:"strategyName"`
+	StrategySpec      StrategySpec                   `json:"strategySpec"`
+	AccessControl     security.AccessControlList     `json:"accessControl"`
+	HealthSecretRef   security.PasswordFromSecretRef `json:"healthSecretRef"`
 }
 
 type Collection struct {
-	Metadata config.ObjectMetadata `json:"metadata"`
-	Spec     Spec                  `json:"spec"`
+	Metadata         config.ObjectMetadata `json:"metadata"`
+	Spec             Spec                  `json:"spec"`
+	SecretFromSecret string
+}
+
+func (c Collection) IsHealthCheckSecretValid(secret string) bool {
+	// secret is optional
+	if c.SecretFromSecret == "" {
+		return true
+	}
+
+	return security.CompareFastCryptoHash(secret, c.SecretFromSecret)
 }
 
 // CanUploadToMe answers if user can add new versions to the collection

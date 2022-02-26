@@ -3,6 +3,8 @@ package security
 import (
 	"encoding/base64"
 	"errors"
+	"fmt"
+	"github.com/riotkit-org/backup-repository/config"
 	"github.com/sirupsen/logrus"
 	"github.com/tidwall/gjson"
 	"gorm.io/gorm"
@@ -18,7 +20,7 @@ func (s Service) StoreJWTAsGrantedAccess(token string, expire time.Time, ip stri
 	ga := NewGrantedAccess(token, expire, false, description, ip, username)
 
 	if err := s.repository.create(&ga); err != nil {
-		logrus.Errorf("Cannot store GrantedAccess. Possibly tried to store same JWT twice. Error: %v", err)
+		logrus.Errorf("Cannot store GrantedAccess. Possibly tried to store same JWT twice. IsError: %v", err)
 		return ""
 	}
 
@@ -85,4 +87,34 @@ func ExtractLoginFromJWT(jwt string) string {
 
 	username := gjson.Get(string(json), "login")
 	return username.String()
+}
+
+// FillPasswordFromKindSecret is able to fill up object from a data retrieved from `kind: Secret` in Kubernetes
+func FillPasswordFromKindSecret(r config.ConfigurationProvider, ref *PasswordFromSecretRef, setterCallback func(secret string)) error {
+	if ref.Name != "" {
+		secretDoc, secretErr := r.GetSingleDocumentAnyType("secrets", ref.Name, "", "v1")
+
+		if secretErr != nil {
+			logrus.Errorf("Cannot fetch user hashed password from `kind: Secret`. Maybe it does not exist? %v", secretErr)
+			return secretErr
+		}
+
+		secret := gjson.Get(secretDoc, fmt.Sprintf("data.%v", ref.Entry))
+
+		if secret.String() == "" {
+			logrus.Errorf(
+				"Cannot retrieve password from `kind: Secret` of name '%v', field '%v'",
+				ref.Name,
+				ref.Entry,
+			)
+
+			return errors.New("invalid field name in `kind: Secret`")
+		}
+
+		setterCallback(secret.String())
+		return nil
+	}
+
+	logrus.Warn("`kind: Secret` not used for entity")
+	return nil
 }

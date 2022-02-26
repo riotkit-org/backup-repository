@@ -81,12 +81,16 @@ func (s *Service) CleanUpOlderVersions(versions []UploadedVersion) bool {
 }
 
 func (s *Service) Delete(version *UploadedVersion) error {
+	if err, _ := s.repository.delete(version); err != nil {
+		if !strings.Contains(err.Error(), "code=NotFound") {
+			return errors.New(fmt.Sprintf("cannot delete version from database - id=%v, version=%v, error=%v", version.Id, version.VersionNumber, err))
+		}
+	}
+
 	if err := s.storage.Delete(context.TODO(), version.GetTargetPath()); err != nil {
 		return errors.New(fmt.Sprintf("cannot delete from storage at path '%v', error: %v", version.GetTargetPath(), err))
 	}
-	if err, _ := s.repository.delete(version); err != nil {
-		return errors.New(fmt.Sprintf("cannot delete version from database - id=%v, version=%v, error=%v", version.Id, version.VersionNumber, err))
-	}
+
 	return nil
 }
 
@@ -190,8 +194,20 @@ func (s *Service) GetVersionByNum(collectionId string, version string) (Uploaded
 	return s.repository.getByVersionNum(collectionId, strings.TrimPrefix(version, "v"))
 }
 
+func (s *Service) FindLatestVersion(collectionId string) (UploadedVersion, error) {
+	latestVersion, err := s.repository.findLastHighestVersionNumber(collectionId)
+	if err != nil {
+		return UploadedVersion{}, err
+	}
+	return s.repository.getByVersionNum(collectionId, fmt.Sprintf("%v", latestVersion))
+}
+
 func (s *Service) ReadFile(ctx context.Context, path string) (io.ReadCloser, error) {
 	return s.storage.NewReader(ctx, path, &blob.ReaderOptions{})
+}
+
+func (s *Service) FindAllActiveVersionsFor(id string) ([]UploadedVersion, error) {
+	return s.repository.findAllActiveVersions(id)
 }
 
 // NewService is a factory method that knows how to construct a Storage provider, distincting multiple types of providers

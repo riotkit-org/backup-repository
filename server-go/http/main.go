@@ -38,5 +38,10 @@ func SpawnHttpApplication(ctx *core.ApplicationContainer) {
 		addDownloadRoute(router, ctx, 180*time.Minute, defaultRateLimitMiddleware)
 	}
 
+	// collection health
+	addCollectionHealthRoute(r, ctx, limiter.NewRateLimiter(time.Minute, 10, func(ctx *gin.Context) (string, error) {
+		return "collectionHealth:" + ctx.ClientIP(), nil
+	}).Middleware())
+
 	_ = r.Run()
 }

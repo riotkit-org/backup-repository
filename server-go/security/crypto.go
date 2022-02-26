@@ -103,7 +103,15 @@ func ComparePassword(password string, hash string) (bool, error) {
 }
 
 func HashJWT(jwt string) string {
-	asByte := sha256.Sum256([]byte(jwt))
+	return HashSha256(jwt)
+}
+
+func CompareFastCryptoHash(plain string, hash string) bool {
+	return HashSha256(plain) == hash
+}
+
+func HashSha256(input string) string {
+	asByte := sha256.Sum256([]byte(input))
 
 	return hex.EncodeToString(asByte[:])
 }

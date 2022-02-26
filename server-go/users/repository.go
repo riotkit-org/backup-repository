@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/riotkit-org/backup-repository/config"
+	"github.com/riotkit-org/backup-repository/security"
 	"github.com/sirupsen/logrus"
 	"github.com/tidwall/gjson"
 )
@@ -15,6 +16,7 @@ type userRepository struct {
 	config.ConfigurationProvider
 }
 
+// todo: Extract this method to `security` module and re-use across components
 func (r userRepository) fillPasswordFromKindSecret(user *User) error {
 	if user.Spec.PasswordFromRef.Name != "" {
 		secretDoc, secretErr := r.GetSingleDocumentAnyType("secrets", user.Spec.PasswordFromRef.Name, "", "v1")
@@ -49,13 +51,19 @@ func (r userRepository) findUserByLogin(login string) (*User, error) {
 	user := User{}
 
 	if retrieveErr != nil {
-		return &user, errors.New(fmt.Sprintf("Error retrieving user: %v", retrieveErr))
+		return &user, errors.New(fmt.Sprintf("IsError retrieving user: %v", retrieveErr))
 	}
 
 	err := json.Unmarshal([]byte(doc), &user)
+	if err != nil {
+		return &User{}, err
+	}
 
-	if fillErr := r.fillPasswordFromKindSecret(&user); fillErr != nil {
-		return &user, fillErr
+	passwordSetter := func(password string) {
+		user.PasswordFromSecret = password
+	}
+	if fillErr := security.FillPasswordFromKindSecret(r, &user.Spec.PasswordFromRef, passwordSetter); fillErr != nil {
+		return &User{}, fillErr
 	}
 
 	return &user, err

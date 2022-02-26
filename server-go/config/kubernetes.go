@@ -54,7 +54,7 @@ func (o *ConfigurationInKubernetes) StoreDocument(kind string, document interfac
 	// todo: if update fails specifically, then attempt to create object
 
 	if err != nil {
-		logrus.Errorf("Cannot stored document of `kind: %v`. Error: %v", kind, err)
+		logrus.Errorf("Cannot stored document of `kind: %v`. error: %v", kind, err)
 		return err
 	}
 
@@ -63,7 +63,7 @@ func (o *ConfigurationInKubernetes) StoreDocument(kind string, document interfac
 
 func CreateKubernetesConfigurationProvider(namespace string) *ConfigurationInKubernetes {
 	api, _ := dynamic.NewForConfig(config.GetConfigOrDie())
-	// todo: Error handling
+	// todo: IsError handling
 
 	// todo: Implement caching by composition
 	return &ConfigurationInKubernetes{

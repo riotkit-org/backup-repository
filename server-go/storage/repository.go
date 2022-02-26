@@ -47,6 +47,12 @@ func (vr VersionsRepository) getByVersionNum(id string, versionNum string) (Uplo
 	return version, err
 }
 
+func (vr VersionsRepository) findAllActiveVersions(id string) ([]UploadedVersion, error) {
+	var results []UploadedVersion
+	err := vr.db.Model(&UploadedVersion{}).Where("uploaded_versions.collection_id = ?", id).Find(&results).Error
+	return results, err
+}
+
 // InitializeModel connects model to migrations
 func InitializeModel(db *gorm.DB) error {
 	return db.AutoMigrate(&UploadedVersion{})

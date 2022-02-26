@@ -36,7 +36,7 @@ spec:
                                   type: string
                               about:
                                   type: string
-                              password:
+                              password:  # todo: remove
                                   type: string
                               passwordFromRef:
                                   type: object

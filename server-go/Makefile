@@ -1,5 +1,4 @@
-build:
-	go build -tags=nomsgpack .
+all: build run
 
 test_login:
 	curl -s -X POST -d '{"username":"admin","password":"admin"}' -H 'Content-Type: application/json' 'http://localhost:8080/api/stable/auth/login'
@@ -44,6 +43,9 @@ test_upload_by_form_5mb:
 test_download:
 	curl -vvv -X GET -H 'Authorization: Bearer ${TOKEN}' 'http://localhost:8080/api/stable/repository/collection/iwa-ait/version/latest' > /tmp/downloaded --limit-rate 100K
 
+test_collection_health:
+	curl -s -X GET -H 'Authorization: admin' 'http://localhost:8080/api/stable/repository/collection/iwa-ait/health'
+
 postgres:
 	docker run -d \
         --name br_postgres \
@@ -69,3 +71,19 @@ minio:
 	    -e "MINIO_ROOT_USER=AKIAIOSFODNN7EXAMPLE" \
 	    -e "MINIO_ROOT_PASSWORD=wJaFuCKtnFEMI/CApItaliSM/bPxRfiCYEXAMPLEKEY" \
 		quay.io/minio/minio:RELEASE.2022-02-16T00-35-27Z server /data --console-address 0.0.0.0:9001
+
+run:
+	export AWS_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE; \
+	export AWS_SECRET_ACCESS_KEY=wJaFuCKtnFEMI/CApItaliSM/bPxRfiCYEXAMPLEKEY; \
+	\
+	./.build/backup-repository \
+		--db-password=postgres \
+		--db-user=postgres \
+		--db-password=postgres \
+		--db-name=postgres \
+		--jwt-secret-key="secret key" \
+		--storage-url="s3://mybucket?endpoint=localhost:9000&disableSSL=true&s3ForcePathStyle=true&region=eu-central-1"
+
+build:
+	go build -tags=nomsgpack -o ./.build/backup-repository
+

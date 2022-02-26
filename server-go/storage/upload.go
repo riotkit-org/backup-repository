@@ -27,7 +27,7 @@ func (s *Service) UploadFile(inputStream io.ReadCloser, version *UploadedVersion
 	// Check if file exists at the storage
 	_ = writeStream.Close()
 	if exists, err := s.storage.Exists(context.TODO(), version.GetTargetPath()); !exists || err != nil {
-		logrus.Error(fmt.Sprintf("file was uploaded but does not exists on the storage at path '%v'. Error: %v", version.GetTargetPath(), err))
+		logrus.Error(fmt.Sprintf("file was uploaded but does not exists on the storage at path '%v'. IsError: %v", version.GetTargetPath(), err))
 		return wroteLen, errors.New("storage error")
 	}
 

@@ -40,7 +40,7 @@ spec:
                               maxCollectionSize:
                                   type: string
                                   pattern: '([0-9]+)(B|K|M|G|T)'
-                              window:
+                              windows:
                                   type: array
                                   items:
                                       type: object
@@ -60,6 +60,14 @@ spec:
                                           type: string
                                       maxOlderCopies:
                                           type: integer
+                              healthSecretRef:
+                                  type: object
+                                  required: ["name", "entry"]
+                                  properties:
+                                      name:
+                                          type: string
+                                      entry:
+                                          type: string
                               accessControl:
                                   type: array
                                   items:

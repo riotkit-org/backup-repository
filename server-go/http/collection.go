@@ -6,6 +6,7 @@ import (
 	"github.com/gin-contrib/timeout"
 	"github.com/gin-gonic/gin"
 	"github.com/riotkit-org/backup-repository/core"
+	"github.com/riotkit-org/backup-repository/health"
 	"github.com/riotkit-org/backup-repository/security"
 	"github.com/riotkit-org/backup-repository/storage"
 	"github.com/sirupsen/logrus"
@@ -178,6 +179,42 @@ func addDownloadRoute(r *gin.RouterGroup, ctx *core.ApplicationContainer, reques
 	r.GET("/repository/collection/:collectionId/version/:versionNum", rateLimiter, timeoutMiddleware)
 }
 
-// todo: healthcheck route
-//       to detect if anything was uploaded in previous Backup Window
-//       to detect if any version is bigger than expected
+// addCollectionHealthRoute is creating an anonymous-access route that exposes health check
+func addCollectionHealthRoute(r *gin.Engine, ctx *core.ApplicationContainer, rateLimiter gin.HandlerFunc) {
+	r.GET("/api/stable/repository/collection/:collectionId/health", rateLimiter, func(c *gin.Context) {
+		// Check if Collection exists
+		collection, findError := ctx.Collections.GetCollectionById(c.Param("collectionId"))
+		if findError != nil {
+			logrus.Errorln(findError)
+			NotFoundResponse(c, errors.New("cannot find specified collection"))
+			return
+		}
+
+		// OPTIONAL: If collection has a healthcheck secret, then verify it. Secret is an any phrase, stored as sha256 hash
+		authCode := c.GetHeader("Authorization")
+		if c.Query("code") != "" {
+			authCode = c.Query("code")
+		}
+		if !collection.IsHealthCheckSecretValid(authCode) {
+			UnauthorizedResponse(c, errors.New("not authorized - invalid value of 'code' parameter in query string"))
+			return
+		}
+
+		// Run all the checks
+		healthStatuses := health.Validators{
+			health.NewBackupWindowValidator(ctx.Storage),
+			health.NewVersionsSizeValidator(ctx.Storage),
+		}.Validate(collection)
+
+		if !healthStatuses.GetOverallStatus() {
+			ServerErrorResponseWithData(c, errors.New("one of checks failed"), gin.H{
+				"health": healthStatuses,
+			})
+			return
+		}
+
+		OKResponse(c, gin.H{
+			"health": healthStatuses,
+		})
+	})
+}

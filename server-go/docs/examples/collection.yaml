@@ -11,15 +11,19 @@ spec:
     maxCollectionSize: 10M
 
     # optional
-    window:
-        - from: "00 30 * * *"
-          duration: 1h
+    windows:
+        - from: "*/30 * * * *"
+          duration: 30m
 
     # fifo, fifo-plus-older
     strategyName: fifo
     strategySpec:
         keepLastOlderNotMoreThan: 5d
         maxOlderCopies: 2
+
+    healthSecretRef:
+        name: backup-repository-collection-secrets
+        entry: iwa-ait
 
     accessControl:
         - userName: admin
