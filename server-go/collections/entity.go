@@ -37,6 +37,9 @@ func (b *BackupWindow) UnmarshalJSON(in []byte) error {
 		return unmarshalErr
 	}
 
+	b.From = v.From
+	b.Duration = v.Duration
+
 	parser := cron.NewParser(cron.Minute | cron.Hour | cron.Dom | cron.Month | cron.DowOptional)
 	err := errors.New("")
 	b.parsed, err = parser.Parse(b.From)
@@ -45,34 +48,57 @@ func (b *BackupWindow) UnmarshalJSON(in []byte) error {
 		return errors.New(fmt.Sprintf("cannot parse Backup Window: %v. Error: %v", b.From, err))
 	}
 
+	b.parsedDuration, err = time.ParseDuration(b.Duration)
+	if err != nil {
+		return errors.New(fmt.Sprintf("cannot parse Backup Window - duation parsing, Error: %v", err))
+	}
+
 	return nil
 }
 
+// IsInWindowNow checks if given time is between BackupWindow time slot (<-start--O--end->)
 func (b *BackupWindow) IsInWindowNow(current time.Time) (bool, error) {
-	nextRun := b.parsed.Next(current)
-	var startDate time.Time
-	retries := 0
-
-	// First calculate startDate run to get "START DATE" and calculate "END DATE"
-	// because the library does not provide a "Previous" method unfortunately
-	for true {
-		retries = retries + 1
-		startDate = current.Add(time.Minute * time.Duration(-1))
-
-		if startDate.Format(time.RFC822) != nextRun.Format(time.RFC822) {
-			break
-		}
-
-		// six months
-		if retries > 60*24*30*6 {
-			return false, errors.New("cannot find a previous date in the backup window")
-		}
+	startDate, err := b.GetStartingDateOfPreviousScheduledRun(current)
+	if err != nil {
+		return false, err
 	}
 
 	endDate := startDate.Add(b.parsedDuration)
 
 	// previous run -> previous run + duration
 	return current.After(startDate) && current.Before(endDate), nil
+}
+
+func (b *BackupWindow) GetStartingDateOfPreviousScheduledRun(current time.Time) (time.Time, error) {
+	nextRun := b.parsed.Next(current)
+
+	// check if next run is NOW
+	possibleNextRunNow := current.Add(time.Second * time.Duration(-1))
+	if b.parsed.Next(possibleNextRunNow).Format(time.RFC822) != nextRun.Format(time.RFC822) {
+		nextRun = b.parsed.Next(possibleNextRunNow)
+	}
+
+	startDate := current
+	retries := 0
+
+	// First calculate startDate run to get "START DATE" and calculate "END DATE"
+	// because the library does not provide a "Previous" method unfortunately
+	for true {
+		retries = retries + 1
+		startDate = startDate.Add(time.Minute * time.Duration(-1))
+		possiblePrevRun := b.parsed.Next(startDate)
+
+		if possiblePrevRun.Format(time.RFC822) != nextRun.Format(time.RFC822) {
+			return possiblePrevRun, nil
+		}
+
+		// 12 months
+		if retries > 60*24*30*12 {
+			return time.Time{}, errors.New("cannot find a previous date in the backup window")
+		}
+	}
+
+	return time.Time{}, errors.New("unknown error while attempting to find start date for backup window")
 }
 
 type BackupWindows []BackupWindow
