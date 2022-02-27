@@ -202,10 +202,10 @@ func addCollectionHealthRoute(r *gin.Engine, ctx *core.ApplicationContainer, rat
 
 		// Run all the checks
 		healthStatuses := health.Validators{
-			health.NewBackupWindowValidator(ctx.Storage),
-			health.NewVersionsSizeValidator(ctx.Storage),
-			health.NewSumOfVersionsValidator(ctx.Storage),
-		}.Validate(collection)
+			health.NewBackupWindowValidator(ctx.Storage, collection),
+			health.NewVersionsSizeValidator(ctx.Storage, collection),
+			health.NewSumOfVersionsValidator(ctx.Storage, collection),
+		}.Validate()
 
 		if !healthStatuses.GetOverallStatus() {
 			ServerErrorResponseWithData(c, errors.New("one of checks failed"), gin.H{
