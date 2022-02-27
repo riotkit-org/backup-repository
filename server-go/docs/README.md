@@ -32,7 +32,7 @@ API
 
 Interactions with server are done using HTTP API that talks JSON in both ways, and identifies with JWT.
 
-### [Users](api/users/README.md)
+### [Users and Authentication](api/users/README.md)
 
 ### Collections
 

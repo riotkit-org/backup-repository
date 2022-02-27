@@ -1,4 +1,4 @@
-users and authentication API
+Users and Authentication API
 ============================
 
 ## Before you begin
