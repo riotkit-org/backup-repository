@@ -3,6 +3,7 @@ package config
 import (
 	"context"
 	"github.com/fatih/structs"
+	"github.com/pkg/errors"
 	"github.com/sirupsen/logrus"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/apimachinery/pkg/apis/meta/v1/unstructured"
@@ -16,6 +17,21 @@ type ConfigurationInKubernetes struct {
 	namespace  string
 	apiGroup   string
 	apiVersion string
+}
+
+func (o *ConfigurationInKubernetes) GetHealth() error {
+	resources := []schema.GroupVersionResource{
+		{Group: o.apiGroup, Version: o.apiVersion, Resource: "backupusers"},
+		{Group: o.apiGroup, Version: o.apiVersion, Resource: "backupcollections"},
+	}
+
+	for _, resource := range resources {
+		if _, err := o.api.Resource(resource).Namespace(o.namespace).List(context.Background(), metav1.ListOptions{}); err != nil {
+			return errors.Wrapf(err, "cannot access Kubrenetes resources: '%v'", resource.String())
+		}
+	}
+
+	return nil
 }
 
 func (o *ConfigurationInKubernetes) GetSingleDocumentAnyType(kind string, id string, apiGroup string, apiVersion string) (string, error) {

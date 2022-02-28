@@ -11,10 +11,11 @@ import (
 
 type BackupWindowValidator struct {
 	svc *storage.Service
+	c   *collections.Collection
 }
 
-func (v BackupWindowValidator) Validate(c *collections.Collection) error {
-	latest, err := v.svc.FindLatestVersion(c.GetId())
+func (v BackupWindowValidator) Validate() error {
+	latest, err := v.svc.FindLatestVersion(v.c.GetId())
 	if err != nil {
 		return err
 	}
@@ -23,11 +24,11 @@ func (v BackupWindowValidator) Validate(c *collections.Collection) error {
 	now := time.Now()
 
 	// Backup Windows are optional
-	if len(c.Spec.Windows) == 0 {
+	if len(v.c.Spec.Windows) == 0 {
 		return nil
 	}
 
-	for _, window := range c.Spec.Windows {
+	for _, window := range v.c.Spec.Windows {
 		matches, err := window.IsInPreviousWindowTimeSlot(now, latest.CreatedAt)
 		if err != nil {
 			return errors.New(fmt.Sprintf("failed to calculate previous run for window '%v' - %v", window, err))
@@ -47,6 +48,6 @@ func (v BackupWindowValidator) Validate(c *collections.Collection) error {
 	return errors.Errorf("previous backup was not executed in expected time slots: %v", strings.Trim(allowedSlots, ", "))
 }
 
-func NewBackupWindowValidator(svc *storage.Service) BackupWindowValidator {
-	return BackupWindowValidator{svc}
+func NewBackupWindowValidator(svc *storage.Service, c *collections.Collection) BackupWindowValidator {
+	return BackupWindowValidator{svc, c}
 }

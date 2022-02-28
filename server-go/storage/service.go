@@ -212,6 +212,30 @@ func (s *Service) FindAllActiveVersionsFor(id string) ([]UploadedVersion, error)
 	return s.repository.findAllActiveVersions(id)
 }
 
+// TestReadWrite is performing a simple write & read & delete operation to check if storage is healthy
+func (s *Service) TestReadWrite() error {
+	healthKey := fmt.Sprintf(".health-%v", time.Now().UnixNano())
+	healthSecret := fmt.Sprintf("secret-%v", time.Now().Unix())
+
+	if err := s.storage.WriteAll(context.TODO(), healthKey, []byte(healthSecret), &blob.WriterOptions{}); err != nil {
+		return err
+	}
+
+	read, err := s.storage.ReadAll(context.TODO(), healthKey)
+	if err != nil {
+		return err
+	}
+	if string(read) != healthSecret {
+		return errors.New("cannot verify storage read&write - wrote a text, but read a different text")
+	}
+
+	if err := s.storage.Delete(context.TODO(), healthKey); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // NewService is a factory method that knows how to construct a Storage provider, distincting multiple types of providers
 func NewService(db *gorm.DB, driverUrl string, isUsingGCS bool) (Service, error) {
 	repository := VersionsRepository{db: db}
