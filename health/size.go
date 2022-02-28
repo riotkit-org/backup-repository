@@ -8,17 +8,18 @@ import (
 
 type VersionsSizeValidator struct {
 	svc *storage.Service
+	c   *collections.Collection
 }
 
-func (v VersionsSizeValidator) Validate(c *collections.Collection) error {
-	versions, err := v.svc.FindAllActiveVersionsFor(c.GetId())
+func (v VersionsSizeValidator) Validate() error {
+	versions, err := v.svc.FindAllActiveVersionsFor(v.c.GetId())
 	if err != nil {
-		return errors.Wrapf(err, "Cannot list versions for collection id=%v", c.GetId())
+		return errors.Wrapf(err, "Cannot list versions for collection id=%v", v.c.GetId())
 	}
 
-	maxVersionSize, err := c.GetMaxOneVersionSizeInBytes()
+	maxVersionSize, err := v.c.GetMaxOneVersionSizeInBytes()
 	if err != nil {
-		return errors.Wrapf(err, "Cannot list versions for collection id=%v", c.GetId())
+		return errors.Wrapf(err, "Cannot list versions for collection id=%v", v.c.GetId())
 	}
 
 	for _, v := range versions {
@@ -30,6 +31,6 @@ func (v VersionsSizeValidator) Validate(c *collections.Collection) error {
 	return nil
 }
 
-func NewVersionsSizeValidator(svc *storage.Service) VersionsSizeValidator {
-	return VersionsSizeValidator{svc}
+func NewVersionsSizeValidator(svc *storage.Service, c *collections.Collection) VersionsSizeValidator {
+	return VersionsSizeValidator{svc, c}
 }

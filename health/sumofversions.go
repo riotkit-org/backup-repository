@@ -8,17 +8,18 @@ import (
 
 type SumOfVersionsValidator struct {
 	svc *storage.Service
+	c   *collections.Collection
 }
 
-func (v SumOfVersionsValidator) Validate(c *collections.Collection) error {
+func (v SumOfVersionsValidator) Validate() error {
 	var totalSize int64
-	allActive, _ := v.svc.FindAllActiveVersionsFor(c.GetId())
+	allActive, _ := v.svc.FindAllActiveVersionsFor(v.c.GetId())
 
 	for _, version := range allActive {
 		totalSize += version.Filesize
 	}
 
-	maxCollectionSize, _ := c.GetCollectionMaxSize()
+	maxCollectionSize, _ := v.c.GetCollectionMaxSize()
 
 	if totalSize > maxCollectionSize {
 		return errors.Errorf("Summary of all files is %vb, while collection hard limit is %vb", totalSize, maxCollectionSize)
@@ -27,6 +28,6 @@ func (v SumOfVersionsValidator) Validate(c *collections.Collection) error {
 	return nil
 }
 
-func NewSumOfVersionsValidator(svc *storage.Service) SumOfVersionsValidator {
-	return SumOfVersionsValidator{svc}
+func NewSumOfVersionsValidator(svc *storage.Service, c *collections.Collection) SumOfVersionsValidator {
+	return SumOfVersionsValidator{svc, c}
 }

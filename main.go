@@ -26,6 +26,7 @@ type options struct {
 	DbName               string `long:"db-name" description:"Database name inside a database"`
 	DbPort               int    `long:"db-port" description:"Database name inside a database" default:"5432"`
 	JwtSecretKey         string `long:"jwt-secret-key" short:"s" description:"Secret used for generating JSON Web Tokens for authentication"`
+	HealthCheckKey       string `long:"health-check-key" short:"k" description:"Secret key to access health check endpoint"`
 	Level                string `long:"log-level" description:"Log level" default:"debug"`
 	StorageDriverUrl     string `long:"storage-url" description:"Storage driver url compatible with GO Cloud (https://gocloud.dev/howto/blob/)"`
 	IsGCS                bool   `long:"use-google-cloud" description:"If using Google Cloud Storage, then in --storage-url just type bucket name"`
@@ -80,10 +81,12 @@ func main() {
 	}
 
 	ctx := core.ApplicationContainer{
+		Db:              dbDriver,
 		Config:          &configProvider,
 		Users:           &usersService,
 		GrantedAccesses: &gaService,
 		JwtSecretKey:    opts.JwtSecretKey,
+		HealthCheckKey:  opts.HealthCheckKey,
 		Collections:     &collectionsService,
 		Storage:         &storageService,
 		Locks:           &locksService,

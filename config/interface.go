@@ -5,4 +5,5 @@ type ConfigurationProvider interface {
 	GetSingleDocumentAnyType(kind string, id string, apiGroup string, apiVersion string) (string, error)
 
 	StoreDocument(kind string, document interface{}) error
+	GetHealth() error
 }

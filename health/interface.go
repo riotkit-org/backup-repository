@@ -3,20 +3,19 @@ package health
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/riotkit-org/backup-repository/collections"
 	"reflect"
 )
 
 type Validator interface {
-	Validate(c *collections.Collection) error
+	Validate() error
 }
 type Validators []Validator
 
-func (v Validators) Validate(c *collections.Collection) StatusCollection {
+func (v Validators) Validate() StatusCollection {
 	var status StatusCollection
 
 	for _, validator := range v {
-		if err := validator.Validate(c); err != nil {
+		if err := validator.Validate(); err != nil {
 			status = append(status, Status{
 				Name:      reflect.TypeOf(validator).Name(),
 				StatusMsg: err.Error(),

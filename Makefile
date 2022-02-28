@@ -1,5 +1,8 @@
 all: build run
 
+test_health:
+	curl -s -X GET 'http://localhost:8080/health'
+
 test_login:
 	curl -s -X POST -d '{"username":"admin","password":"admin"}' -H 'Content-Type: application/json' 'http://localhost:8080/api/stable/auth/login'
 	@echo "Now do export TOKEN=..."
