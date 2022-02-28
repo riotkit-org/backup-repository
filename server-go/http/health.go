@@ -22,6 +22,7 @@ func addServerHealthEndpoint(r *gin.Engine, ctx *core.ApplicationContainer, rate
 		healthStatuses := health.Validators{
 			health.NewDbValidator(ctx.Db),
 			health.NewStorageValidator(ctx.Storage),
+			health.NewConfigurationProviderValidator(*ctx.Config),
 		}.Validate()
 
 		if !healthStatuses.GetOverallStatus() {
