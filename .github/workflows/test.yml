@@ -25,7 +25,7 @@ jobs:
               run: "make build"
 
             - name: Test
-              run: "go test -v"
+              run: "make test"
 
             # ===================
             # Arch Linux package
