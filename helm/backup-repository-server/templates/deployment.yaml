@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: {{ include "backup-repository-server.fullname" . }}
+    labels:
+      {{- include "backup-repository-server.labels" . | nindent 4 }}
+spec:
+  {{- if not .Values.autoscaling.enabled }}
+    replicas: {{ .Values.replicaCount }}
+  {{- end }}
+    selector:
+        matchLabels:
+          {{- include "backup-repository-server.selectorLabels" . | nindent 10 }}
+    template:
+        metadata:
+          {{- with .Values.podAnnotations }}
+            annotations:
+              {{- toYaml . | nindent 14 }}
+          {{- end }}
+            labels:
+              {{- include "backup-repository-server.selectorLabels" . | nindent 12 }}
+        spec:
+          {{- with .Values.imagePullSecrets }}
+            imagePullSecrets:
+              {{- toYaml . | nindent 14 }}
+          {{- end }}
+            serviceAccountName: {{ include "backup-repository-server.serviceAccountName" . }}
+
+            {{- with .Values.podSecurityContext }}
+            securityContext:
+              {{- toYaml . | nindent 14 }}
+            {{- end }}
+            containers:
+                - name: {{ .Chart.Name }}
+                  securityContext:
+                    {{- toYaml .Values.securityContext | nindent 20 }}
+                  image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
+                  imagePullPolicy: {{ .Values.image.pullPolicy }}
+                  ports:
+                      - name: http
+                        containerPort: 80
+                        protocol: TCP
+                  livenessProbe:
+                      httpGet:
+                          path: /
+                          port: http
+                  readinessProbe:
+                      httpGet:
+                          path: /
+                          port: http
+                  resources:
+                    {{- toYaml .Values.resources | nindent 20 }}
+          {{- with .Values.nodeSelector }}
+            nodeSelector:
+              {{- toYaml . | nindent 14 }}
+          {{- end }}
+          {{- with .Values.affinity }}
+            affinity:
+              {{- toYaml . | nindent 14 }}
+          {{- end }}
+          {{- with .Values.tolerations }}
+            tolerations:
+              {{- toYaml . | nindent 14 }}
+          {{- end }}

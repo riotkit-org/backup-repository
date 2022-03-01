@@ -1,0 +1,16 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+    name: {{ include "backup-repository-server.fullname" . }}
+    labels:
+        {{- include "backup-repository-server.labels" . | nindent 8 }}
+spec:
+    type: {{ .Values.service.type }}
+    ports:
+        - port: {{ .Values.service.port }}
+          targetPort: http
+          protocol: TCP
+          name: http
+    selector:
+        {{- include "backup-repository-server.selectorLabels" . | nindent 8 }}

@@ -1,0 +1,71 @@
+# Default values for backup-repository-server.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+    repository: ghcr.io/riotkit-org/backup-repository
+    pullPolicy: Always
+    # Overrides the image tag whose default is the chart appVersion.
+    tag: ""
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+    create: true
+    # Annotations to add to the service account
+    annotations: {}
+    # The name of the service account to use.
+    # If not set and create is true, a name is generated using the fullname template
+    name: ""
+
+podAnnotations: {}
+podSecurityContext: {}
+
+securityContext:
+    capabilities:
+        drop: ["ALL"]
+    readOnlyRootFilesystem: true
+    runAsNonRoot: true
+    # runAsUser: 1000
+
+service:
+    type: ClusterIP
+    port: 80
+
+ingress:
+    enabled: false
+    className: ""
+    annotations: {}
+    hosts:
+        - host: chart-example.local
+          paths:
+              - path: /
+                pathType: ImplementationSpecific
+    tls: []
+
+# todo: Support for OpenShift's routes
+route:
+    enabled: false
+
+resources:
+    limits:
+        cpu: 2
+        memory: 1Gi
+    requests:
+        cpu: 50m
+        memory: 128Mi
+
+autoscaling:
+    enabled: false
+    minReplicas: 1
+    maxReplicas: 100
+    targetCPUUtilizationPercentage: 80
+    # targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+tolerations: []
+affinity: {}
