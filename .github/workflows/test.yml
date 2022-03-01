@@ -3,6 +3,10 @@ on:
     pull_request:
     push:
 
+env:
+    REGISTRY: ghcr.io
+    IMAGE_NAME: "riotkit-org/backup-repository"
+
 jobs:
     test:
         runs-on: ubuntu-latest
