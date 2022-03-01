@@ -11,14 +11,8 @@ prepare(){
     mkdir -p .build/
 }
 build() {
-    cd ..
-    export CGO_CPPFLAGS="${CPPFLAGS}"
-    export CGO_CFLAGS="${CFLAGS}"
-    export CGO_CXXFLAGS="${CXXFLAGS}"
-    export CGO_LDFLAGS="${LDFLAGS}"
-    export GOFLAGS="-buildmode=pie -trimpath -ldflags=-linkmode=external -mod=readonly -modcacherw"
-    export GOROOT=/usr/lib/go
-    go build -o ./.build/backup-repository ./
+    # use already built artifacts
+    return 0
 }
 check() {
     return 0

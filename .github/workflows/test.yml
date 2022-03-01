@@ -1,40 +1,59 @@
 name: Test
 on:
-  pull_request:
-  push:
+    pull_request:
+    push:
 
 jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
+    test:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v2
+              with:
+                  fetch-depth: 0
 
-      - name: Set up Go
-        uses: actions/setup-go@v2
-        with:
-          go-version: 1.17
+            - name: Set up Go
+              uses: actions/setup-go@v2
+              with:
+                  go-version: 1.17
 
-      - name: Test
-        run: "go test -v"
+            - name: Build
+              run: "make build"
 
-  check-packaging:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v2
-        with:
-          fetch-depth: 0
+            - name: Test
+              run: "go test -v"
 
-      - name: Set up Go
-        uses: actions/setup-go@v2
-        with:
-          go-version: 1.17
+            # ===================
+            # Arch Linux package
+            # ===================
 
-      - name: Create Arch Linux package
-        uses: 2m/arch-pkgbuild-builder@v1.18
-        with:
-          target: 'pkgbuild'
-          pkgname: './'
+            - name: Create Arch Linux package to check if PKGBUILD works
+              uses: 2m/arch-pkgbuild-builder@v1.18
+              with:
+                  target: 'pkgbuild'
+                  pkgname: './'
+
+            # =======
+            # Docker
+            # =======
+
+            - name: Log in to the Container registry
+              uses: docker/login-action@f054a8b539a109f9f41c372932f1ae047eff08c9
+              with:
+                  registry: ${{ env.REGISTRY }}
+                  username: ${{ github.actor }}
+                  password: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Extract metadata (tags, labels) for Docker
+              id: meta
+              uses: docker/metadata-action@98669ae865ea3cffbcbaa878cf57c20bbf1c6c38
+              with:
+                  images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+
+            - name: Build and release to container registry
+              uses: docker/build-push-action@v2
+              with:
+                  context: .
+                  push: true
+                  tags: snapshot
+                  labels: ${{ steps.meta.outputs.labels }}
