@@ -35,7 +35,7 @@ func (g GrantedAccessRepository) checkSessionExistsById(id string) bool {
 	var exists bool
 
 	if err := g.db.Model(&GrantedAccess{}).Select("count(*) > 0").Where("id = ?", id).Find(&exists).Error; err != nil {
-		logrus.Errorln("checkSessionExistsById(): %v", err)
+		logrus.Errorf("checkSessionExistsById(): %v", err)
 	}
 
 	return exists
