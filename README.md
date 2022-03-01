@@ -3,7 +3,7 @@ Backup Repository
 
 Cloud-native, zero-knowledge, multi-tenant, security-first backup storage with minimal footprint.
 
-_TLDR; Storage for E2E GPG-encrypted files, with multi-user, quotas, versioning, using a Cloud Storage Provider and deployed on Kubernetes or standalone._
+_TLDR; Backup storage for E2E GPG-encrypted files, with multi-user, quotas, versioning, using a object storage (S3/Min.io/GCS etc.) and deployed on Kubernetes or standalone._
 
 **Natively supports:**
 - Kubernetes (but does not require)
