@@ -11,7 +11,7 @@ permissions:
     packages: write
 
 jobs:
-    test:
+    test-and-release-snapshot:
         runs-on: ubuntu-latest
         steps:
             - name: Checkout
