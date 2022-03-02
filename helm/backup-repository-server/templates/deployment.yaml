@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
     name: {{ include "backup-repository-server.fullname" . }}
     labels:
-      {{- include "backup-repository-server.labels" . | nindent 4 }}
+        {{- include "backup-repository-server.labels" . | nindent 8 }}
 spec:
   {{- if not .Values.autoscaling.enabled }}
     replicas: {{ .Values.replicaCount }}
@@ -15,14 +15,14 @@ spec:
         metadata:
           {{- with .Values.podAnnotations }}
             annotations:
-              {{- toYaml . | nindent 14 }}
+              {{- toYaml . | nindent 16 }}
           {{- end }}
             labels:
-              {{- include "backup-repository-server.selectorLabels" . | nindent 12 }}
+              {{- include "backup-repository-server.selectorLabels" . | nindent 16 }}
         spec:
           {{- with .Values.imagePullSecrets }}
             imagePullSecrets:
-              {{- toYaml . | nindent 14 }}
+              {{- toYaml . | nindent 16 }}
           {{- end }}
             serviceAccountName: {{ include "backup-repository-server.serviceAccountName" . }}
 

@@ -9,8 +9,8 @@ rules:
       resources:
           - backupcollections
           - backupusers
-      verbs: "*"
-    - apiGroups: "*"
+      verbs: ["*"]
+    - apiGroups: ["*"]
       resources:
           - secrets
       verbs:
