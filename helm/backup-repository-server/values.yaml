@@ -41,7 +41,7 @@ ingress:
     className: ""
     annotations: {}
     hosts:
-        - host: chart-example.local
+        - host: backups.example.org
           paths:
               - path: /
                 pathType: ImplementationSpecific
@@ -50,6 +50,8 @@ ingress:
 # todo: Support for OpenShift's routes
 route:
     enabled: false
+    host: backups.example.org
+    yaml: {}  # extra settings on spec level e.g. put TLS settings there
 
 resources:
     limits:
