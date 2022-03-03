@@ -6,12 +6,22 @@ replicaCount: 1
 
 settings:
     healthCode: changeme
-    clusterAddress: kubernetes.svc.local
-    jwtSecretKey: ""  # todo: Should be put inside a secret? if not defined, then generated?
-    loggingLevel: "info"
+
+# supported values: sealedSecrets, plain
+# when using sealedSecrets please paste already ENCRYPTED secrets into `.secrets` section
+secretsType: plain
+
+secrets:
+    BR_JWT_SECRET_KEY: "" # leave empty to auto-generate, will be stored in `kind: Secret`
+    BR_DB_HOSTNAME: "..."
+    BR_DB_PASSWORD: "..."
+    BR_DB_USERNAME: "..."
+    BR_DB_NAME: "..."
+    BR_DB_PORT: "5432"
 
 env: []
-
+    # BR_USE_GOOGLE_CLOUD=false
+    # todo: list all environment variables there
 
 image:
     repository: ghcr.io/riotkit-org/backup-repository

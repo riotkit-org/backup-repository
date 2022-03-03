@@ -32,9 +32,11 @@ _TLDR; Backup storage for E2E GPG-encrypted files, with multi-user, quotas, vers
 
 **Support:**
 - Any Kubernetes 1.19+
-- K3s
+- [K3s](https://github.com/k3s-io/k3s)
 - OpenShift (with support for Routes, non-privileged, non-root containers)
 - PostgreSQL 11+
+- [SealedSecrets](https://github.com/bitnami-labs/sealed-secrets)
+- [Min.io](https://github.com/minio/minio)
 
 Running
 -------

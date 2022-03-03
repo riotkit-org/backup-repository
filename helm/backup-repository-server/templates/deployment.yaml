@@ -39,10 +39,9 @@ spec:
                     {{- toYaml .Values.securityContext | nindent 20 }}
                   image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
                   imagePullPolicy: {{ .Values.image.pullPolicy }}
-                  ports:
-                      - name: http
-                        containerPort: 80
-                        protocol: TCP
+
+                  args:
+                      - "--health-check-key={{ .Values.settings.healthCode }}"
 
                   {{- with .Values.env }}
                   env:
@@ -51,6 +50,16 @@ spec:
                         value: "{{ $value }}"
                   {{- end }}
                   {{- end }}
+
+                  envFrom:
+                      - secretRef:
+                            name: {{ include "backup-repository-server.fullname" . }}-credentials
+                            optional: false
+
+                  ports:
+                      - name: http
+                        containerPort: 80
+                        protocol: TCP
 
                   # todo: distinct liveness and readiness - make separate endpoints
                   livenessProbe:
