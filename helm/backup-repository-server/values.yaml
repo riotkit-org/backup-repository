@@ -4,6 +4,15 @@
 
 replicaCount: 1
 
+settings:
+    healthCode: changeme
+    clusterAddress: kubernetes.svc.local
+    jwtSecretKey: ""  # todo: Should be put inside a secret? if not defined, then generated?
+    loggingLevel: "info"
+
+env: []
+
+
 image:
     repository: ghcr.io/riotkit-org/backup-repository
     pullPolicy: Always
@@ -47,7 +56,6 @@ ingress:
                 pathType: ImplementationSpecific
     tls: []
 
-# todo: Support for OpenShift's routes
 route:
     enabled: false
     host: backups.example.org

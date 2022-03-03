@@ -20,6 +20,9 @@ spec:
             labels:
               {{- include "backup-repository-server.selectorLabels" . | nindent 16 }}
         spec:
+            # todo: implement termination procedure, so the pending upload would block from termination
+            #       and terminating container will block from taking new uploads
+            terminationGracePeriodSeconds: 300
           {{- with .Values.imagePullSecrets }}
             imagePullSecrets:
               {{- toYaml . | nindent 16 }}
@@ -40,14 +43,32 @@ spec:
                       - name: http
                         containerPort: 80
                         protocol: TCP
+
+                  {{- with .Values.env }}
+                  env:
+                  {{- range $key, $value := . }}
+                      - name: {{ $key }}
+                        value: "{{ $value }}"
+                  {{- end }}
+                  {{- end }}
+
+                  # todo: distinct liveness and readiness - make separate endpoints
                   livenessProbe:
+                      failureThreshold: 1
+                      terminationGracePeriodSeconds: 10
                       httpGet:
-                          path: /
+                          path: /health
                           port: http
+                          httpHeaders:
+                              - name: Authorization
+                                value: "{{ .Values.settings.healthCode }}"
                   readinessProbe:
                       httpGet:
-                          path: /
+                          path: /health?code={{ .Values.settings.healthCode }}
                           port: http
+                          httpHeaders:
+                              - name: Authorization
+                                value: "{{ .Values.settings.healthCode }}"
                   resources:
                     {{- toYaml .Values.resources | nindent 20 }}
           {{- with .Values.nodeSelector }}

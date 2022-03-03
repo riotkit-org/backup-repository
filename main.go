@@ -19,17 +19,17 @@ type options struct {
 	Help                 bool   `short:"h" long:"help" description:"Shows this help message"`
 	Provider             string `short:"p" long:"provider" description:"Configuration provider. Choice: 'kubernetes', 'filesystem'" default:"kubernetes"`
 	EncodePasswordAction string `long:"encode-password" description:"Encode a password from CLI instead of running a server"`
-	HashJWT              string `long:"hash-jwt" description:"Generate a hash from JWT"`
-	DbHostname           string `long:"db-hostname" description:"Hostname for database connection" default:"localhost"`
-	DbUsername           string `long:"db-user" description:"Username for database connection"`
-	DbPassword           string `long:"db-password" description:"Password for database connection"`
-	DbName               string `long:"db-name" description:"Database name inside a database"`
-	DbPort               int    `long:"db-port" description:"Database name inside a database" default:"5432"`
-	JwtSecretKey         string `long:"jwt-secret-key" short:"s" description:"Secret used for generating JSON Web Tokens for authentication"`
-	HealthCheckKey       string `long:"health-check-key" short:"k" description:"Secret key to access health check endpoint"`
-	Level                string `long:"log-level" description:"Log level" default:"debug"`
-	StorageDriverUrl     string `long:"storage-url" description:"Storage driver url compatible with GO Cloud (https://gocloud.dev/howto/blob/)"`
-	IsGCS                bool   `long:"use-google-cloud" description:"If using Google Cloud Storage, then in --storage-url just type bucket name"`
+	HashJWT              string `long:"hash-jwt" description:"Generate a hash from JWT" env:"BR_HASH_JWT"`
+	DbHostname           string `long:"db-hostname" description:"Hostname for database connection" default:"localhost" env:"BR_DB_HOSTNAME"`
+	DbUsername           string `long:"db-user" description:"Username for database connection" env:"BR_DB_USERNAME"`
+	DbPassword           string `long:"db-password" description:"Password for database connection" env:"BR_DB_PASSWORD"`
+	DbName               string `long:"db-name" description:"Database name inside a database" env:"BR_DB_NAME"`
+	DbPort               int    `long:"db-port" description:"Database name inside a database" default:"5432" env:"BR_DB_PORT"`
+	JwtSecretKey         string `long:"jwt-secret-key" short:"s" description:"Secret used for generating JSON Web Tokens for authentication" env:"BR_JWT_SECRET_KEY"`
+	HealthCheckKey       string `long:"health-check-key" short:"k" description:"Secret key to access health check endpoint" env:"BR_HEALTH_CHECK_KEY"`
+	Level                string `long:"log-level" description:"Log level" default:"debug" env:"BR_LOG_LEVEL"`
+	StorageDriverUrl     string `long:"storage-url" description:"Storage driver url compatible with GO Cloud (https://gocloud.dev/howto/blob/)" env:"BR_STORAGE_DRIVER_URL"`
+	IsGCS                bool   `long:"use-google-cloud" description:"If using Google Cloud Storage, then in --storage-url just type bucket name" env:"BR_USE_GOOGLE_CLOUD"`
 }
 
 func main() {
@@ -57,6 +57,10 @@ func main() {
 		println(security.HashJWT(opts.HashJWT))
 		os.Exit(0)
 	}
+
+	//
+	// Application services container is built here
+	//
 
 	configProvider, err := config.CreateConfigurationProvider(opts.Provider)
 	if err != nil {
@@ -92,10 +96,8 @@ func main() {
 		Locks:           &locksService,
 	}
 
-	// todo: First thread - HTTP
-	// todo: Second thread - configuration changes watcher
-	//       Notice: Fork configuration objects on each request? Or do not allow updating, when any request is pending?
-	http.SpawnHttpApplication(&ctx)
-
-	// todo: Add commandline arg --encode-password=... to allow password hashing from commandline (should not run whole application)
+	if err := http.SpawnHttpApplication(&ctx); err != nil {
+		log.Errorf("Cannot spawn HTTP server: %v", err)
+		os.Exit(1)
+	}
 }

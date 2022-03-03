@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func SpawnHttpApplication(ctx *core.ApplicationContainer) {
+func SpawnHttpApplication(ctx *core.ApplicationContainer) error {
 	r := gin.Default()
 
 	authMiddleware := createAuthenticationMiddleware(r, ctx)
@@ -49,5 +49,5 @@ func SpawnHttpApplication(ctx *core.ApplicationContainer) {
 		return "health:" + ctx.ClientIP(), nil
 	}).Middleware())
 
-	_ = r.Run()
+	return r.Run()
 }
