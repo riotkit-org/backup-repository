@@ -1,6 +1,8 @@
 Backup Repository
 =================
 
+[![Coverage Status](https://coveralls.io/repos/github/riotkit-org/backup-repository/badge.svg?branch=main)](https://coveralls.io/github/riotkit-org/backup-repository?branch=main)
+
 Cloud-native, zero-knowledge, multi-tenant, security-first backup storage with minimal footprint.
 
 _TLDR; Backup storage for E2E GPG-encrypted files, with multi-user, quotas, versioning, using a object storage (S3/Min.io/GCS etc.) and deployed on Kubernetes or standalone._
