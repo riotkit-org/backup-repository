@@ -3,6 +3,9 @@ all: build run
 test:
 	go test -v ./...
 
+coverage:
+	go test -v ./... -covermode=count -coverprofile=coverage.out
+
 test_health:
 	curl -s -X GET 'http://localhost:8080/health'
 

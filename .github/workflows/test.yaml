@@ -30,6 +30,15 @@ jobs:
             - name: Test
               run: "make test"
 
+            - name: Convert coverage to lcov format
+              uses: jandelgado/gcov2lcov-action@v1.0.5
+
+            - name: Coveralls
+              uses: coverallsapp/github-action@v1.0.4
+              with:
+                github-token: ${{ secrets.github_token }}
+                path-to-lcov: coverage.lcov
+
             # ===================
             # Arch Linux package
             # ===================
