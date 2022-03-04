@@ -5,11 +5,11 @@ import (
 	"fmt"
 )
 
-func CreateConfigurationProvider(providerName string) (ConfigurationProvider, error) {
+func CreateConfigurationProvider(providerName string, namespace string) (ConfigurationProvider, error) {
 
 	if providerName == "kubernetes" {
 		return CreateKubernetesConfigurationProvider(
-			"default",
+			namespace,
 		), nil
 	}
 

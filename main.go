@@ -18,6 +18,7 @@ import (
 type options struct {
 	Help                 bool   `short:"h" long:"help" description:"Shows this help message"`
 	Provider             string `short:"p" long:"provider" description:"Configuration provider. Choice: 'kubernetes', 'filesystem'" default:"kubernetes" env:"BR_CONFIG_PROVIDER"`
+	Namespace            string `short:"n" long:"namespace" default:"backup-repository" description:"Kubernetes namespace to operate in"`
 	EncodePasswordAction string `long:"encode-password" description:"Encode a password from CLI instead of running a server"`
 	HashJWT              string `long:"hash-jwt" description:"Generate a hash from JWT"`
 	DbHostname           string `long:"db-hostname" description:"Hostname for database connection" default:"localhost" env:"BR_DB_HOSTNAME"`
@@ -62,7 +63,7 @@ func main() {
 	// Application services container is built here
 	//
 
-	configProvider, err := config.CreateConfigurationProvider(opts.Provider)
+	configProvider, err := config.CreateConfigurationProvider(opts.Provider, opts.Namespace)
 	if err != nil {
 		log.Errorln("Cannot initialize Configuration Provider")
 		log.Fatal(err)
