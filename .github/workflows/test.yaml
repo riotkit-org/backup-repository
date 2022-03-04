@@ -98,8 +98,12 @@ jobs:
             - name: Install Backup Repository
               run: make k8s_test_backup_repository
 
-            - name: Take a look
+            - name: Verify
               run: |
                   sleep 10
                   kubectl get pods -A
                   kubectl get events -A
+
+                  if kubectl get events -A | grep "backup-repository" | grep "Failed" 2>&1 > /dev/null; then
+                      exit 1
+                  fi
