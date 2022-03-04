@@ -39,6 +39,23 @@ func TestIsInWindowNow(t *testing.T) {
 	assert.False(t, isInWindowNow(window, "2022-01-01 01:45:34"))
 }
 
+func TestGenerateNextVersionFilename(t *testing.T) {
+	c := Collection{Spec: Spec{FilenameTemplate: "zsp-net-pl-${version}.tar.gz"}}
+	assert.Equal(t, "zsp-net-pl-1.tar.gz", c.GenerateNextVersionFilename(1))
+}
+
+func TestGenerateNextVersionFilenameReplacesOnlyOnce(t *testing.T) {
+	c := Collection{Spec: Spec{FilenameTemplate: "zsp-net-pl-${version}.tar.gz${version}"}}
+	assert.Equal(t, "zsp-net-pl-1.tar.gz${version}", c.GenerateNextVersionFilename(1))
+}
+
+func TestGetEstimatedDiskSpaceForFullCollectionInBytes(t *testing.T) {
+	c := Collection{Spec: Spec{MaxBackupsCount: 30, MaxOneVersionSize: "50G"}}
+
+	calc, _ := c.getEstimatedDiskSpaceForFullCollectionInBytes()
+	assert.Equal(t, int64(1500*1024*1024*1024), calc) // 50GB * 30 = 1500 GB * 1024mb * 1024kb * 1024b = 1500 GB in bytes
+}
+
 // helper
 func isInWindowNow(window BackupWindow, nowStr string) bool {
 	now, _ := time.Parse("2006-01-02 15:04:05", nowStr)
