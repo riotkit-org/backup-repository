@@ -2,6 +2,7 @@ Backup Repository
 =================
 
 [![Coverage Status](https://coveralls.io/repos/github/riotkit-org/backup-repository/badge.svg?branch=main)](https://coveralls.io/github/riotkit-org/backup-repository?branch=main)
+[![Test](https://github.com/riotkit-org/backup-repository/actions/workflows/test.yaml/badge.svg)](https://github.com/riotkit-org/backup-repository/actions/workflows/test.yaml)
 
 Cloud-native, zero-knowledge, multi-tenant, security-first backup storage with minimal footprint.
 

@@ -96,3 +96,9 @@ jobs:
 
             - name: Install Backup Repository
               run: make k8s_test_backup_repository
+
+            - name: Take a look
+              run: |
+                  sleep 10
+                  kubectl get pods -A
+                  kubectl get events -A
