@@ -21,7 +21,7 @@ k8s_test:
 	kubectl get events -A
 	kubectl logs deployment/backup-repository-backup-repository-server -n backup-repository
 
-	curl -vvv -k http://localhost:30080/health
+	curl -vvv -k http://localhost:30080/ready
 
 	if kubectl get events -A | grep "backup-repository" | grep "Failed" 2>&1 > /dev/null; then \
 	    exit 1; \
