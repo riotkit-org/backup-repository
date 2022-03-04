@@ -63,7 +63,6 @@ spec:
                         containerPort: 8080
                         protocol: TCP
 
-                  # todo: distinct liveness and readiness - make separate endpoints
                   livenessProbe:
                       failureThreshold: 1
                       terminationGracePeriodSeconds: 10
@@ -75,7 +74,7 @@ spec:
                                 value: "{{ .Values.settings.healthCode }}"
                   readinessProbe:
                       httpGet:
-                          path: /health?code={{ .Values.settings.healthCode }}
+                          path: /ready
                           port: http
                           httpHeaders:
                               - name: Authorization

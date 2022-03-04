@@ -45,7 +45,7 @@ func SpawnHttpApplication(ctx *core.ApplicationContainer) error {
 	}).Middleware())
 
 	// server health
-	addServerHealthEndpoint(r, ctx, limiter.NewRateLimiter(time.Minute, 10, func(ctx *gin.Context) (string, error) {
+	addServerHealthEndpoints(r, ctx, limiter.NewRateLimiter(time.Minute, 10, func(ctx *gin.Context) (string, error) {
 		return "health:" + ctx.ClientIP(), nil
 	}).Middleware())
 

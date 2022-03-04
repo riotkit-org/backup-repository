@@ -8,8 +8,16 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-func addServerHealthEndpoint(r *gin.Engine, ctx *core.ApplicationContainer, rateLimiter gin.HandlerFunc) {
+func addServerHealthEndpoints(r *gin.Engine, ctx *core.ApplicationContainer, rateLimiter gin.HandlerFunc) {
+	// responds if service is running (there is enough ram memory, HTTP request can be processed etc.)
 	r.GET("/health", rateLimiter, func(c *gin.Context) {
+		OKResponse(c, gin.H{
+			"msg": "The server is up and running. Dependent services are not shown there. Take a look at /ready endpoint",
+		})
+	})
+
+	// responds if service can handle requests actually
+	r.GET("/ready", rateLimiter, func(c *gin.Context) {
 		// Authorization
 		healthCode := c.GetHeader("Authorization")
 		if healthCode == "" {
