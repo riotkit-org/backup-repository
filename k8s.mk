@@ -26,3 +26,6 @@ k8s_test:
 	@if kubectl get events -A | grep "backup-repository" | grep "Failed" 2>&1 > /dev/null; then \
 	    exit 1; \
 	fi;
+
+k3d:
+	k3d cluster create riotkit --agents 1 -p "30080:30080@agent:0"

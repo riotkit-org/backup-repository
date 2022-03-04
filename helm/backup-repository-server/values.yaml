@@ -30,7 +30,7 @@ image:
     # Overrides the image tag whose default is the chart appVersion.
     tag: ""
 
-# use nodePort for testing, to expose service ports on your local machine and on CI
+# use additional `kind: Service` of LoadBalancer type for testing, to expose service ports on your local machine and on CI
 devPort:
     enable: false
     port: 30080
