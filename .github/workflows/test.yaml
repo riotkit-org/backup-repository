@@ -93,24 +93,8 @@ jobs:
               with:
                   version: ${{ env.K3S_VERSION }}
 
-            - name: Install Postgres
-              run: make k8s_postgres
-
-            - name: Install Min.io
-              run: make k8s_minio
-
-            - name: Install Backup Repository
-              run: make k8s_test_backup_repository
+            - name: Install all required things
+              run: make k8s_install
 
             - name: Verify
-              run: |
-                  sleep 10
-                  kubectl get pods -A
-                  kubectl get events -A
-                  kubectl logs deployment/backup-repository-backup-repository-server -n backup-repository
-                  
-                  curl -vvv -k http://localhost:30080/health
-
-                  if kubectl get events -A | grep "backup-repository" | grep "Failed" 2>&1 > /dev/null; then
-                      exit 1
-                  fi
+              run: make k8s_test
