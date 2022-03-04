@@ -1,0 +1,20 @@
+# existingSecret: ...
+accessKey: AKIAIOSFODNN7EXAMPLE
+secretKey: wJaFuCKtnFEMI/CApItaliSM/bPxRfiCYEXAMPLEKEY
+mode: standalone # recommended to use "distributed" for production
+
+persistence:
+    enabled: true
+    size: 10Gi
+    # existingClaim: ""
+    # storageClass: ""
+
+resources:
+    requests:
+        memory: 100m
+
+defaultBucket:
+    enabled: true
+    name: backups
+    # policy: ...
+    purge: false

@@ -6,6 +6,7 @@ on:
 env:
     REGISTRY: ghcr.io
     IMAGE_NAME: "riotkit-org/backup-repository"
+    K3S_VERSION: "v1.21.2-k3s1"
 
 permissions:
     packages: write
@@ -73,3 +74,25 @@ jobs:
                   push: true
                   tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:snapshot
                   labels: ${{ steps.meta.outputs.labels }}
+
+    test-on-kubernetes:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v3
+              with:
+                  fetch-depth: 0
+
+            - name: Setup Kubernetes cluster
+              uses: debianmaster/actions-k3s@master
+              with:
+                  version: ${{ env.K3S_VERSION }}
+
+            - name: Install Postgres
+              run: make k8s_postgres
+
+            - name: Install Min.io
+              run: make k8s_minio
+
+            - name: Install Backup Repository
+              run: make k8s_test_backup_repository

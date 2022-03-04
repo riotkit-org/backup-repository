@@ -1,3 +1,5 @@
+include k8s.mk
+
 all: build run
 
 test:

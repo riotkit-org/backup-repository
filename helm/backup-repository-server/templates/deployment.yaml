@@ -42,6 +42,7 @@ spec:
 
                   args:
                       - "--health-check-key={{ .Values.settings.healthCode }}"
+                      - "--provider=kubernetes"
 
                   {{- with .Values.env }}
                   env:

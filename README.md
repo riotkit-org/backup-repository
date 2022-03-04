@@ -58,6 +58,13 @@ backup-repository \
     --storage-url="s3://mybucket?endpoint=localhost:9000&disableSSL=true&s3ForcePathStyle=true&region=eu-central-1"
 ```
 
+#### Installing via Helm
+
+```bash
+helm repo add riotkit-org ...
+helm install backup-repository riotkit-org/backup-repository-server -n backup-repository # --values ...
+```
+
 Documentation
 -------------
 

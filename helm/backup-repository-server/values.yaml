@@ -12,16 +12,17 @@ settings:
 secretsType: plain
 
 secrets:
-    BR_JWT_SECRET_KEY: "" # leave empty to auto-generate, will be stored in `kind: Secret`
-    BR_DB_HOSTNAME: "..."
-    BR_DB_PASSWORD: "..."
-    BR_DB_USERNAME: "..."
-    BR_DB_NAME: "..."
+    BR_JWT_SECRET_KEY: "" # MANDATORY
+    BR_DB_HOSTNAME: "postgres.backup-repository.svc.cluster.local"
+    BR_DB_PASSWORD: "postgres"
+    BR_DB_USERNAME: "postgres"
+    BR_DB_NAME: "backup-repository"
     BR_DB_PORT: "5432"
 
-env: []
-    # BR_USE_GOOGLE_CLOUD=false
-    # todo: list all environment variables there
+env:
+    # BR_USE_GOOGLE_CLOUD: true
+    BR_LOG_LEVEL: info
+    BR_STORAGE_DRIVER_URL: "s3://backups?endpoint=minio.backup-repository.svc.cluster.local:9000&disableSSL=true&s3ForcePathStyle=true&region=eu-central-1"
 
 image:
     repository: ghcr.io/riotkit-org/backup-repository

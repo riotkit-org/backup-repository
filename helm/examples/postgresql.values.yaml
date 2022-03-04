@@ -1,0 +1,6 @@
+auth:
+    username: postgres
+    password: postgres
+    database: backup-repository
+
+architecture: standalone # for production better use "replication"

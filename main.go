@@ -17,7 +17,7 @@ import (
 
 type options struct {
 	Help                 bool   `short:"h" long:"help" description:"Shows this help message"`
-	Provider             string `short:"p" long:"provider" description:"Configuration provider. Choice: 'kubernetes', 'filesystem'" default:"kubernetes"`
+	Provider             string `short:"p" long:"provider" description:"Configuration provider. Choice: 'kubernetes', 'filesystem'" default:"kubernetes" env:"BR_CONFIG_PROVIDER"`
 	EncodePasswordAction string `long:"encode-password" description:"Encode a password from CLI instead of running a server"`
 	HashJWT              string `long:"hash-jwt" description:"Generate a hash from JWT"`
 	DbHostname           string `long:"db-hostname" description:"Hostname for database connection" default:"localhost" env:"BR_DB_HOSTNAME"`
