@@ -35,7 +35,7 @@ func addServerHealthEndpoints(r *gin.Engine, ctx *core.ApplicationContainer, rat
 		}.Validate()
 
 		if !healthStatuses.GetOverallStatus() {
-			logrus.Errorln("The server is unhealthy: %v", healthStatuses)
+			logrus.Errorf("The server is unhealthy: %v", healthStatuses)
 
 			ServerErrorResponseWithData(c, errors.New("one of checks failed"), gin.H{
 				"health": healthStatuses,
