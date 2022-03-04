@@ -5,6 +5,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/riotkit-org/backup-repository/core"
 	"github.com/riotkit-org/backup-repository/health"
+	"github.com/sirupsen/logrus"
 )
 
 func addServerHealthEndpoint(r *gin.Engine, ctx *core.ApplicationContainer, rateLimiter gin.HandlerFunc) {
@@ -26,6 +27,8 @@ func addServerHealthEndpoint(r *gin.Engine, ctx *core.ApplicationContainer, rate
 		}.Validate()
 
 		if !healthStatuses.GetOverallStatus() {
+			logrus.Errorln("The server is unhealthy: %v", healthStatuses)
+
 			ServerErrorResponseWithData(c, errors.New("one of checks failed"), gin.H{
 				"health": healthStatuses,
 			})
