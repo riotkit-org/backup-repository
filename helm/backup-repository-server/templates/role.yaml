@@ -5,7 +5,7 @@ metadata:
     name: {{ include "backup-repository-server.fullname" . }}-instance-admin
 rules:
     - apiGroups:
-          - "backups.riotkit.org/v1alpha1"
+          - "backups.riotkit.org"
       resources:
           - backupcollections
           - backupusers
