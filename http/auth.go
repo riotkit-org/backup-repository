@@ -71,7 +71,7 @@ func createAuthenticationMiddleware(r *gin.Engine, di *core.ApplicationContainer
 
 			if err != nil {
 				logrus.Errorf("User lookup error: %v", err)
-				return nil, errors.New("user configuration error. Please take a look at server logs")
+				return nil, jwt.ErrFailedAuthentication
 			}
 
 			if !user.IsPasswordValid(password) {

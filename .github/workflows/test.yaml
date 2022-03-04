@@ -97,5 +97,17 @@ jobs:
             - name: Install all required things
               run: make k8s_install
 
-            - name: Verify
+            - name: Verify installation
               run: make k8s_test
+
+            - name: Prepare Python
+              uses: actions/setup-python@v2
+              with:
+                  python-version: "3.8"
+                  architecture: "x64"
+
+            - name: Prepare Pipenv
+              run: "python -m pip install --upgrade pipenv wheel"
+
+            - name: Test API
+              run: "make setup_api_tests api_tests"

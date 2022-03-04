@@ -5,6 +5,13 @@ all: build run
 test:
 	go test -v ./...
 
+setup_api_tests:
+	kubectl apply -f "docs/examples/" -n backup-repository
+	pipenv install
+
+api_tests:
+	pipenv run pytest -s
+
 coverage:
 	go test -v ./... -covermode=count -coverprofile=coverage.out
 
