@@ -16,7 +16,7 @@ k8s_crd:
 k8s_install: k8s_postgres k8s_minio k8s_crd k8s_test_backup_repository
 
 k8s_test:
-	sleep 10
+	kubectl get svc -A
 	kubectl get pods -A
 	kubectl get events -A
 	kubectl logs deployment/backup-repository-backup-repository-server -n backup-repository
