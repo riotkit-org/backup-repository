@@ -31,7 +31,7 @@ image:
     tag: ""
 
 # use nodePort for testing, to expose service ports on your local machine and on CI
-nodePort:
+devPort:
     enable: false
     port: 30080
 
