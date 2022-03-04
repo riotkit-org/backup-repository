@@ -23,6 +23,6 @@ k8s_test:
 
 	curl -vvv -k http://localhost:30080/health
 
-	if kubectl get events -A | grep "backup-repository" | grep "Failed" 2>&1 > /dev/null; then
-	    exit 1
-	fi
+	if kubectl get events -A | grep "backup-repository" | grep "Failed" 2>&1 > /dev/null; then \
+	    exit 1; \
+	fi;
