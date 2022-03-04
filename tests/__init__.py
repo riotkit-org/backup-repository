@@ -1,3 +1,4 @@
+import time
 import unittest
 import requests
 from json import dumps as to_json
@@ -9,7 +10,7 @@ class BaseTestCase(unittest.TestCase):
     def get(self, url: str, auth: str) -> requests.Response:
         headers = {}
         if auth:
-            headers['Authorization'] = auth
+            headers['Authorization'] = f'Bearer {auth}'
 
         return requests.get(f"{self._base_url}{url}", headers=headers)
 
@@ -26,3 +27,12 @@ class BaseTestCase(unittest.TestCase):
             data = to_json(data)
 
         return requests.post(f"{self._base_url}{url}", headers=headers, data=data)
+
+    def login(self, username: str, password: str) -> str:
+        time.sleep(0.5)
+        response = self.post("/api/stable/auth/login", data={'username': username, 'password': password})
+        data = response.json()
+
+        assert "token" in data['data'], response.content
+
+        return data['data']['token']

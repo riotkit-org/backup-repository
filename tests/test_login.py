@@ -16,3 +16,10 @@ class LoginTest(BaseTestCase):
         assert "sessionId" in data['data']
         assert "token" in data['data']
         assert data['status'] is True
+
+    def test_whoami(self):
+        token = self.login('admin', 'admin')
+        response = self.get("/api/stable/auth/whoami", auth=token).json()
+
+        assert response['data']['email'] == 'riotkit@riseup.net', response
+        self.assertNotEqual(response['data']['sessionId'], '')  # not empty
