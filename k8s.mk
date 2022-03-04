@@ -8,4 +8,4 @@ k8s_minio:
 	helm upgrade --install minio minio/minio -n backup-repository --values ./helm/examples/minio.values.yaml --wait --timeout 2m0s
 
 k8s_test_backup_repository:
-	helm install backup-repository ./helm/backup-repository-server -n backup-repository --values ./helm/examples/backup-repository-ci.values.yaml
+	helm upgrade --install backup-repository ./helm/backup-repository-server -n backup-repository --values ./helm/examples/backup-repository-ci.values.yaml

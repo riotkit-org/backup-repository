@@ -1,6 +1,6 @@
 auth:
-    username: postgres
-    password: postgres
+    username: riotkit
+    password: putinchuj
     database: backup-repository
 
 architecture: standalone # for production better use "replication"
