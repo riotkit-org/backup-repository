@@ -59,7 +59,7 @@ spec:
 
                   ports:
                       - name: http
-                        containerPort: 80
+                        containerPort: 8080
                         protocol: TCP
 
                   # todo: distinct liveness and readiness - make separate endpoints
