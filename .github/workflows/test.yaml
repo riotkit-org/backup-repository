@@ -6,7 +6,6 @@ on:
 env:
     REGISTRY: ghcr.io
     IMAGE_NAME: "riotkit-org/backup-repository"
-    K3S_VERSION: "v1.21.2-k3s1"
 
 permissions:
     packages: write
@@ -89,9 +88,11 @@ jobs:
                   fetch-depth: 0
 
             - name: Setup Kubernetes cluster
-              uses: debianmaster/actions-k3s@master
+              uses: AbsaOSS/k3d-action@v2
               with:
-                  version: ${{ env.K3S_VERSION }}
+                  cluster-name: "riotkit"
+                  args: |
+                      --agents 1 -p "30080:30080@agent:0"
 
             - name: Install all required things
               run: make k8s_install
