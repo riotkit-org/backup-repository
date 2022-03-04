@@ -31,7 +31,9 @@ image:
     tag: ""
 
 # use nodePort for testing, to expose service ports on your local machine and on CI
-nodePort: false
+nodePort:
+    enable: false
+    port: 30080
 
 imagePullSecrets: []
 nameOverride: ""

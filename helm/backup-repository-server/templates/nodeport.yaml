@@ -1,4 +1,4 @@
-{{- if .Values.nodePort }}
+{{- if .Values.nodePort.enable }}
 ---
 apiVersion: v1
 kind: Service
@@ -11,6 +11,6 @@ spec:
     ports:
         - port: {{ .Values.service.port }}
           targetPort: {{ .Values.service.port }}
-          nodePort: 30080
+          nodePort: {{ .Values.nodePort.port }}
 
 {{- end }}

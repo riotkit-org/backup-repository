@@ -10,6 +10,9 @@ env:
     AWS_SECRET_KEY: "wJaFuCKtnFEMI/CApItaliSM/bPxRfiCYEXAMPLEKEY"
     AWS_ACCESS_KEY_ID: "AKIAIOSFODNN7EXAMPLE"
 
-nodePort: true
+nodePort:
+    enable: true
+    port: 30080
+
 image:
     tag: snapshot
