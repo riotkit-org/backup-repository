@@ -5,8 +5,8 @@ class LoginTest(BaseTestCase):
     def test_jwt_gaining(self):
         response = self.post("/api/stable/auth/login", data={'username': 'somebody', 'password': 'invalid'})
 
-        assert response.status_code == 403
-        assert "user configuration error" in str(response.content)
+        assert response.status_code == 401
+        assert "incorrect Username or Password" in str(response.content)
 
     def test_jwt_granted(self):
         response = self.post("/api/stable/auth/login", data={'username': 'admin', 'password': 'admin'})
