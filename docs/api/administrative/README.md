@@ -1,12 +1,12 @@
 Administrative API endpoints
 ============================
 
-## GET `/health``
+## GET `/ready`
 
 **Example:**
 
 ```bash
-curl -s -X GET 'http://localhost:8080/health'
+curl -s -X GET 'http://localhost:8080/ready'
 ```
 
 **Example response (200):**
@@ -26,6 +26,12 @@ curl -s -X GET 'http://localhost:8080/health'
                 "name": "StorageAvailabilityValidator",
                 "status": true,
                 "statusText": "StorageAvailabilityValidator=true"
+            },
+            {
+                "message": "OK",
+                "name": "ConfigurationProviderValidator",
+                "status": true,
+                "statusText": "ConfigurationProviderValidator=true"
             }
         ]
     },
