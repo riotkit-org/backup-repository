@@ -1,6 +1,6 @@
 secrets:
     BR_JWT_SECRET_KEY: "87GHq66A+uGkcn/AyxrnPYdd5F0XUmGlHsREbY3tcM4CpO6/dFL7z/057DHnp9nMdoYOpKxwYWrM9XyffjrBidm6/VCzfam9GwMlOac7TsidcTnSHG5IasPICb9bKE3h" # MANDATORY
-    BR_DB_HOSTNAME: "postgres.backup-repository.svc.cluster.local"
+    BR_DB_HOSTNAME: "postgres-postgresql.backup-repository.svc.cluster.local"
     BR_DB_PASSWORD: "postgres"
     BR_DB_USERNAME: "postgres"
     BR_DB_NAME: "backup-repository"
