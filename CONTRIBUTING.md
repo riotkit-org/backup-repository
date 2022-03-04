@@ -23,3 +23,10 @@ It is a special module that defines all routes, it's authentication and security
 - responses: HTTP responses format standardization
 - utils: Various utils for validating user input, checking session etc.
 - main: Registers all the endpoints to the router
+
+Testing
+-------
+
+1. Application needs to be tested with all supported software listed in README.md if there is a risk that something could be break
+2. Unit tests needs to be written
+3. [API tests in PyTest](./tests) needs to be written
