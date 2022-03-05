@@ -39,7 +39,7 @@ jobs:
             - uses: actions/upload-artifact@v2
               with:
                   name: binary
-                  path: .build
+                  path: .build/backup-repository
 
     release-docker:
         runs-on: ubuntu-latest
@@ -53,6 +53,7 @@ jobs:
             - uses: actions/download-artifact@v2
               with:
                   name: binary
+                  path: .build/backup-repository
 
             - name: Log in to the Container registry
               uses: docker/login-action@dd4fa0671be5250ee6f50aedf4cb05514abda2c7
@@ -88,6 +89,7 @@ jobs:
             - uses: actions/download-artifact@v2
               with:
                   name: binary
+                  path: .build/backup-repository
 
             - name: Create Arch Linux package
               uses: 2m/arch-pkgbuild-builder@v1.18
