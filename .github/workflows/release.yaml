@@ -8,8 +8,7 @@ env:
     REGISTRY: ghcr.io
     IMAGE_NAME: "riotkit-org/backup-repository"
 
-permissions:
-    packages: write
+permissions: write-all
 
 jobs:
     build:
