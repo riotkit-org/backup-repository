@@ -7,7 +7,7 @@ from json import dumps as to_json
 class BaseTestCase(unittest.TestCase):
     _base_url: str = 'http://localhost:30080'
 
-    def get(self, url: str, auth: str) -> requests.Response:
+    def get(self, url: str, auth: str = None) -> requests.Response:
         headers = {}
         if auth:
             headers['Authorization'] = f'Bearer {auth}'
