@@ -1,3 +1,4 @@
+import subprocess
 import time
 import unittest
 import requests
@@ -36,3 +37,7 @@ class BaseTestCase(unittest.TestCase):
         assert "token" in data['data'], response.content
 
         return data['data']['token']
+
+    @staticmethod
+    def scale(kind: str, name: str, replicas: int):
+        subprocess.check_call(["kubectl", "scale", "-n", "backup-repository", kind, name, f"--replicas={replicas}"])
