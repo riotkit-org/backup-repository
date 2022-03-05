@@ -10,7 +10,7 @@ class HealthTest(BaseTestCase):
     def test_readiness_when_postgresql_is_off(self):
         try:
             self.scale("sts", "postgres-postgresql", 0)
-            response = self.get("/ready", auth=None)
+            response = self.get("/ready?code=changeme", auth=None)
 
             assert response.status_code > 500
         finally:
@@ -19,7 +19,7 @@ class HealthTest(BaseTestCase):
     def test_readiness_when_storage_is_off(self):
         try:
             self.scale("deployment", "minio", 0)
-            response = self.get("/ready", auth=None)
+            response = self.get("/ready?code=changeme", auth=None)
 
             assert response.status_code > 500
         finally:
