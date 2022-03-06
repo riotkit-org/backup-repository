@@ -8,12 +8,12 @@ from json import dumps as to_json
 class BaseTestCase(unittest.TestCase):
     _base_url: str = 'http://localhost:30080'
 
-    def get(self, url: str, auth: str = None) -> requests.Response:
+    def get(self, url: str, auth: str = None, timeout: int = 5) -> requests.Response:
         headers = {}
         if auth:
             headers['Authorization'] = f'Bearer {auth}'
 
-        return requests.get(f"{self._base_url}{url}", headers=headers)
+        return requests.get(f"{self._base_url}{url}", headers=headers, timeout=timeout)
 
     def post(self, url: str, data: any, additional_headers: dict = None, auth: str = None) -> requests.Response:
         headers = {}
@@ -49,4 +49,4 @@ class BaseTestCase(unittest.TestCase):
         if ready:
             condition = "=False"
 
-        subprocess.check_call(['kubectl', 'wait', '--for=condition=ready' + condition, 'pod', '-l', label, '-n', 'backup-repository', '--timeout=120s'])
+        subprocess.check_call(['kubectl', 'wait', '--for=condition=ready' + condition, 'pod', '-l', label, '-n', 'backup-repository', '--timeout=300s'])

@@ -1,8 +1,11 @@
 package health
 
 import (
+	"fmt"
 	"github.com/pkg/errors"
 	"gorm.io/gorm"
+	"math/rand"
+	"time"
 )
 
 type DbValidator struct {
@@ -10,9 +13,12 @@ type DbValidator struct {
 }
 
 func (v DbValidator) Validate() error {
+	rand.Seed(time.Now().UnixNano())
+	key := rand.Intn(8)
 	var result int
-	err := v.db.Raw("SELECT 161").Scan(&result).Error
-	if err != nil || result != 161 {
+
+	err := v.db.Raw(fmt.Sprintf("SELECT %v", key)).Scan(&result).Error
+	if err != nil || result != key {
 		return errors.Wrapf(err, "cannot connect to database")
 	}
 

@@ -13,7 +13,7 @@ class HealthTest(BaseTestCase):
             self.wait_for("app.kubernetes.io/instance=postgres", ready=False)
             response = self.get("/ready?code=changeme", auth=None)
 
-            assert response.status_code >= 500
+            assert response.status_code >= 500, response.content
         finally:
             self.scale("sts", "postgres-postgresql", 1)
             self.wait_for("app.kubernetes.io/instance=postgres")
@@ -24,7 +24,7 @@ class HealthTest(BaseTestCase):
             self.wait_for("app=minio", ready=False)
             response = self.get("/ready?code=changeme", auth=None)
 
-            assert response.status_code >= 500
+            assert response.status_code >= 500, response.content
         finally:
             self.scale("deployment", "minio", 1)
             self.wait_for("app=minio")
