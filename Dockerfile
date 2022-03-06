@@ -7,4 +7,4 @@ FROM gcr.io/distroless/base-debian11
 ENV GIN_MODE=release
 COPY --from=builder /backup-repository /backup-repository
 USER 65532
-ENTRYPOINT ["/go/bin/backup-repository"]
+ENTRYPOINT ["/backup-repository"]
