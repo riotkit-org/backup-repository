@@ -34,11 +34,7 @@ k8s_test:
 	kubectl get events -A
 	kubectl logs deployment/backup-repository-backup-repository-server -n backup-repository
 
-	curl -vvv -k http://localhost:30080/ready?code=changeme
-
-	@if kubectl get events -A | grep "backup-repository" | grep "Failed" 2>&1 > /dev/null; then \
-	    exit 1; \
-	fi;
+	curl -vvv -k http://localhost:30080/ready?code=changeme --fail-early
 
 #################################
 ## Local development environment
