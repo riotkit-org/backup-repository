@@ -58,6 +58,7 @@ func (s *Service) createGPGStreamMiddleware() streamMiddleware {
 			return errors.New("first chunk of uploaded data does not contain a valid GPG header")
 		}
 
+		// if previous hunk is not empty, then we are at the end of the stream
 		if len(previousHunkBeforeEof) > 0 {
 			concatenated := [][]byte{previousHunkBeforeEof, buff}
 
@@ -99,7 +100,7 @@ func (s *Service) createNonEmptyMiddleware() streamMiddleware {
 func (s *Service) createQuotaMaxFileSizeMiddleware(maxFileSize int64) streamMiddleware {
 	validator := func(buff []byte, totalLength int64, previousHunkBeforeEof []byte, chunkNum int) error {
 		if totalLength > maxFileSize {
-			return errors.New(fmt.Sprintf("filesize reached allowed limit. Uploaded %vbytes, allowed to upload only %v bytes", totalLength, maxFileSize))
+			return errors.New(fmt.Sprintf("filesize reached allowed limit. Uploaded %v bytes, allowed to upload only %v bytes", totalLength, maxFileSize))
 		}
 		return nil
 	}
