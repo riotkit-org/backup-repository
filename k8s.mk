@@ -1,5 +1,5 @@
 IMAGE_REPOSITORY=ghcr.io/riotkit-org/backup-repository
-IMAGE_TAG=latest
+IMAGE_TAG=snapshot
 DEV_LOCAL_IMAGE_REPOSITORY=127.0.0.1:30050/backup-repository
 
 k3d: ## Run local empty Kubernetes cluster
@@ -45,8 +45,8 @@ k8s_test:
 #################################
 
 k8s_publish_dev_registry: ## Publish to local Kubernetes registry
-	docker build . -t ${DEV_LOCAL_IMAGE_REPOSITORY}:latest
-	docker push ${DEV_LOCAL_IMAGE_REPOSITORY}:latest
+	docker build . -t ${DEV_LOCAL_IMAGE_REPOSITORY}:snapshot
+	docker push ${DEV_LOCAL_IMAGE_REPOSITORY}:snapshot
 
 k8s_test_promote: ## Build & Push & Install at local Kubernetes
 	make build k8s_crd k8s_publish_dev_registry k8s_test_backup_repository IMAGE_REPOSITORY=${DEV_LOCAL_IMAGE_REPOSITORY}
