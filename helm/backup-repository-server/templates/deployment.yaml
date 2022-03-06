@@ -19,7 +19,7 @@ spec:
           {{- end }}
             labels:
               {{- include "backup-repository-server.selectorLabels" . | nindent 16 }}
-              {{- if or((eq .Values.image.tag "latest") (eq .Values.image.tag "snapshot")) }}
+              {{- if eq .Values.image.tag "latest" | or (eq .Values.image.tag "snapshot") }}
                 refreshImageTag: "{{- randAlphaNum 24 | nospace -}}"
               {{- end }}
         spec:
