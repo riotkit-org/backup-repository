@@ -64,4 +64,20 @@ func TestRequestCancelledMiddleware(t *testing.T) {
 	// not cancelled
 	middlewareNotCancelled := s.createRequestCancelledMiddleware(context.TODO())
 	assert.Nil(t, middlewareNotCancelled.processor([]byte("hello"), int64(5), []byte(""), 1))
+
+	assert.Nil(t, middlewareNotCancelled.resultReporter()) // this should do nothing
+}
+
+func TestNestedStreamMiddlewares(t *testing.T) {
+	s := Service{}
+
+	middlewares := NestedStreamMiddlewares{
+		s.createNonEmptyMiddleware(),
+		s.createQuotaMaxFileSizeMiddleware(int64(1024)),
+	}
+
+	_ = middlewares.processChunk([]byte(""), int64(0), []byte(""), 1)
+	assert.NotNil(t, middlewares.checkFinalStatusAfterFilesWasUploaded())
+	assert.Nil(t, middlewares.processChunk([]byte("hello"), int64(5), []byte(""), 1))
+	assert.Nil(t, middlewares.checkFinalStatusAfterFilesWasUploaded())
 }
