@@ -84,6 +84,7 @@ Security
 - We use [distroless](https://github.com/GoogleContainerTools/distroless) images
 - By default, we set [requests and limits](https://kubesec.io/basics/containers-resources-limits-memory/) for `kind: Pod` in Kubernetes
 - Built-in simple Request Rate limiter to protect against DoS attacks on application side (Note: The limit is PER application instance. [For more advanced limiting please configure your reverse-proxy properly](http://nginx.org/en/docs/http/ngx_http_limit_req_module.html))
+- Each `BackupUser` can be optionally restricted to connect only from allowed IP addresses
 
 ```go
 Argon2Config{
