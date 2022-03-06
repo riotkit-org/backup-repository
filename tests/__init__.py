@@ -49,4 +49,4 @@ class BaseTestCase(unittest.TestCase):
         if ready:
             condition = "=False"
 
-        subprocess.check_call(['kubectl', 'wait', '--for=condition=ready' + condition, 'pod', '-l', label, '-n', 'backup-repository'])
+        subprocess.check_call(['kubectl', 'wait', '--for=condition=ready' + condition, 'pod', '-l', label, '-n', 'backup-repository', '--timeout=120s'])
