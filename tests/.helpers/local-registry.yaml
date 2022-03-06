@@ -1,0 +1,14 @@
+---
+apiVersion: v1
+kind: Service
+metadata:
+    name: docker-registry-lb
+    namespace: default
+spec:
+    type: LoadBalancer
+    selector:
+        app: docker-registry
+    ports:
+        - port: 5000
+          targetPort: 5000
+          nodePort: 30050

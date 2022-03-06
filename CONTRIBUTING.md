@@ -30,3 +30,27 @@ Testing
 1. Application needs to be tested with all supported software listed in README.md if there is a risk that something could be break
 2. Unit tests needs to be written
 3. [API tests in PyTest](./tests) needs to be written
+
+Development environment
+-----------------------
+
+#### Setting up cluster
+
+```bash
+make k3d k8s_postgres k8s_minio k8s_dev_registry
+```
+
+#### Promoting changes to the local cluster
+
+```bash
+make k8s_test_promote
+```
+
+#### Checking
+
+```bash
+curl -vvv http://127.0.0.1:30080/health?code=changeme
+
+# in browser
+xdg-open http://127.0.0.1:30080/health?code=changeme
+```
