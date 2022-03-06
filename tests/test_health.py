@@ -10,6 +10,7 @@ class HealthTest(BaseTestCase):
     def test_readiness_when_postgresql_is_off(self):
         try:
             self.scale("sts", "postgres-postgresql", 0)
+            self.wait_for("app.kubernetes.io/instance=postgres", ready=False)
             response = self.get("/ready?code=changeme", auth=None)
 
             assert response.status_code >= 500
@@ -20,6 +21,7 @@ class HealthTest(BaseTestCase):
     def test_readiness_when_storage_is_off(self):
         try:
             self.scale("deployment", "minio", 0)
+            self.wait_for("app=minio", ready=False)
             response = self.get("/ready?code=changeme", auth=None)
 
             assert response.status_code >= 500
