@@ -2,12 +2,14 @@ package http
 
 import (
 	"errors"
+	"fmt"
 	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
 	"github.com/riotkit-org/backup-repository/core"
 	"github.com/riotkit-org/backup-repository/security"
 	"github.com/riotkit-org/backup-repository/users"
 	"github.com/sirupsen/logrus"
+	"math/rand"
 	"time"
 )
 
@@ -36,9 +38,13 @@ func createAuthenticationMiddleware(r *gin.Engine, di *core.ApplicationContainer
 		IdentityKey: IdentityKey,
 		PayloadFunc: func(data interface{}) jwt.MapClaims {
 			if v, ok := data.(*AuthUser); ok {
-				return jwt.MapClaims{
+				claims := jwt.MapClaims{
 					IdentityKey: v.UserName,
 				}
+				rand.Seed(time.Now().UnixNano())
+				claims["rand"] = fmt.Sprintf("%v", rand.Intn(64))
+
+				return claims
 			}
 			return jwt.MapClaims{}
 		},
