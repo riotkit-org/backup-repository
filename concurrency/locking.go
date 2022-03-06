@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 	"math/rand"
 	"time"
@@ -30,6 +31,7 @@ func (ls *LocksService) Lock(id string, howLong time.Duration) (Lock, error) {
 
 func (ls *LocksService) addLock(id string, howLong time.Duration) error {
 	expiration := time.Now().Add(howLong)
+	logrus.Debugf("Locking '%s' until '%v'", id, expiration)
 	return ls.db.Exec("INSERT INTO locks (id, expires) VALUES (@id, @expires);", sql.Named("id", id), sql.Named("expires", expiration)).Error
 }
 
@@ -74,5 +76,6 @@ type Lock struct {
 }
 
 func (l *Lock) Unlock() {
+	logrus.Debugf("Releasing lock '%s'", l.Id)
 	l.unlock()
 }

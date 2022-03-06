@@ -1,6 +1,7 @@
 package http
 
 import (
+	"context"
 	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"
 	"github.com/riotkit-org/backup-repository/core"
@@ -30,7 +31,7 @@ func addServerHealthEndpoints(r *gin.Engine, ctx *core.ApplicationContainer, rat
 
 		healthStatuses := health.Validators{
 			health.NewDbValidator(ctx.Db),
-			health.NewStorageValidator(ctx.Storage),
+			health.NewStorageValidator(ctx.Storage, context.Background(), ctx.Storage.HealthTimeout),
 			health.NewConfigurationProviderValidator(*ctx.Config),
 		}.Validate()
 

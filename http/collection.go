@@ -1,6 +1,7 @@
 package http
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"github.com/gin-contrib/timeout"
@@ -101,7 +102,7 @@ func addUploadRoute(r *gin.RouterGroup, ctx *core.ApplicationContainer, requestT
 			}
 
 			// [HTTP] Upload a file from selected source, then handle errors - delete file from storage if not uploaded successfully
-			wroteLen, uploadError := ctx.Storage.UploadFile(stream, &version, &middlewares)
+			wroteLen, uploadError := ctx.Storage.UploadFile(c.Request.Context(), stream, &version, &middlewares)
 			if uploadError != nil {
 				_ = ctx.Storage.Delete(&version)
 
@@ -169,7 +170,7 @@ func addDownloadRoute(r *gin.RouterGroup, ctx *core.ApplicationContainer, reques
 			c.Header("Content-Length", fmt.Sprintf("%v", version.Filesize))
 
 			// Write output directly to the HTTP response writer
-			if _, err := ctx.Storage.CopyStream(stream, c.Writer, 1024*1024, &middlewares); err != nil {
+			if _, err := ctx.Storage.CopyStream(context.Background(), stream, c.Writer, 1024*1024, &middlewares); err != nil {
 				ServerErrorResponse(c, errors.New(fmt.Sprintf("cannot copy stream to download a version: %v", err)))
 				return
 			}

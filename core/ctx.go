@@ -8,6 +8,7 @@ import (
 	"github.com/riotkit-org/backup-repository/storage"
 	"github.com/riotkit-org/backup-repository/users"
 	"gorm.io/gorm"
+	"time"
 )
 
 type ApplicationContainer struct {
@@ -20,4 +21,14 @@ type ApplicationContainer struct {
 	JwtSecretKey    string
 	HealthCheckKey  string
 	Locks           *concurrency.LocksService
+
+	// global timeouts
+	UploadTimeout   time.Duration
+	DownloadTimeout time.Duration
+
+	// global request limit rate
+	DefaultRPS          int16
+	AuthRPM             int16
+	CollectionHealthRPM int16
+	ServerHealthRPM     int16
 }

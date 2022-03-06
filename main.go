@@ -12,7 +12,9 @@ import (
 	"github.com/riotkit-org/backup-repository/storage"
 	"github.com/riotkit-org/backup-repository/users"
 	log "github.com/sirupsen/logrus"
+	"gorm.io/gorm"
 	"os"
+	"time"
 )
 
 type options struct {
@@ -31,6 +33,20 @@ type options struct {
 	Level                string `long:"log-level" description:"Log level" default:"debug" env:"BR_LOG_LEVEL"`
 	StorageDriverUrl     string `long:"storage-url" description:"Storage driver url compatible with GO Cloud (https://gocloud.dev/howto/blob/)" env:"BR_STORAGE_DRIVER_URL"`
 	IsGCS                bool   `long:"use-google-cloud" description:"If using Google Cloud Storage, then in --storage-url just type bucket name" env:"BR_USE_GOOGLE_CLOUD"`
+
+	// storage timeouts
+	StorageHealthTimeout string `long:"storage-health-timeout" description:"Maximum allowed storage ping" default:"5s" env:"BR_STORAGE_HEALTH_TIMEOUT"`
+	StorageIOTimeout     string `long:"storage-io-timeout" description:"Maximum time the server can read/write to storage for a single file. WARNING! If you have very large files you need to consider to increase this value." default:"2h" env:"BR_STORAGE_IO_TIMEOUT"`
+
+	// http timeouts
+	UploadTimeout   string `long:"http-upload-timeout" description:"HTTP upload endpoint timeout" default:"180m" env:"BR_HTTP_UPLOAD_TIMEOUT"`
+	DownloadTimeout string `long:"http-download-timeout" description:"HTTP download endpoint timeout" default:"180m" env:"BR_HTTP_DOWNLOAD_TIMEOUT"`
+
+	// request rate limit
+	DefaultRPS          int16 `long:"rate-default-limit" description:"Request rate limit for all endpoints (except those that have it's dedicated limit). Unit: requests per second" default:"5"`
+	AuthRPM             int16 `long:"rate-auth-limit" description:"Request rate limit for login/authentication endpoints. Unit: requests per minute" default:"10"`
+	CollectionHealthRPM int16 `long:"rate-collection-health-limit" description:"Request rate limit for collection's /health endpoint. Unit: requests per minute" default:"10"`
+	ServerHealthRPM     int16 `long:"rate-server-health-limit" description:"Request rate limit for server's /health and /ready endpoints. Unit: requests per minute. WARNING: Be careful in Kubernetes as Kube API also can hit this rate limit and restart your service!" default:"160"`
 }
 
 func main() {
@@ -79,11 +95,6 @@ func main() {
 	usersService := users.NewUsersService(configProvider)
 	gaService := security.NewService(dbDriver)
 	collectionsService := collections.NewService(configProvider)
-	storageService, storageError := storage.NewService(dbDriver, opts.StorageDriverUrl, opts.IsGCS)
-	if storageError != nil {
-		log.Errorln("Cannot initialize storage driver")
-		log.Fatal(storageError)
-	}
 
 	ctx := core.ApplicationContainer{
 		Db:              dbDriver,
@@ -93,12 +104,55 @@ func main() {
 		JwtSecretKey:    opts.JwtSecretKey,
 		HealthCheckKey:  opts.HealthCheckKey,
 		Collections:     &collectionsService,
-		Storage:         &storageService,
+		Storage:         createStorage(dbDriver, &opts),
 		Locks:           &locksService,
+
+		// timeouts
+		UploadTimeout:   toDurationOrFatal(opts.UploadTimeout),
+		DownloadTimeout: toDurationOrFatal(opts.DownloadTimeout),
+
+		// request limit rates
+		DefaultRPS:          opts.DefaultRPS,
+		AuthRPM:             opts.AuthRPM,
+		CollectionHealthRPM: opts.CollectionHealthRPM,
+		ServerHealthRPM:     opts.ServerHealthRPM,
 	}
 
 	if err := http.SpawnHttpApplication(&ctx); err != nil {
 		log.Errorf("Cannot spawn HTTP server: %v", err)
 		os.Exit(1)
 	}
+}
+
+func createStorage(dbDriver *gorm.DB, opts *options) *storage.Service {
+	healthTimeout, storageTimeoutErr := time.ParseDuration(opts.StorageHealthTimeout)
+	if storageTimeoutErr != nil {
+		log.Errorln("Cannot parse --storage-health-timeout duration")
+		log.Fatal(storageTimeoutErr)
+	}
+
+	ioTimeout, ioTimeoutErr := time.ParseDuration(opts.StorageIOTimeout)
+	if ioTimeoutErr != nil {
+		log.Errorln("Cannot parse --storage-io-timeout duration")
+		log.Fatal(ioTimeoutErr)
+	}
+
+	log.Debugf("Creating storage with ioTimeout=%v, healthTimeout=%v", ioTimeout, healthTimeout)
+
+	storageService, storageError := storage.NewService(dbDriver, opts.StorageDriverUrl, opts.IsGCS, healthTimeout, ioTimeout)
+	if storageError != nil {
+		log.Errorln("Cannot initialize storage driver")
+		log.Fatal(storageError)
+	}
+
+	return &storageService
+}
+
+func toDurationOrFatal(durationStr string) time.Duration {
+	duration, err := time.ParseDuration(durationStr)
+	if err != nil {
+		log.Errorf("Cannot parse %s to duration", durationStr)
+		log.Fatal(err)
+	}
+	return duration
 }

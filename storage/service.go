@@ -19,8 +19,10 @@ import (
 )
 
 type Service struct {
-	storage    *blob.Bucket
-	repository *VersionsRepository
+	storage       *blob.Bucket
+	repository    *VersionsRepository
+	HealthTimeout time.Duration
+	IOTimeout     time.Duration
 }
 
 func (s *Service) FindNextVersionForCollectionId(name string) (int, error) {
@@ -213,15 +215,18 @@ func (s *Service) FindAllActiveVersionsFor(id string) ([]UploadedVersion, error)
 }
 
 // TestReadWrite is performing a simple write & read & delete operation to check if storage is healthy
-func (s *Service) TestReadWrite() error {
+func (s *Service) TestReadWrite(parentCtx context.Context, timeout time.Duration) error {
 	healthKey := fmt.Sprintf(".health-%v", time.Now().UnixNano())
 	healthSecret := fmt.Sprintf("secret-%v", time.Now().Unix())
 
-	if err := s.storage.WriteAll(context.TODO(), healthKey, []byte(healthSecret), &blob.WriterOptions{}); err != nil {
+	ctx, cancel := context.WithTimeout(parentCtx, timeout)
+	defer cancel()
+
+	if err := s.storage.WriteAll(ctx, healthKey, []byte(healthSecret), &blob.WriterOptions{}); err != nil {
 		return err
 	}
 
-	read, err := s.storage.ReadAll(context.TODO(), healthKey)
+	read, err := s.storage.ReadAll(ctx, healthKey)
 	if err != nil {
 		return err
 	}
@@ -229,7 +234,7 @@ func (s *Service) TestReadWrite() error {
 		return errors.New("cannot verify storage read&write - wrote a text, but read a different text")
 	}
 
-	if err := s.storage.Delete(context.TODO(), healthKey); err != nil {
+	if err := s.storage.Delete(ctx, healthKey); err != nil {
 		return err
 	}
 
@@ -237,7 +242,7 @@ func (s *Service) TestReadWrite() error {
 }
 
 // NewService is a factory method that knows how to construct a Storage provider, distincting multiple types of providers
-func NewService(db *gorm.DB, driverUrl string, isUsingGCS bool) (Service, error) {
+func NewService(db *gorm.DB, driverUrl string, isUsingGCS bool, healthTimeout time.Duration, ioTimeout time.Duration) (Service, error) {
 	repository := VersionsRepository{db: db}
 
 	// Google Cloud requires extra support
@@ -258,7 +263,7 @@ func NewService(db *gorm.DB, driverUrl string, isUsingGCS bool) (Service, error)
 			logrus.Warningln("If connection status is still failing without a message then, check if bucket exists")
 			return Service{}, errors.New(fmt.Sprintf("Google Cloud Storage bucket is not accessible: %v || connection status = %v", err, result))
 		}
-		return Service{storage: driver, repository: &repository}, nil
+		return Service{storage: driver, repository: &repository, HealthTimeout: healthTimeout, IOTimeout: ioTimeout}, nil
 	}
 
 	// AWS S3, Min.io, CEPH and others compatible with S3 protocol
@@ -274,7 +279,7 @@ func NewService(db *gorm.DB, driverUrl string, isUsingGCS bool) (Service, error)
 		return Service{}, errors.New(fmt.Sprintf("bucket is not accessible: %v || connection status = %v", err, result))
 	}
 
-	return Service{storage: driver, repository: &repository}, nil
+	return Service{storage: driver, repository: &repository, HealthTimeout: healthTimeout, IOTimeout: ioTimeout}, nil
 }
 
 func contains(s []string, e string) bool {

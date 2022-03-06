@@ -50,7 +50,7 @@ test_upload_by_form_1mb:
 	@echo "-----BEGIN PGP MESSAGE-----" > /tmp/1mb.gpg
 	@openssl rand -base64 $$((735*1024*1)) >> /tmp/1mb.gpg
 	@echo "-----END PGP MESSAGE-----" >> /tmp/1mb.gpg
-	curl -vvv -X POST -H 'Authorization: Bearer ${TOKEN}' -F "file=@/tmp/1mb.gpg" 'http://localhost:8080/api/stable/repository/collection/iwa-ait/version' --limit-rate 100K
+	curl -vvv -X POST -H 'Authorization: Bearer ${TOKEN}' -F "file=@/tmp/1mb.gpg" 'http://localhost:8080/api/stable/repository/collection/iwa-ait/version' --limit-rate 400K
 
 test_upload_by_form_5mb:
 	@echo "-----BEGIN PGP MESSAGE-----" > /tmp/5mb.gpg
@@ -104,6 +104,7 @@ run:
 		--db-name=postgres \
 		--health-check-key=changeme \
 		--jwt-secret-key="secret key" \
+		--storage-io-timeout="5m" \
 		--storage-url="s3://mybucket?endpoint=localhost:9000&disableSSL=true&s3ForcePathStyle=true&region=eu-central-1"
 
 build:
