@@ -102,6 +102,7 @@ run:
 		--db-user=postgres \
 		--db-password=postgres \
 		--db-name=postgres \
+		--health-check-key=changeme \
 		--jwt-secret-key="secret key" \
 		--storage-url="s3://mybucket?endpoint=localhost:9000&disableSSL=true&s3ForcePathStyle=true&region=eu-central-1"
 

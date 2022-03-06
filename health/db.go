@@ -10,10 +10,12 @@ type DbValidator struct {
 }
 
 func (v DbValidator) Validate() error {
-	err := v.db.Raw("SELECT 1").Error
-	if err != nil {
+	var result int
+	err := v.db.Raw("SELECT 161").Scan(&result).Error
+	if err != nil || result != 161 {
 		return errors.Wrapf(err, "cannot connect to database")
 	}
+
 	return nil
 }
 
