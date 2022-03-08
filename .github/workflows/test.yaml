@@ -101,7 +101,7 @@ jobs:
               run: make k8s_test
 
             - name: Prepare Python
-              uses: actions/setup-python@v2
+              uses: actions/setup-python@v3
               with:
                   python-version: "3.8"
                   architecture: "x64"
