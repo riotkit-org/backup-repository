@@ -34,15 +34,15 @@ Testing
 Development environment
 -----------------------
 
-Recommended setup is using k3d to 
-
-#### Setting up cluster
+Recommended setup is using k3d, which is a K3s lightweight Kubernetes distribution inside a docker container.
 
 **Requirements:**
 - [k3d](https://k3d.io/)
 - [helm](https://helm.sh/docs/intro/quickstart/)
 - [docker](https://docs.docker.com/get-docker/)
 - [make](https://www.gnu.org/software/make/)
+
+#### Setting up cluster
 
 ```bash
 make k3d k8s_postgres k8s_minio k8s_dev_registry
