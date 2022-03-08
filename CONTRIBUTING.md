@@ -27,14 +27,22 @@ It is a special module that defines all routes, it's authentication and security
 Testing
 -------
 
-1. Application needs to be tested with all supported software listed in README.md if there is a risk that something could be break
-2. Unit tests needs to be written
-3. [API tests in PyTest](./tests) needs to be written
+1. Application should be tested with all supported software listed in README.md if there is a risk that something could be broken
+2. Unit tests coverage is required
+3. [API tests in PyTest](./tests) should be written, especially when code is difficult to cover with unit tests
 
 Development environment
 -----------------------
 
+Recommended setup is using k3d to 
+
 #### Setting up cluster
+
+**Requirements:**
+- [k3d](https://k3d.io/)
+- [helm](https://helm.sh/docs/intro/quickstart/)
+- [docker](https://docs.docker.com/get-docker/)
+- [make](https://www.gnu.org/software/make/)
 
 ```bash
 make k3d k8s_postgres k8s_minio k8s_dev_registry

@@ -249,3 +249,9 @@ spec:
     # ...
     strategyName: fifo
 ```
+
+[Contributing](./CONTRIBUTING.md)
+---------------------------------
+
+[Security policy](./SECURITY.md)
+--------------------------------
