@@ -51,6 +51,7 @@ make k3d k8s_postgres k8s_minio k8s_dev_registry
 #### Promoting changes to the local cluster
 
 ```bash
+# will build, produce docker, publish docker to local registry and deploy application using helm on local cluster
 make k8s_test_promote
 ```
 
