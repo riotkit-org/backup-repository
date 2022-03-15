@@ -24,21 +24,18 @@ jobs:
                   git config user.name "$GITHUB_ACTOR"
                   git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
 
-            - name: Install Helm
-              uses: azure/setup-helm@v1
+            - name: Publish Helm chart
+              uses: stefanprodan/helm-gh-pages@master
               with:
-                  version: v3.7.1
-
-            - name: Release Helm Chart
-              uses: helm/chart-releaser-action@v1.2.0
-              with:
+                  token: "${{ secrets.GH_RW_TOKEN }}"
                   charts_dir: helm
-                  charts_repo_url: https://riotkit-org.github.io/helm-of-revolution
-              env:
-                  CR_TOKEN: "${{ secrets.GH_RW_TOKEN }}"
-                  CR_OWNER: "riotkit-org"
-                  CR_GIT_REPO: "helm-of-revolution"
-                  CR_SKIP_EXISTING: "false"
+                  charts_url: https://riotkit-org.github.io/helm-of-revolution
+                  owner: riotkit-org
+                  repository: helm-of-revolution
+                  branch: gh-pages
+                  target_dir: charts
+                  commit_username: "{{ env.GITHUB_ACTOR }}"
+                  commit_email: "{{ env.GITHUB_ACTOR }}@users.noreply.github.com"
 
     test-and-release-snapshot:
         runs-on: ubuntu-latest
