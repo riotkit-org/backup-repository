@@ -11,6 +11,32 @@ permissions:
     packages: write
 
 jobs:
+    chart-release:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v3
+              with:
+                  fetch-depth: 0
+
+            - name: Configure Git
+              run: |
+                  git config user.name "$GITHUB_ACTOR"
+                  git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+
+            - name: Install Helm
+              uses: azure/setup-helm@v1
+              with:
+                  version: v3.7.1
+
+            - name: Release Helm Chart
+              uses: helm/chart-releaser-action@v1.2.0
+              with:
+                  charts_dir: helm
+                  charts_repo_url: https://github.com/riotkit-org/helm-of-insurection.git
+              env:
+                  CR_TOKEN: "${{ secrets.GH_RW_TOKEN }}"
+
     test-and-release-snapshot:
         runs-on: ubuntu-latest
         steps:
