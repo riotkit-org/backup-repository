@@ -33,11 +33,11 @@ jobs:
               uses: helm/chart-releaser-action@v1.2.0
               with:
                   charts_dir: helm
-                  charts_repo_url: https://riotkit-org.github.io/helm-of-insurection
+                  charts_repo_url: https://riotkit-org.github.io/helm-of-revolution
               env:
                   CR_TOKEN: "${{ secrets.GH_RW_TOKEN }}"
                   CR_OWNER: "riotkit-org"
-                  CR_GIT_REPO: "helm-of-insurection"
+                  CR_GIT_REPO: "helm-of-revolution"
 
     test-and-release-snapshot:
         runs-on: ubuntu-latest
