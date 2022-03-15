@@ -37,6 +37,9 @@ jobs:
                   commit_username: "${{ env.GITHUB_ACTOR }}"
                   commit_email: "${{ env.GITHUB_ACTOR }}@users.noreply.github.com"
 
+                  app_version: "${{github.ref_name}}"
+                  chart_version: "${{github.ref_name}}"
+
     test-and-release-snapshot:
         runs-on: ubuntu-latest
         steps:
