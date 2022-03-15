@@ -38,6 +38,7 @@ jobs:
                   CR_TOKEN: "${{ secrets.GH_RW_TOKEN }}"
                   CR_OWNER: "riotkit-org"
                   CR_GIT_REPO: "helm-of-revolution"
+                  CR_SKIP_EXISTING: "false"
 
     test-and-release-snapshot:
         runs-on: ubuntu-latest
