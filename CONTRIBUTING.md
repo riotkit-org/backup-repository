@@ -41,6 +41,7 @@ Recommended setup is using k3d, which is a K3s lightweight Kubernetes distributi
 - [helm](https://helm.sh/docs/intro/quickstart/)
 - [docker](https://docs.docker.com/get-docker/)
 - [make](https://www.gnu.org/software/make/)
+- [kubectl](https://kubernetes.io/docs/tasks/tools/install-kubectl-linux/)
 
 #### Setting up cluster
 
