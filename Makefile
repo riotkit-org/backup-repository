@@ -110,5 +110,5 @@ run:
 		--storage-url="s3://mybucket?endpoint=localhost:9000&disableSSL=true&s3ForcePathStyle=true&region=eu-central-1"
 
 build:
-	go build -tags=nomsgpack -o ./.build/backup-repository
+	CGO_ENABLED=0 GO111MODULE=on go build -tags=nomsgpack -o ./.build/backup-repository
 
