@@ -40,10 +40,12 @@ class BaseTestCase(unittest.TestCase):
 
     @staticmethod
     def scale(kind: str, name: str, replicas: int):
+        print(f'>> Scaling {kind} - {name} to {replicas} replicas')
         subprocess.check_call(["kubectl", "scale", "-n", "backup-repository", kind, name, f"--replicas={replicas}"])
 
     @staticmethod
     def wait_for(label: str, ready: bool = True):
+        print(f'>> Waiting for {label} to be ready={ready}')
         condition = ""
 
         if ready:

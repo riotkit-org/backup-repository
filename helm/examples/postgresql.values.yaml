@@ -4,3 +4,8 @@ auth:
     database: backup-repository
 
 architecture: standalone # for production better use "replication"
+
+
+# speed up testing
+primary:
+    terminationGracePeriodSeconds: 5
