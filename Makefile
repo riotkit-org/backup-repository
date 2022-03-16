@@ -1,5 +1,7 @@
 include k8s.mk
 
+SERVER_URL=http://localhost:8080
+
 all: build run
 
 test:
@@ -16,56 +18,56 @@ coverage:
 	go test -v ./... -covermode=count -coverprofile=coverage.out
 
 test_health:
-	curl -s -X GET 'http://localhost:8080/health'
+	curl -s -X GET '${SERVER_URL}/health'
 
 test_login:
-	curl -s -X POST -d '{"username":"admin","password":"admin"}' -H 'Content-Type: application/json' 'http://localhost:8080/api/stable/auth/login'
+	curl -s -X POST -d '{"username":"admin","password":"admin"}' -H 'Content-Type: application/json' '${SERVER_URL}/api/stable/auth/login'
 	@echo "Now do export TOKEN=..."
 
 test_login_some_user:
-	curl -s -X POST -d '{"username":"some-user","password":"admin"}' -H 'Content-Type: application/json' 'http://localhost:8080/api/stable/auth/login'
+	curl -s -X POST -d '{"username":"some-user","password":"admin"}' -H 'Content-Type: application/json' '${SERVER_URL}/api/stable/auth/login'
 
 test_lookup:
-	curl -s -X GET -H 'Authorization: Bearer ${TOKEN}' -H 'Content-Type: application/json' 'http://localhost:8080/api/stable/auth/user/some-user'
+	curl -s -X GET -H 'Authorization: Bearer ${TOKEN}' -H 'Content-Type: application/json' '${SERVER_URL}/api/stable/auth/user/some-user'
 
 test_whoami:
-	curl -s -X GET -H 'Authorization: Bearer ${TOKEN}' -H 'Content-Type: application/json' 'http://localhost:8080/api/stable/auth/whoami'
+	curl -s -X GET -H 'Authorization: Bearer ${TOKEN}' -H 'Content-Type: application/json' '${SERVER_URL}/api/stable/auth/whoami'
 
 test_logout:
-	curl -s -X DELETE -H 'Authorization: Bearer ${TOKEN}' -H 'Content-Type: application/json' 'http://localhost:8080/api/stable/auth/logout'
+	curl -s -X DELETE -H 'Authorization: Bearer ${TOKEN}' -H 'Content-Type: application/json' '${SERVER_URL}/api/stable/auth/logout'
 
 test_logout_other_user:
-	curl -s -X DELETE -H 'Authorization: Bearer ${TOKEN}' -H 'Content-Type: application/json' 'http://localhost:8080/api/stable/auth/logout?sessionId=${OTHER_USER_SESSION_ID}'
+	curl -s -X DELETE -H 'Authorization: Bearer ${TOKEN}' -H 'Content-Type: application/json' '${SERVER_URL}/api/stable/auth/logout?sessionId=${OTHER_USER_SESSION_ID}'
 
 test_list_auths:
-	curl -s -X GET -H 'Authorization: Bearer ${TOKEN}' -H 'Content-Type: application/json' 'http://localhost:8080/api/stable/auth/token'
+	curl -s -X GET -H 'Authorization: Bearer ${TOKEN}' -H 'Content-Type: application/json' '${SERVER_URL}/api/stable/auth/token'
 
 test_list_auths_other_user:
-	curl -s -X GET -H 'Authorization: Bearer ${TOKEN}' -H 'Content-Type: application/json' 'http://localhost:8080/api/stable/auth/token?userName=some-user'
+	curl -s -X GET -H 'Authorization: Bearer ${TOKEN}' -H 'Content-Type: application/json' '${SERVER_URL}/api/stable/auth/token?userName=some-user'
 
 test_upload_by_form:
-	curl -s -X POST -H 'Authorization: Bearer ${TOKEN}' -F "file=@./storage/.test_data/test.gpg" 'http://localhost:8080/api/stable/repository/collection/iwa-ait/version'
+	curl -s -X POST -H 'Authorization: Bearer ${TOKEN}' -F "file=@./storage/.test_data/test.gpg" '${SERVER_URL}/api/stable/repository/collection/iwa-ait/version'
 
 test_upload_by_form_1mb:
 	@echo "-----BEGIN PGP MESSAGE-----" > /tmp/1mb.gpg
 	@openssl rand -base64 $$((735*1024*1)) >> /tmp/1mb.gpg
 	@echo "-----END PGP MESSAGE-----" >> /tmp/1mb.gpg
-	curl -vvv -X POST -H 'Authorization: Bearer ${TOKEN}' -F "file=@/tmp/1mb.gpg" 'http://localhost:8080/api/stable/repository/collection/iwa-ait/version' --limit-rate 400K
+	curl -vvv -X POST -H 'Authorization: Bearer ${TOKEN}' -F "file=@/tmp/1mb.gpg" '${SERVER_URL}/api/stable/repository/collection/iwa-ait/version' --limit-rate 400K
 
 test_upload_by_form_5mb:
 	@echo "-----BEGIN PGP MESSAGE-----" > /tmp/5mb.gpg
 	@openssl rand -base64 $$((735*1024*5)) >> /tmp/5mb.gpg
 	@echo "-----END PGP MESSAGE-----" >> /tmp/5mb.gpg
-	curl -vvv -X POST -H 'Authorization: Bearer ${TOKEN}' -F "file=@/tmp/5mb.gpg" 'http://localhost:8080/api/stable/repository/collection/iwa-ait/version' --limit-rate 1000K
+	curl -vvv -X POST -H 'Authorization: Bearer ${TOKEN}' -F "file=@/tmp/5mb.gpg" '${SERVER_URL}/api/stable/repository/collection/iwa-ait/version' --limit-rate 1000K
 
 test_download:
-	curl -vvv -X GET -H 'Authorization: Bearer ${TOKEN}' 'http://localhost:8080/api/stable/repository/collection/iwa-ait/version/latest' > /tmp/downloaded --limit-rate 100K
+	curl -vvv -X GET -H 'Authorization: Bearer ${TOKEN}' '${SERVER_URL}/api/stable/repository/collection/iwa-ait/version/latest' > /tmp/downloaded --limit-rate 100K
 
 test_collection_health:
-	curl -s -X GET -H 'Authorization: admin' 'http://localhost:8080/api/stable/repository/collection/iwa-ait/health'
+	curl -s -X GET -H 'Authorization: admin' '${SERVER_URL}/api/stable/repository/collection/iwa-ait/health'
 
 test_list_versions:
-	curl -s -X GET -H 'Authorization: Bearer ${TOKEN}' 'http://localhost:8080/api/stable/repository/collection/iwa-ait/version'
+	curl -s -X GET -H 'Authorization: Bearer ${TOKEN}' '${SERVER_URL}/api/stable/repository/collection/iwa-ait/version'
 
 postgres:
 	docker run -d \

@@ -62,8 +62,8 @@ backup-repository \
 #### Installing via Helm
 
 ```bash
-helm repo add riotkit-org ...
-helm install backup-repository riotkit-org/backup-repository-server -n backup-repository # --values ...
+helm repo add riotkit-org https://riotkit-org.github.io/helm-of-revolution/
+helm install backups riotkit-org/backup-repository-server -n backup-repository # --values ...
 ```
 
 Documentation

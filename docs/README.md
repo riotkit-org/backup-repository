@@ -34,6 +34,6 @@ Interactions with server are done using HTTP API that talks JSON in both ways, a
 
 ### [Users and Authentication](api/users/README.md)
 
-### Collections
+### [Collections](api/collections/README.md)
 
 ### [Administrative](api/administrative/README.md)
