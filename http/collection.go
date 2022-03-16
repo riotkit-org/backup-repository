@@ -33,6 +33,7 @@ func addUploadRoute(r *gin.RouterGroup, ctx *core.ApplicationContainer, requestT
 			// [SECURITY] Check permissions
 			if !collection.CanUploadToMe(ctxUser) {
 				UnauthorizedResponse(c, errors.New("not authorized to upload versions to this collection"))
+				return
 			}
 
 			// [SECURITY] Backup Windows support
