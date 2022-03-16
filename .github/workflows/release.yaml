@@ -76,6 +76,35 @@ jobs:
                   tags: ${{ steps.meta.outputs.tags }}
                   labels: ${{ steps.meta.outputs.labels }}
 
+    chart-release:
+        runs-on: ubuntu-latest
+        needs: ["build", "release-docker"]
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v3
+              with:
+                  fetch-depth: 0
+
+            - name: Configure Git
+              run: |
+                  git config user.name "$GITHUB_ACTOR"
+                  git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
+
+            - name: Publish Helm chart
+              uses: stefanprodan/helm-gh-pages@master
+              with:
+                  token: "${{ secrets.GH_RW_TOKEN }}"
+                  charts_dir: helm
+                  charts_url: https://riotkit-org.github.io/helm-of-revolution
+                  owner: riotkit-org
+                  repository: helm-of-revolution
+                  branch: gh-pages
+                  target_dir: ./
+                  commit_username: "${{ env.GITHUB_ACTOR }}"
+                  commit_email: "${{ env.GITHUB_ACTOR }}@users.noreply.github.com"
+
+                  app_version: "${{github.ref_name}}"
+                  chart_version: "${{github.ref_name}}"
 
     release-archlinux-pkg:
         runs-on: ubuntu-latest
