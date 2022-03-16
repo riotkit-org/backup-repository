@@ -33,7 +33,7 @@ jobs:
                   owner: riotkit-org
                   repository: helm-of-revolution
                   branch: gh-pages
-                  target_dir: charts
+                  target_dir: ./
                   commit_username: "${{ env.GITHUB_ACTOR }}"
                   commit_email: "${{ env.GITHUB_ACTOR }}@users.noreply.github.com"
 
