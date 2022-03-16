@@ -1,0 +1,15 @@
+---
+apiVersion: backups.riotkit.org/v1alpha1
+kind: BackupUser
+metadata:
+    name: unprivileged
+spec:
+    email: unprivileged@example.org
+    deactivated: false
+    organization: "Riotkit"
+    about: "Example unprivileged user"
+    password: ""
+    passwordFromRef:
+        name: backup-repository-passwords
+        entry: admin
+    roles: []
