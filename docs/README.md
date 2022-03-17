@@ -37,3 +37,5 @@ Interactions with server are done using HTTP API that talks JSON in both ways, a
 ### [Collections](api/collections/README.md)
 
 ### [Administrative](api/administrative/README.md)
+
+### [Clients](./client.md)
