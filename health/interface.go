@@ -3,6 +3,7 @@ package health
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/riotkit-org/backup-repository/storage"
 	"reflect"
 )
 
@@ -58,4 +59,8 @@ func (sc StatusCollection) GetOverallStatus() bool {
 		}
 	}
 	return true
+}
+
+type StorageInterface interface {
+	FindLatestVersion(collectionId string) (storage.UploadedVersion, error)
 }

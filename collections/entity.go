@@ -37,8 +37,13 @@ func (b *BackupWindow) UnmarshalJSON(in []byte) error {
 		return unmarshalErr
 	}
 
-	b.From = v.From
-	b.Duration = v.Duration
+	return b.applyRawAttributes(b.From, b.Duration)
+}
+
+// applyRawAttributes sets construction attributes just like it was unmarshalled from JSON
+func (b *BackupWindow) applyRawAttributes(from string, duration string) error {
+	b.From = from
+	b.Duration = duration
 
 	parser := cron.NewParser(cron.Minute | cron.Hour | cron.Dom | cron.Month | cron.DowOptional)
 	err := errors.New("")
@@ -53,6 +58,13 @@ func (b *BackupWindow) UnmarshalJSON(in []byte) error {
 	}
 
 	return nil
+}
+
+// NewBackupWindow is a factory method
+func NewBackupWindow(from string, duration string) (BackupWindow, error) {
+	w := BackupWindow{}
+	err := w.applyRawAttributes(from, duration)
+	return w, err
 }
 
 // IsInWindowNow checks if given time is between BackupWindow time slot (<-start--O--end->)
@@ -107,7 +119,6 @@ func (b *BackupWindow) IsInPreviousWindowTimeSlot(now time.Time, latestVersionCr
 	}
 
 	endDate := previousRun.Add(b.parsedDuration)
-
 	return latestVersionCreation.After(previousRun) && latestVersionCreation.Before(endDate), nil
 }
 

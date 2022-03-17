@@ -10,26 +10,28 @@ import (
 )
 
 type BackupWindowValidator struct {
-	svc *storage.Service
-	c   *collections.Collection
+	svc        StorageInterface
+	c          *collections.Collection
+	nowFactory func() time.Time
 }
 
 func (v BackupWindowValidator) Validate() error {
-	latest, err := v.svc.FindLatestVersion(v.c.GetId())
-	if err != nil {
-		return err
-	}
-
-	allowedSlots := ""
-	now := time.Now()
-
 	// Backup Windows are optional
 	if len(v.c.Spec.Windows) == 0 {
 		return nil
 	}
 
+	latest, err := v.svc.FindLatestVersion(v.c.GetId())
+	if err != nil {
+		return errors.Wrap(err, "cannot find any backup in the collection")
+	}
+
+	allowedSlots := ""
+	now := v.nowFactory()
+
 	for _, window := range v.c.Spec.Windows {
 		matches, err := window.IsInPreviousWindowTimeSlot(now, latest.CreatedAt)
+
 		if err != nil {
 			return errors.New(fmt.Sprintf("failed to calculate previous run for window '%v' - %v", window, err))
 		}
@@ -45,9 +47,9 @@ func (v BackupWindowValidator) Validate() error {
 		allowedSlots += fmt.Sprintf(", interval(%v) + %v", window.From, window.Duration)
 	}
 
-	return errors.Errorf("previous backup was not executed in expected time slots: %v", strings.Trim(allowedSlots, ", "))
+	return errors.Errorf("previous backup was not executed in expected time slots: %v. Latest backup created at: %s", strings.Trim(allowedSlots, ", "), latest.CreatedAt)
 }
 
 func NewBackupWindowValidator(svc *storage.Service, c *collections.Collection) BackupWindowValidator {
-	return BackupWindowValidator{svc, c}
+	return BackupWindowValidator{svc, c, func() time.Time { return time.Now() }}
 }
