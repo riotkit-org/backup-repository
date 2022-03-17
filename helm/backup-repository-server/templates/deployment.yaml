@@ -66,22 +66,30 @@ spec:
                         containerPort: 8080
                         protocol: TCP
 
+                  {{- if .Values.health.liveness.enabled }}
                   livenessProbe:
-                      failureThreshold: 1
-                      terminationGracePeriodSeconds: 10
+                      {{- with .Values.health.liveness.attributes}}
+                      {{- toYaml . | nindent 22 }}
+                      {{- end}}
                       httpGet:
                           path: /health
                           port: http
                           httpHeaders:
                               - name: Authorization
                                 value: "{{ .Values.settings.healthCode }}"
+                  {{- end }}
+                  {{- if .Values.health.readiness.enabled }}
                   readinessProbe:
+                      {{- with .Values.health.readiness.attributes }}
+                      {{- toYaml . | nindent 22 }}
+                      {{- end }}
                       httpGet:
                           path: /ready
                           port: http
                           httpHeaders:
                               - name: Authorization
                                 value: "{{ .Values.settings.healthCode }}"
+                  {{- end }}
                   resources:
                     {{- toYaml .Values.resources | nindent 20 }}
           {{- with .Values.nodeSelector }}

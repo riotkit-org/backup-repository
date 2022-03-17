@@ -16,3 +16,10 @@ devPort:
 
 image:
     tag: snapshot
+
+# CI/testing specific
+health:
+    liveness:
+        enabled: false  # disable, so during the tests pod will not be restarted
+    readiness:
+        enabled: false  # the same as for liveness probe

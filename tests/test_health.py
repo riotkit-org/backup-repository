@@ -43,3 +43,5 @@ class HealthTest(BaseTestCase):
 
         finally:
             subprocess.check_call(['kubectl', 'apply', '-f', 'crd'])
+            subprocess.check_call(['kubectl', 'apply', '-f',
+                                   'docs/examples/', '-n', 'backup-repository'])  # restore test data

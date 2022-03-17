@@ -92,6 +92,16 @@ autoscaling:
     targetCPUUtilizationPercentage: 80
     # targetMemoryUtilizationPercentage: 80
 
+health:
+    liveness:
+        enabled: true
+        attributes:
+            failureThreshold: 1
+            terminationGracePeriodSeconds: 10
+    readiness:
+        enabled: true
+        attributes: {}
+
 nodeSelector: {}
 tolerations: []
 affinity: {}

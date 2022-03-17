@@ -112,3 +112,8 @@ run:
 build:
 	CGO_ENABLED=0 GO111MODULE=on go build -tags=nomsgpack -o ./.build/backup-repository
 
+lint:
+	export GO111MODULE=on; \
+	golangci-lint run \
+		--verbose \
+		--build-tags build
