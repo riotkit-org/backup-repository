@@ -37,7 +37,7 @@ func (b *BackupWindow) UnmarshalJSON(in []byte) error {
 		return unmarshalErr
 	}
 
-	return b.applyRawAttributes(b.From, b.Duration)
+	return b.applyRawAttributes(v.From, v.Duration)
 }
 
 // applyRawAttributes sets construction attributes just like it was unmarshalled from JSON
