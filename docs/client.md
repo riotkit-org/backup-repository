@@ -3,8 +3,8 @@ Backup upload & download
 
 The server is accepting uploaded files using an HTTP endpoint in standardized format, [check out the API docs for upload endpoint before proceeding](./api/collections/README.md).
 
-Basic usage with cURL
----------------------
+~ Basic usage with cURL
+-----------------------
 
 1) **Receive authorization token to sign requests**
 
@@ -38,8 +38,8 @@ gpg --encrypt -r test@riotkit.org ./archive.tar.gz
 
 Setup a GPG keyring: https://linuxhint.com/gpg-command-ubuntu/
 
-[Backup Maker](https://github.com/riotkit-org/br-backup-maker)
-------------
+~ [Backup Maker](https://github.com/riotkit-org/br-backup-maker)
+----------------
 
 This is an official client for Backup Repository, it **automates GPG operations** almost transparently to the user and performs all operations on buffers to be
 lightweight.
