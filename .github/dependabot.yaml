@@ -10,7 +10,7 @@ updates:
     schedule:
       interval: "weekly"
 
-  - package-ecosystem: "pipenv"
+  - package-ecosystem: "pip"
     directory: "/"
     schedule:
       interval: "weekly"
