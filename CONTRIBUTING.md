@@ -31,6 +31,44 @@ Testing
 2. Unit tests coverage is required
 3. [API tests in PyTest](./tests) should be written, especially when code is difficult to cover with unit tests
 
+### Manual testing helpers
+
+Take a look at [test.mk](./test.mk) file, which contains Makefile tasks for manual testing, used at development time as handy shortcuts.
+
+```bash
+make build run
+```
+
+```bash
+# at first login and export the retrieved token into the shell
+make test_login
+export TOKEN=...
+
+# then use prepared curl snippets to test functionalities
+make test_collection_health test_whoami # ...
+```
+
+### Automated testing
+
+**Unit tests can be executed within:**
+
+```bash
+make test
+
+# or
+make coverage
+```
+
+**There are also E2E tests on real application image:**
+
+```bash
+# first time
+make setup_api_tests
+
+# then
+make api_tests
+```
+
 Development environment
 -----------------------
 
