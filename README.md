@@ -79,6 +79,8 @@ Documentation
 
 ### [For documentation please look into `./docs` directory](./docs/README.md)
 
+**NOTICE:** You are probably reading documentation at `main` branch, please consider selecting a versioned tag from branch/tag selector.
+
 Ecosystem
 ---------
 
