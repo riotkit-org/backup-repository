@@ -3,7 +3,7 @@ ADD .build/backup-repository /backup-repository
 RUN chmod +x /backup-repository && chmod 755 /backup-repository && chown 1001 /backup-repository
 
 
-FROM gcr.io/distroless/static
+FROM gcr.io/distroless/base
 ENV GIN_MODE=release
 COPY --from=builder /backup-repository /backup-repository
 USER 65532
