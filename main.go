@@ -47,6 +47,8 @@ type options struct {
 	AuthRPM             int16 `long:"rate-auth-limit" description:"Request rate limit for login/authentication endpoints. Unit: requests per minute" default:"10"`
 	CollectionHealthRPM int16 `long:"rate-collection-health-limit" description:"Request rate limit for collection's /health endpoint. Unit: requests per minute" default:"10"`
 	ServerHealthRPM     int16 `long:"rate-server-health-limit" description:"Request rate limit for server's /health and /ready endpoints. Unit: requests per minute. WARNING: Be careful in Kubernetes as Kube API also can hit this rate limit and restart your service!" default:"160"`
+
+	ListenAddr string `long:"listen" description:"Address to listen on with HTTP API (e.g. :8080)" default:":8080"`
 }
 
 func main() {
@@ -118,7 +120,7 @@ func main() {
 		ServerHealthRPM:     opts.ServerHealthRPM,
 	}
 
-	if err := http.SpawnHttpApplication(&ctx); err != nil {
+	if err := http.SpawnHttpApplication(&ctx, opts.ListenAddr); err != nil {
 		log.Errorf("Cannot spawn HTTP server: %v", err)
 		os.Exit(1)
 	}

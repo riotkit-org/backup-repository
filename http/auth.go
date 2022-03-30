@@ -132,7 +132,7 @@ func createAuthenticationMiddleware(r *gin.Engine, di *core.ApplicationContainer
 
 // addLookupUserRoute returns User object for a lookup
 func addLookupUserRoute(r *gin.RouterGroup, ctx *core.ApplicationContainer, rateLimiter gin.HandlerFunc) {
-	r.GET("/auth/user/:userName", rateLimiter, func(c *gin.Context) {
+	r.GET("/api/stable/auth/user/:userName", rateLimiter, func(c *gin.Context) {
 		// subject
 		user, err := ctx.Users.LookupUser(c.Param("userName"))
 		if err != nil {
@@ -157,7 +157,7 @@ func addLookupUserRoute(r *gin.RouterGroup, ctx *core.ApplicationContainer, rate
 // addWhoamiRoute Returns information about current session
 // sessionId is a hashed JWT, by this we identify granted accesses to be able to revoke them later
 func addWhoamiRoute(r *gin.RouterGroup, ctx *core.ApplicationContainer, rateLimiter gin.HandlerFunc) {
-	r.GET("/auth/whoami", rateLimiter, func(c *gin.Context) {
+	r.GET("/api/stable/auth/whoami", rateLimiter, func(c *gin.Context) {
 		ctxUser, _ := GetContextUser(ctx, c)
 		token, _ := c.Get("JWT_TOKEN")
 		ga, _ := ctx.GrantedAccesses.GetGrantedAccessInformation(token.(string))
@@ -174,7 +174,7 @@ func addWhoamiRoute(r *gin.RouterGroup, ctx *core.ApplicationContainer, rateLimi
 // addLogoutRoute Revokes a current JWT specified in current session (e.g. from Authorization header)
 // Logout does not delete GrantedAccess, but disables it so user cannot use it, but it remains in database for auditing
 func addLogoutRoute(r *gin.RouterGroup, ctx *core.ApplicationContainer, rateLimiter gin.HandlerFunc) {
-	r.DELETE("/auth/logout", rateLimiter, func(c *gin.Context) {
+	r.DELETE("/api/stable/auth/logout", rateLimiter, func(c *gin.Context) {
 		token, _ := c.Get("JWT_TOKEN")
 		tokenFromQuery, shouldTryTokenFromQuery := c.GetQuery("sessionId")
 		ctxUser, _ := GetContextUser(ctx, c)
@@ -218,7 +218,7 @@ func addLogoutRoute(r *gin.RouterGroup, ctx *core.ApplicationContainer, rateLimi
 
 // addGrantedAccessSearchRoute is useful for audit. All granted user sessions are listed there and can be revoked with a logout endpoint
 func addGrantedAccessSearchRoute(r *gin.RouterGroup, ctx *core.ApplicationContainer, rateLimiter gin.HandlerFunc) {
-	r.GET("/auth/token", rateLimiter, func(c *gin.Context) {
+	r.GET("/api/stable/auth/token", rateLimiter, func(c *gin.Context) {
 		var userName string
 		ctxUser, _ := GetContextUser(ctx, c)
 		impersonateUser, shouldTryImpersonate := c.GetQuery("userName")

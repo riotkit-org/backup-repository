@@ -75,7 +75,7 @@ data:
 HTTP API endpoints
 ------------------
 
-## GET `/repository/collection/:collectionId/version`
+## GET `/api/alpha/repository/collection/:collectionId/version`
 
 Lists currently stored copies of backups in a `BackupCollection` of specified `collectionId`.
 
@@ -126,7 +126,7 @@ Lists currently stored copies of backups in a `BackupCollection` of specified `c
 | user                | User login who uploaded backup copy                                                                                                                                          |
 
 
-## `POST /repository/collection/:collectionId/version`
+## `POST /api/alpha/repository/collection/:collectionId/version`
 
 Upload endpoint for a collection. Users with role `backupUploader` can upload files using this endpoint. Role can be assigned in scope of this collection or globally for all collections in the system.
 
@@ -137,5 +137,22 @@ Upload endpoint for a collection. Users with role `backupUploader` can upload fi
 
 **Example response (200):**
 
-todo
-
+```json
+{
+    "data": {
+        "version": {
+            "id": "8ee3a487-0229-46fe-a8ce-5817c7f0f5b7",
+            "collectionId": "iwa-ait",
+            "versionNumber": 1,
+            "filename": "iwa-ait-1.tar.gz",
+            "filesize": 3057,
+            "uploadedBySessionId": "9e39bd799f722a8339a29056b72c9ece57bba49f2b4d3414cd4112526ee30350",
+            "user": "admin",
+            "CreatedAt": "2022-03-30T08:52:51.691060767+02:00",
+            "UpdatedAt": "2022-03-30T08:52:51.691060767+02:00",
+            "DeletedAt": null
+        }
+    },
+    "status": true
+}
+```

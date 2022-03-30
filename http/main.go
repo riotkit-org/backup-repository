@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func SpawnHttpApplication(app *core.ApplicationContainer) error {
+func SpawnHttpApplication(app *core.ApplicationContainer, listenAddr string) error {
 	r := gin.Default()
 
 	authMiddleware := createAuthenticationMiddleware(r, app)
@@ -25,9 +25,9 @@ func SpawnHttpApplication(app *core.ApplicationContainer) error {
 		return "default:" + ctx.ClientIP(), nil
 	}).Middleware()
 
-	router := r.Group("/api/stable")
-	router.POST("/auth/login", authRateLimitMiddleware.Middleware(), authMiddleware.LoginHandler)
-	router.GET("/auth/refresh_token", authRateLimitMiddleware.Middleware(), authMiddleware.RefreshHandler)
+	router := r.Group("/")
+	router.POST("/api/stable/auth/login", authRateLimitMiddleware.Middleware(), authMiddleware.LoginHandler)
+	router.GET("/api/stable/auth/refresh_token", authRateLimitMiddleware.Middleware(), authMiddleware.RefreshHandler)
 	router.Use(authMiddleware.MiddlewareFunc())
 	{
 		addLookupUserRoute(router, app, defaultRateLimitMiddleware)
@@ -49,5 +49,5 @@ func SpawnHttpApplication(app *core.ApplicationContainer) error {
 		return "health:" + ctx.ClientIP(), nil
 	}).Middleware())
 
-	return r.Run()
+	return r.Run(listenAddr)
 }

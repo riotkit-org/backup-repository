@@ -127,7 +127,7 @@ func addUploadRoute(r *gin.RouterGroup, ctx *core.ApplicationContainer, requestT
 		}),
 		timeout.WithResponse(RequestTimeoutResponse),
 	)
-	r.POST("/repository/collection/:collectionId/version", timeoutMiddleware)
+	r.POST("/api/alpha/repository/collection/:collectionId/version", timeoutMiddleware)
 }
 
 // addDownloadRoute adds a collection version download endpoint
@@ -178,7 +178,7 @@ func addDownloadRoute(r *gin.RouterGroup, ctx *core.ApplicationContainer, reques
 		}),
 		timeout.WithResponse(RequestTimeoutResponse),
 	)
-	r.GET("/repository/collection/:collectionId/version/:versionNum", rateLimiter, timeoutMiddleware)
+	r.GET("/api/alpha/repository/collection/:collectionId/version/:versionNum", rateLimiter, timeoutMiddleware)
 }
 
 // addCollectionHealthRoute is creating an anonymous-access route that exposes health check
@@ -223,7 +223,7 @@ func addCollectionHealthRoute(r *gin.Engine, ctx *core.ApplicationContainer, rat
 }
 
 func addCollectionListingRoute(r *gin.RouterGroup, ctx *core.ApplicationContainer, requestTimeout time.Duration, rateLimiter gin.HandlerFunc) {
-	r.GET("/repository/collection/:collectionId/version", rateLimiter, func(c *gin.Context) {
+	r.GET("/api/stable/repository/collection/:collectionId/version", rateLimiter, func(c *gin.Context) {
 		ctxUser, _ := GetContextUser(ctx, c)
 
 		// Check if Collection exists
