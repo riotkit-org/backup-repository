@@ -156,3 +156,75 @@ Upload endpoint for a collection. Users with role `backupUploader` can upload fi
     "status": true
 }
 ```
+
+## GET `/api/stable/repository/collection/:collectionId/health`
+
+Exposes a health check endpoint for external monitoring software.
+
+**Query string parameters:**
+- `?code=...` (optional, a header `Authorization` can be used instead. e.g. `Authorization my-secret-code-in-plain-text`)
+
+**Headers:**
+- `Authorization my-secret-code-here` if `code` not used in query string
+
+### Creating a secret to secure endpoint
+
+```yaml
+---
+apiVersion: backups.riotkit.org/v1alpha1
+kind: BackupCollection
+metadata:
+    name: iwa-ait
+spec:
+# (...)
+healthSecretRef:
+    name: backup-repository-collection-secrets
+    entry: iwa-ait
+# (...)
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+    name: backup-repository-collection-secrets
+data:
+    iwa-ait: "... base64 encoded password ..."
+```
+
+**Example response (200):**
+
+```json
+{
+    "data": {
+        "health": [
+            {
+                "message": "OK",
+                "name": "BackupWindowValidator",
+                "status": true,
+                "statusText": "BackupWindowValidator=true"
+            },
+            {
+                "message": "OK",
+                "name": "VersionsSizeValidator",
+                "status": true,
+                "statusText": "VersionsSizeValidator=true"
+            },
+            {
+                "message": "OK",
+                "name": "SumOfVersionsValidator",
+                "status": true,
+                "statusText": "SumOfVersionsValidator=true"
+            }
+        ]
+    },
+    "status": true
+}
+```
+
+### Response health checks reference
+
+| Check                   | Description                                                                                                                                                                           |
+|-------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| BackupWindowValidator   | Activates when at least one Backup Window is defined. Checks if previous backup was made recently in at **least one** Backup Window iteration                                         |
+| VersionsSizeValidator   | Fails when at least one collection element exceeds soft limit of single version filesize limit. This should be interpreted as your backup is growing and you should take action soon. |
+| SumOfVersionsValidator  | Fails when all stored versions in summary are exceeding hard limit of collection max size                                                                                             |
