@@ -159,7 +159,8 @@ Upload endpoint for a collection. Users with role `backupUploader` can upload fi
 
 ## GET `/api/stable/repository/collection/:collectionId/health`
 
-Exposes a health check endpoint for external monitoring software.
+Exposes a health check endpoint for external monitoring software. The purpose of this endpoint is to allow given User to monitor its resources on a shared backups hosting.
+Backup Repository assumes that it is multi-tenant and End-To-End encrypted, this leads to natural concept of autonomous monitoring of own resources on almost zero-knowledge storage.
 
 **Query string parameters:**
 - `?code=...` (optional, a header `Authorization` can be used instead. e.g. `Authorization my-secret-code-in-plain-text`)
