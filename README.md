@@ -89,6 +89,8 @@ Ecosystem
 - [RKC](https://github.com/riotkit-org/rkc): Part of `Space Harbor` project, contains independently working sub-commands for generating **backup** and **restore** commands and `kind: CronJob` for Kubernetes
 - [PGBR](https://github.com/riotkit-org/br-pgbr): PostgreSQL helpers to be used with `BackupMaker` for reliable backups using native mechanism of dump & restore
 
+Find more projects in the [Github Community](https://github.com/topics/backup-repository).
+
 Security
 --------
 
