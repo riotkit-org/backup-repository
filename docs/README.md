@@ -39,3 +39,15 @@ Interactions with server are done using HTTP API that talks JSON in both ways, a
 ### [Administrative](api/administrative/README.md)
 
 ### [Clients](./client.md)
+
+Development
+-----------
+
+### [Developer guide](../CONTRIBUTING.md)
+
+Security and support
+--------------------
+
+There is no commercial support, this is a community project.
+
+### [List of maintained versions](../SECURITY.md)
