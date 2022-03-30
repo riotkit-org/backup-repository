@@ -23,7 +23,7 @@ require (
 	gorm.io/gorm v1.22.5
 	k8s.io/apimachinery v0.23.5
 	k8s.io/client-go v0.23.5
-	sigs.k8s.io/controller-runtime v0.11.0
+	sigs.k8s.io/controller-runtime v0.11.1
 )
 
 require (
