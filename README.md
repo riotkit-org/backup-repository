@@ -32,12 +32,19 @@ _TLDR; Backup storage for E2E GPG-encrypted files, with multi-user, quotas, vers
 - Storage provider (S3, GCS, Min.io, local filesystem, and others supported by https://gocloud.dev/howto/blob/#services)
 
 **Support:**
-- Any Kubernetes 1.19+
+- Any Kubernetes 1.20+
 - [K3s](https://github.com/k3s-io/k3s)
 - OpenShift (with support for Routes, non-privileged, non-root containers)
 - PostgreSQL 11+
 - [SealedSecrets](https://github.com/bitnami-labs/sealed-secrets)
 - [Min.io](https://github.com/minio/minio)
+
+Maturity
+--------
+
+**Notice:** _This software is currently in a pre-prod stage. We do not plan breaking changes to the functionality, but the API interface may still change. We recommend our official **Backup Maker** client that will be always up-to-date with API changes._
+
+Star a repo, subscribe for releases to get informed.
 
 Running
 -------
