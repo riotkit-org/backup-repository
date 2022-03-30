@@ -78,6 +78,14 @@ Documentation
 
 ### [For documentation please look into `./docs` directory](./docs/README.md)
 
+Ecosystem
+---------
+
+- [Backup Maker](https://github.com/riotkit-org/br-backup-maker): Uploading & Downloading backups with automated GPG encryption support
+- [Backup Maker Environment](https://github.com/riotkit-org/br-backup-maker-env): Docker image for Backup Maker
+- [RKC](https://github.com/riotkit-org/rkc): Part of `Space Harbor` project, contains independently working sub-commands for generating **backup** and **restore** commands and `kind: CronJob` for Kubernetes
+- [PGBR](https://github.com/riotkit-org/br-pgbr): PostgreSQL helpers to be used with `BackupMaker` for reliable backups using native mechanism of dump & restore
+
 Security
 --------
 
