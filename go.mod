@@ -22,7 +22,7 @@ require (
 	gorm.io/driver/postgres v1.2.3
 	gorm.io/gorm v1.22.5
 	k8s.io/apimachinery v0.23.5
-	k8s.io/client-go v0.23.3
+	k8s.io/client-go v0.23.5
 	sigs.k8s.io/controller-runtime v0.11.0
 )
 
