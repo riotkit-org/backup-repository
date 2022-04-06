@@ -3,7 +3,7 @@ IMAGE_TAG=snapshot
 DEV_LOCAL_IMAGE_REPOSITORY=127.0.0.1:30050/backup-repository
 
 k3d: ## Run local empty Kubernetes cluster
-	k3d cluster create riotkit --agents 1 -p "30080:30080@agent:0" -p "30050:30050@agent:0"
+	k3d cluster create riotkit --agents 1 -p "30080:30080@agent:0" -p "30081:30081@agent:0" -p "30050:30050@agent:0"
 
 k8s_postgres:
 	helm repo add bitnami https://charts.bitnami.com/bitnami
@@ -34,7 +34,7 @@ k8s_test:
 	kubectl get events -A
 	kubectl logs deployment/backup-repository-backup-repository-server -n backup-repository
 
-	curl -vvv -k http://localhost:30080/ready?code=changeme --fail-early
+	curl -vvv -k http://localhost:30081/ready?code=changeme --fail-early
 
 #################################
 ## Local development environment

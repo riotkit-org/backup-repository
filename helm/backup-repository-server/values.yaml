@@ -33,7 +33,7 @@ image:
 # use additional `kind: Service` of LoadBalancer type for testing, to expose service ports on your local machine and on CI
 devPort:
     enable: false
-    port: 30080
+    port: 30081
 
 imagePullSecrets: []
 nameOverride: ""

@@ -9,10 +9,21 @@ secrets:
 env:
     AWS_SECRET_KEY: "wJaFuCKtnFEMI/CApItaliSM/bPxRfiCYEXAMPLEKEY"
     AWS_ACCESS_KEY_ID: "AKIAIOSFODNN7EXAMPLE"
+    GIN_MODE: debug
+
+ingress:
+    enabled: true
+    className: ""
+    annotations: {}
+    hosts:
+        - host: backup-repository.localhost
+          paths:
+              - path: /
+                pathType: ImplementationSpecific
 
 devPort:
     enable: true
-    port: 30080
+    port: 30081
 
 image:
     tag: snapshot
