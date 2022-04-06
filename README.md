@@ -40,6 +40,27 @@ _TLDR; Primitive backup storage for E2E GPG-encrypted files, with multi-user, qu
 - [SealedSecrets](https://github.com/bitnami-labs/sealed-secrets)
 - [Min.io](https://github.com/minio/minio)
 
+Difference between other backups systems
+----------------------------------------
+
+Selecting a best tool depends on specific use case.  Most common way on Kubernetes is to perform cloud-native volume snapshotting, there [Velero project](https://velero.io/docs/v1.8/how-velero-works/) is the most recognized solution that integrates with cloud provides like AWS, Google Cloud or Azure
+and uses API calls to ask cloud provider for a snapshot.
+
+**Backup Repository** approach uses **application-native** and more traditional method of performing backups - using tar, pg_dump, mysqldump and other application-native tools for Backup and Restore.
+This selected approach have pros and cons as following:
+
+**Pros:**
+- Possibility to back up selected part of data e.g. "database X inside PostgreSQL instance"
+- Control over data in terms of security: Everything GPG encrypted, storage does not know what is stored. Do you trust your cloud provider at 100%?
+- No dependency on public cloud
+- Volume driver agnostic, runs even on k3s with local storage provisioner
+
+**Cons:**
+- Responsibility for the process to be successful (not just an API call to provider)
+- No possibility to do a consistent block device snapshot
+- Slower and ineffective at very large scale
+- Maintenance and monitoring of scripts that perform backups
+
 Maturity
 --------
 
@@ -84,9 +105,8 @@ Documentation
 Ecosystem
 ---------
 
-- [Backup Maker](https://github.com/riotkit-org/br-backup-maker): Uploading & Downloading backups with automated GPG encryption support
-- [Backup Maker Environment](https://github.com/riotkit-org/br-backup-maker-env): Docker image for Backup Maker
-- [RKC](https://github.com/riotkit-org/rkc): Part of `Space Harbor` project, contains independently working sub-commands for generating **backup** and **restore** commands and `kind: CronJob` for Kubernetes
+- [Backup Maker](https://github.com/riotkit-org/br-backup-maker): Uploading & Downloading backups with automated GPG encryption support. CLI client + BMG (Backup Maker procedures Generator) for generating customizable Backup & Restore procedures.
+- [RKC](https://github.com/riotkit-org/rkc): Part of `Space Harbor` project, contains CLI integration of `Space Harbor` K8s cluster with Backup Repository
 - [PGBR](https://github.com/riotkit-org/br-pgbr): PostgreSQL helpers to be used with `BackupMaker` for reliable backups using native mechanism of dump & restore
 
 Find more projects in the [Github Community](https://github.com/topics/backup-repository).
