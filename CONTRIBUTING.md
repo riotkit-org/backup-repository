@@ -97,8 +97,8 @@ make k8s_test_promote
 #### Checking
 
 ```bash
-curl -vvv http://127.0.0.1:30080/health?code=changeme
+curl -vvv http://127.0.0.1:30081/health?code=changeme
 
 # in browser
-xdg-open http://127.0.0.1:30080/health?code=changeme
+xdg-open http://127.0.0.1:30081/health?code=changeme
 ```
