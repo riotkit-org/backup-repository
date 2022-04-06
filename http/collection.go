@@ -114,6 +114,17 @@ func addUploadRoute(r *gin.RouterGroup, ctx *core.ApplicationContainer, requestT
 			// Set a valid filesize that is known after receiving the file
 			version.Filesize = wroteLen
 
+			// Give client time to cancel the request maximum 2s after writing whole body
+			// if the client didn't manage to cancel the request while writing the body
+			time.Sleep(time.Second * 2)
+			select {
+			case <-c.Request.Context().Done():
+				ctx.Storage.Delete(&version)
+				ServerErrorResponse(c, errors.New("upload cancelled by client after the body was written"))
+				return
+			default:
+			}
+
 			// Append version to the registry
 			if err := ctx.Storage.RegisterVersion(&version); err != nil {
 				_ = ctx.Storage.Delete(&version)
