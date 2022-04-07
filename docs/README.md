@@ -27,6 +27,11 @@ kind: BackupUser
 
 **Your server instance can be configured using those YAML's basically, the rest are highly dynamic changing data that is configured via API, it includes `Authentication keys` and `Uploaded backup versions that are rotating`**
 
+Installation
+------------
+
+Read more about [how to install Backup Repository](./installing.md).
+
 API
 ---
 
