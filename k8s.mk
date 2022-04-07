@@ -24,7 +24,7 @@ k8s_dev_registry:
 	helm upgrade --install registry twuni/docker-registry -n default --set ingress.enabled=true --set ingress.hosts[0]=registry.ingress.cluster.local
 	kubectl apply -f tests/.helpers/local-registry.yaml
 
-k8s_install: k8s_postgres k8s_minio k8s_crd k8s_test_backup_repository
+k8s_install: k8s_postgres k8s_minio k8s_test_backup_repository
 
 k8s_test:
 	sleep 10
