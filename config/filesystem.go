@@ -19,8 +19,8 @@ type ConfigurationInLocalFilesystem struct {
 	apiVersion string
 }
 
-func (o *ConfigurationInLocalFilesystem) GetHealth() error {
-	fileName := fmt.Sprintf("%s/.health-%v", o.path, time.Now().UnixNano())
+func (fs *ConfigurationInLocalFilesystem) GetHealth() error {
+	fileName := fmt.Sprintf("%s/.health-%v", fs.path, time.Now().UnixNano())
 	defer func() {
 		_ = os.Remove(fileName)
 	}()
@@ -40,8 +40,8 @@ func (o *ConfigurationInLocalFilesystem) GetHealth() error {
 	return nil
 }
 
-func (o *ConfigurationInLocalFilesystem) GetSingleDocumentAnyType(kind string, id string, apiGroup string, apiVersion string) (string, error) {
-	filePath := o.buildPath(kind, id, apiGroup, apiVersion)
+func (fs *ConfigurationInLocalFilesystem) GetSingleDocumentAnyType(kind string, id string, apiGroup string, apiVersion string) (string, error) {
+	filePath := fs.buildPath(kind, id, apiGroup, apiVersion)
 	logrus.Debugf("Looking for file at path '%s'", filePath)
 
 	if _, err := os.Stat(filePath); errors.Is(err, os.ErrNotExist) {
@@ -52,7 +52,7 @@ func (o *ConfigurationInLocalFilesystem) GetSingleDocumentAnyType(kind string, i
 	if err != nil {
 		return "", errors.Wrapf(err, "Cannot read object from filesystem storage at path '%s'", filePath)
 	}
-	recode, err := o.recodeFromYamlToJson(content)
+	recode, err := fs.recodeFromYamlToJson(content)
 	if err != nil {
 		return "", errors.Wrapf(err, "Cannot parse object from filesystem storage at path '%s'", filePath)
 	}
@@ -60,28 +60,19 @@ func (o *ConfigurationInLocalFilesystem) GetSingleDocumentAnyType(kind string, i
 	return recode, nil
 }
 
-func (o *ConfigurationInLocalFilesystem) GetSingleDocument(kind string, id string) (string, error) {
-	return o.GetSingleDocumentAnyType(kind, id, o.apiGroup, o.apiVersion)
+func (fs *ConfigurationInLocalFilesystem) GetSingleDocument(kind string, id string) (string, error) {
+	return fs.GetSingleDocumentAnyType(kind, id, fs.apiGroup, fs.apiVersion)
 }
 
-func (o *ConfigurationInLocalFilesystem) StoreDocument(kind string, document interface{}) error {
+func (fs *ConfigurationInLocalFilesystem) StoreDocument(kind string, document interface{}) error {
 	return errors.New("not implemented")
 }
 
-func NewConfigurationInLocalFilesystemProvider(path string, namespace string) *ConfigurationInLocalFilesystem {
-	return &ConfigurationInLocalFilesystem{
-		path:       path,
-		namespace:  namespace,
-		apiVersion: "v1alpha1",
-		apiGroup:   "backups.riotkit.org",
-	}
+func (fs *ConfigurationInLocalFilesystem) buildPath(kind string, id string, apiGroup string, apiVersion string) string {
+	return strings.ReplaceAll(fs.path+"/"+fs.namespace+"/"+apiGroup+"/"+apiVersion+"/"+kind+"/"+id+".yaml", "//", "/")
 }
 
-func (o *ConfigurationInLocalFilesystem) buildPath(kind string, id string, apiGroup string, apiVersion string) string {
-	return strings.ReplaceAll(o.path+"/"+o.namespace+"/"+apiGroup+"/"+apiVersion+"/"+kind+"/"+id+".yaml", "//", "/")
-}
-
-func (o *ConfigurationInLocalFilesystem) recodeFromYamlToJson(yamlDoc []byte) (string, error) {
+func (fs *ConfigurationInLocalFilesystem) recodeFromYamlToJson(yamlDoc []byte) (string, error) {
 	var raw interface{}
 	if err := yaml.Unmarshal(yamlDoc, &raw); err != nil {
 		return "", errors.Wrap(err, "Cannot recode from YAML to JSON")
@@ -91,4 +82,13 @@ func (o *ConfigurationInLocalFilesystem) recodeFromYamlToJson(yamlDoc []byte) (s
 		return "", errors.Wrap(err, "Cannot recode from YAML to JSON")
 	}
 	return string(jsonDoc), nil
+}
+
+func NewConfigurationInLocalFilesystemProvider(path string, namespace string) *ConfigurationInLocalFilesystem {
+	return &ConfigurationInLocalFilesystem{
+		path:       path,
+		namespace:  namespace,
+		apiVersion: "v1alpha1",
+		apiGroup:   "backups.riotkit.org",
+	}
 }
