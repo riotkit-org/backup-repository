@@ -17,7 +17,7 @@ k8s_test_backup_repository:
 	helm upgrade --install backup-repository ./helm/backup-repository-server -n backup-repository --values ./helm/examples/backup-repository-ci.values.yaml --wait --timeout 30s --set image.repository=${IMAGE_REPOSITORY} --set image.tag=${IMAGE_TAG} || (kubectl get events -A; exit 1)
 
 k8s_crd:
-	kubectl apply -f crd
+	kubectl apply -f helm/backup-repository-server/templates/crd.yaml
 
 k8s_dev_registry:
 	helm repo add twuni https://helm.twun.io

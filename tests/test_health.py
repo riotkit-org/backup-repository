@@ -34,7 +34,7 @@ class HealthTest(BaseTestCase):
 
     def test_kubernetes_connection_will_be_degraded_if_crds_not_present(self):
         try:
-            subprocess.check_call(['kubectl', 'delete', '-f', 'crd'])
+            subprocess.check_call(['kubectl', 'delete', '-f', 'helm/backup-repository-server/templates/crd.yaml'])
             time.sleep(5)
 
             response = self.get("/ready?code=changeme", auth=None)
@@ -42,6 +42,6 @@ class HealthTest(BaseTestCase):
             assert "configuration provider is not usable" in str(response.content)
 
         finally:
-            subprocess.check_call(['kubectl', 'apply', '-f', 'crd'])
+            subprocess.check_call(['kubectl', 'apply', '-f', 'helm/backup-repository-server/templates/crd.yaml'])
             subprocess.check_call(['kubectl', 'apply', '-f',
                                    'docs/examples/', '-n', 'backup-repository'])  # restore test data
