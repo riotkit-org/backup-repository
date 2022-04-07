@@ -1,0 +1,32 @@
+---
+apiVersion: backups.riotkit.org/v1alpha1
+kind: BackupCollection
+metadata:
+    name: iwa-ait
+    namespace: backup-repository
+spec:
+    description: IWA-AIT website files
+    filenameTemplate: iwa-ait-${version}.tar.gz
+    maxBackupsCount: 5
+    maxOneVersionSize: 1M
+    maxCollectionSize: 10M
+
+    # optional
+    windows:
+        - from: "*/30 * * * *"
+          duration: 30m
+
+    # fifo, fifo-plus-older
+    strategyName: fifo
+    strategySpec:
+        keepLastOlderNotMoreThan: 5d
+        maxOlderCopies: 2
+
+    healthSecretRef:
+        name: backup-repository-collection-secrets
+        entry: iwa-ait
+
+    accessControl:
+        - userName: admin
+          roles:
+              - collectionManager

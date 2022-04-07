@@ -19,7 +19,6 @@ import (
 
 type options struct {
 	Help                 bool   `short:"h" long:"help" description:"Shows this help message"`
-	Provider             string `short:"p" long:"provider" description:"Configuration provider. Choice: 'kubernetes', 'filesystem'" default:"kubernetes" env:"BR_CONFIG_PROVIDER"`
 	Namespace            string `short:"n" long:"namespace" default:"backup-repository" description:"Kubernetes namespace to operate in"`
 	EncodePasswordAction string `long:"encode-password" description:"Encode a password from CLI instead of running a server"`
 	HashJWT              string `long:"hash-jwt" description:"Generate a hash from JWT"`
@@ -49,6 +48,10 @@ type options struct {
 	ServerHealthRPM     int16 `long:"rate-server-health-limit" description:"Request rate limit for server's /health and /ready endpoints. Unit: requests per minute. WARNING: Be careful in Kubernetes as Kube API also can hit this rate limit and restart your service!" default:"160"`
 
 	ListenAddr string `long:"listen" description:"Address to listen on with HTTP API (e.g. :8080)" default:":8080"`
+
+	// Configuration provider
+	Provider        string `short:"p" long:"provider" description:"Configuration provider. Choice: 'kubernetes', 'filesystem'" default:"kubernetes" env:"BR_CONFIG_PROVIDER"`
+	ConfigLocalPath string `long:"config-local-path" description:"Configuration path (if using --provider=filesystem)" default:"~/.backup-repository" env:"BR_CONFIG_LOCAL_PATH"`
 }
 
 func main() {
@@ -81,7 +84,7 @@ func main() {
 	// Application services container is built here
 	//
 
-	configProvider, err := config.CreateConfigurationProvider(opts.Provider, opts.Namespace)
+	configProvider, err := config.CreateConfigurationProvider(opts.Provider, opts.Namespace, opts.ConfigLocalPath)
 	if err != nil {
 		log.Errorln("Cannot initialize Configuration Provider")
 		log.Fatal(err)

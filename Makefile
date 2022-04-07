@@ -55,6 +55,24 @@ run:
 		--jwt-secret-key="secret key" \
 		--storage-io-timeout="5m" \
 		--listen=":${SERVER_PORT}" \
+		--provider=kubernetes \
+		--storage-url="s3://mybucket?endpoint=localhost:9000&disableSSL=true&s3ForcePathStyle=true&region=eu-central-1"
+
+run_with_local_config_storage:
+	export AWS_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE; \
+	export AWS_SECRET_ACCESS_KEY=wJaFuCKtnFEMI/CApItaliSM/bPxRfiCYEXAMPLEKEY; \
+	\
+	./.build/backup-repository \
+		--db-password=postgres \
+		--db-user=postgres \
+		--db-password=postgres \
+		--db-name=postgres \
+		--health-check-key=changeme \
+		--jwt-secret-key="secret key" \
+		--storage-io-timeout="5m" \
+		--listen=":${SERVER_PORT}" \
+		--provider=filesystem \
+		--config-local-path=$$(pwd)/docs/examples-filesystem/\
 		--storage-url="s3://mybucket?endpoint=localhost:9000&disableSSL=true&s3ForcePathStyle=true&region=eu-central-1"
 
 build:

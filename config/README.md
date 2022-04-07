@@ -18,15 +18,24 @@ Filesystem adapter
 
 Works in a directory structure that bases on object types and names.
 
+**Pattern:**
+
+```
+strings.ReplaceAll(o.path+"/"+o.namespace+"/"+apiGroup+"/"+apiVersion+"/"+kind+"/"+id+".yaml", "//", "/")
+```
+
+**Examples:**
+
 ```
 # Example: 
 #    apiVersion: backups.riotkit.org/v1alpha1
 #    kind: BackupUser
 #    metadata:
 #        name: admin
+#        namespace: default
 #
 
-./backups.riotkit.org/v1alpha1/BackupUser/admin.yaml
+./default/backups.riotkit.org_v1alpha1/BackupUser/admin.yaml
 
 
 # Example:
@@ -35,7 +44,7 @@ Works in a directory structure that bases on object types and names.
 #   metadata:
 #       name: backup-repository-passwords
 
-./v1/Secret/backup-repository-passwords.yaml
+./default/v1/Secret/backup-repository-passwords.yaml
 ```
 
 #### Immutability

@@ -5,10 +5,15 @@ import (
 	"fmt"
 )
 
-func CreateConfigurationProvider(providerName string, namespace string) (ConfigurationProvider, error) {
-
+// CreateConfigurationProvider is a configuration factory
+func CreateConfigurationProvider(providerName string, namespace string, localPath string) (ConfigurationProvider, error) {
 	if providerName == "kubernetes" {
 		return CreateKubernetesConfigurationProvider(
+			namespace,
+		), nil
+	} else if providerName == "filesystem" {
+		return NewConfigurationInLocalFilesystemProvider(
+			localPath,
 			namespace,
 		), nil
 	}

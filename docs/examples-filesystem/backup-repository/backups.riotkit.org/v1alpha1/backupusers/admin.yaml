@@ -1,0 +1,20 @@
+---
+apiVersion: backups.riotkit.org/v1alpha1
+kind: BackupUser
+metadata:
+    name: admin
+spec:
+    email: riotkit@riseup.net
+    deactivated: false
+    organization: "Riotkit"
+    about: "System administrator"
+    password: "hashed"
+    passwordFromRef:  # alternatively, fetch from `kind: Secret`
+        name: backup-repository-passwords
+        entry: admin
+    restrictByIP:
+        - 1.2.3.4
+    roles:
+        - collectionManager
+        - usersManager
+        - systemAdmin
