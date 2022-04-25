@@ -21,7 +21,7 @@ require (
 	golang.org/x/net v0.0.0-20220401154927-543a649e0bdd
 	gorm.io/driver/postgres v1.3.4
 	gorm.io/gorm v1.23.1
-	k8s.io/apimachinery v0.23.5
+	k8s.io/apimachinery v0.23.6
 	k8s.io/client-go v0.23.5
 	sigs.k8s.io/controller-runtime v0.11.2
 )
