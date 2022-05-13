@@ -58,7 +58,7 @@ spec:
 
                   envFrom:
                       - secretRef:
-                            name: {{ include "backup-repository-server.fullname" . }}-credentials
+                            name: {{ .Values.secrets.name }}
                             optional: false
 
                   ports:

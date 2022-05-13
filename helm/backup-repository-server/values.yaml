@@ -12,12 +12,16 @@ settings:
 secretsType: plain
 
 secrets:
-    BR_JWT_SECRET_KEY: "changeme-important!" # MANDATORY
-    BR_DB_HOSTNAME: "postgres.backup-repository.svc.cluster.local"
-    BR_DB_PASSWORD: "postgres"
-    BR_DB_USERNAME: "postgres"
-    BR_DB_NAME: "backup-repository"
-    BR_DB_PORT: "5432"
+    name: backup-repository-secret-env
+    type: plain # or "sealedSecrets"
+    create: true
+    spec:
+        BR_JWT_SECRET_KEY: "changeme-important!" # MANDATORY
+        BR_DB_HOSTNAME: "postgres.backup-repository.svc.cluster.local"
+        BR_DB_PASSWORD: "postgres"
+        BR_DB_USERNAME: "postgres"
+        BR_DB_NAME: "backup-repository"
+        BR_DB_PORT: "5432"
 
 env:
     # BR_USE_GOOGLE_CLOUD: true

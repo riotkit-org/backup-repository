@@ -1,14 +1,18 @@
 secrets:
-    BR_JWT_SECRET_KEY: "87GHq66A+uGkcn/AyxrnPYdd5F0XUmGlHsREbY3tcM4CpO6/dFL7z/057DHnp9nMdoYOpKxwYWrM9XyffjrBidm6/VCzfam9GwMlOac7TsidcTnSHG5IasPICb9bKE3h" # MANDATORY
-    BR_DB_HOSTNAME: "postgres-postgresql.backup-repository.svc.cluster.local"
-    BR_DB_PASSWORD: "putinchuj"
-    BR_DB_USERNAME: "riotkit"
-    BR_DB_NAME: "backup-repository"
-    BR_DB_PORT: "5432"
+    name: backup-repository-secret-env
+    type: plain
+    create: true
+    spec:
+        BR_JWT_SECRET_KEY: "87GHq66A+uGkcn/AyxrnPYdd5F0XUmGlHsREbY3tcM4CpO6/dFL7z/057DHnp9nMdoYOpKxwYWrM9XyffjrBidm6/VCzfam9GwMlOac7TsidcTnSHG5IasPICb9bKE3h" # MANDATORY
+        BR_DB_HOSTNAME: "postgres-postgresql.backup-repository.svc.cluster.local"
+        BR_DB_PASSWORD: "putinchuj"
+        BR_DB_USERNAME: "riotkit"
+        BR_DB_NAME: "backup-repository"
+        BR_DB_PORT: "5432"
+        AWS_SECRET_KEY: "wJaFuCKtnFEMI/CApItaliSM/bPxRfiCYEXAMPLEKEY"
+        AWS_ACCESS_KEY_ID: "AKIAIOSFODNN7EXAMPLE"
 
 env:
-    AWS_SECRET_KEY: "wJaFuCKtnFEMI/CApItaliSM/bPxRfiCYEXAMPLEKEY"
-    AWS_ACCESS_KEY_ID: "AKIAIOSFODNN7EXAMPLE"
     GIN_MODE: debug
 
 ingress:
