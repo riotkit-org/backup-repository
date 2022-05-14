@@ -109,3 +109,6 @@ health:
 nodeSelector: {}
 tolerations: []
 affinity: {}
+
+deploymentLabels: {}
+podLabels: {}

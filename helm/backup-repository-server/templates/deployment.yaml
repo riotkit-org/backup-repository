@@ -4,6 +4,9 @@ metadata:
     name: {{ include "backup-repository-server.fullname" . }}
     labels:
         {{- include "backup-repository-server.labels" . | nindent 8 }}
+        {{- with .Values.deploymentLabels }}
+        {{- toYaml . | nindent 8 }}
+        {{- end }}
 spec:
   {{- if not .Values.autoscaling.enabled }}
     replicas: {{ .Values.replicaCount }}
@@ -18,10 +21,13 @@ spec:
               {{- toYaml . | nindent 16 }}
           {{- end }}
             labels:
-              {{- include "backup-repository-server.selectorLabels" . | nindent 16 }}
-              {{- if eq .Values.image.tag "latest" | or (eq .Values.image.tag "snapshot") }}
+                {{- include "backup-repository-server.selectorLabels" . | nindent 16 }}
+                {{- if eq .Values.image.tag "latest" | or (eq .Values.image.tag "snapshot") }}
                 refreshImageTag: "{{- randAlphaNum 24 | nospace -}}"
-              {{- end }}
+                {{- end }}
+                {{- with .Values.podLabels }}
+                {{- toYaml . | nindent 16 }}
+                {{- end }}
         spec:
             # todo: implement termination procedure, so the pending upload would block from termination
             #       and terminating container will block from taking new uploads
