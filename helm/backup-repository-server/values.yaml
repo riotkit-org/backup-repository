@@ -24,9 +24,9 @@ secrets:
         BR_DB_PORT: "5432"
 
 env:
-    # BR_USE_GOOGLE_CLOUD: true
     BR_LOG_LEVEL: info
-    BR_STORAGE_DRIVER_URL: "s3://backups?endpoint=minio.backup-repository.svc.cluster.local:9000&disableSSL=true&s3ForcePathStyle=true&region=eu-central-1"
+    # BR_USE_GOOGLE_CLOUD: true
+    #BR_STORAGE_DRIVER_URL: "s3://backups?endpoint=minio.backup-repository.svc.cluster.local:9000&disableSSL=true&s3ForcePathStyle=true&region=eu-central-1"
 
 image:
     repository: ghcr.io/riotkit-org/backup-repository
