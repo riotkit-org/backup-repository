@@ -102,7 +102,6 @@ health:
         enabled: true
         attributes:
             failureThreshold: 1
-            terminationGracePeriodSeconds: 10
     readiness:
         enabled: true
         attributes: {}
