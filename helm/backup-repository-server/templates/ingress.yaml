@@ -20,7 +20,7 @@ metadata:
       {{- include "backup-repository-server.labels" . | nindent 6 }}
   {{- with .Values.ingress.annotations }}
     annotations:
-      {{- toYaml . | nindent 4 }}
+      {{- toYaml . | nindent 6 }}
   {{- end }}
 spec:
   {{- if and .Values.ingress.className (semverCompare ">=1.18-0" .Capabilities.KubeVersion.GitVersion) }}
