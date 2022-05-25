@@ -80,7 +80,7 @@ spec:
                                               type: array
                                               items:
                                                   type: string
-                                                  enum: ["collectionManager", "uploader", "downloader"]
+                                                  enum: ["collectionManager", "backupUploader", "backupDownloader", "uploadsAnytime"]
 
 
           additionalPrinterColumns:
@@ -157,7 +157,7 @@ spec:
                                   type: array
                                   items:
                                       type: string
-                                      enum: ["collectionManager", "usersManager", "systemAdmin"]
+                                      enum: ["collectionManager", "usersManager", "systemAdmin", "backupUploader", "backupDownloader", "uploadsAnytime"]
 
 
           additionalPrinterColumns:
