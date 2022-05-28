@@ -14,7 +14,7 @@ k8s_minio:
 	helm upgrade --install minio minio/minio -n backup-repository --values ./helm/examples/minio.values.yaml --wait --timeout 2m0s
 
 k8s_test_backup_repository:
-	helm upgrade --install backup-repository ./helm/backup-repository-server -n backup-repository --values ./helm/examples/backup-repository-ci.values.yaml --wait --timeout 30s --set image.repository=${IMAGE_REPOSITORY} --set image.tag=${IMAGE_TAG} || (kubectl get events -A; exit 1)
+	helm upgrade --install backup-repository ./helm/backup-repository-server -n backup-repository --values ./helm/examples/backup-repository-ci.values.yaml --wait --timeout 30s --set image.repository=${IMAGE_REPOSITORY} --set image.tag=${IMAGE_TAG} || (kubectl get events -A; kubectl logs deployment/backup-repository-backup-repository-server -n backup-repository; exit 1)
 
 k8s_crd:
 	kubectl apply -f helm/backup-repository-server/templates/crd.yaml
