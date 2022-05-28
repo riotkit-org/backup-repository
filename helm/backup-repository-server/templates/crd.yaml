@@ -4,7 +4,8 @@ kind: "CustomResourceDefinition"
 metadata:
     name: "backupcollections.backups.riotkit.org"
     annotations:
-        "helm.sh/resource-policy": keep
+        helm.sh/resource-policy: keep
+        argocd.argoproj.io/sync-options: Prune=false
 spec:
     group: "backups.riotkit.org"
     scope: "Namespaced"
@@ -108,7 +109,8 @@ kind: "CustomResourceDefinition"
 metadata:
     name: "backupusers.backups.riotkit.org"
     annotations:
-        "helm.sh/resource-policy": keep
+        helm.sh/resource-policy: keep
+        argocd.argoproj.io/sync-options: Prune=false
 spec:
     group: "backups.riotkit.org"
     scope: "Namespaced"
