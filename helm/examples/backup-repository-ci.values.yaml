@@ -14,6 +14,7 @@ secrets:
 
 env:
     GIN_MODE: debug
+    BR_STORAGE_DRIVER_URL: "s3://backups?endpoint=minio.backup-repository.svc.cluster.local:9000&disableSSL=true&s3ForcePathStyle=true&region=eu-central-1"
 
 ingress:
     enabled: true
