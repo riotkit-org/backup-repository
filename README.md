@@ -293,5 +293,8 @@ spec:
 [Contributing](./CONTRIBUTING.md)
 ---------------------------------
 
+This software is developed with [GoLand](https://www.jetbrains.com/go/) licensed for open source development.
+Special thanks for the support.
+
 [Security policy](./SECURITY.md)
 --------------------------------
