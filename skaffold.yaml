@@ -1,0 +1,47 @@
+---
+apiVersion: skaffold/v3
+kind: Config
+build:
+    artifacts:
+        - image: bmt-registry:5000/backup-repository
+          ko:
+              dependencies:
+                  paths: ["**/*.go", "go.mod", "go.sum"]
+                  ignore: []
+              labels:
+                  org.opencontainers.image.licenses: Apache-2.0
+                  org.opencontainers.image.source: https://github.com/riotkit-org/backup-repository
+    tagPolicy:
+        gitCommit: {}
+deploy:
+    helm:
+        releases:
+            - name: postgresql
+              repo: https://charts.bitnami.com/bitnami
+              remoteChart: postgresql
+              namespace: db
+              createNamespace: true
+              wait: true
+              valuesFiles:
+                  - helm/examples/postgresql.values.yaml
+
+            - name: minio
+              repo: https://helm.min.io/
+              remoteChart: minio
+              namespace: storage
+              createNamespace: true
+              wait: true
+              valuesFiles:
+                  - helm/examples/minio.values.yaml
+
+            - name: server
+              chartPath: helm/backup-repository-server
+              recreatePods: true
+              namespace: backups
+              createNamespace: true
+              valuesFiles:
+                  - helm/examples/backup-repository-ci.values.yaml
+              setValueTemplates:
+                  installCRD: "false"
+                  image.repository: 'bmt-registry:5000/backup-repository'
+                  image.tag: '{{.IMAGE_TAG}}'

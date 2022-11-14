@@ -17,7 +17,7 @@ secrets:
     create: true
     spec:
         BR_JWT_SECRET_KEY: "changeme-important!" # MANDATORY
-        BR_DB_HOSTNAME: "postgres.backup-repository.svc.cluster.local"
+        BR_DB_HOSTNAME: "postgresql.db.svc.cluster.local"
         BR_DB_PASSWORD: "postgres"
         BR_DB_USERNAME: "postgres"
         BR_DB_NAME: "backup-repository"

@@ -4,7 +4,7 @@ secrets:
     create: true
     spec:
         BR_JWT_SECRET_KEY: "87GHq66A+uGkcn/AyxrnPYdd5F0XUmGlHsREbY3tcM4CpO6/dFL7z/057DHnp9nMdoYOpKxwYWrM9XyffjrBidm6/VCzfam9GwMlOac7TsidcTnSHG5IasPICb9bKE3h" # MANDATORY
-        BR_DB_HOSTNAME: "postgres-postgresql.backup-repository.svc.cluster.local"
+        BR_DB_HOSTNAME: "postgresql.db.svc.cluster.local"
         BR_DB_PASSWORD: "putinchuj"
         BR_DB_USERNAME: "riotkit"
         BR_DB_NAME: "backup-repository"
@@ -14,7 +14,7 @@ secrets:
 
 env:
     GIN_MODE: debug
-    BR_STORAGE_DRIVER_URL: "s3://backups?endpoint=minio.backup-repository.svc.cluster.local:9000&disableSSL=true&s3ForcePathStyle=true&region=eu-central-1"
+    BR_STORAGE_DRIVER_URL: "s3://backups?endpoint=minio.storage.svc.cluster.local:9000&disableSSL=true&s3ForcePathStyle=true&region=eu-central-1"
 
 ingress:
     enabled: true
