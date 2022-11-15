@@ -27,7 +27,7 @@ deploy:
                   - helm/examples/postgresql.values.yaml
 
             - name: minio
-              repo: https://helm.min.io/
+              repo: https://charts.min.io/
               version: 5.0.1
               remoteChart: minio
               namespace: storage
