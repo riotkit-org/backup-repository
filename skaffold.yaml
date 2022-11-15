@@ -15,7 +15,6 @@ build:
         gitCommit: {}
 deploy:
     statusCheck: true
-    tolerateFailuresUntilDeadline: true
     statusCheckDeadlineSeconds: 60
     helm:
         releases:
