@@ -1,5 +1,5 @@
 ---
-apiVersion: skaffold/v3
+apiVersion: skaffold/v3alpha1
 kind: Config
 build:
     artifacts:
@@ -14,6 +14,9 @@ build:
     tagPolicy:
         gitCommit: {}
 deploy:
+    statusCheck: true
+    tolerateFailuresUntilDeadline: true
+    statusCheckDeadlineSeconds: 60
     helm:
         releases:
             - name: postgresql
