@@ -18,6 +18,7 @@ deploy:
         releases:
             - name: postgresql
               repo: https://charts.bitnami.com/bitnami
+              version: 12.1.2
               remoteChart: postgresql
               namespace: db
               createNamespace: true
@@ -27,6 +28,7 @@ deploy:
 
             - name: minio
               repo: https://helm.min.io/
+              version: 5.0.1
               remoteChart: minio
               namespace: storage
               createNamespace: true
