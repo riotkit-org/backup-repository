@@ -31,7 +31,7 @@ spec:
         spec:
             # todo: implement termination procedure, so the pending upload would block from termination
             #       and terminating container will block from taking new uploads
-            terminationGracePeriodSeconds: 300
+            terminationGracePeriodSeconds: {{ .Values.terminationGracePeriodSeconds }}
           {{- with .Values.imagePullSecrets }}
             imagePullSecrets:
               {{- toYaml . | nindent 16 }}

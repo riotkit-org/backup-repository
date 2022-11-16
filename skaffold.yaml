@@ -49,3 +49,4 @@ deploy:
                   installCRD: "false"
                   image.repository: 'bmt-registry:5000/backup-repository'
                   image.tag: '{{.IMAGE_TAG}}'
+                  terminationGracePeriodSeconds: 1
