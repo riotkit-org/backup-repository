@@ -15,7 +15,7 @@ build:
         gitCommit: {}
 deploy:
     statusCheck: true
-    statusCheckDeadlineSeconds: 60
+    statusCheckDeadlineSeconds: 120
     helm:
         releases:
             - name: postgresql
