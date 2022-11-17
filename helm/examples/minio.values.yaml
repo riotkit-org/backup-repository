@@ -1,6 +1,10 @@
 # existingSecret: ...
-accessKey: AKIAIOSFODNN7EXAMPLE
-secretKey: wJaFuCKtnFEMI/CApItaliSM/bPxRfiCYEXAMPLEKEY
+
+users:
+    - accessKey: "AKIAIOSFODNN7EXAMPLE"
+      secretKey: "wJaFuCKtnFEMI/CApItaliSM/bPxRfiCYEXAMPLEKEY"
+      policy: consoleAdmin
+
 mode: standalone # recommended to use "distributed" for production
 
 persistence:
@@ -13,8 +17,6 @@ resources:
     requests:
         memory: 100m
 
-defaultBucket:
-    enabled: true
-    name: backups
-    # policy: ...
-    purge: false
+buckets:
+    - name: backups
+      purge: false
