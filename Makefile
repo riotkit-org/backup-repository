@@ -1,4 +1,4 @@
-include k8s.mk
+SUDO=sudo
 include test.mk
 
 all: build run
@@ -7,40 +7,23 @@ test:
 	go test -v ./...
 
 setup_api_tests:
-	kubectl apply -f "docs/examples/" -n backup-repository
 	pipenv install
 
 api_tests:
 	pipenv run pytest -s
 
+k3d:
+	(${SUDO} docker ps | grep k3d-bmt-server-0 > /dev/null 2>&1) || ${SUDO} k3d cluster create bmt --registry-create bmt-registry:0.0.0.0:5000
+	cat /etc/hosts | grep "bmt-registry" > /dev/null || (sudo /bin/bash -c "echo '127.0.0.1 bmt-registry' >> /etc/hosts")
+	${SUDO} k3d kubeconfig merge bmt
+
+	export KUBECONFIG=~/.k3d/kubeconfig-bmt.yaml
+	kubectl create ns backups || true
+	kubectl apply -f helm/backup-repository-server/templates/crd.yaml
+	kubectl apply -f "docs/examples/" -n backups
+
 coverage:
 	go test -v ./... -covermode=count -coverprofile=coverage.out
-
-postgres:
-	docker run -d \
-        --name br_postgres \
-        -e POSTGRES_PASSWORD=postgres \
-        -e POSTGRES_USER=postgres \
-        -e POSTGRES_DB=postgres \
-        -e PGDATA=/var/lib/postgresql/data/pgdata \
-        -v $$(pwd)/.build/postgres:/var/lib/postgresql \
-        -p 5432:5432 \
-        postgres:14.1-alpine
-
-postgres_refresh:
-	docker rm -f br_postgres || true
-	sudo rm -rf $$(pwd)/.build/postgres
-	make postgres
-
-minio:
-	docker run -d \
-		--name br_minio \
-		-p 9000:9000 \
-	    -p 9001:9001 \
-	    -v $$(pwd)/.build/minio:/data \
-	    -e "MINIO_ROOT_USER=AKIAIOSFODNN7EXAMPLE" \
-	    -e "MINIO_ROOT_PASSWORD=wJaFuCKtnFEMI/CApItaliSM/bPxRfiCYEXAMPLEKEY" \
-		quay.io/minio/minio:RELEASE.2022-02-16T00-35-27Z server /data --console-address 0.0.0.0:9001
 
 run:
 	export AWS_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE; \

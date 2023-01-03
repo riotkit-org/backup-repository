@@ -87,23 +87,13 @@ jobs:
               with:
                   fetch-depth: 0
 
-            - name: Setup Kubernetes cluster
-              uses: AbsaOSS/k3d-action@v2
-              with:
-                  cluster-name: "riotkit"
-                  args: |
-                      --agents 1 -p "30080:30080@agent:0" -p "30081:30081@agent:0"
-
             - name: Install all required things
-              run: make k8s_install
-
-            - name: Verify installation
-              run: make k8s_test
+              run: make k3d
 
             - name: Prepare Python
               uses: actions/setup-python@v3
               with:
-                  python-version: "3.8"
+                  python-version: "3.10"
                   architecture: "x64"
 
             - name: Prepare Pipenv
