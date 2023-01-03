@@ -30,14 +30,14 @@ prepare-tools:
 
 
 k3d: prepare-tools
-	(${SUDO} docker ps | grep k3d-bmt-server-0 > /dev/null 2>&1) || ${SUDO} k3d cluster create bmt --registry-create bmt-registry:0.0.0.0:5000
+	(${SUDO} docker ps | grep k3d-bmt-server-0 > /dev/null 2>&1) || ${SUDO} ./.build/k3d cluster create bmt --registry-create bmt-registry:0.0.0.0:5000
 	cat /etc/hosts | grep "bmt-registry" > /dev/null || (sudo /bin/bash -c "echo '127.0.0.1 bmt-registry' >> /etc/hosts")
-	${SUDO} k3d kubeconfig merge bmt
+	${SUDO} ./.build/k3d kubeconfig merge bmt
 
 	export KUBECONFIG=~/.k3d/kubeconfig-bmt.yaml
-	kubectl create ns backups || true
-	kubectl apply -f helm/backup-repository-server/templates/crd.yaml
-	kubectl apply -f "docs/examples/" -n backups
+	./.build/kubectl create ns backups || true
+	./.build/kubectl apply -f helm/backup-repository-server/templates/crd.yaml
+	./.build/kubectl apply -f "docs/examples/" -n backups
 
 coverage:
 	go test -v ./... -covermode=count -coverprofile=coverage.out
