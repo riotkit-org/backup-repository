@@ -30,7 +30,7 @@ prepare-tools:
 
 
 k3d: prepare-tools
-	(${SUDO} docker ps | grep k3d-bmt-server-0 > /dev/null 2>&1) || ${SUDO} ./.build/k3d cluster create bmt --registry-create bmt-registry:0.0.0.0:5000 -p "30080:30080@agent:0" -p "30081:30081@agent:0" -p "30050:30050@agent:0"
+	(${SUDO} docker ps | grep k3d-bmt-server-0 > /dev/null 2>&1) || ${SUDO} ./.build/k3d cluster create bmt --registry-create bmt-registry:0.0.0.0:5000 --agents 1 -p "30080:30080@agent:0" -p "30081:30081@agent:0" -p "30050:30050@agent:0"
 	cat /etc/hosts | grep "bmt-registry" > /dev/null || (sudo /bin/bash -c "echo '127.0.0.1 bmt-registry' >> /etc/hosts")
 	./.build/k3d kubeconfig merge bmt
 
