@@ -41,7 +41,7 @@ class BaseTestCase(unittest.TestCase):
     @staticmethod
     def scale(kind: str, name: str, replicas: int):
         print(f'>> Scaling {kind} - {name} to {replicas} replicas')
-        subprocess.check_call(["kubectl", "scale", "-n", "backup-repository", kind, name, f"--replicas={replicas}"])
+        subprocess.check_call(["kubectl", "scale", "-n", "backups", kind, name, f"--replicas={replicas}"])
 
     @staticmethod
     def wait_for(label: str, ready: bool = True):
@@ -53,7 +53,7 @@ class BaseTestCase(unittest.TestCase):
             condition = "=False"
 
         try:
-            subprocess.check_call(['kubectl', 'wait', '--for=condition=ready' + condition, 'pod', '-l', label, '-n', 'backup-repository', '--timeout=300s'])
+            subprocess.check_call(['kubectl', 'wait', '--for=condition=ready' + condition, 'pod', '-l', label, '-n', 'backups', '--timeout=300s'])
         except subprocess.CalledProcessError:
             subprocess.check_call(['kubectl', 'get', 'events', '-A'])
             raise

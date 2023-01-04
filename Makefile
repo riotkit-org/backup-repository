@@ -9,7 +9,7 @@ all: build run
 test:
 	go test -v ./...
 
-setup_api_tests:
+setup_api_tests: prepare-tools skaffold-deploy
 	pipenv install
 
 api_tests:
@@ -38,6 +38,10 @@ k3d: prepare-tools
 	./.build/kubectl create ns backups || true
 	./.build/kubectl apply -f helm/backup-repository-server/templates/crd.yaml
 	./.build/kubectl apply -f "docs/examples/" -n backups
+
+skaffold-deploy:
+	./.build/skaffold build --tag e2e --default-repo bmt-registry:5000 --push --insecure-registry bmt-registry:5000 --disable-multi-platform-build=true --detect-minikube=false --cache-artifacts=false
+	./.build/skaffold deploy --tag e2e --assume-yes=true --default-repo bmt-registry:5000
 
 coverage:
 	go test -v ./... -covermode=count -coverprofile=coverage.out

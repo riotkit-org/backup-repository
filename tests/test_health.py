@@ -44,4 +44,4 @@ class HealthTest(BaseTestCase):
         finally:
             subprocess.check_call(['kubectl', 'apply', '-f', 'helm/backup-repository-server/templates/crd.yaml'])
             subprocess.check_call(['kubectl', 'apply', '-f',
-                                   'docs/examples/', '-n', 'backup-repository'])  # restore test data
+                                   'docs/examples/', '-n', 'backups'])  # restore test data
