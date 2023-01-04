@@ -11,72 +11,72 @@ permissions:
     packages: write
 
 jobs:
-    test-and-release-snapshot:
-        runs-on: ubuntu-latest
-        steps:
-            - name: Checkout
-              uses: actions/checkout@v3
-              with:
-                  fetch-depth: 0
-
-            - name: Set up Go
-              uses: actions/setup-go@v2
-              with:
-                  go-version: 1.17
-
-            - name: Build
-              run: "make build"
-
-            - name: Test
-              run: "make coverage"
-              if: "!contains(github.event.head_commit.message, 'test skip')"
-
-            - name: Convert coverage to lcov format
-              uses: jandelgado/gcov2lcov-action@v1.0.8
-              if: "!contains(github.event.head_commit.message, 'test skip')"
-
-            - name: Coveralls
-              uses: coverallsapp/github-action@1.1.3
-              if: "!contains(github.event.head_commit.message, 'test skip')"
-              with:
-                github-token: ${{ secrets.github_token }}
-                path-to-lcov: coverage.lcov
-
-            # ===================
-            # Arch Linux package
-            # ===================
-
-            - name: Create Arch Linux package to check if PKGBUILD works
-              uses: 2m/arch-pkgbuild-builder@v1.18
-              if: "!contains(github.event.head_commit.message, 'pkg skip')"
-              with:
-                  target: 'pkgbuild'
-                  pkgname: './'
-
-            # =======
-            # Docker
-            # =======
-
-            - name: Log in to the Container registry
-              uses: docker/login-action@dd4fa0671be5250ee6f50aedf4cb05514abda2c7
-              with:
-                  registry: ${{ env.REGISTRY }}
-                  username: ${{ github.actor }}
-                  password: ${{ secrets.GITHUB_TOKEN }}
-
-            - name: Extract metadata (tags, labels) for Docker
-              id: meta
-              uses: docker/metadata-action@e5622373a38e60fb6d795a4421e56882f2d7a681
-              with:
-                  images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
-
-            - name: Build and release to container registry
-              uses: docker/build-push-action@v2
-              with:
-                  context: .
-                  push: true
-                  tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:snapshot
-                  labels: ${{ steps.meta.outputs.labels }}
+#    test-and-release-snapshot:
+#        runs-on: ubuntu-latest
+#        steps:
+#            - name: Checkout
+#              uses: actions/checkout@v3
+#              with:
+#                  fetch-depth: 0
+#
+#            - name: Set up Go
+#              uses: actions/setup-go@v2
+#              with:
+#                  go-version: 1.17
+#
+#            - name: Build
+#              run: "make build"
+#
+#            - name: Test
+#              run: "make coverage"
+#              if: "!contains(github.event.head_commit.message, 'test skip')"
+#
+#            - name: Convert coverage to lcov format
+#              uses: jandelgado/gcov2lcov-action@v1.0.8
+#              if: "!contains(github.event.head_commit.message, 'test skip')"
+#
+#            - name: Coveralls
+#              uses: coverallsapp/github-action@1.1.3
+#              if: "!contains(github.event.head_commit.message, 'test skip')"
+#              with:
+#                github-token: ${{ secrets.github_token }}
+#                path-to-lcov: coverage.lcov
+#
+#            # ===================
+#            # Arch Linux package
+#            # ===================
+#
+#            - name: Create Arch Linux package to check if PKGBUILD works
+#              uses: 2m/arch-pkgbuild-builder@v1.18
+#              if: "!contains(github.event.head_commit.message, 'pkg skip')"
+#              with:
+#                  target: 'pkgbuild'
+#                  pkgname: './'
+#
+#            # =======
+#            # Docker
+#            # =======
+#
+#            - name: Log in to the Container registry
+#              uses: docker/login-action@dd4fa0671be5250ee6f50aedf4cb05514abda2c7
+#              with:
+#                  registry: ${{ env.REGISTRY }}
+#                  username: ${{ github.actor }}
+#                  password: ${{ secrets.GITHUB_TOKEN }}
+#
+#            - name: Extract metadata (tags, labels) for Docker
+#              id: meta
+#              uses: docker/metadata-action@e5622373a38e60fb6d795a4421e56882f2d7a681
+#              with:
+#                  images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+#
+#            - name: Build and release to container registry
+#              uses: docker/build-push-action@v2
+#              with:
+#                  context: .
+#                  push: true
+#                  tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:snapshot
+#                  labels: ${{ steps.meta.outputs.labels }}
 
     test-on-kubernetes:
         runs-on: ubuntu-latest
