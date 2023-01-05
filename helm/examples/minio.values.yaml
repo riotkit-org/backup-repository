@@ -15,7 +15,7 @@ persistence:
 
 resources:
     requests:
-        memory: 100m
+        memory: 0.1
 
 buckets:
     - name: backups

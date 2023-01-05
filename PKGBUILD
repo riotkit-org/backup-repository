@@ -1,5 +1,11 @@
+regexp="^v[0-9.]+"
+if [[ "$GITHUB_REF" =~ $regexp ]]; then
+    pkgver=${GITHUB_REF##*/}
+else
+    pkgver=0.0.0
+fi
+
 pkgname=backup-repository
-pkgver=${GITHUB_REF##*/}
 pkgver=${pkgver/-/}
 pkgrel=1
 pkgdesc='Backup storage for E2E GPG-encrypted files, with multi-user, quotas, versioning, using a object storage (S3/Min.io/GCS etc.) and deployed on Kubernetes or standalone.'

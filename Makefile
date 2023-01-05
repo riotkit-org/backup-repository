@@ -9,7 +9,7 @@ all: build run
 test:
 	go test -v ./...
 
-setup_api_tests:
+setup_api_tests: prepare-tools skaffold-deploy
 	pipenv install
 
 api_tests:
@@ -31,13 +31,18 @@ prepare-tools:
 
 k3d: prepare-tools
 	(${SUDO} docker ps | grep k3d-bmt-server-0 > /dev/null 2>&1) || ${SUDO} ./.build/k3d cluster create bmt --registry-create bmt-registry:0.0.0.0:5000 --agents 1 -p "30080:30080@agent:0" -p "30081:30081@agent:0" -p "30050:30050@agent:0"
-	cat /etc/hosts | grep "bmt-registry" > /dev/null || (sudo /bin/bash -c "echo '127.0.0.1 bmt-registry' >> /etc/hosts")
 	./.build/k3d kubeconfig merge bmt
 
-	export KUBECONFIG=~/.k3d/kubeconfig-bmt.yaml
+
+skaffold-deploy: prepare-tools
 	./.build/kubectl create ns backups || true
-	./.build/kubectl apply -f helm/backup-repository-server/templates/crd.yaml
-	./.build/kubectl apply -f "docs/examples/" -n backups
+	cat /etc/hosts | grep "bmt-registry" > /dev/null || (sudo /bin/bash -c "echo '127.0.0.1 bmt-registry' >> /etc/hosts")
+
+	./.build/skaffold build --tag e2e --default-repo bmt-registry:5000 --push --insecure-registry bmt-registry:5000 --disable-multi-platform-build=true --detect-minikube=false --cache-artifacts=false
+	./.build/skaffold deploy --tag e2e --assume-yes=true --default-repo bmt-registry:5000
+
+	export KUBECONFIG=~/.k3d/kubeconfig-bmt.yaml; ./.build/kubectl apply -f "docs/examples/" -n backups
+
 
 coverage:
 	go test -v ./... -covermode=count -coverprofile=coverage.out
