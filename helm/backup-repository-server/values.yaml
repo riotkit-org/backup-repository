@@ -35,12 +35,6 @@ image:
     # Overrides the image tag whose default is the chart appVersion.
     tag: ""
 
-# use additional `kind: Service` of LoadBalancer type for testing, to expose service ports on your local machine and on CI
-# WARNING: `devPort` functionality is internal, it may change in the future without noticing end user. Use at own risk ;-)
-devPort:
-    enable: false
-    port: 30081
-
 imagePullSecrets: []
 nameOverride: ""
 fullnameOverride: ""
