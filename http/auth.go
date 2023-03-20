@@ -25,10 +25,8 @@ type AuthUser struct {
 	subject  users.User
 }
 
-//
 // Authentication middleware is used in almost every endpoint to prevalidate user credentials
 // also it provides login endpoints
-//
 func createAuthenticationMiddleware(r *gin.Engine, di *core.ApplicationContainer) *jwt.GinJWTMiddleware {
 	authMiddleware, err := jwt.New(&jwt.GinJWTMiddleware{
 		Realm:       "backup-repository",
@@ -188,7 +186,7 @@ func addLogoutRoute(r *gin.RouterGroup, ctx *core.ApplicationContainer, rateLimi
 			}
 
 			// only System Administrator can revoke tokens of other users
-			// but user can revoke his/her own token
+			// but users can revoke their own token
 			if gaFromQuery.User != ctxUser.Metadata.Name && !ctxUser.Spec.Roles.HasRole(security.RoleSysAdmin) {
 				UnauthorizedResponse(c, errors.New("you don't have permissions to revoke session of other user"))
 				return

@@ -2,8 +2,15 @@
 # Common tasks
 #
 
-SERVER_PORT=8080
-SERVER_URL=http://localhost:${SERVER_PORT}
+.EXPORT_ALL_VARIABLES:
+PATH = $(shell pwd)/.build:$(shell echo $$PATH)
+KUBECONFIG = $(shell /bin/bash -c "[[ -f \"$$HOME/.k3d/kubeconfig-bmt.yaml\" ]] && rm -f $$HOME/.k3d/kubeconfig-bmt.yaml; k3d kubeconfig merge bmt > /dev/null")
+
+SERVER_PORT=8050
+SERVER_URL=http://127.0.0.1:${SERVER_PORT}
+
+import-examples:
+	kubectl apply -f docs/examples/ -n backups
 
 test_health:
 	curl -s -X GET '${SERVER_URL}/health'

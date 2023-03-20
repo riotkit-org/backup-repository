@@ -22,13 +22,13 @@ jobs:
             - name: Set up Go
               uses: actions/setup-go@v2
               with:
-                  go-version: 1.17
+                  go-version: 1.19
 
             - name: Build
               run: "make build"
 
             - name: Test
-              run: "make coverage"
+              run: "make test"
               if: "!contains(github.event.head_commit.message, 'test skip')"
 
             - name: Convert coverage to lcov format
@@ -82,4 +82,4 @@ jobs:
         uses: riotkit-org/.github/.github/workflows/python.release.yaml@main
         with:
             pythonVersion: 3.11
-            testCmd: "make k3d setup_api_tests api_tests"
+            testCmd: "make k3d integration-test"

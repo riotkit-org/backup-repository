@@ -1,6 +1,6 @@
 module github.com/riotkit-org/backup-repository
 
-go 1.17
+go 1.19
 
 require (
 	github.com/appleboy/gin-jwt/v2 v2.8.0

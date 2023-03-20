@@ -26,10 +26,6 @@ ingress:
               - path: /
                 pathType: ImplementationSpecific
 
-devPort:
-    enable: true
-    port: 30081
-
 image:
     tag: snapshot
 
