@@ -5,6 +5,11 @@ import (
 	"net/http"
 )
 
+type GenericResponseType struct {
+	Error   string `json:"error"`
+	Message string `json:"message"`
+}
+
 func NotFoundResponse(c *gin.Context, err error) {
 	c.IndentedJSON(404, gin.H{
 		"status": false,
