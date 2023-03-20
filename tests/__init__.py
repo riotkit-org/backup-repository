@@ -6,7 +6,7 @@ from json import dumps as to_json
 
 
 class BaseTestCase(unittest.TestCase):
-    _base_url: str = 'http://localhost:30081'
+    _base_url: str = 'http://127.0.0.1:8050'
 
     def get(self, url: str, auth: str = None, timeout: int = 15) -> requests.Response:
         headers = {}
