@@ -44,6 +44,17 @@ ingress:
                 pathType: ImplementationSpecific
 ```
 
+### Using with Ingress-Nginx
+
+In order to use with Ingress-Nginx you may want to adjust a few configuration options, to allow large file uploads.
+
+```yaml
+# `kind: Ingress` annotations (.ingress.annotations in Helm)
+nginx.ingress.kubernetes.io/proxy-request-buffering: "off"
+nginx.ingress.kubernetes.io/proxy-buffering: "off"
+nginx.ingress.kubernetes.io/proxy-body-size: "0"
+```
+
 Bare-metal, no Docker, no Kubernetes
 ------------------------------------
 
