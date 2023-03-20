@@ -11,6 +11,7 @@ func SpawnHttpApplication(app *core.ApplicationContainer, listenAddr string) err
 	r := gin.Default()
 
 	authMiddleware := createAuthenticationMiddleware(r, app)
+	errorLoggerMiddleware := responseErrorLoggerMiddleware()
 
 	// set a rate limit of 10 requests per minute for IP address to protect against DoS attacks on login and refresh_token endpoints
 	// for two reasons:
@@ -26,9 +27,9 @@ func SpawnHttpApplication(app *core.ApplicationContainer, listenAddr string) err
 	}).Middleware()
 
 	router := r.Group("/")
-	router.POST("/api/stable/auth/login", authRateLimitMiddleware.Middleware(), authMiddleware.LoginHandler)
-	router.GET("/api/stable/auth/refresh_token", authRateLimitMiddleware.Middleware(), authMiddleware.RefreshHandler)
-	router.Use(authMiddleware.MiddlewareFunc())
+	router.POST("/api/stable/auth/login", errorLoggerMiddleware, authRateLimitMiddleware.Middleware(), authMiddleware.LoginHandler)
+	router.GET("/api/stable/auth/refresh_token", errorLoggerMiddleware, authRateLimitMiddleware.Middleware(), authMiddleware.RefreshHandler)
+	router.Use(authMiddleware.MiddlewareFunc(), errorLoggerMiddleware)
 	{
 		addLookupUserRoute(router, app, defaultRateLimitMiddleware)
 		addWhoamiRoute(router, app, defaultRateLimitMiddleware)
