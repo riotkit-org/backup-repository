@@ -35,8 +35,9 @@ prepare-tools:
 	@test -f ./.build/kubens || (curl -sL https://raw.githubusercontent.com/ahmetb/kubectx/master/kubens --output ./.build/kubens && chmod +x ./.build/kubens)
 
 skaffold-deploy: prepare-tools
-	skaffold build --tag e2e --default-repo bmt-registry:5000 --push --insecure-registry bmt-registry:5000 --disable-multi-platform-build=true --detect-minikube=false --cache-artifacts=false
-	skaffold deploy --tag e2e --assume-yes=true --default-repo bmt-registry:5000
+	skaffold deploy -p deps
+	skaffold build -p app --tag e2e --default-repo bmt-registry:5000 --push --insecure-registry bmt-registry:5000 --disable-multi-platform-build=true --detect-minikube=false --cache-artifacts=false
+	skaffold deploy -p app --tag e2e --assume-yes=true --default-repo bmt-registry:5000
 
 	export KUBECONFIG=~/.k3d/kubeconfig-bmt.yaml; kubectl apply -f "docs/examples/" -n backups
 
