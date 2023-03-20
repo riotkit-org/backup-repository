@@ -24,15 +24,15 @@ k3d: prepare-tools
 prepare-tools:
 	mkdir -p .build
 	# skaffold
-	@test -f skaffold || (curl -sL https://storage.googleapis.com/skaffold/releases/v2.0.0/skaffold-linux-amd64 --output skaffold && chmod +x skaffold)
+	@test -f ./.build/skaffold || (curl -sL https://storage.googleapis.com/skaffold/releases/v2.0.0/skaffold-linux-amd64 --output ./.build/skaffold && chmod +x ./.build/skaffold)
 	# kubectl
-	@test -f kubectl || (curl -sL https://dl.k8s.io/release/v1.25.0/bin/linux/amd64/kubectl --output kubectl && chmod +x kubectl)
+	@test -f ./.build/kubectl || (curl -sL https://dl.k8s.io/release/v1.25.0/bin/linux/amd64/kubectl --output ./.build/kubectl && chmod +x ./.build/kubectl)
 	# k3d
-	@test -f k3d || (curl -sL https://github.com/k3d-io/k3d/releases/download/v5.4.6/k3d-linux-amd64 --output k3d && chmod +x k3d)
+	@test -f ./.build/k3d || (curl -sL https://github.com/k3d-io/k3d/releases/download/v5.4.6/k3d-linux-amd64 --output ./.build/k3d && chmod +x ./.build/k3d)
 	# helm
-	@test -f helm || (curl -sL https://get.helm.sh/helm-v3.10.2-linux-amd64.tar.gz --output /tmp/helm.tar.gz && tar xf /tmp/helm.tar.gz -C /tmp && mv /tmp/linux-amd64/helm helm && chmod +x helm)
+	@test -f ./.build/helm || (curl -sL https://get.helm.sh/helm-v3.10.2-linux-amd64.tar.gz --output /tmp/helm.tar.gz && tar xf /tmp/helm.tar.gz -C /tmp && mv /tmp/linux-amd64/helm ./.build/helm && chmod +x ./.build/helm)
 	# kubens
-	@test -f kubens || (curl -sL https://raw.githubusercontent.com/ahmetb/kubectx/master/kubens --output kubens && chmod +x kubens)
+	@test -f ./.build/kubens || (curl -sL https://raw.githubusercontent.com/ahmetb/kubectx/master/kubens --output ./.build/kubens && chmod +x ./.build/kubens)
 
 skaffold-deploy: prepare-tools
 	skaffold build --tag e2e --default-repo bmt-registry:5000 --push --insecure-registry bmt-registry:5000 --disable-multi-platform-build=true --detect-minikube=false --cache-artifacts=false
