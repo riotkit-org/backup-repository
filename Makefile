@@ -11,7 +11,8 @@ build:
 test: ## Unit tests
 	go test -v ./... -covermode=count -coverprofile=coverage.out
 
-integration-test: prepare-tools skaffold-deploy ## End-To-End tests with Kubernetes
+integration-test: prepare-tools skaffold-deploy _pytest ## End-To-End tests with Kubernetes
+_pytest: ## Shortcut for E2E tests without setting up the environment
 	pipenv sync
 	pipenv run pytest -s
 
@@ -39,7 +40,9 @@ skaffold-deploy: prepare-tools
 	skaffold build -p app --tag e2e --default-repo bmt-registry:5000 --push --insecure-registry bmt-registry:5000 --disable-multi-platform-build=true --detect-minikube=false --cache-artifacts=false
 	skaffold deploy -p app --tag e2e --assume-yes=true --default-repo bmt-registry:5000
 
-	export KUBECONFIG=~/.k3d/kubeconfig-bmt.yaml; kubectl apply -f "docs/examples/" -n backups
+	export KUBECONFIG=~/.k3d/kubeconfig-bmt.yaml; kubectl apply -f "docs/examples/" -n backups; \
+	kubectl port-forward svc/server-backup-repository-server -n backups 8050:8080 &
+
 
 dev: ## Runs the development environment in Kubernetes
 	skaffold deploy -p deps
