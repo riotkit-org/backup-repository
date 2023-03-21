@@ -7,7 +7,7 @@ profiles:
           local:
               push: true
           artifacts:
-              - image: bmt-registry:5000/backup-repository
+              - image: rkt-registry:5000/backup-repository
                 ko:
                     dependencies:
                         paths: ["**/*.go", "go.mod", "go.sum"]
@@ -15,7 +15,7 @@ profiles:
           tagPolicy:
               gitCommit: {}
           insecureRegistries:
-              - bmt-registry:5000
+              - rkt-registry:5000
       deploy:
           statusCheck: true
           statusCheckDeadlineSeconds: 120
@@ -30,7 +30,7 @@ profiles:
                         - helm/examples/backup-repository-ci.values.yaml
                     setValueTemplates:
                         installCRD: "false"
-                        image.repository: 'bmt-registry:5000/backup-repository'
+                        image.repository: 'rkt-registry:5000/backup-repository'
                         image.tag: '{{.IMAGE_TAG}}'
                         terminationGracePeriodSeconds: 1
                         env.GIN_MODE: "debug"
