@@ -29,15 +29,15 @@ jobs:
 
             - name: Test
               run: "make test"
-              if: "!contains(github.event.head_commit.message, 'test skip')"
+              if: "!contains(github.event.head_commit.message, '!test skip')"
 
             - name: Convert coverage to lcov format
               uses: jandelgado/gcov2lcov-action@v1.0.8
-              if: "!contains(github.event.head_commit.message, 'test skip')"
+              if: "!contains(github.event.head_commit.message, '!test skip')"
 
             - name: Coveralls
               uses: coverallsapp/github-action@1.1.3
-              if: "!contains(github.event.head_commit.message, 'test skip')"
+              if: "!contains(github.event.head_commit.message, '!test skip')"
               with:
                 github-token: ${{ secrets.github_token }}
                 path-to-lcov: coverage.lcov
@@ -48,7 +48,7 @@ jobs:
 
             - name: Create Arch Linux package to check if PKGBUILD works
               uses: 2m/arch-pkgbuild-builder@v1.18
-              if: "!contains(github.event.head_commit.message, 'pkg skip')"
+              if: "!contains(github.event.head_commit.message, '!pkg skip')"
               with:
                   target: 'pkgbuild'
                   pkgname: './'

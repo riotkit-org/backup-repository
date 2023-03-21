@@ -1,3 +1,5 @@
+include env.mk
+
 SUDO=
 
 .EXPORT_ALL_VARIABLES:
@@ -11,42 +13,13 @@ build:
 test: ## Unit tests
 	go test -v ./... -covermode=count -coverprofile=coverage.out
 
-integration-test: prepare-tools skaffold-deploy _pytest ## End-To-End tests with Kubernetes
+integration-test: prepare-tools _prepare-env _pytest ## End-To-End tests with Kubernetes
 _pytest: ## Shortcut for E2E tests without setting up the environment
 	pipenv sync
 	pipenv run pytest -s
 
-k3d: prepare-tools
-	(${SUDO} docker ps | grep k3d-bmt-server-0 > /dev/null 2>&1) || ${SUDO} k3d cluster create bmt --registry-create bmt-registry:0.0.0.0:5000 --agents 1 -p "30080:30080@agent:0" -p "30081:30081@agent:0" -p "30050:30050@agent:0"
-	k3d kubeconfig merge bmt
-	kubectl create ns backups || true
-	cat /etc/hosts | grep "bmt-registry" > /dev/null || (sudo /bin/bash -c "echo '127.0.0.1 bmt-registry' >> /etc/hosts")
-
-prepare-tools:
-	mkdir -p .build
-	# skaffold
-	@test -f ./.build/skaffold || (curl -sL https://storage.googleapis.com/skaffold/releases/v2.0.0/skaffold-linux-amd64 --output ./.build/skaffold && chmod +x ./.build/skaffold)
-	# kubectl
-	@test -f ./.build/kubectl || (curl -sL https://dl.k8s.io/release/v1.25.0/bin/linux/amd64/kubectl --output ./.build/kubectl && chmod +x ./.build/kubectl)
-	# k3d
-	@test -f ./.build/k3d || (curl -sL https://github.com/k3d-io/k3d/releases/download/v5.4.6/k3d-linux-amd64 --output ./.build/k3d && chmod +x ./.build/k3d)
-	# helm
-	@test -f ./.build/helm || (curl -sL https://get.helm.sh/helm-v3.10.2-linux-amd64.tar.gz --output /tmp/helm.tar.gz && tar xf /tmp/helm.tar.gz -C /tmp && mv /tmp/linux-amd64/helm ./.build/helm && chmod +x ./.build/helm)
-	# kubens
-	@test -f ./.build/kubens || (curl -sL https://raw.githubusercontent.com/ahmetb/kubectx/master/kubens --output ./.build/kubens && chmod +x ./.build/kubens)
-
-skaffold-deploy: prepare-tools
-	skaffold deploy -p deps
-	skaffold build -p app --tag e2e --default-repo bmt-registry:5000 --push --insecure-registry bmt-registry:5000 --disable-multi-platform-build=true --detect-minikube=false --cache-artifacts=false
-	skaffold deploy -p app --tag e2e --assume-yes=true --default-repo bmt-registry:5000
-
-	export KUBECONFIG=~/.k3d/kubeconfig-bmt.yaml; kubectl apply -f "docs/examples/" -n backups; \
-	kubectl port-forward svc/server-backup-repository-server -n backups 8050:8080 &
-
-
-dev: ## Runs the development environment in Kubernetes
-	skaffold deploy -p deps
-	skaffold dev -p app --tag e2e --assume-yes=true --default-repo bmt-registry:5000 --force=true
+_prepare-env:
+	kubectl apply -f "docs/examples/" -n backups
 
 run:
 	export AWS_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE; \
