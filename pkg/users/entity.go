@@ -2,16 +2,16 @@ package users
 
 import (
 	"github.com/riotkit-org/backup-repository/pkg/config"
-	security2 "github.com/riotkit-org/backup-repository/pkg/security"
+	"github.com/riotkit-org/backup-repository/pkg/security"
 	"github.com/sirupsen/logrus"
 )
 
 type Spec struct {
-	Id              string                          `json:"id"`
-	Email           string                          `json:"email"`
-	Roles           security2.Permissions           `json:"roles"`
-	Password        string                          `json:"password"`
-	PasswordFromRef security2.PasswordFromSecretRef `json:"passwordFromRef"`
+	Id              string                         `json:"id"`
+	Email           string                         `json:"email"`
+	Roles           security.Permissions           `json:"roles"`
+	Password        string                         `json:"password"`
+	PasswordFromRef security.PasswordFromSecretRef `json:"passwordFromRef"`
 }
 
 type User struct {
@@ -28,7 +28,7 @@ func (u User) getPasswordHash() string {
 }
 
 func (u User) IsPasswordValid(password string) bool {
-	result, err := security2.ComparePassword(password, u.getPasswordHash())
+	result, err := security.ComparePassword(password, u.getPasswordHash())
 	if err != nil {
 		logrus.Errorf("Cannot decode password: '%v'", err)
 	}
@@ -41,7 +41,7 @@ func (u User) IsPasswordValid(password string) bool {
 
 func (u User) CanViewMyProfile(actor *User) bool {
 	// rbac
-	if actor.Spec.Roles.HasRole(security2.RoleUserManager) {
+	if actor.Spec.Roles.HasRole(security.RoleUserManager) {
 		return true
 	}
 
