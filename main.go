@@ -2,15 +2,15 @@ package main
 
 import (
 	"github.com/jessevdk/go-flags"
-	"github.com/riotkit-org/backup-repository/collections"
-	"github.com/riotkit-org/backup-repository/concurrency"
-	"github.com/riotkit-org/backup-repository/config"
-	"github.com/riotkit-org/backup-repository/core"
-	"github.com/riotkit-org/backup-repository/db"
-	"github.com/riotkit-org/backup-repository/http"
-	"github.com/riotkit-org/backup-repository/security"
-	"github.com/riotkit-org/backup-repository/storage"
-	"github.com/riotkit-org/backup-repository/users"
+	"github.com/riotkit-org/backup-repository/pkg/collections"
+	"github.com/riotkit-org/backup-repository/pkg/concurrency"
+	"github.com/riotkit-org/backup-repository/pkg/config"
+	"github.com/riotkit-org/backup-repository/pkg/core"
+	"github.com/riotkit-org/backup-repository/pkg/db"
+	"github.com/riotkit-org/backup-repository/pkg/http"
+	security2 "github.com/riotkit-org/backup-repository/pkg/security"
+	"github.com/riotkit-org/backup-repository/pkg/storage"
+	"github.com/riotkit-org/backup-repository/pkg/users"
 	log "github.com/sirupsen/logrus"
 	"gorm.io/gorm"
 	"os"
@@ -70,13 +70,13 @@ func main() {
 	}
 	// allows encoding passwords from CLI to make the configmap creation easier
 	if opts.EncodePasswordAction != "" {
-		hash, _ := security.CreateHashFromPassword(opts.EncodePasswordAction)
+		hash, _ := security2.CreateHashFromPassword(opts.EncodePasswordAction)
 		println(hash)
 		os.Exit(0)
 	}
 	// allows to hash a JWT, to be later used in comparison in `kind: GrantedAccess`
 	if opts.HashJWT != "" {
-		println(security.HashJWT(opts.HashJWT))
+		println(security2.HashJWT(opts.HashJWT))
 		os.Exit(0)
 	}
 
@@ -98,7 +98,7 @@ func main() {
 	db.InitializeDatabase(dbDriver)
 
 	usersService := users.NewUsersService(configProvider)
-	gaService := security.NewService(dbDriver)
+	gaService := security2.NewService(dbDriver)
 	collectionsService := collections.NewService(configProvider)
 
 	ctx := core.ApplicationContainer{
