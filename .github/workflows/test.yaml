@@ -42,17 +42,6 @@ jobs:
                 github-token: ${{ secrets.github_token }}
                 path-to-lcov: coverage.lcov
 
-            # ===================
-            # Arch Linux package
-            # ===================
-
-            - name: Create Arch Linux package to check if PKGBUILD works
-              uses: 2m/arch-pkgbuild-builder@v1.18
-              if: "!contains(github.event.head_commit.message, '!pkg skip')"
-              with:
-                  target: 'pkgbuild'
-                  pkgname: './'
-
             # =======
             # Docker
             # =======
