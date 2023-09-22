@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"github.com/labstack/gommon/bytes"
 	"github.com/riotkit-org/backup-repository/pkg/config"
-	security2 "github.com/riotkit-org/backup-repository/pkg/security"
+	"github.com/riotkit-org/backup-repository/pkg/security"
 	"github.com/riotkit-org/backup-repository/pkg/users"
 	"github.com/robfig/cron/v3"
 	"strings"
@@ -125,16 +125,16 @@ func (b *BackupWindow) IsInPreviousWindowTimeSlot(now time.Time, latestVersionCr
 type BackupWindows []BackupWindow
 
 type Spec struct {
-	Description       string                          `json:"description"`
-	FilenameTemplate  string                          `json:"filenameTemplate"`
-	MaxBackupsCount   int                             `json:"maxBackupsCount"`
-	MaxOneVersionSize string                          `json:"maxOneVersionSize"`
-	MaxCollectionSize string                          `json:"maxCollectionSize"`
-	Windows           BackupWindows                   `json:"windows"`
-	StrategyName      string                          `json:"strategyName"`
-	StrategySpec      StrategySpec                    `json:"strategySpec"`
-	AccessControl     security2.AccessControlList     `json:"accessControl"`
-	HealthSecretRef   security2.PasswordFromSecretRef `json:"healthSecretRef"`
+	Description       string                         `json:"description"`
+	FilenameTemplate  string                         `json:"filenameTemplate"`
+	MaxBackupsCount   int                            `json:"maxBackupsCount"`
+	MaxOneVersionSize string                         `json:"maxOneVersionSize"`
+	MaxCollectionSize string                         `json:"maxCollectionSize"`
+	Windows           BackupWindows                  `json:"windows"`
+	StrategyName      string                         `json:"strategyName"`
+	StrategySpec      StrategySpec                   `json:"strategySpec"`
+	AccessControl     security.AccessControlList     `json:"accessControl"`
+	HealthSecretRef   security.PasswordFromSecretRef `json:"healthSecretRef"`
 }
 
 type Collection struct {
@@ -143,27 +143,40 @@ type Collection struct {
 	SecretFromSecret string
 }
 
-func (c Collection) IsHealthCheckSecretValid(secret string) bool {
+func (c *Collection) IsHealthCheckSecretValid(secret string) bool {
 	// secret is optional
 	if c.SecretFromSecret == "" {
 		return true
 	}
-
-	return security2.CompareFastCryptoHash(secret, c.SecretFromSecret)
+	return security.CompareFastCryptoHash(secret, c.SecretFromSecret)
 }
 
 // CanUploadToMe answers if user can add new versions to the collection
-func (c Collection) CanUploadToMe(user *users.User) bool {
-	return user.Spec.Roles.HasRole(security2.RoleBackupUploader) || c.Spec.AccessControl.IsPermitted(user.Metadata.Name, security2.RoleBackupUploader)
+func (c *Collection) CanUploadToMe(user *users.User) bool {
+	if user.IsInAccessKeyContext() {
+		if !c.Spec.AccessControl.IsPermitted(user.Metadata.Name, security.RoleBackupUploader) {
+			return false
+		}
+		scopedRoles := user.GetAccessKeyRolesInCollectionContext(c.GetId())
+		return scopedRoles.HasRole(security.RoleBackupUploader) || scopedRoles.HasRole(security.RoleCollectionManager)
+	}
+	return user.GetRoles().HasRole(security.RoleCollectionManager) || user.GetRoles().HasRole(security.RoleBackupUploader) || c.Spec.AccessControl.IsPermitted(user.Metadata.Name, security.RoleBackupUploader)
 }
 
 // CanDownloadFromMe answers if user can download versions to this collection
-func (c Collection) CanDownloadFromMe(user *users.User) bool {
-	return user.Spec.Roles.HasRole(security2.RoleBackupDownloader) || c.Spec.AccessControl.IsPermitted(user.Metadata.Name, security2.RoleBackupDownloader)
+func (c *Collection) CanDownloadFromMe(user *users.User) bool {
+	if user.IsInAccessKeyContext() {
+		if !c.Spec.AccessControl.IsPermitted(user.Metadata.Name, security.RoleBackupDownloader) {
+			return false
+		}
+		scopedRoles := user.GetAccessKeyRolesInCollectionContext(c.GetId())
+		return scopedRoles.HasRole(security.RoleBackupDownloader) || scopedRoles.HasRole(security.RoleCollectionManager)
+	}
+	return user.GetRoles().HasRole(security.RoleCollectionManager) || user.GetRoles().HasRole(security.RoleBackupDownloader) || c.Spec.AccessControl.IsPermitted(user.Metadata.Name, security.RoleBackupDownloader)
 }
 
 // CanListMyVersions answers if user can list versions
-func (c Collection) CanListMyVersions(user *users.User) bool {
+func (c *Collection) CanListMyVersions(user *users.User) bool {
 	return c.CanUploadToMe(user) || c.CanDownloadFromMe(user)
 }
 
@@ -210,6 +223,6 @@ func (c *Collection) GetId() string {
 	return c.Metadata.Name
 }
 
-func (c Collection) GetGlobalIdentifier() string {
+func (c *Collection) GetGlobalIdentifier() string {
 	return "collection:" + c.GetId()
 }

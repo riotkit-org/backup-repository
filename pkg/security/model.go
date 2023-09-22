@@ -3,6 +3,7 @@ package security
 import (
 	"github.com/sirupsen/logrus"
 	"gorm.io/gorm"
+	"strings"
 	"time"
 )
 
@@ -11,6 +12,10 @@ import (
 //
 
 type Permissions []string
+
+func (p Permissions) IsEmpty() bool {
+	return len(p) == 0
+}
 
 func (p Permissions) HasRole(name string) bool {
 	return p.has(name) || p.has(RoleSysAdmin)
@@ -62,12 +67,13 @@ type GrantedAccess struct {
 	UpdatedAt time.Time
 	DeletedAt gorm.DeletedAt `gorm:"index"`
 
-	ID          string    `json:"id"          structs:"id" sql:"type:string;primary_key;default:uuid_generate_v4()`
-	ExpiresAt   time.Time `json:"expiresAt"   structs:"expiresAt"`
-	Deactivated bool      `json:"deactivated" structs:"deactivated"`
-	Description string    `json:"description" structs:"description"`
-	RequesterIP string    `json:"requesterIP" structs:"requesterIP"`
-	User        string    `json:"user"        structs:"user"`
+	ID            string    `json:"id"            structs:"id" sql:"type:string;primary_key;default:uuid_generate_v4()"`
+	ExpiresAt     time.Time `json:"expiresAt"     structs:"expiresAt"`
+	Deactivated   bool      `json:"deactivated"   structs:"deactivated"`
+	Description   string    `json:"description"   structs:"description"`
+	RequesterIP   string    `json:"requesterIP"   structs:"requesterIP"`
+	User          string    `json:"user"          structs:"user"`
+	AccessKeyName string    `json:"accessKeyName" structs:"accessKeyName"`
 }
 
 func (ga GrantedAccess) IsNotExpired() bool {
@@ -93,13 +99,33 @@ func (ga GrantedAccess) IsValid() bool {
 	return true
 }
 
-func NewGrantedAccess(jwt string, expiresAt time.Time, deactivated bool, description string, requesterIP string, username string) GrantedAccess {
+func NewGrantedAccess(jwt string, expiresAt time.Time, deactivated bool, description string, requesterIP string, username string, accessKeyName string) GrantedAccess {
 	return GrantedAccess{
-		ID:          HashJWT(jwt),
-		ExpiresAt:   expiresAt,
-		Deactivated: deactivated,
-		Description: description,
-		RequesterIP: requesterIP,
-		User:        username,
+		ID:            HashJWT(jwt),
+		ExpiresAt:     expiresAt,
+		Deactivated:   deactivated,
+		Description:   description,
+		RequesterIP:   requesterIP,
+		User:          username,
+		AccessKeyName: accessKeyName,
+	}
+}
+
+type UserIdentity struct {
+	Username      string
+	AccessKeyName string
+}
+
+func NewUserIdentityFromString(login string) UserIdentity {
+	if strings.Contains(login, "$") {
+		lastIndex := strings.LastIndex(login, "$")
+		return UserIdentity{
+			Username:      login[:lastIndex],
+			AccessKeyName: login[lastIndex+1:],
+		}
+	}
+	return UserIdentity{
+		Username:      login,
+		AccessKeyName: "",
 	}
 }

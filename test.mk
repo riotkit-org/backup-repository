@@ -4,7 +4,7 @@
 
 .EXPORT_ALL_VARIABLES:
 PATH = $(shell pwd)/.build:$(shell echo $$PATH)
-KUBECONFIG = $(shell /bin/bash -c "[[ -f \"$$HOME/.k3d/kubeconfig-bmt.yaml\" ]] && rm -f $$HOME/.k3d/kubeconfig-bmt.yaml; k3d kubeconfig merge bmt > /dev/null")
+KUBECONFIG = $(shell /bin/bash -c "[[ -f \"$$HOME/.k3d/kubeconfig-rkt.yaml\" ]] && rm -f $$HOME/.k3d/kubeconfig-rkt.yaml; k3d kubeconfig merge rkt")
 
 SERVER_PORT=8050
 SERVER_URL=http://127.0.0.1:${SERVER_PORT}

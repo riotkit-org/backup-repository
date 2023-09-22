@@ -4,7 +4,7 @@ import (
 	"bytes"
 	"context"
 	"github.com/stretchr/testify/assert"
-	"io/ioutil"
+	"io"
 	"strings"
 	"testing"
 	"time"
@@ -16,7 +16,7 @@ func TestService_CopyStream(t *testing.T) {
 
 	ctx, _ := context.WithTimeout(context.TODO(), time.Second*5)
 
-	readStream := ioutil.NopCloser(strings.NewReader("hello-world"))
+	readStream := io.NopCloser(strings.NewReader("hello-world"))
 	var writeStream bytes.Buffer
 	buff := make([]byte, 11)
 

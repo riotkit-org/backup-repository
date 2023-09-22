@@ -6,14 +6,17 @@ import (
 	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
 	"github.com/riotkit-org/backup-repository/pkg/core"
-	security2 "github.com/riotkit-org/backup-repository/pkg/security"
+	"github.com/riotkit-org/backup-repository/pkg/security"
 	"github.com/riotkit-org/backup-repository/pkg/users"
 	"github.com/sirupsen/logrus"
 	"math/rand"
 	"time"
 )
 
-const IdentityKey = "login"
+const (
+	IdentityKeyClaimIndex = "login"
+	AccessKeyClaimIndex   = "accessKeyName"
+)
 
 type loginForm struct {
 	Username string `form:"username" json:"username" binding:"required"`
@@ -21,8 +24,9 @@ type loginForm struct {
 }
 
 type AuthUser struct {
-	UserName string
-	subject  users.User
+	UserName      string
+	AccessKeyName string
+	subject       users.User
 }
 
 // Authentication middleware is used in almost every endpoint to prevalidate user credentials
@@ -31,13 +35,14 @@ func createAuthenticationMiddleware(r *gin.Engine, di *core.ApplicationContainer
 	authMiddleware, err := jwt.New(&jwt.GinJWTMiddleware{
 		Realm:       "backup-repository",
 		Key:         []byte(di.JwtSecretKey),
-		Timeout:     time.Hour * 87600,
-		MaxRefresh:  time.Hour * 87600,
-		IdentityKey: IdentityKey,
+		Timeout:     time.Hour * 6,
+		MaxRefresh:  time.Hour * 6,
+		IdentityKey: IdentityKeyClaimIndex,
 		PayloadFunc: func(data interface{}) jwt.MapClaims {
 			if v, ok := data.(*AuthUser); ok {
 				claims := jwt.MapClaims{
-					IdentityKey: v.UserName,
+					IdentityKeyClaimIndex: v.UserName,
+					AccessKeyClaimIndex:   v.AccessKeyName,
 				}
 				rand.Seed(time.Now().UnixNano())
 				claims["rand"] = fmt.Sprintf("%v", rand.Intn(64))
@@ -57,7 +62,8 @@ func createAuthenticationMiddleware(r *gin.Engine, di *core.ApplicationContainer
 			// login user
 			claims := jwt.ExtractClaims(c)
 			return &AuthUser{
-				UserName: claims[IdentityKey].(string),
+				UserName:      claims[IdentityKeyClaimIndex].(string),
+				AccessKeyName: claims[AccessKeyClaimIndex].(string),
 			}
 		},
 		Authenticator: func(c *gin.Context) (interface{}, error) {
@@ -67,30 +73,30 @@ func createAuthenticationMiddleware(r *gin.Engine, di *core.ApplicationContainer
 				return "", jwt.ErrMissingLoginValues
 			}
 
-			userID := loginValues.Username
+			login := loginValues.Username
 			password := loginValues.Password
+			userIdentity := security.NewUserIdentityFromString(login)
 
-			user, err := di.Users.LookupUser(userID)
-			logrus.Info("Looking up user", userID)
-
+			user, err := di.Users.LookupUser(login)
+			logrus.Infof("Looking up user '%s' (%s)", userIdentity.Username, login)
 			if err != nil {
 				logrus.Errorf("User lookup error: %v", err)
 				return nil, jwt.ErrFailedAuthentication
 			}
 
-			if !user.IsPasswordValid(password) {
-				logrus.Debugf("Invalid password for '%v'", userID)
+			if !user.IsPasswordValid(password, userIdentity.AccessKeyName) {
+				logrus.Debugf("Invalid password for '%v'", login)
 				return nil, jwt.ErrFailedAuthentication
 			}
 
-			return &AuthUser{UserName: userID}, nil
+			return &AuthUser{
+				UserName:      userIdentity.Username,
+				AccessKeyName: userIdentity.AccessKeyName,
+			}, nil
 		},
 		Authorizator: func(data interface{}, c *gin.Context) bool {
-			if _, ok := data.(*AuthUser); ok {
-				return true
-			}
-
-			return false
+			_, ok := data.(*AuthUser)
+			return ok
 		},
 		Unauthorized: func(c *gin.Context, code int, message string) {
 			c.IndentedJSON(code, gin.H{
@@ -104,8 +110,9 @@ func createAuthenticationMiddleware(r *gin.Engine, di *core.ApplicationContainer
 		TokenHeadName: "Bearer",
 		TimeFunc:      time.Now,
 		LoginResponse: func(c *gin.Context, code int, token string, expire time.Time) {
+			username, accessKey := security.ExtractLoginFromJWT(token)
 			hashedShortcut := di.GrantedAccesses.StoreJWTAsGrantedAccess(
-				token, expire, c.ClientIP(), "Login", security2.ExtractLoginFromJWT(token))
+				token, expire, c.ClientIP(), "Login", username, accessKey)
 
 			if hashedShortcut == "" {
 				ServerErrorResponse(c, errors.New("too short interval between login attempts"))
@@ -187,7 +194,7 @@ func addLogoutRoute(r *gin.RouterGroup, ctx *core.ApplicationContainer, rateLimi
 
 			// only System Administrator can revoke tokens of other users
 			// but users can revoke their own token
-			if gaFromQuery.User != ctxUser.Metadata.Name && !ctxUser.Spec.Roles.HasRole(security2.RoleSysAdmin) {
+			if gaFromQuery.User != ctxUser.Metadata.Name && !ctxUser.GetRoles().HasRole(security.RoleSysAdmin) {
 				UnauthorizedResponse(c, errors.New("you don't have permissions to revoke session of other user"))
 				return
 			}
@@ -209,7 +216,7 @@ func addLogoutRoute(r *gin.RouterGroup, ctx *core.ApplicationContainer, rateLimi
 
 		OKResponse(c, gin.H{
 			"message":   "JWT was revoked",
-			"sessionId": security2.HashJWT(token.(string)),
+			"sessionId": security.HashJWT(token.(string)),
 		})
 	})
 }
@@ -224,7 +231,7 @@ func addGrantedAccessSearchRoute(r *gin.RouterGroup, ctx *core.ApplicationContai
 
 		// security: System Administrator can additionally list other user GrantedAccesses
 		if shouldTryImpersonate {
-			if !ctxUser.Spec.Roles.HasRole(security2.RoleSysAdmin) {
+			if !ctxUser.GetRoles().HasRole(security.RoleSysAdmin) {
 				UnauthorizedResponse(c, errors.New("no permissions to act as other user"))
 				return
 			}
@@ -233,7 +240,6 @@ func addGrantedAccessSearchRoute(r *gin.RouterGroup, ctx *core.ApplicationContai
 		}
 
 		tokens := ctx.GrantedAccesses.GetAllGrantedAccessesForUserByUsername(userName)
-
 		OKResponse(c, gin.H{
 			"grantedAccesses": tokens,
 		})

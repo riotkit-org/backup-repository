@@ -38,7 +38,7 @@ func addUploadRoute(r *gin.RouterGroup, ctx *core.ApplicationContainer, requestT
 
 			// [SECURITY] Backup Windows support
 			if !ctx.Collections.ValidateIsBackupWindowAllowingToUpload(collection, time.Now()) &&
-				!ctxUser.Spec.Roles.HasRole(security.RoleUploadsAnytime) {
+				!ctxUser.GetRoles().HasRole(security.RoleUploadsAnytime) {
 
 				UnauthorizedResponse(c, errors.New("backup window does not allow you to send a backup at this time. "+
 					"You need a token from a user that has a special permission 'uploadsAnytime'"))

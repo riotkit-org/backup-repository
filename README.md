@@ -5,7 +5,7 @@ Backup Repository
 [![Test](https://github.com/riotkit-org/backup-repository/actions/workflows/test.yaml/badge.svg)](https://github.com/riotkit-org/backup-repository/actions/workflows/test.yaml)
 [![Artifact Hub](https://img.shields.io/endpoint?url=https://artifacthub.io/badge/repository/riotkit-org)](https://artifacthub.io/packages/search?repo=riotkit-org)
 
-Cloud-native, zero-knowledge, multi-tenant, security-first backup storage with minimal footprint.
+Cloud-native, zero-knowledge, multi-tenant, compliance-strict, security-first backup storage with minimal footprint.
 
 _TLDR; Primitive backup storage for E2E GPG-encrypted files, with multi-user, quotas, versioning, using a object storage (S3/Min.io/GCS etc.) and deployed on Kubernetes or standalone. No fancy stuff included, lightweight and stable as much as possible is the project target._
 
@@ -30,7 +30,7 @@ _TLDR; Primitive backup storage for E2E GPG-encrypted files, with multi-user, qu
 - Kubernetes (if wanting to use Kubernetes)
 - PostgreSQL
 - About 128Mb ram for small scale usage (**Note**: _We use Argon2di and performing file uploads + calculations on buffers_)
-- Storage provider (S3, GCS, Min.io, local filesystem, and others supported by https://gocloud.dev/howto/blob/#services)
+- Storage provider (S3, GCS, Min.io, local filesystem, or others supported by https://gocloud.dev/howto/blob/#services)
 
 **Support:**
 - Any Kubernetes 1.20+
@@ -177,7 +177,7 @@ Domain objects should implement a logic that checks given `Actor` if it can act 
 ```go
 func (u User) CanViewMyProfile(actor User) bool {
 	// rbac
-	if actor.Spec.Roles.HasRole(security.RoleUserManager) {
+	if actor.GetRoles().HasRole(security.RoleUserManager) {
 		return true
 	}
 
@@ -190,7 +190,7 @@ func (u User) CanViewMyProfile(actor User) bool {
 
 ```go
 func (c Collection) CanUploadToMe(user *users.User) bool {
-	if user.Spec.Roles.HasRole(security.RoleBackupUploader) {
+	if user.GetRoles().HasRole(security.RoleBackupUploader) {
 		return true
 	}
 

@@ -145,7 +145,7 @@ spec:
                                   type: string
                               about:
                                   type: string
-                              password:  # todo: remove
+                              password:
                                   type: string
                               passwordFromRef:
                                   type: object
@@ -155,6 +155,33 @@ spec:
                                           type: string
                                       entry:
                                           type: string
+                              collectionAccessTokens:
+                                  type: array
+                                  items:
+                                      type: object
+                                      properties:
+                                          name:
+                                              type: string
+                                          collections:
+                                              type: array
+                                              items:
+                                                  type: string
+                                          roles:
+                                              type: array
+                                              items:
+                                                  type: string
+                                                  enum: ["collectionManager", "backupUploader", "backupDownloader"]
+                                          password:
+                                              type: string
+                                          passwordFromRef:
+                                              type: object
+                                              required: ["name", "entry"]
+                                              properties:
+                                                  name:
+                                                      type: string
+                                                  entry:
+                                                      type: string
+
                               restrictByIP:
                                   type: array
                                   items:

@@ -2,12 +2,10 @@ package users
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
+	"github.com/pkg/errors"
 	"github.com/riotkit-org/backup-repository/pkg/config"
 	"github.com/riotkit-org/backup-repository/pkg/security"
-	"github.com/sirupsen/logrus"
-	"github.com/tidwall/gjson"
 )
 
 const KindBackupUser = "backupusers"
@@ -16,55 +14,50 @@ type userRepository struct {
 	config.ConfigurationProvider
 }
 
-// todo: Extract this method to `security` module and re-use across components
-func (r userRepository) fillPasswordFromKindSecret(user *User) error {
-	if user.Spec.PasswordFromRef.Name != "" {
-		secretDoc, secretErr := r.GetSingleDocumentAnyType("secrets", user.Spec.PasswordFromRef.Name, "", "v1")
-
-		if secretErr != nil {
-			logrus.Errorf("Cannot fetch user hashed password from `kind: Secret`. Maybe it does not exist? %v", secretErr)
-			return secretErr
-		}
-
-		secret := gjson.Get(secretDoc, fmt.Sprintf("data.%v", user.Spec.PasswordFromRef.Entry))
-
-		if secret.String() == "" {
-			logrus.Errorf(
-				"Cannot retrieve password from `kind: Secret` of name '%v', field '%v'",
-				user.Spec.PasswordFromRef.Name,
-				user.Spec.PasswordFromRef.Entry,
-			)
-
-			return errors.New("invalid field name in `kind: Secret`")
-		}
-
-		user.PasswordFromSecret = secret.String()
-		return nil
-	}
-
-	logrus.Warn("`kind: Secret` not specified for user") // todo: debug
-	return nil
-}
-
-func (r userRepository) findUserByLogin(login string) (*User, error) {
-	doc, retrieveErr := r.GetSingleDocument(KindBackupUser, login)
+func (r userRepository) findUserByLogin(identity security.UserIdentity) (*User, error) {
+	doc, retrieveErr := r.GetSingleDocument(KindBackupUser, identity.Username)
 	user := User{}
-
 	if retrieveErr != nil {
 		return &user, errors.New(fmt.Sprintf("IsError retrieving user: %v", retrieveErr))
 	}
 
-	err := json.Unmarshal([]byte(doc), &user)
-	if err != nil {
+	if err := json.Unmarshal([]byte(doc), &user); err != nil {
 		return &User{}, err
 	}
+	if hydrateErr := r.hydrate(&user, identity.AccessKeyName); hydrateErr != nil {
+		return &User{}, hydrateErr
+	}
 
+	return &user, nil
+}
+
+func (r userRepository) hydrate(user *User, currentlyUsedAccessKeyName string) error {
+	// password
 	passwordSetter := func(password string) {
-		user.PasswordFromSecret = password
+		user.passwordFromSecret = password
 	}
 	if fillErr := security.FillPasswordFromKindSecret(r, &user.Spec.PasswordFromRef, passwordSetter); fillErr != nil {
-		return &User{}, fillErr
+		return errors.Wrap(fillErr, "cannot fetch password")
 	}
 
-	return &user, err
+	// access keys
+	accessKeys := make([]*CollectionAccessKey, 0)
+	user.currentAccessKey = nil
+	for _, accessKey := range user.Spec.CollectionAccessKeys {
+		ak := *accessKey
+		if ak.Password == "" && ak.PasswordFromRef.Name != "" {
+			hashSetter := func(password string) {
+				ak.Password = password
+			}
+			if hashFillErr := security.FillPasswordFromKindSecret(r, &ak.PasswordFromRef, hashSetter); hashFillErr != nil {
+				return errors.Wrap(hashFillErr, "cannot fetch access key")
+			}
+		}
+		if accessKey.Name == currentlyUsedAccessKeyName {
+			user.currentAccessKey = &ak
+		}
+		accessKeys = append(accessKeys, &ak)
+	}
+	user.accessKeysFromSecret = accessKeys
+	return nil
 }
