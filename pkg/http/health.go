@@ -5,7 +5,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/pkg/errors"
 	"github.com/riotkit-org/backup-repository/pkg/core"
-	health2 "github.com/riotkit-org/backup-repository/pkg/health"
+	health "github.com/riotkit-org/backup-repository/pkg/health"
 	"github.com/sirupsen/logrus"
 )
 
@@ -29,10 +29,10 @@ func addServerHealthEndpoints(r *gin.Engine, ctx *core.ApplicationContainer, rat
 			return
 		}
 
-		healthStatuses := health2.Validators{
-			health2.NewDbValidator(ctx.Db),
-			health2.NewStorageValidator(ctx.Storage, context.Background(), ctx.Storage.HealthTimeout),
-			health2.NewConfigurationProviderValidator(*ctx.Config),
+		healthStatuses := health.Validators{
+			health.NewDbValidator(ctx.Db),
+			health.NewStorageValidator(ctx.Storage, context.Background(), ctx.Storage.HealthTimeout),
+			health.NewConfigurationProviderValidator(*ctx.Config),
 		}.Validate()
 
 		if !healthStatuses.GetOverallStatus() {

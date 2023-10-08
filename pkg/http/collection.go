@@ -7,7 +7,7 @@ import (
 	"github.com/gin-contrib/timeout"
 	"github.com/gin-gonic/gin"
 	"github.com/riotkit-org/backup-repository/pkg/core"
-	health2 "github.com/riotkit-org/backup-repository/pkg/health"
+	"github.com/riotkit-org/backup-repository/pkg/health"
 	"github.com/riotkit-org/backup-repository/pkg/security"
 	"github.com/riotkit-org/backup-repository/pkg/storage"
 	"github.com/sirupsen/logrus"
@@ -171,6 +171,7 @@ func addDownloadRoute(r *gin.RouterGroup, ctx *core.ApplicationContainer, reques
 			// Read from storage
 			middlewares := storage.NestedStreamMiddlewares{}
 			stream, err := ctx.Storage.ReadFile(c.Request.Context(), version.GetTargetPath())
+			defer stream.Close()
 			if err != nil {
 				ServerErrorResponse(c, errors.New(fmt.Sprintf("cannot read from storage: %v", err)))
 				return
@@ -214,10 +215,10 @@ func addCollectionHealthRoute(r *gin.Engine, ctx *core.ApplicationContainer, rat
 		}
 
 		// Run all the checks
-		healthStatuses := health2.Validators{
-			health2.NewBackupWindowValidator(ctx.Storage, collection),
-			health2.NewVersionsSizeValidator(ctx.Storage, collection),
-			health2.NewSumOfVersionsValidator(ctx.Storage, collection),
+		healthStatuses := health.Validators{
+			health.NewBackupWindowValidator(ctx.Storage, collection),
+			health.NewVersionsSizeValidator(ctx.Storage, collection),
+			health.NewSumOfVersionsValidator(ctx.Storage, collection),
 		}.Validate()
 
 		if !healthStatuses.GetOverallStatus() {
