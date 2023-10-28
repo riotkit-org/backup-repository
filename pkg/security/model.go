@@ -7,21 +7,32 @@ import (
 	"time"
 )
 
+type ScopedElement struct {
+	Type  string   `form:"type" json:"type" binding:"required"`
+	Name  string   `form:"name" json:"name" binding:"required"`
+	Roles []string `form:"roles" json:"roles" binding:"required"`
+}
+
+// SessionLimitedOperationsScope allows to define additional limitations on the user's JWT token, so even if user has higher permissions we can limit those permissions per JWT token
+type SessionLimitedOperationsScope struct {
+	Elements []ScopedElement `form:"elements" json:"elements"`
+}
+
 //
-// User permissions
+// User permissions - roles
 //
 
-type Permissions []string
+type Roles []string
 
-func (p Permissions) IsEmpty() bool {
+func (p Roles) IsEmpty() bool {
 	return len(p) == 0
 }
 
-func (p Permissions) HasRole(name string) bool {
+func (p Roles) HasRole(name string) bool {
 	return p.has(name) || p.has(RoleSysAdmin)
 }
 
-func (p Permissions) has(name string) bool {
+func (p Roles) has(name string) bool {
 	for _, cursor := range p {
 		if cursor == name {
 			return true
@@ -32,20 +43,21 @@ func (p Permissions) has(name string) bool {
 }
 
 //
-// Permissions for objects
+// Roles for objects
 //
 
 type AccessControlObject struct {
-	UserName string      `json:"userName"`
-	Roles    Permissions `json:"roles"`
+	Name  string `json:"name"`
+	Type  string `json:"type"`
+	Roles Roles  `json:"roles"`
 }
 
 type AccessControlList []AccessControlObject
 
 // IsPermitted checks if given user is granted a role in this list
-func (acl AccessControlList) IsPermitted(username string, role string) bool {
+func (acl AccessControlList) IsPermitted(name string, objType string, action string) bool {
 	for _, permitted := range acl {
-		if permitted.UserName == username && permitted.Roles.HasRole(role) {
+		if permitted.Name == name && permitted.Type == objType && CanThoseRolesPerformAction(permitted.Roles, action) {
 			return true
 		}
 	}

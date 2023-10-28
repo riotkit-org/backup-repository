@@ -19,8 +19,6 @@ func addUploadRoute(r *gin.RouterGroup, ctx *core.ApplicationContainer, requestT
 	timeoutMiddleware := timeout.New(
 		timeout.WithTimeout(requestTimeout),
 		timeout.WithHandler(func(c *gin.Context) {
-			// todo: deactivate token if temporary token is used
-
 			ctxUser, _ := GetContextUser(ctx, c)
 
 			// Check if Collection exists
@@ -37,12 +35,17 @@ func addUploadRoute(r *gin.RouterGroup, ctx *core.ApplicationContainer, requestT
 			}
 
 			// [SECURITY] Backup Windows support
-			if !ctx.Collections.ValidateIsBackupWindowAllowingToUpload(collection, time.Now()) &&
-				!ctxUser.GetRoles().HasRole(security.RoleUploadsAnytime) {
-
-				UnauthorizedResponse(c, errors.New("backup window does not allow you to send a backup at this time. "+
-					"You need a token from a user that has a special permission 'uploadsAnytime'"))
-				return
+			if !ctx.Collections.ValidateIsBackupWindowAllowingToUpload(collection, time.Now()) {
+				uploadAnyTimeRequest := security.DecisionRequest{
+					Actor:   ctxUser,
+					Subject: collection,
+					Action:  security.ActionUploadAnytime,
+				}
+				if !security.DecideCanDo(&uploadAnyTimeRequest) {
+					UnauthorizedResponse(c, errors.New("backup window does not allow you to send a backup at this time. "+
+						"You need a token that has a special permission 'uploadsAnytime'"))
+					return
+				}
 			}
 
 			// [SECURITY] Do not allow parallel uploads to the same collection
@@ -84,14 +87,15 @@ func addUploadRoute(r *gin.RouterGroup, ctx *core.ApplicationContainer, requestT
 					return
 				}
 				stream, openErr = fh.Open()
+				defer stream.Close()
 				if openErr != nil {
 					ServerErrorResponse(c, errors.New(fmt.Sprintf("cannot open file from multipart/urlencoded form: %v", openErr)))
 				}
-				defer stream.Close()
 
 			} else {
 				// [HTTP] Support RAW sent data via body
 				stream = c.Request.Body
+				defer stream.Close()
 			}
 
 			// [VALIDATION] Middlewares
@@ -106,7 +110,6 @@ func addUploadRoute(r *gin.RouterGroup, ctx *core.ApplicationContainer, requestT
 			wroteLen, uploadError := ctx.Storage.UploadFile(c.Request.Context(), stream, &version, &middlewares)
 			if uploadError != nil {
 				_ = ctx.Storage.Delete(&version)
-
 				ServerErrorResponse(c, errors.New(fmt.Sprintf("cannot upload version. %v", uploadError)))
 				return
 			}

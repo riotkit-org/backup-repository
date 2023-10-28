@@ -27,6 +27,7 @@ spec:
         entry: iwa-ait
 
     accessControl:
-        - userName: admin
+        - name: admin
+          type: user
           roles:
               - collectionManager

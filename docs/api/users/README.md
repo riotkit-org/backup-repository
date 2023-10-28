@@ -25,6 +25,7 @@ curl -s -X POST -d '{"username":"admin","password":"admin"}' -H 'Content-Type: a
 {
     "data": {
         "expire": "2032-02-25T00:32:56+01:00",
+        "msg": "Use this sessionId to revoke this token anytime",
         "sessionId": "2d0aa5db61c02ea9a9d7fe6d768021aca98fff1fe75fe214a65ccd6926bb8b77",
         "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE5NjEyNzgzNzYsImxvZ2luIjoiYWRtaW4iLCJvcmlnX2lhdCI6MTY0NTkxODM3Nn0.my0WXXMxKCetkomtzRDNIKLWUm4cJ2gxyUCkuAHT6M4"
     },
@@ -33,6 +34,70 @@ curl -s -X POST -d '{"username":"admin","password":"admin"}' -H 'Content-Type: a
 ```
 
 The `.data.token` from response is a session secret key, use it to authenticate next API requests using `Authorization: Bearer token-here` header.
+
+### Feature: Generating a JWT token with limited permissions
+
+User can create a restricted session with `/api/stable/auth/login` endpoint, by using extra parameter `operationsScope`.
+
+`operationsScope` extra parameter is a working like an allowlist/whitelist - optional, when specified, then User permissions
+are restricted to roles specified there. 
+
+_Notice: Roles specified in `operationsScope` cannot be higher than specified in User's profile or in collection ACL._
+
+**Example:**
+
+```bash
+curl -s -X POST -d '{"username":"some-user","password":"test", "operationsScope": {"elements": [{"type": "collection", "name": "iwa-ait", "roles": ["collectionManager"]}]}}' -H 'Content-Type: application/json' 'http://localhost:8080/api/stable/auth/login'
+```
+
+_Notice `"operationsScope": {"elements": [{"type": "collection", "name": "iwa-ait", "roles": ["collectionManager"]}]}` in the request body._
+
+### Feature: Access Tokens
+
+Second way to restrict user session is by creating **Access Keys** that are separate passwords associated with same User account, but with additional restrictions.
+
+**Example configuration:**
+
+```yaml
+---
+apiVersion: backups.riotkit.org/v1alpha1
+kind: BackupUser
+metadata:
+    name: some-user
+spec:
+    # (...)
+    passwordFromRef:
+        name: backup-repository-passwords
+        entry: admin
+    collectionAccessKeys:
+        #
+        # login: some-user$uploader
+        # password: test
+        #
+        - name: uploader
+          collections: ["iwa-ait"]
+          roles: ["backupUploader"]
+          passwordFromRef:
+              name: backup-repository-passwords
+              entry: admin_access_key_1
+    # (...)
+```
+
+_Notice: Roles specified in `collectionAccessKeys` cannot be higher than specified in User's profile or in collection ACL._
+
+**Example JSON payload:**
+
+```json
+{"username":"some-user$uploader","password":"test"}
+```
+
+When using login endpoint you need to specify **Access Key** name after `$` in username field, and use password specified for that Access Key - it's not a regular password associated with the account.
+
+**Example:**
+
+```bash
+curl -s -X POST -d '{"username":"some-user$uploader","password":"test", "operationsScope": {"elements": []}}' -H 'Content-Type: application/json' 'http://localhost:8080/api/stable/auth/login'
+```
 
 ## GET `/api/stable/auth/user/some-user`
 

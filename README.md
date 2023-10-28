@@ -15,6 +15,8 @@ _TLDR; Primitive backup storage for E2E GPG-encrypted files, with multi-user, qu
 - Configuration via GitOps (Configuration as a Code)
 - Multi-tenancy with configurable Quotas
 - Multiple cloud providers as a backend storage (all supported by [GO Cloud](https://gocloud.dev/howto/blob/#services))
+- (Security) JWT tokens with restricted scope (login endpoint can apply additional restrictions to user session)
+- (Security) Extra pairs of username & passwords with different restrictions applied - for single user
 
 **Notice:**
 - Project is more focusing on security than on performance

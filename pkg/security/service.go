@@ -2,6 +2,7 @@ package security
 
 import (
 	"encoding/base64"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"github.com/riotkit-org/backup-repository/pkg/config"
@@ -66,24 +67,53 @@ func NewService(db *gorm.DB) Service {
 	}
 }
 
-// ExtractLoginFromJWT returns username of a user that owns this token
-func ExtractLoginFromJWT(jwt string) (string, string) {
+func extractJsonFromJWT(jwt string) (string, error) {
 	// optionally extract token from Authorization header
 	if strings.HasPrefix(jwt, "Bearer") {
 		jwt = jwt[7:]
 	}
-
 	split := strings.SplitN(jwt, ".", 3)
 	json, err := base64.RawStdEncoding.DecodeString(split[1])
 	if err != nil {
-		logrus.Errorf("Cannot extract login from JWT, %v", err)
-		return "", ""
+		return "", errors.New(fmt.Sprintf("cannot extract JSON from JWT: %s", err.Error()))
+	}
+	return string(json), nil
+}
+
+// ExtractLoginFromJWT returns username of a user that owns this token
+func ExtractLoginFromJWT(jwt string) (string, string) {
+	json, err := extractJsonFromJWT(jwt)
+	if err != nil {
+		logrus.Warnf("invalid JWT format: %s", err.Error())
 	}
 
-	username := gjson.Get(string(json), "login")
-	accessKeyName := gjson.Get(string(json), "accessKeyName")
+	username := gjson.Get(json, "login")
+	accessKeyName := gjson.Get(json, "accessKeyName")
 
 	return username.String(), accessKeyName.String()
+}
+
+func ExtractSessionLimitedOperationsScopeFromJWT(jwt string) (*SessionLimitedOperationsScope, error) {
+	asJson, err := extractJsonFromJWT(jwt)
+	if err != nil {
+		logrus.Warnf("invalid JWT format: %s", err.Error())
+	}
+
+	scope := &SessionLimitedOperationsScope{}
+	scopeJson := gjson.Get(asJson, ScopeClaimIndex)
+
+	if scopeJson.Exists() {
+		scopeAsTxtJson, decodeErr := base64.StdEncoding.DecodeString(scopeJson.String())
+		if decodeErr != nil {
+			return nil, errors.New(fmt.Sprintf("cannot base64 decode operations scope from JWT: %s", decodeErr.Error()))
+		}
+
+		scopeErr := json.Unmarshal([]byte(scopeAsTxtJson), &scope)
+		if scopeErr != nil {
+			return nil, errors.New(fmt.Sprintf("cannot unpack operations scope from JWT: %s", scopeErr.Error()))
+		}
+	}
+	return scope, nil
 }
 
 // FillPasswordFromKindSecret is able to fill up object from a data retrieved from `kind: Secret` in Kubernetes

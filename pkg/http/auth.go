@@ -1,32 +1,31 @@
 package http
 
 import (
+	"encoding/json"
 	"errors"
 	"fmt"
 	jwt "github.com/appleboy/gin-jwt/v2"
 	"github.com/gin-gonic/gin"
 	"github.com/riotkit-org/backup-repository/pkg/core"
 	"github.com/riotkit-org/backup-repository/pkg/security"
-	"github.com/riotkit-org/backup-repository/pkg/users"
 	"github.com/sirupsen/logrus"
 	"math/rand"
 	"time"
 )
 
-const (
-	IdentityKeyClaimIndex = "login"
-	AccessKeyClaimIndex   = "accessKeyName"
-)
-
 type loginForm struct {
 	Username string `form:"username" json:"username" binding:"required"`
 	Password string `form:"password" json:"password" binding:"required"`
+
+	// optional
+	OperationsScope security.SessionLimitedOperationsScope `form:"operationsScope" json:"operationsScope"`
 }
 
 type AuthUser struct {
 	UserName      string
 	AccessKeyName string
-	subject       users.User
+
+	OperationsScope security.SessionLimitedOperationsScope
 }
 
 // Authentication middleware is used in almost every endpoint to prevalidate user credentials
@@ -35,14 +34,19 @@ func createAuthenticationMiddleware(r *gin.Engine, di *core.ApplicationContainer
 	authMiddleware, err := jwt.New(&jwt.GinJWTMiddleware{
 		Realm:       "backup-repository",
 		Key:         []byte(di.JwtSecretKey),
-		Timeout:     time.Hour * 6,
+		Timeout:     time.Hour * 6, // todo: configurable globally
 		MaxRefresh:  time.Hour * 6,
-		IdentityKey: IdentityKeyClaimIndex,
+		IdentityKey: security.IdentityKeyClaimIndex,
 		PayloadFunc: func(data interface{}) jwt.MapClaims {
 			if v, ok := data.(*AuthUser); ok {
+				scope, scopeErr := json.Marshal(v.OperationsScope)
+				if scopeErr != nil {
+					return jwt.MapClaims{}
+				}
 				claims := jwt.MapClaims{
-					IdentityKeyClaimIndex: v.UserName,
-					AccessKeyClaimIndex:   v.AccessKeyName,
+					security.IdentityKeyClaimIndex: v.UserName,
+					security.AccessKeyClaimIndex:   v.AccessKeyName,
+					security.ScopeClaimIndex:       scope,
 				}
 				rand.Seed(time.Now().UnixNano())
 				claims["rand"] = fmt.Sprintf("%v", rand.Intn(64))
@@ -61,9 +65,21 @@ func createAuthenticationMiddleware(r *gin.Engine, di *core.ApplicationContainer
 
 			// login user
 			claims := jwt.ExtractClaims(c)
+			username := claims[security.IdentityKeyClaimIndex].(string)
+
+			var opScope security.SessionLimitedOperationsScope
+			err := json.Unmarshal([]byte(claims[security.ScopeClaimIndex].(string)), &opScope)
+			if err != nil {
+				logrus.Warnf("Failed to unpack operations scope for %s", username)
+				return nil
+			}
+
 			return &AuthUser{
-				UserName:      claims[IdentityKeyClaimIndex].(string),
-				AccessKeyName: claims[AccessKeyClaimIndex].(string),
+				UserName:      username,
+				AccessKeyName: claims[security.AccessKeyClaimIndex].(string),
+
+				// optional
+				OperationsScope: opScope,
 			}
 		},
 		Authenticator: func(c *gin.Context) (interface{}, error) {
@@ -77,7 +93,7 @@ func createAuthenticationMiddleware(r *gin.Engine, di *core.ApplicationContainer
 			password := loginValues.Password
 			userIdentity := security.NewUserIdentityFromString(login)
 
-			user, err := di.Users.LookupUser(login)
+			user, err := di.Users.LookupSessionUser(userIdentity, &loginValues.OperationsScope)
 			logrus.Infof("Looking up user '%s' (%s)", userIdentity.Username, login)
 			if err != nil {
 				logrus.Errorf("User lookup error: %v", err)
@@ -92,6 +108,9 @@ func createAuthenticationMiddleware(r *gin.Engine, di *core.ApplicationContainer
 			return &AuthUser{
 				UserName:      userIdentity.Username,
 				AccessKeyName: userIdentity.AccessKeyName,
+
+				// optional values
+				OperationsScope: loginValues.OperationsScope,
 			}, nil
 		},
 		Authorizator: func(data interface{}, c *gin.Context) bool {
@@ -123,6 +142,7 @@ func createAuthenticationMiddleware(r *gin.Engine, di *core.ApplicationContainer
 				"token":     token,
 				"sessionId": hashedShortcut,
 				"expire":    expire.Format(time.RFC3339),
+				"msg":       "Use this sessionId to revoke this token anytime",
 			})
 		},
 	})
@@ -139,7 +159,8 @@ func createAuthenticationMiddleware(r *gin.Engine, di *core.ApplicationContainer
 func addLookupUserRoute(r *gin.RouterGroup, ctx *core.ApplicationContainer, rateLimiter gin.HandlerFunc) {
 	r.GET("/api/stable/auth/user/:userName", rateLimiter, func(c *gin.Context) {
 		// subject
-		user, err := ctx.Users.LookupUser(c.Param("userName"))
+		identity := security.NewUserIdentityFromString(c.Param("userName"))
+		user, err := ctx.Users.LookupUser(identity)
 		if err != nil {
 			NotFoundResponse(c, err)
 			return

@@ -7,7 +7,6 @@ import (
 	"github.com/labstack/gommon/bytes"
 	"github.com/riotkit-org/backup-repository/pkg/config"
 	"github.com/riotkit-org/backup-repository/pkg/security"
-	"github.com/riotkit-org/backup-repository/pkg/users"
 	"github.com/robfig/cron/v3"
 	"strings"
 	"time"
@@ -143,6 +142,14 @@ type Collection struct {
 	SecretFromSecret string
 }
 
+func (c *Collection) GetTypeName() string {
+	return "collection"
+}
+
+func (c *Collection) GetAccessControlList() *security.AccessControlList {
+	return &c.Spec.AccessControl
+}
+
 func (c *Collection) IsHealthCheckSecretValid(secret string) bool {
 	// secret is optional
 	if c.SecretFromSecret == "" {
@@ -152,31 +159,25 @@ func (c *Collection) IsHealthCheckSecretValid(secret string) bool {
 }
 
 // CanUploadToMe answers if user can add new versions to the collection
-func (c *Collection) CanUploadToMe(user *users.User) bool {
-	if user.IsInAccessKeyContext() {
-		if !c.Spec.AccessControl.IsPermitted(user.Metadata.Name, security.RoleBackupUploader) {
-			return false
-		}
-		scopedRoles := user.GetAccessKeyRolesInCollectionContext(c.GetId())
-		return scopedRoles.HasRole(security.RoleBackupUploader) || scopedRoles.HasRole(security.RoleCollectionManager)
-	}
-	return user.GetRoles().HasRole(security.RoleCollectionManager) || user.GetRoles().HasRole(security.RoleBackupUploader) || c.Spec.AccessControl.IsPermitted(user.Metadata.Name, security.RoleBackupUploader)
+func (c *Collection) CanUploadToMe(user security.Actor) bool {
+	return security.DecideCanDo(&security.DecisionRequest{
+		Actor:   user,
+		Subject: c,
+		Action:  security.ActionUpload,
+	})
 }
 
 // CanDownloadFromMe answers if user can download versions to this collection
-func (c *Collection) CanDownloadFromMe(user *users.User) bool {
-	if user.IsInAccessKeyContext() {
-		if !c.Spec.AccessControl.IsPermitted(user.Metadata.Name, security.RoleBackupDownloader) {
-			return false
-		}
-		scopedRoles := user.GetAccessKeyRolesInCollectionContext(c.GetId())
-		return scopedRoles.HasRole(security.RoleBackupDownloader) || scopedRoles.HasRole(security.RoleCollectionManager)
-	}
-	return user.GetRoles().HasRole(security.RoleCollectionManager) || user.GetRoles().HasRole(security.RoleBackupDownloader) || c.Spec.AccessControl.IsPermitted(user.Metadata.Name, security.RoleBackupDownloader)
+func (c *Collection) CanDownloadFromMe(user security.Actor) bool {
+	return security.DecideCanDo(&security.DecisionRequest{
+		Actor:   user,
+		Subject: c,
+		Action:  security.ActionDownload,
+	})
 }
 
 // CanListMyVersions answers if user can list versions
-func (c *Collection) CanListMyVersions(user *users.User) bool {
+func (c *Collection) CanListMyVersions(user security.Actor) bool {
 	return c.CanUploadToMe(user) || c.CanDownloadFromMe(user)
 }
 

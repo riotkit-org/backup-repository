@@ -104,7 +104,7 @@ func main() {
 	ctx := core.ApplicationContainer{
 		Db:              dbDriver,
 		Config:          &configProvider,
-		Users:           &usersService,
+		Users:           usersService,
 		GrantedAccesses: &gaService,
 		JwtSecretKey:    opts.JwtSecretKey,
 		HealthCheckKey:  opts.HealthCheckKey,
