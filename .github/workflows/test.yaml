@@ -71,4 +71,4 @@ jobs:
         uses: riotkit-org/.github/.github/workflows/python.release.yaml@main
         with:
             pythonVersion: 3.11
-            testCmd: "make k3d integration-test"
+            testCmd: "make k3d skaffold-deploy integration-test"
