@@ -39,9 +39,9 @@ func (a *Service) LookupSessionUser(identity security.UserIdentity, scope *secur
 
 func (a *Service) fillUpAccessToken(saUser *SessionAwareUser, currentlyUsedAccessKeyName string) error {
 	// access keys
-	accessKeys := make([]*CollectionAccessKey, 0)
+	accessKeys := make([]*AccessKey, 0)
 	saUser.currentAccessKey = nil
-	for _, accessKey := range saUser.Spec.CollectionAccessKeys {
+	for _, accessKey := range saUser.Spec.AccessKeys {
 		ak := *accessKey
 		if ak.Password == "" && ak.PasswordFromRef.Name != "" {
 			hashSetter := func(password string) {

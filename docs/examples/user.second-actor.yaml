@@ -18,11 +18,13 @@ spec:
         # password: test
         #
         - name: uploader
-          collections: ["iwa-ait"]
-          roles: ["backupUploader"]
           # password: ""
           passwordFromRef:
               name: backup-repository-passwords
               entry: admin_access_key_1
+          objects:
+              - name: iwa-ait
+                type: collection
+                roles: ["backupUploader"]
     roles:
         - collectionManager

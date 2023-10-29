@@ -52,7 +52,7 @@ curl -s -X POST -d '{"username":"some-user","password":"test", "operationsScope"
 
 _Notice `"operationsScope": {"elements": [{"type": "collection", "name": "iwa-ait", "roles": ["collectionManager"]}]}` in the request body._
 
-### Feature: Access Tokens
+### Feature: Access Keys
 
 Second way to restrict user session is by creating **Access Keys** that are separate passwords associated with same User account, but with additional restrictions.
 
@@ -69,21 +69,27 @@ spec:
     passwordFromRef:
         name: backup-repository-passwords
         entry: admin
-    collectionAccessKeys:
+    accessKeys:
         #
-        # login: some-user$uploader
+        # This entry creates a "sub-user" some-user$uploader which is restricted to only upload to collection 'iwa-ait'
+        # This "sub-user" uses a different password. You may create as many "sub-users" (access keys) as you wish - per collection, per function.
+        #
+        # login: some-user$iwa
         # password: test
         #
-        - name: uploader
-          collections: ["iwa-ait"]
-          roles: ["backupUploader"]
+        - name: iwa
+          # password: ""
           passwordFromRef:
               name: backup-repository-passwords
               entry: admin_access_key_1
+          objects:
+              - name: iwa-ait
+                type: collection
+                roles: ["backupUploader"]
     # (...)
 ```
 
-_Notice: Roles specified in `collectionAccessKeys` cannot be higher than specified in User's profile or in collection ACL._
+_Notice: Roles specified in `accessKeys` cannot be higher than specified in User's profile or in collection ACL._
 
 **Example JSON payload:**
 

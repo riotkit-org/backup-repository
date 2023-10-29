@@ -155,22 +155,27 @@ spec:
                                           type: string
                                       entry:
                                           type: string
-                              collectionAccessTokens:
+                              accessKeys:
                                   type: array
                                   items:
                                       type: object
                                       properties:
                                           name:
                                               type: string
-                                          collections:
+                                          objects:
                                               type: array
                                               items:
-                                                  type: string
-                                          roles:
-                                              type: array
-                                              items:
-                                                  type: string
-                                                  enum: ["collectionManager", "backupUploader", "backupDownloader"]
+                                                  type: object
+                                                  required: ["name", "type"]
+                                                  properties:
+                                                      name:
+                                                          type: string
+                                                      type:
+                                                          type: string
+                                                      roles:
+                                                          type: array
+                                                          items:
+                                                              type: string
                                           password:
                                               type: string
                                           passwordFromRef:

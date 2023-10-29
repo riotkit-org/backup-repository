@@ -70,6 +70,31 @@ Maturity
 
 Star a repo, subscribe for releases to get informed.
 
+Security/Compliance demo
+------------------------
+
+### Are my backups created in specific time?
+
+Every **Backup Collection** has HTTP health check endpoint you can monitor and trigger alerts in case when expected backup was not submitted or is invalid.
+
+### Attacker got my Kubernetes cluster and wants to overwrite remote backups
+
+- Good practice is to **limit how often versions can be submitted**. Attacker would need to be very patient to overwrite your past backups with malicious ones.
+
+### Attacker got my Backup Repository credentials from target environment
+
+- **Access Keys** feature allows to generate additional pair of username & password for same user, but with fewer privileges
+- Use *Backup Maker Operator* which injects JWT credentials on-the-fly just before the backup is made. Those credentials are restricted to upload to single collection at a time
+- You may specify ranges of IP addresses from which backup could be submitted (if the server is reachable from the internet)
+
+### Attacker wants to upload a terabyte file to generate cloud costs or exhaust disk space
+
+Backup Repository operates on disk quotas. Every incoming byte stream is calculated on the fly and cancelled, when the limit is exhausted.
+
+### Storage of my Backup Repository server leaked!
+
+End-To-End backup encryption makes your backup unreadable for people not having your GPG private key.
+
 Running
 -------
 
@@ -118,6 +143,8 @@ Security
 
 - For authentication JSON Web Token was used
 - Tokens are long-term due to usage nature
+- Support for scoped JSON Web Tokens (a single requested token can have restricted permissions to perform less than defined in User profile)
+- User can have multiple username & passwords pairs, each one with additional restrictions (e.g. username `mycluster$collection1` -> only uploads to collection1, username `mycluster$collection2` -> only uploads to collection2)
 - All JWT's can be revoked anytime. There is a list of generated tokens stored in configuration (only sha256 shortcuts)
 - Passwords are encoded with `argon2di` (winner of the 2015 Password Hashing Competition, recommended by OWASP)
 - All objects are managed by RBAC (Role Based Access Control) and ACL (Access Control Lists)

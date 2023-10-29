@@ -6,7 +6,7 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
-type CollectionAccessKey struct {
+type AccessKey struct {
 	Name            string                         `json:"name"`
 	Password        string                         `json:"password"` // master password to this account, allows access limited by
 	PasswordFromRef security.PasswordFromSecretRef `json:"passwordFromRef"`
@@ -14,12 +14,12 @@ type CollectionAccessKey struct {
 }
 
 type Spec struct {
-	Id                   string                         `json:"id"`
-	Email                string                         `json:"email"`
-	Roles                security.Roles                 `json:"roles"`
-	Password             string                         `json:"password"` // master password to this account, allows access limited by
-	PasswordFromRef      security.PasswordFromSecretRef `json:"passwordFromRef"`
-	CollectionAccessKeys []*CollectionAccessKey         `json:"collectionAccessKeys"`
+	Id              string                         `json:"id"`
+	Email           string                         `json:"email"`
+	Roles           security.Roles                 `json:"roles"`
+	Password        string                         `json:"password"` // master password to this account, allows access limited by
+	PasswordFromRef security.PasswordFromSecretRef `json:"passwordFromRef"`
+	AccessKeys      []*AccessKey                   `json:"accessKeys"`
 }
 
 type User struct {
@@ -77,10 +77,10 @@ type SessionAwareUser struct {
 	*User
 
 	// Dynamic property: Copy of .spec.CollectionAccessKeys with password field filled up
-	accessKeysFromSecret []*CollectionAccessKey
+	accessKeysFromSecret []*AccessKey
 
 	// Dynamic property: Access key used in current session
-	currentAccessKey *CollectionAccessKey
+	currentAccessKey *AccessKey
 
 	// Dynamic property: Read from JWT token - operations scope, limited per session/token
 	sessionScope *security.SessionLimitedOperationsScope
@@ -114,7 +114,7 @@ func (sau *SessionAwareUser) GetAccessKeyRolesInContextOf(subject security.Subje
 }
 
 // IsPasswordValid is checking if User supplied password matches User's main password,
-// or CollectionAccessKey password - depending on accessKeyName parameter
+// or AccessKey password - depending on accessKeyName parameter
 func (sau *SessionAwareUser) IsPasswordValid(password string, accessKeyName string) bool {
 	if accessKeyName != "" {
 		for _, accessKey := range sau.accessKeysFromSecret {
