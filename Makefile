@@ -19,6 +19,7 @@ _pytest: ## Shortcut for E2E tests without setting up the environment
 	pipenv run pytest -s
 
 _prepare-env:
+	kubectl apply -f "helm/backup-repository-server/templates/crd.yaml"
 	kubectl apply -f "docs/examples/" -n backups
 
 run:
