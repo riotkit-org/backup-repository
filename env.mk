@@ -41,6 +41,7 @@ skaffold-deploy: prepare-tools  ## Deploys app with dependencies using Skaffold
 	skaffold deploy -p app --tag e2e --assume-yes=true --default-repo ${ENV_CLUSTER_NAME}-registry:5000
 
 	export KUBECONFIG=~/.k3d/kubeconfig-${ENV_CLUSTER_NAME}.yaml
+	killall kubectl || true
 	kubectl port-forward svc/${ENV_APP_SVC} -n ${ENV_NS} ${ENV_PORT_FORWARD} &
 
 dev: ## Runs the development environment in Kubernetes

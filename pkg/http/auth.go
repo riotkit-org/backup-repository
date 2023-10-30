@@ -18,14 +18,14 @@ type loginForm struct {
 	Password string `form:"password" json:"password" binding:"required"`
 
 	// optional
-	OperationsScope security.SessionLimitedOperationsScope `form:"operationsScope" json:"operationsScope"`
+	OperationsScope *security.SessionLimitedOperationsScope `form:"operationsScope" json:"operationsScope"`
 }
 
 type AuthUser struct {
 	UserName      string
 	AccessKeyName string
 
-	OperationsScope security.SessionLimitedOperationsScope
+	OperationsScope *security.SessionLimitedOperationsScope
 }
 
 // Authentication middleware is used in almost every endpoint to prevalidate user credentials
@@ -67,11 +67,16 @@ func createAuthenticationMiddleware(r *gin.Engine, di *core.ApplicationContainer
 			claims := jwt.ExtractClaims(c)
 			username := claims[security.IdentityKeyClaimIndex].(string)
 
-			var opScope security.SessionLimitedOperationsScope
-			err := json.Unmarshal([]byte(claims[security.ScopeClaimIndex].(string)), &opScope)
-			if err != nil {
-				logrus.Warnf("Failed to unpack operations scope for %s", username)
-				return nil
+			opScope := &security.SessionLimitedOperationsScope{Elements: []security.ScopedElement{}}
+
+			if val, exists := claims[security.ScopeClaimIndex]; exists && val != nil {
+				var scopeErr error
+				opScope, scopeErr = security.ExtractScopeFromString(val.(string))
+
+				if scopeErr != nil {
+					logrus.Warnf("Failed to unmarshal operations scope for %s", username)
+					return nil
+				}
 			}
 
 			return &AuthUser{
@@ -93,7 +98,7 @@ func createAuthenticationMiddleware(r *gin.Engine, di *core.ApplicationContainer
 			password := loginValues.Password
 			userIdentity := security.NewUserIdentityFromString(login)
 
-			user, err := di.Users.LookupSessionUser(userIdentity, &loginValues.OperationsScope)
+			user, err := di.Users.LookupSessionUser(userIdentity, loginValues.OperationsScope)
 			logrus.Infof("Looking up user '%s' (%s)", userIdentity.Username, login)
 			if err != nil {
 				logrus.Errorf("User lookup error: %v", err)

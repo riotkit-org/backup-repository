@@ -98,20 +98,23 @@ func ExtractSessionLimitedOperationsScopeFromJWT(jwt string) (*SessionLimitedOpe
 	if err != nil {
 		logrus.Warnf("invalid JWT format: %s", err.Error())
 	}
-
-	scope := &SessionLimitedOperationsScope{}
 	scopeJson := gjson.Get(asJson, ScopeClaimIndex)
-
 	if scopeJson.Exists() {
-		scopeAsTxtJson, decodeErr := base64.StdEncoding.DecodeString(scopeJson.String())
-		if decodeErr != nil {
-			return nil, errors.New(fmt.Sprintf("cannot base64 decode operations scope from JWT: %s", decodeErr.Error()))
-		}
+		return ExtractScopeFromString(scopeJson.String())
+	}
+	return &SessionLimitedOperationsScope{Elements: []ScopedElement{}}, nil
+}
 
-		scopeErr := json.Unmarshal([]byte(scopeAsTxtJson), &scope)
-		if scopeErr != nil {
-			return nil, errors.New(fmt.Sprintf("cannot unpack operations scope from JWT: %s", scopeErr.Error()))
-		}
+func ExtractScopeFromString(asJson string) (*SessionLimitedOperationsScope, error) {
+	scope := &SessionLimitedOperationsScope{}
+	scopeAsTxtJson, decodeErr := base64.StdEncoding.DecodeString(asJson)
+	if decodeErr != nil {
+		return nil, errors.New(fmt.Sprintf("cannot base64 decode operations scope from JWT: %s", decodeErr.Error()))
+	}
+
+	scopeErr := json.Unmarshal(scopeAsTxtJson, &scope)
+	if scopeErr != nil {
+		return nil, errors.New(fmt.Sprintf("cannot unpack operations scope from JWT: %s", scopeErr.Error()))
 	}
 	return scope, nil
 }
