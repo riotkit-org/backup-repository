@@ -12,5 +12,19 @@ spec:
     passwordFromRef:
         name: backup-repository-passwords
         entry: admin
+    accessKeys:
+        #
+        # login: some-user$uploader
+        # password: test
+        #
+        - name: uploader
+          # password: ""
+          passwordFromRef:
+              name: backup-repository-passwords
+              entry: admin_access_key_1
+          objects:
+              - name: iwa-ait
+                type: collection
+                roles: ["backupUploader"]
     roles:
         - collectionManager
